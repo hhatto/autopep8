@@ -1,6 +1,9 @@
 import sys, os
 
 
+print 1 
+
+
 def func1():
     pass
 

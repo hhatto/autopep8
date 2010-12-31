@@ -67,6 +67,11 @@ class FixPEP8(object):
         for cnt in range(delete_linenum):
             self.source[result['line'] - 2 - cnt] = ''
 
+    def fixed_w291(self, result):
+        fixed_line = self.source[result['line'] - 1].strip()
+        # TODO: found logic, cr or lf or crlf in source code
+        self.source[result['line'] - 1] = "%s\n" % fixed_line
+
     def fixed_w391(self, result):
         source = copy.copy(self.source)
         source.reverse()
