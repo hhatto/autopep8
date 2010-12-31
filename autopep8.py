@@ -1,6 +1,7 @@
 import copy
 import os
 import re
+import sys
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 
@@ -40,8 +41,12 @@ class FixPEP8(object):
     def _fixed_source(self):
         for result in self.results:
             #print result
-            fix = getattr(self, "fixed_%s" % result['id'].lower())
-            fix(result)
+            fixed_methodname = "fixed_%s" % result['id'].lower()
+            if hasattr(self, fixed_methodname):
+                fix = getattr(self, fixed_methodname)
+                fix(result)
+            else:
+                print >>sys.stderr, "'%s' is not defined." % fixed_methodname
 
     def fix(self):
         pep8result = self._execute_pep8(self.filename)
@@ -71,6 +76,10 @@ class FixPEP8(object):
         fixed_line = self.source[result['line'] - 1].strip()
         # TODO: found logic, cr or lf or crlf in source code
         self.source[result['line'] - 1] = "%s\n" % fixed_line
+
+    def fixed_w293(self, result):
+        # TODO: found logic, cr or lf or crlf in source code
+        self.source[result['line'] - 1] = "\n"
 
     def fixed_w391(self, result):
         source = copy.copy(self.source)
