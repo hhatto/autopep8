@@ -50,7 +50,11 @@ class FixPEP8(object):
         return "".join(self.source)
 
     def fixed_e401(self, result):
-        pass
+        target = self.source[result['line'] - 1]
+        modules = target.split("import ")[1].split(",")
+        fixed_modulelist = ["import %s" % m.lstrip() for m in modules]
+        # TODO: found logic, cr or lf or crlf in source code
+        self.source[result['line'] - 1] = "\n".join(fixed_modulelist)
 
     def fixed_e302(self, result):
         add_linenum = 2 - int(result['info'].split()[-1])
