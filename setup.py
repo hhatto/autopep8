@@ -15,7 +15,7 @@ setup(
     license='Expat License',
     author='Hideo Hattori',
     author_email='hhatto.jp@gmail.com',
-    #url='http://bitbucket.org/hhatto/autopep8/',
+    url='https://github.com/hhatto/autopep8',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
