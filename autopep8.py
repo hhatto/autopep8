@@ -5,7 +5,7 @@ import sys
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 
-__version__ = '0.0.1'
+__version__ = '0.1'
 
 
 pep8bin = 'pep8'
