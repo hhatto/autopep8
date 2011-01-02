@@ -124,6 +124,9 @@ def main():
     parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
                       help='print to verbose result.')
     opts, args = parser.parse_args()
+    if not len(args):
+        print parser.format_help()
+        return 1
     fix = FixPEP8(args[0])
     print fix.fix()
 
