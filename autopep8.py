@@ -49,10 +49,10 @@ class FixPEP8(object):
                 return p.stdout.readlines()
         raise Exception("'%s' is not found." % pep8bin)
 
-    def _fixed_source(self):
+    def _fix_source(self):
         for result in self.results:
             #print result
-            fixed_methodname = "fixed_%s" % result['id'].lower()
+            fixed_methodname = "fix_%s" % result['id'].lower()
             if hasattr(self, fixed_methodname):
                 fix = getattr(self, fixed_methodname)
                 fix(result)
@@ -62,10 +62,10 @@ class FixPEP8(object):
     def fix(self):
         pep8result = self._execute_pep8(self.filename)
         self.results = [self._analyze_pep8result(line) for line in pep8result]
-        self._fixed_source()
+        self._fix_source()
         return "".join(self.source)
 
-    def fixed_e231(self, result):
+    def fix_e231(self, result):
         target = self.source[result['line'] - 1]
         fixed = ""
         fixed_end = 0
@@ -75,34 +75,34 @@ class FixPEP8(object):
         fixed += target[fixed_end:]
         self.source[result['line'] - 1] = fixed
 
-    def fixed_e302(self, result):
+    def fix_e302(self, result):
         add_linenum = 2 - int(result['info'].split()[-1])
         # TODO: found logic, cr or lf or crlf in source code
         cr = "\n" * add_linenum
         self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
 
-    def fixed_e303(self, result):
+    def fix_e303(self, result):
         delete_linenum = int(result['info'].split("(")[1].split(")")[0]) - 2
         for cnt in range(delete_linenum):
             self.source[result['line'] - 2 - cnt] = ''
 
-    def fixed_e401(self, result):
+    def fix_e401(self, result):
         target = self.source[result['line'] - 1]
         modules = target.split("import ")[1].split(",")
         fixed_modulelist = ["import %s" % m.lstrip() for m in modules]
         # TODO: found logic, cr or lf or crlf in source code
         self.source[result['line'] - 1] = "\n".join(fixed_modulelist)
 
-    def fixed_w291(self, result):
+    def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].strip()
         # TODO: found logic, cr or lf or crlf in source code
         self.source[result['line'] - 1] = "%s\n" % fixed_line
 
-    def fixed_w293(self, result):
+    def fix_w293(self, result):
         # TODO: found logic, cr or lf or crlf in source code
         self.source[result['line'] - 1] = "\n"
 
-    def fixed_w391(self, result):
+    def fix_w391(self, result):
         source = copy.copy(self.source)
         source.reverse()
         found_notblank = False
