@@ -25,7 +25,10 @@ def func2():
 def func22():
     pass
 
-def func3():
+
+def func_oneline():if True: print 1
+
+def func_last():
     pass
 
 
