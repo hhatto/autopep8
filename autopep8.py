@@ -35,7 +35,6 @@ class FixPEP8(object):
         column = tmp[2]
         info = " ".join(tmp[3:])
         pep8id = info.lstrip().split()[0]
-        #print pep8id
         return dict(id=pep8id, filename=filename, line=line,
                     column=column, info=info)
 
