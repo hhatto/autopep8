@@ -13,6 +13,17 @@ pep8bin = 'pep8'
 
 class FixPEP8(object):
 
+    """fix invalid code
+
+    [fixed mothod list]
+    - e231
+    - e302
+    - e303
+    - e401
+    - w291
+    - w293
+    - w391
+    """
     def __init__(self, filename):
         self.filename = filename
         self.source = open(filename).readlines()
@@ -54,12 +65,15 @@ class FixPEP8(object):
         self._fixed_source()
         return "".join(self.source)
 
-    def fixed_e401(self, result):
+    def fixed_e231(self, result):
         target = self.source[result['line'] - 1]
-        modules = target.split("import ")[1].split(",")
-        fixed_modulelist = ["import %s" % m.lstrip() for m in modules]
-        # TODO: found logic, cr or lf or crlf in source code
-        self.source[result['line'] - 1] = "\n".join(fixed_modulelist)
+        fixed = ""
+        fixed_end = 0
+        for i in re.finditer(",\S", target):
+            fixed += target[fixed_end:i.start()] + ", "
+            fixed_end = i.end() - 1
+        fixed += target[fixed_end:]
+        self.source[result['line'] - 1] = fixed
 
     def fixed_e302(self, result):
         add_linenum = 2 - int(result['info'].split()[-1])
@@ -71,6 +85,13 @@ class FixPEP8(object):
         delete_linenum = int(result['info'].split("(")[1].split(")")[0]) - 2
         for cnt in range(delete_linenum):
             self.source[result['line'] - 2 - cnt] = ''
+
+    def fixed_e401(self, result):
+        target = self.source[result['line'] - 1]
+        modules = target.split("import ")[1].split(",")
+        fixed_modulelist = ["import %s" % m.lstrip() for m in modules]
+        # TODO: found logic, cr or lf or crlf in source code
+        self.source[result['line'] - 1] = "\n".join(fixed_modulelist)
 
     def fixed_w291(self, result):
         fixed_line = self.source[result['line'] - 1].strip()

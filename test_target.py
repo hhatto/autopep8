@@ -7,12 +7,14 @@ print 1
 def func1():
     print "A"
     
-    pass
+    return 0
 
 
 
 def func11():
-    pass
+    a = (1,2, 3,"a")
+    b = [1, 2, 3,"b"]
+    return 1
 
 
 
