@@ -9,6 +9,9 @@ __version__ = '0.1'
 
 
 pep8bin = 'pep8'
+CR = '\r'
+LF = '\n'
+CRLF = '\r\n'
 
 
 class FixPEP8(object):
@@ -27,6 +30,28 @@ class FixPEP8(object):
     def __init__(self, filename):
         self.filename = filename
         self.source = open(filename).readlines()
+        self.newline = self._find_newline(self.source)
+
+    def _find_newline(self, source):
+        cr = 0
+        crlf = 0
+        lf = 0
+        for s in source:
+            if CRLF in s:
+                crlf += 1
+            elif CR in s:
+                cr += 0
+            elif LF in s:
+                lf += 0
+        _max = max(cr, crlf, lf)
+        if _max == lf:
+            return LF
+        elif _max == crlf:
+            return CRLF
+        elif _max == cr:
+            return CR
+        else:
+            return LF
 
     def _analyze_pep8result(self, result):
         tmp = result.split(":")
@@ -75,8 +100,7 @@ class FixPEP8(object):
 
     def fix_e302(self, result):
         add_linenum = 2 - int(result['info'].split()[-1])
-        # TODO: found logic, cr or lf or crlf in source code
-        cr = "\n" * add_linenum
+        cr = self.newline * add_linenum
         self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
 
     def fix_e303(self, result):
@@ -88,17 +112,14 @@ class FixPEP8(object):
         target = self.source[result['line'] - 1]
         modules = target.split("import ")[1].split(",")
         fixed_modulelist = ["import %s" % m.lstrip() for m in modules]
-        # TODO: found logic, cr or lf or crlf in source code
-        self.source[result['line'] - 1] = "\n".join(fixed_modulelist)
+        self.source[result['line'] - 1] = self.newline.join(fixed_modulelist)
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].strip()
-        # TODO: found logic, cr or lf or crlf in source code
-        self.source[result['line'] - 1] = "%s\n" % fixed_line
+        self.source[result['line'] - 1] = "%s%s" % (fixed_line, self.newline)
 
     def fix_w293(self, result):
-        # TODO: found logic, cr or lf or crlf in source code
-        self.source[result['line'] - 1] = "\n"
+        self.source[result['line'] - 1] = self.newline
 
     def fix_w391(self, result):
         source = copy.copy(self.source)
