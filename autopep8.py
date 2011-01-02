@@ -51,7 +51,6 @@ class FixPEP8(object):
 
     def _fix_source(self):
         for result in self.results:
-            #print result
             fixed_methodname = "fix_%s" % result['id'].lower()
             if hasattr(self, fixed_methodname):
                 fix = getattr(self, fixed_methodname)
