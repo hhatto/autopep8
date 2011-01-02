@@ -33,11 +33,10 @@ class FixPEP8(object):
         self.filename = filename
         self.source = open(filename).readlines()
         self.newline = self._find_newline(self.source)
+        self.results = []
 
     def _find_newline(self, source):
-        cr = 0
-        crlf = 0
-        lf = 0
+        cr, lf, crlf = 0, 0, 0
         for s in source:
             if CRLF in s:
                 crlf += 1
