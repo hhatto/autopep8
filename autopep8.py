@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+"""This tool is automatic generate to pep8 checked code."""
 import copy
 import os
 import re
@@ -80,7 +82,7 @@ class FixPEP8(object):
                 fix = getattr(self, fixed_methodname)
                 fix(result)
             else:
-                print >>sys.stderr, "'%s' is not defined." % fixed_methodname
+                print >> sys.stderr, "'%s' is not defined." % fixed_methodname
 
     def fix(self):
         pep8result = self._execute_pep8(self.filename)
