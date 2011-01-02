@@ -29,11 +29,12 @@ class FixPEP8(object):
     - w293
     - w391
     """
-    def __init__(self, filename):
+    def __init__(self, filename, options):
         self.filename = filename
         self.source = open(filename).readlines()
         self.newline = self._find_newline(self.source)
         self.results = []
+        self.options = options
 
     def _find_newline(self, source):
         cr, lf, crlf = 0, 0, 0
@@ -82,6 +83,12 @@ class FixPEP8(object):
                 fix(result)
             else:
                 print >> sys.stderr, "'%s' is not defined." % fixed_methodname
+                if self.options.verbose:
+                    info = result['info'].strip()
+                    print >> sys.stderr, "%s:%s:%s:%s" % (result['filename'],
+                                                          result['line'],
+                                                          result['column'],
+                                                          info)
 
     def fix(self):
         pep8result = self._execute_pep8(self.filename)
@@ -115,6 +122,13 @@ class FixPEP8(object):
         fixed_modulelist = ["import %s" % m.lstrip() for m in modules]
         self.source[result['line'] - 1] = self.newline.join(fixed_modulelist)
 
+    def fix_e701(self, result):
+        # TODO: fix to multiple one-level, and indent level hard-coding, now.
+        target = self.source[result['line'] - 1]
+        fixed_source = target[:int(result['column'])] + self.newline + \
+                       "    " + target[int(result['column']):]
+        self.source[result['line'] - 1] = fixed_source
+
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].strip()
         self.source[result['line'] - 1] = "%s%s" % (fixed_line, self.newline)
@@ -147,7 +161,7 @@ def main():
     if not len(args):
         print parser.format_help()
         return 1
-    fix = FixPEP8(args[0])
+    fix = FixPEP8(args[0], opts)
     print fix.fix()
 
 if __name__ == '__main__':
