@@ -26,7 +26,7 @@ def func11():
 def func2():
     pass
 def func22():
-    pass
+    pass;
 
 
 def func_oneline():if True: print 1
