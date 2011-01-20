@@ -210,7 +210,7 @@ def main():
         print parser.format_help()
         return 1
     fix = FixPEP8(args[0], opts)
-    print fix.fix()
+    print fix.fix(),
 
 if __name__ == '__main__':
     main()
