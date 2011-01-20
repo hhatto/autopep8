@@ -7,6 +7,14 @@ print 2  ## e262
 print 2  #### e262
 
 
+def dummy1 (a):
+    print a
+
+
+def dummy2(a) :
+    print a
+
+
 def func1():
     print "A"
     
