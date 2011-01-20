@@ -120,6 +120,11 @@ class FixPEP8(object):
                                                           result['column'],
                                                           info)
 
+    def _fix_whitespace(self, result, pattern, repl):
+        target = self.source[result['line'] - 1]
+        fixed = re.sub(pattern, repl, target)
+        self.source[result['line'] - 1] = fixed
+
     def fix(self):
         pep8result = self._execute_pep8(self.filename)
         self.results = [self._analyze_pep8result(line) for line in pep8result]
@@ -127,14 +132,10 @@ class FixPEP8(object):
         return "".join(self.source)
 
     def fix_e203(self, result):
-        target = self.source[result['line'] - 1]
-        fixed = re.sub(r"(\) )", ")", target)
-        self.source[result['line'] - 1] = fixed
+        self._fix_whitespace(result, r"(\) )", ")")
 
     def fix_e211(self, result):
-        target = self.source[result['line'] - 1]
-        fixed = re.sub(r"( \()", "(", target)
-        self.source[result['line'] - 1] = fixed
+        self._fix_whitespace(result, r"( \()", "(")
 
     def fix_e231(self, result):
         target = self.source[result['line'] - 1]
@@ -153,9 +154,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed
 
     def fix_e262(self, result):
-        target = self.source[result['line'] - 1]
-        fixed = re.sub(r"##*", "#", target)
-        self.source[result['line'] - 1] = fixed
+        self._fix_whitespace(result, r"##*", "#")
 
     def fix_e302(self, result):
         add_linenum = 2 - int(result['info'].split()[-1])
