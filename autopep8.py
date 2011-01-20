@@ -27,6 +27,9 @@ class FixPEP8(object):
     """fix invalid code
 
     [fixed method list]
+    - e201
+    - e203
+    - e211
     - e231
     - e261
     - e262
