@@ -13,7 +13,7 @@ import tokenize
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 
-__version__ = '0.1'
+__version__ = '0.1.1'
 
 
 pep8bin = 'pep8'
@@ -28,9 +28,13 @@ class FixPEP8(object):
 
     [fixed method list]
     - e231
+    - e261
+    - e262
     - e302
     - e303
     - e401
+    - e701
+    - e702
     - w291
     - w293
     - w391
@@ -166,6 +170,12 @@ class FixPEP8(object):
         fixed_source = target[:c] + self.newline + \
                        self.indent_word * indent_level + target[c:].lstrip()
         self.source[result['line'] - 1] = fixed_source
+
+    def fix_e702(self, result):
+        target = self.source[result['line'] - 1]
+        f = target.split(";")
+        fixed = "".join(f)
+        self.source[result['line'] - 1] = fixed
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].strip()
