@@ -4,6 +4,12 @@ import copy
 import os
 import re
 import sys
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+import token
+import tokenize
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 
@@ -35,6 +41,7 @@ class FixPEP8(object):
         self.newline = self._find_newline(self.source)
         self.results = []
         self.options = options
+        self.indent_word = self._get_indentword("".join(self.source))
 
     def _find_newline(self, source):
         cr, lf, crlf = 0, 0, 0
@@ -54,6 +61,25 @@ class FixPEP8(object):
             return CR
         else:
             return LF
+
+    def _get_indentword(self, source):
+        sio = StringIO(source)
+        indent_word = ""
+        for t in tokenize.generate_tokens(sio.readline):
+            if t[0] == token.INDENT:
+                indent_word = t[1]
+                break
+        return indent_word
+
+    def _get_indentlevel(self, line):
+        sio = StringIO(line)
+        indent_word = ""
+        for t in tokenize.generate_tokens(sio.readline):
+            if t[0] == token.INDENT:
+                indent_word = t[1]
+                break
+        indent_level = len(indent_word) / len(self.indent_word)
+        return indent_level + 1
 
     def _analyze_pep8result(self, result):
         tmp = result.split(":")
@@ -123,10 +149,11 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = self.newline.join(fixed_modulelist)
 
     def fix_e701(self, result):
-        # TODO: fix to multiple one-level, and indent level hard-coding, now.
         target = self.source[result['line'] - 1]
-        fixed_source = target[:int(result['column'])] + self.newline + \
-                       "    " + target[int(result['column']):]
+        c = int(result['column'])
+        indent_level = self._get_indentlevel(target)
+        fixed_source = target[:c] + self.newline + \
+                       self.indent_word * indent_level + target[c:]
         self.source[result['line'] - 1] = fixed_source
 
     def fix_w291(self, result):
