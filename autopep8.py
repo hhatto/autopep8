@@ -85,7 +85,7 @@ class FixPEP8(object):
         tmp = result.split(":")
         filename = tmp[0]
         line = int(tmp[1])
-        column = tmp[2]
+        column = int(tmp[2])
         info = " ".join(tmp[3:])
         pep8id = info.lstrip().split()[0]
         return dict(id=pep8id, filename=filename, line=line,
@@ -132,6 +132,17 @@ class FixPEP8(object):
         fixed += target[fixed_end:]
         self.source[result['line'] - 1] = fixed
 
+    def fix_e261(self, result):
+        target = self.source[result['line'] - 1]
+        c = result['column']
+        fixed = target[:c] + " " + target[c:]
+        self.source[result['line'] - 1] = fixed
+
+    def fix_e262(self, result):
+        target = self.source[result['line'] - 1]
+        fixed = re.sub(r"##*", "#", target)
+        self.source[result['line'] - 1] = fixed
+
     def fix_e302(self, result):
         add_linenum = 2 - int(result['info'].split()[-1])
         cr = self.newline * add_linenum
@@ -150,10 +161,10 @@ class FixPEP8(object):
 
     def fix_e701(self, result):
         target = self.source[result['line'] - 1]
-        c = int(result['column'])
+        c = result['column']
         indent_level = self._get_indentlevel(target)
         fixed_source = target[:c] + self.newline + \
-                       self.indent_word * indent_level + target[c:]
+                       self.indent_word * indent_level + target[c:].lstrip()
         self.source[result['line'] - 1] = fixed_source
 
     def fix_w291(self, result):
@@ -172,7 +183,7 @@ class FixPEP8(object):
                 source[cnt] = ''
                 found_notblank = True
             if found_notblank and not re.match("^$", line):
-                source[cnt] = line.split("\n")[0]
+                source[cnt] = line.rstrip()
                 break
         source.reverse()
         self.source = source
