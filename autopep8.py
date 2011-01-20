@@ -126,6 +126,16 @@ class FixPEP8(object):
         self._fix_source()
         return "".join(self.source)
 
+    def fix_e203(self, result):
+        target = self.source[result['line'] - 1]
+        fixed = re.sub(r"(\) )", ")", target)
+        self.source[result['line'] - 1] = fixed
+
+    def fix_e211(self, result):
+        target = self.source[result['line'] - 1]
+        fixed = re.sub(r"( \()", "(", target)
+        self.source[result['line'] - 1] = fixed
+
     def fix_e231(self, result):
         target = self.source[result['line'] - 1]
         fixed = ""
