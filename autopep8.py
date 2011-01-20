@@ -131,6 +131,9 @@ class FixPEP8(object):
         self._fix_source()
         return "".join(self.source)
 
+    def fix_e201(self, result):
+        self._fix_whitespace(result, r"(\( )", "(")
+
     def fix_e203(self, result):
         self._fix_whitespace(result, r"(\) )", ")")
 
@@ -181,6 +184,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed_source
 
     def fix_e702(self, result):
+        # FIXME: when multiple statements.
         target = self.source[result['line'] - 1]
         f = target.split(";")
         fixed = "".join(f)
@@ -206,6 +210,9 @@ class FixPEP8(object):
                 break
         source.reverse()
         self.source = source
+
+    def fix_w601(self, result):
+        pass
 
 
 def main():
