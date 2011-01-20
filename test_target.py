@@ -12,6 +12,8 @@ def dummy1 (a):
 
 
 def dummy2(a) :
+    if a.has_key(1):
+        print "a"
     print a
 
 
