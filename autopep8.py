@@ -145,6 +145,20 @@ class FixPEP8(object):
     def fix_e211(self, result):
         self._fix_whitespace(result, r"( \()", "(")
 
+    def fix_e225(self, result):
+        target = self.source[result['line'] - 1]
+        offset = result['column']
+        fixed = ""
+        if target[offset - 2] not in tokenize.Whitespace:
+            fixed = target[:offset - 1] + " " + target[offset - 1]
+        else:
+            fixed = target[:offset - 1]
+        if target[offset] not in tokenize.Whitespace:
+            fixed += " " + target[offset:]
+        else:
+            fixed += target[offset:]
+        self.source[result['line'] - 1] = fixed
+
     def fix_e231(self, result):
         target = self.source[result['line'] - 1]
         fixed = ""

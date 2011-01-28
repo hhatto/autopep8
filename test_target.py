@@ -14,6 +14,9 @@ def dummy1 (a):
 def dummy2(a) :
     if a.has_key(1):
         print "a"
+        print 1+1   # w225
+        print 1 +1  # w225
+        print 1+ 1  # w225
     print a
 
 
