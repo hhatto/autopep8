@@ -222,6 +222,12 @@ class FixPEP8(object):
         pass
 
 
+def _get_difftext(old, new):
+    diff = unified_diff(old, new, 'oiginal', 'fixed')
+    difftext = [line for line in diff]
+    return "".join(difftext)
+
+
 def main():
     """tool main"""
     parser = OptionParser(version="autopep8: %s" % __version__,
@@ -237,11 +243,9 @@ def main():
     fix = FixPEP8(args[0], opts)
     fixed_source = fix.fix()
     if opts.diff:
-        r = StringIO("".join(fix.source))
-        r = r.readlines()
-        diff = unified_diff(fix.original_source, r, 'oiginal', 'fixed')
-        difftext = [line for line in diff]
-        print "".join(difftext),
+        new = StringIO("".join(fix.source))
+        new = new.readlines()
+        print _get_difftext(fix.original_source, new),
     else:
         print fixed_source,
 
