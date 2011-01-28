@@ -12,6 +12,7 @@ import token
 import tokenize
 from optparse import OptionParser
 from subprocess import Popen, PIPE
+from difflib import unified_diff
 
 __version__ = '0.1.1'
 
@@ -45,6 +46,7 @@ class FixPEP8(object):
     def __init__(self, filename, options):
         self.filename = filename
         self.source = open(filename).readlines()
+        self.original_source = copy.copy(self.source)
         self.newline = self._find_newline(self.source)
         self.results = []
         self.options = options
@@ -204,13 +206,15 @@ class FixPEP8(object):
         source = copy.copy(self.source)
         source.reverse()
         found_notblank = False
+        blank_count = 0
         for cnt, line in enumerate(source):
             if re.match("^$", line):
-                source[cnt] = ''
+                blank_count += 1
+            else:
                 found_notblank = True
             if found_notblank and not re.match("^$", line):
-                source[cnt] = line.rstrip()
                 break
+        source = source[blank_count:]
         source.reverse()
         self.source = source
 
@@ -224,12 +228,22 @@ def main():
                           description=__doc__)
     parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
                       help='print to verbose result.')
+    parser.add_option('-d', '--diff', action='store_true', dest='diff',
+                      help='diff print of fixed source.')
     opts, args = parser.parse_args()
     if not len(args):
         print parser.format_help()
         return 1
     fix = FixPEP8(args[0], opts)
-    print fix.fix(),
+    fixed_source = fix.fix()
+    if opts.diff:
+        r = StringIO("".join(fix.source))
+        r = r.readlines()
+        diff = unified_diff(fix.original_source, r, 'oiginal', 'fixed')
+        difftext = [line for line in diff]
+        print "".join(difftext),
+    else:
+        print fixed_source,
 
 if __name__ == '__main__':
     main()
