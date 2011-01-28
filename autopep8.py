@@ -210,7 +210,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed
 
     def fix_w291(self, result):
-        fixed_line = self.source[result['line'] - 1].strip()
+        fixed_line = self.source[result['line'] - 1].rstrip()
         self.source[result['line'] - 1] = "%s%s" % (fixed_line, self.newline)
 
     def fix_w293(self, result):

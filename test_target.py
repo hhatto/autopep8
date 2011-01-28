@@ -8,6 +8,7 @@ print 2  #### e262
 
 
 def dummy1 (a):
+    print a 
     print a
 
 
