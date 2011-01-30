@@ -101,6 +101,7 @@ class FixPEP8(object):
                     column=column, info=info)
 
     def _execute_pep8(self, targetfile):
+        """execute pep8 via subprocess.Popen."""
         paths = os.environ['PATH'].split(':')
         paths.reverse()
         for path in paths:
@@ -221,7 +222,7 @@ class FixPEP8(object):
         source.reverse()
         found_notblank = False
         blank_count = 0
-        for cnt, line in enumerate(source):
+        for line in source:
             if re.match("^$", line):
                 blank_count += 1
             else:
