@@ -95,7 +95,7 @@ class FixPEP8(object):
         filename = tmp[0]
         line = int(tmp[1])
         column = int(tmp[2])
-        info = " ".join(tmp[3:])
+        info = " ".join(result.split()[1:])
         pep8id = info.lstrip().split()[0]
         return dict(id=pep8id, filename=filename, line=line,
                     column=column, info=info)
@@ -162,10 +162,11 @@ class FixPEP8(object):
 
     def fix_e231(self, result):
         target = self.source[result['line'] - 1]
+        target_char = result['info'].split()[-1][1]
         fixed = ""
         fixed_end = 0
-        for i in re.finditer(",\S", target):
-            fixed += target[fixed_end:i.start()] + ", "
+        for i in re.finditer("%s\S" % target_char, target):
+            fixed += target[fixed_end:i.start()] + "%s " % target_char
             fixed_end = i.end() - 1
         fixed += target[fixed_end:]
         self.source[result['line'] - 1] = fixed
@@ -204,7 +205,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed_source
 
     def fix_e702(self, result):
-        # FIXME: when multiple statements.
+        # FIXME: not fixing when multiple statements.
         target = self.source[result['line'] - 1]
         f = target.split(";")
         fixed = "".join(f)
