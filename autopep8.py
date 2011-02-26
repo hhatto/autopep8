@@ -31,9 +31,11 @@ class FixPEP8(object):
     - e201
     - e203
     - e211
+    - e225
     - e231
     - e261
     - e262
+    - e301
     - e302
     - e303
     - e401
@@ -137,6 +139,16 @@ class FixPEP8(object):
         self._fix_source()
         return "".join(self.source)
 
+    #def fix_e101(self, result):
+    #    target = self.source[result['line'] - 1]
+    #    offset = result['column'] - 1
+    #    if target[offset] == '\t':
+    #        fixed = self.indent_word + target[offset + 1:]
+    #    else:
+    #        # FIXME: not implement
+    #        fixed = target
+    #    self.source[result['line'] - 1] = fixed
+
     def fix_e201(self, result):
         self._fix_whitespace(result, r"(\( )", "(")
 
@@ -179,6 +191,10 @@ class FixPEP8(object):
 
     def fix_e262(self, result):
         self._fix_whitespace(result, r"##*", "#")
+
+    def fix_e301(self, result):
+        cr = self.newline
+        self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
 
     def fix_e302(self, result):
         add_linenum = 2 - int(result['info'].split()[-1])
