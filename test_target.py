@@ -18,6 +18,9 @@ def dummy2(a) :
         print 1+1   # w225
         print 1 +1  # w225
         print 1+ 1  # w225
+        print 1  + 1  # e221
+        print 1  * 1  # e221
+        print 1 +  1  # e222
     print a
 
 

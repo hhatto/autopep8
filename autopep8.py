@@ -159,6 +159,12 @@ class FixPEP8(object):
     def fix_e211(self, result):
         self._fix_whitespace(result, r"( \()", "(")
 
+    def fix_e221(self, result):
+        target = self.source[result['line'] - 1]
+        c = result['column'] + 1
+        fixed = re.sub(r'\s+', ' ', target[c::-1], 1)[::-1] + target[c + 1:]
+        self.source[result['line'] - 1] = fixed
+
     def fix_e225(self, result):
         target = self.source[result['line'] - 1]
         offset = result['column']
