@@ -33,6 +33,7 @@ class FixPEP8(object):
     - e211
     - e225
     - e231
+    - e251
     - e261
     - e262
     - e301
@@ -181,6 +182,12 @@ class FixPEP8(object):
             fixed += target[fixed_end:i.start()] + "%s " % target_char
             fixed_end = i.end() - 1
         fixed += target[fixed_end:]
+        self.source[result['line'] - 1] = fixed
+
+    def fix_e251(self, result):
+        target = self.source[result['line'] - 1]
+        c = result['column'] - 1
+        fixed = target[:c] + re.sub(r'\s*=\s*', '=', target[c:], 1)
         self.source[result['line'] - 1] = fixed
 
     def fix_e261(self, result):

@@ -50,5 +50,13 @@ def func_last():
     pass
 
 
+def func_e251(a, b=1, c = 3):
+    pass
+
+
+def func_e251_t(a, b=1, c = 3, d = 4):
+    pass
+
+
 if __name__ == '__main__': func_last()
 
