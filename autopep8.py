@@ -136,7 +136,15 @@ class FixPEP8(object):
 
     def fix(self):
         pep8result = self._execute_pep8(self.filename)
-        self.results = [self._analyze_pep8result(line) for line in pep8result]
+        raw_results = [self._analyze_pep8result(line) for line in pep8result]
+
+        # Only handle one error per line
+        line_results = {}
+        for result in raw_results:
+            line_results[result['line']] = result
+
+        self.results = line_results.values()
+
         self._fix_source()
         return "".join(self.source)
 
