@@ -1,11 +1,10 @@
 About
 =====
-autopep8 formats Python code based on the output of the pep8 utility.
+autopep8 formats Python code based on the output of the pep8_ utility.
 
 
-Install
-=======
-
+Installation
+============
 from pip::
 
     pip install --upgrade autopep8
@@ -14,9 +13,9 @@ from easy_install::
 
     easy_install -ZU autopep8
 
-Require
-=======
-autopep8 is used pep8_ (via subprocess).
+Requirements
+============
+autopep8 requires pep8_ (via subprocess).
 
 .. _pep8: https://github.com/jcrocholl/pep8
 
