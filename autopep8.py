@@ -177,7 +177,10 @@ class FixPEP8(object):
             fixed += " " + target[offset:]
         else:
             fixed += target[offset:]
-        self.source[result['line'] - 1] = fixed
+
+        # Only proceed if non-whitespace characters match
+        if fixed.replace(' ', '') == target.replace(' ', ''):
+            self.source[result['line'] - 1] = fixed
 
     def fix_e231(self, result):
         target = self.source[result['line'] - 1]
