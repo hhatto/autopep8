@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""This tool is automatic generate to pep8 checked code."""
+"""A tool that automatically formats Python code to conform to the PEP 8 style guide."""
 import copy
 import os
 import re
@@ -136,7 +136,15 @@ class FixPEP8(object):
 
     def fix(self):
         pep8result = self._execute_pep8(self.filename)
-        self.results = [self._analyze_pep8result(line) for line in pep8result]
+        raw_results = [self._analyze_pep8result(line) for line in pep8result]
+
+        # Only handle one error per line
+        line_results = {}
+        for result in raw_results:
+            line_results[result['line']] = result
+
+        self.results = line_results.values()
+
         self._fix_source()
         return "".join(self.source)
 
@@ -177,7 +185,10 @@ class FixPEP8(object):
             fixed += " " + target[offset:]
         else:
             fixed += target[offset:]
-        self.source[result['line'] - 1] = fixed
+
+        # Only proceed if non-whitespace characters match
+        if fixed.replace(' ', '') == target.replace(' ', ''):
+            self.source[result['line'] - 1] = fixed
 
     def fix_e231(self, result):
         target = self.source[result['line'] - 1]
@@ -217,12 +228,15 @@ class FixPEP8(object):
     def fix_e303(self, result):
         delete_linenum = int(result['info'].split("(")[1].split(")")[0]) - 2
         for cnt in range(delete_linenum):
-            self.source[result['line'] - 2 - cnt] = ''
+            line = result['line'] - 2 - cnt
+            if not self.source[line].strip():
+                self.source[line] = ''
 
     def fix_e401(self, result):
         target = self.source[result['line'] - 1]
+        indentation = target.split("import ")[0]
         modules = target.split("import ")[1].split(",")
-        fixed_modulelist = ["import %s" % m.lstrip() for m in modules]
+        fixed_modulelist = [indentation + "import %s" % m.lstrip() for m in modules]
         self.source[result['line'] - 1] = self.newline.join(fixed_modulelist)
 
     def fix_e701(self, result):
