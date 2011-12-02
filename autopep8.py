@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""This tool is automatic generate to pep8 checked code."""
+"""A tool that automatically formats Python code to conform to the PEP 8 style guide."""
 import copy
 import os
 import re
