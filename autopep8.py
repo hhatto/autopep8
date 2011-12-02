@@ -217,7 +217,9 @@ class FixPEP8(object):
     def fix_e303(self, result):
         delete_linenum = int(result['info'].split("(")[1].split(")")[0]) - 2
         for cnt in range(delete_linenum):
-            self.source[result['line'] - 2 - cnt] = ''
+            line = result['line'] - 2 - cnt
+            if not self.source[line].strip():
+                self.source[line] = ''
 
     def fix_e401(self, result):
         target = self.source[result['line'] - 1]
