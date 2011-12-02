@@ -223,8 +223,9 @@ class FixPEP8(object):
 
     def fix_e401(self, result):
         target = self.source[result['line'] - 1]
+        indentation = target.split("import ")[0]
         modules = target.split("import ")[1].split(",")
-        fixed_modulelist = ["import %s" % m.lstrip() for m in modules]
+        fixed_modulelist = [indentation + "import %s" % m.lstrip() for m in modules]
         self.source[result['line'] - 1] = self.newline.join(fixed_modulelist)
 
     def fix_e701(self, result):
