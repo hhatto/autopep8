@@ -15,5 +15,6 @@ pypireg:
 
 clean:
 	rm -rf .tmp.test.py
+	rm -rf temp
 	rm -rf *.pyc
 	rm -rf *egg-info dist build
