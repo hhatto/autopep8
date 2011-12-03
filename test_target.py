@@ -1,5 +1,8 @@
 import sys, os
 
+def foo():
+    import subprocess, argparse
+
 
 print 1 
 print 2 # e261

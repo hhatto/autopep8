@@ -10,7 +10,7 @@ import autopep8
 setup(
     name='autopep8',
     version=autopep8.__version__,
-    description="Automatic generated to pep8 checked code.",
+    description="A tool that automatically formats Python code to conform to the PEP 8 style guide",
     long_description=open("README.rst").read(),
     license='Expat License',
     author='Hideo Hattori',
