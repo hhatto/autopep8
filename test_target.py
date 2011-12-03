@@ -8,6 +8,11 @@ print 1
 print 2 # e261
 print 2  ## e262
 print 2  #### e262
+1 /1
+1 *2
+1 +1
+1 -1
+1 **2
 
 
 def dummy1 (a):
@@ -18,12 +23,14 @@ def dummy1 (a):
 def dummy2(a) :
     if a.has_key(1):
         print "a"
-        print 1+1   # w225
-        print 1 +1  # w225
-        print 1+ 1  # w225
+        print 1+1   # e225
+        print 1 +1  # e225
+        print 1+ 1  # e225
+        print 1  +1  # e221+e225
         print 1  + 1  # e221
         print 1  * 1  # e221
         print 1 +  1  # e222
+        print 1 *    1  # e222
     print a
 
 
@@ -37,6 +44,7 @@ def func1():
 def func11():
     a = (1,2, 3,"a")
     b = [1, 2, 3,"b"]
+    c = 0,11/2
     return 1
 
 
@@ -49,7 +57,7 @@ def func22():
     pass;
 
 
-def func_oneline():if True: print 1
+def func_oneline(): print 1
 
 def func_last():
     if True: print 1
