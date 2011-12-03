@@ -15,7 +15,8 @@ import token
 import tokenize
 from optparse import OptionParser
 from subprocess import Popen, PIPE
-from difflib import unified_diff
+from difflib import unified_diff, SequenceMatcher
+import tempfile
 
 __version__ = '0.1.2'
 
@@ -182,15 +183,7 @@ class FixPEP8(object):
     def fix_e225(self, result):
         target = self.source[result['line'] - 1]
         offset = result['column']
-        fixed = ""
-        if target[offset - 2] not in tokenize.Whitespace:
-            fixed = target[:offset - 1] + " " + target[offset - 1]
-        else:
-            fixed = target[:offset - 1]
-        if target[offset] not in tokenize.Whitespace:
-            fixed += " " + target[offset:]
-        else:
-            fixed += target[offset:]
+        fixed = target[:offset - 1] + " " + target[offset - 1:]
 
         # Only proceed if non-whitespace characters match
         if fixed.replace(' ', '') == target.replace(' ', ''):
@@ -306,12 +299,26 @@ def main():
     if not len(args):
         print parser.format_help()
         return 1
-    fix = FixPEP8(args[0], opts)
+    filename = args[0]
+    original_source = open(filename).read()
+    fix = FixPEP8(filename, opts)
     fixed_source = fix.fix()
+    for cnt in range(5):
+        diff = SequenceMatcher(None, fixed_source, original_source)
+        if 1.0 == diff.ratio():
+            break
+        original_source = copy.copy(fixed_source)
+        filename = tempfile.mkstemp()[1]
+        fp = open(filename, 'w')
+        fp.write(fixed_source)
+        fp.close()
+        fix = FixPEP8(filename, opts)
+        fixed_source = fix.fix()
+        os.remove(filename)
     if opts.diff:
         new = StringIO("".join(fix.source))
         new = new.readlines()
-        print _get_difftext(fix.original_source, new),
+        print _get_difftext(original_source, new),
     else:
         print fixed_source,
 
