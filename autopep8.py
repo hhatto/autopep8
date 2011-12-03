@@ -57,6 +57,8 @@ class FixPEP8(object):
         self.results = []
         self.options = options
         self.indent_word = self._get_indentword("".join(self.source))
+        # method definition
+        self.fix_e222 = self.fix_e221
 
     def _find_newline(self, source):
         cr, lf, crlf = 0, 0, 0
@@ -171,6 +173,7 @@ class FixPEP8(object):
         self._fix_whitespace(result, r"( \()", "(")
 
     def fix_e221(self, result):
+        """e221 and e222 fixed method"""
         target = self.source[result['line'] - 1]
         c = result['column'] + 1
         fixed = re.sub(r'\s+', ' ', target[c::-1], 1)[::-1] + target[c + 1:]
