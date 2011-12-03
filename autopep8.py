@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-"""A tool that automatically formats Python code to conform to the PEP 8 style guide."""
+"""
+A tool that automatically formats Python code to conform to the PEP 8 style
+guide.
+"""
 import copy
 import os
 import re
@@ -236,7 +239,8 @@ class FixPEP8(object):
         target = self.source[result['line'] - 1]
         indentation = target.split("import ")[0]
         modules = target.split("import ")[1].split(",")
-        fixed_modulelist = [indentation + "import %s" % m.lstrip() for m in modules]
+        fixed_modulelist = \
+                [indentation + "import %s" % m.lstrip() for m in modules]
         self.source[result['line'] - 1] = self.newline.join(fixed_modulelist)
 
     def fix_e701(self, result):
