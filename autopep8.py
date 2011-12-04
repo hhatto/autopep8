@@ -179,7 +179,8 @@ class FixPEP8(object):
         self._fix_whitespace(result, r" ,", ",")
 
     def fix_e211(self, result):
-        self._fix_whitespace(result, r"( \()", "(")
+        self._fix_whitespace(result, r"\s+\(", "(")
+        self._fix_whitespace(result, r"\s+\[", "[")
 
     def fix_e221(self, result):
         """e221 and e222 fixed method"""
