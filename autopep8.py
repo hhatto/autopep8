@@ -82,7 +82,7 @@ class FixPEP8(object):
 
     def _get_indentword(self, source):
         sio = StringIO(source)
-        indent_word = ""
+        indent_word = "    "  # Default in case source has no indentation
         for t in tokenize.generate_tokens(sio.readline):
             if t[0] == token.INDENT:
                 indent_word = t[1]
