@@ -165,13 +165,18 @@ class FixPEP8(object):
     #    self.source[result['line'] - 1] = fixed
 
     def fix_e201(self, result):
-        self._fix_whitespace(result, r"(\( )", "(")
+        self._fix_whitespace(result, r"\( ", "(")
+        self._fix_whitespace(result, r"\[ ", "[")
+        self._fix_whitespace(result, r"{ ", "{")
 
     def fix_e202(self, result):
-        self._fix_whitespace(result, r"( \))", ")")
+        self._fix_whitespace(result, r" \)", ")")
+        self._fix_whitespace(result, r" \]", "]")
+        self._fix_whitespace(result, r" }", "}")
 
     def fix_e203(self, result):
-        self._fix_whitespace(result, r"( :)", ":")
+        self._fix_whitespace(result, r" :", ":")
+        self._fix_whitespace(result, r" ,", ",")
 
     def fix_e211(self, result):
         self._fix_whitespace(result, r"( \()", "(")
