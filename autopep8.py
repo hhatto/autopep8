@@ -221,7 +221,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed
 
     def fix_e262(self, result):
-        self._fix_whitespace(result, r"##*", "#")
+        self._fix_whitespace(result, r"##* *", "# ")
 
     def fix_e301(self, result):
         cr = self.newline

@@ -8,6 +8,7 @@ print 1
 print 2 # e261
 print 2  ## e262
 print 2  #### e262
+print 2  #e262
 1 /1
 1 *2
 1 +1
