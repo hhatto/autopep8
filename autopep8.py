@@ -285,7 +285,7 @@ class FixPEP8(object):
 
 
 def _get_difftext(old, new):
-    diff = unified_diff(old, new, 'oiginal', 'fixed')
+    diff = unified_diff(old, new, 'original', 'fixed')
     difftext = [line for line in diff]
     return "".join(difftext)
 
@@ -303,14 +303,15 @@ def main():
         print parser.format_help()
         return 1
     filename = args[0]
-    original_source = open(filename).read()
+    tmp_source = open(filename).read()
     fix = FixPEP8(filename, opts)
     fixed_source = fix.fix()
+    original_source = copy.copy(fix.original_source)
     for cnt in range(5):
-        diff = SequenceMatcher(None, fixed_source, original_source)
+        diff = SequenceMatcher(None, fixed_source, tmp_source)
         if 1.0 == diff.ratio():
             break
-        original_source = copy.copy(fixed_source)
+        tmp_source = copy.copy(fixed_source)
         filename = tempfile.mkstemp()[1]
         fp = open(filename, 'w')
         fp.write(fixed_source)
