@@ -259,8 +259,8 @@ class FixPEP8(object):
         target = self.source[result['line'] - 1]
         non_whitespace_index = len(target) - len(target.lstrip())
         indentation = target[:non_whitespace_index]
-        f = [indentation + t.lstrip() for t in target.split(";")]
-        fixed = '\n'.join(f)
+        f = [indentation + t.strip() for t in target.split(";") if t.strip()]
+        fixed = '\n'.join(f) + '\n'
         self.source[result['line'] - 1] = fixed
 
     def fix_w291(self, result):
