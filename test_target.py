@@ -15,13 +15,13 @@ print 2  #### e262
 1 **2
 
 
-def dummy1 (a):
+def dummy1 ( a ):
     print a 
     print a
 
 
 def dummy2(a) :
-    if a.has_key(1):
+    if 1 in a:
         print "a"
         print 1+1   # e225
         print 1 +1  # e225

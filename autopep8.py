@@ -167,6 +167,9 @@ class FixPEP8(object):
     def fix_e201(self, result):
         self._fix_whitespace(result, r"(\( )", "(")
 
+    def fix_e202(self, result):
+        self._fix_whitespace(result, r"( \))", ")")
+
     def fix_e203(self, result):
         self._fix_whitespace(result, r"(\) )", ")")
 
