@@ -15,13 +15,13 @@ print 2  #### e262
 1 **2
 
 
-def dummy1 (a):
+def dummy1 ( a ):
     print a 
     print a
 
 
 def dummy2(a) :
-    if a.has_key(1):
+    if 1 in a:
         print "a"
         print 1+1   # e225
         print 1 +1  # e225
@@ -70,6 +70,31 @@ def func_e251(a, b=1, c = 3):
 
 def func_e251_t(a, b=1, c = 3, d = 4):
     pass
+
+
+# e201
+( 1)
+[ 1]
+{ 1: 2}
+
+# e202
+(1 )
+[1 ]
+{1: 2 }
+
+# e203
+{4 : 2}
+[4 , 2]
+
+
+def func_e702():
+    4; 1
+    print 2; print 4;          6;8
+    if True:
+        1; 2; 3
+0; 1
+2;3
+4;     5
 
 
 if __name__ == '__main__': func_last()
