@@ -309,8 +309,8 @@ class FixPEP8(object):
         pass
 
 
-def _get_difftext(old, new):
-    diff = unified_diff(old, new, 'original', 'fixed')
+def _get_difftext(old, new, filename):
+    diff = unified_diff(old, new, 'original/' + filename, 'fixed/' + filename)
     difftext = [line for line in diff]
     return "".join(difftext)
 
@@ -328,6 +328,7 @@ def main():
         print parser.format_help()
         return 1
     filename = args[0]
+    original_filename = filename
     tmp_source = open(filename).read()
     fix = FixPEP8(filename, opts)
     fixed_source = fix.fix()
@@ -347,7 +348,7 @@ def main():
     if opts.diff:
         new = StringIO("".join(fix.source))
         new = new.readlines()
-        print _get_difftext(original_source, new),
+        print _get_difftext(original_source, new, original_filename),
     else:
         print fixed_source,
 
