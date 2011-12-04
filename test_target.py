@@ -87,7 +87,7 @@ def func_e251_t(a, b=1, c = 3, d = 4):
 [4 , 2]
 
 
-def func_e701():
+def func_e702():
     4; 1
     print 2; print 4
     if True:
