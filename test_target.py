@@ -89,10 +89,12 @@ def func_e251_t(a, b=1, c = 3, d = 4):
 
 def func_e702():
     4; 1
-    print 2; print 4
+    print 2; print 4;          6;8
     if True:
         1; 2; 3
 0; 1
+2;3
+4;     5
 
 
 if __name__ == '__main__': func_last()
