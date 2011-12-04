@@ -249,12 +249,18 @@ class FixPEP8(object):
                 self.source[line] = ''
 
     def fix_e401(self, result):
-        target = self.source[result['line'] - 1]
-        indentation = target.split("import ")[0]
-        modules = target.split("import ")[1].split(",")
-        fixed_modulelist = \
-                [indentation + "import %s" % m.lstrip() for m in modules]
-        self.source[result['line'] - 1] = self.newline.join(fixed_modulelist)
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+
+        # Take care of semicolons first
+        if ';' in target:
+            self.source[line_index] = self._fix_multiple_statements(target)
+        else:
+            indentation = target.split("import ")[0]
+            modules = target.split("import ")[1].split(",")
+            fixed_modulelist = \
+                    [indentation + "import %s" % m.lstrip() for m in modules]
+            self.source[line_index] = self.newline.join(fixed_modulelist)
 
     def fix_e701(self, result):
         target = self.source[result['line'] - 1]
@@ -264,13 +270,15 @@ class FixPEP8(object):
                        self.indent_word * indent_level + target[c:].lstrip()
         self.source[result['line'] - 1] = fixed_source
 
-    def fix_e702(self, result):
-        target = self.source[result['line'] - 1]
+    def _fix_multiple_statements(self, target):
         non_whitespace_index = len(target) - len(target.lstrip())
         indentation = target[:non_whitespace_index]
         f = [indentation + t.strip() for t in target.split(";") if t.strip()]
-        fixed = '\n'.join(f) + '\n'
-        self.source[result['line'] - 1] = fixed
+        return '\n'.join(f) + '\n'
+
+    def fix_e702(self, result):
+        target = self.source[result['line'] - 1]
+        self.source[result['line'] - 1] = self._fix_multiple_statements(target)
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()

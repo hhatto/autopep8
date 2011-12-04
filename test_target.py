@@ -2,6 +2,7 @@ import sys, os
 
 def foo():
     import subprocess, argparse
+    import copy; import math, email
 
 
 print 1 
