@@ -256,10 +256,11 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed_source
 
     def fix_e702(self, result):
-        # FIXME: not fixing when multiple statements.
         target = self.source[result['line'] - 1]
-        f = target.split(";")
-        fixed = "".join(f)
+        non_whitespace_index = len(target) - len(target.lstrip())
+        indentation = target[:non_whitespace_index]
+        f = [indentation + t.lstrip() for t in target.split(";")]
+        fixed = '\n'.join(f)
         self.source[result['line'] - 1] = fixed
 
     def fix_w291(self, result):
