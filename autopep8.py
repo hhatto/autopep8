@@ -165,10 +165,18 @@ class FixPEP8(object):
     #    self.source[result['line'] - 1] = fixed
 
     def fix_e201(self, result):
-        self._fix_whitespace(result, r"(\( )", "(")
+        self._fix_whitespace(result, r"\( ", "(")
+        self._fix_whitespace(result, r"\[ ", "[")
+        self._fix_whitespace(result, r"{ ", "{")
+
+    def fix_e202(self, result):
+        self._fix_whitespace(result, r" \)", ")")
+        self._fix_whitespace(result, r" \]", "]")
+        self._fix_whitespace(result, r" }", "}")
 
     def fix_e203(self, result):
-        self._fix_whitespace(result, r"(\) )", ")")
+        self._fix_whitespace(result, r" :", ":")
+        self._fix_whitespace(result, r" ,", ",")
 
     def fix_e211(self, result):
         self._fix_whitespace(result, r"( \()", "(")
@@ -248,10 +256,11 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed_source
 
     def fix_e702(self, result):
-        # FIXME: not fixing when multiple statements.
         target = self.source[result['line'] - 1]
-        f = target.split(";")
-        fixed = "".join(f)
+        non_whitespace_index = len(target) - len(target.lstrip())
+        indentation = target[:non_whitespace_index]
+        f = [indentation + t.lstrip() for t in target.split(";")]
+        fixed = '\n'.join(f)
         self.source[result['line'] - 1] = fixed
 
     def fix_w291(self, result):
@@ -282,7 +291,7 @@ class FixPEP8(object):
 
 
 def _get_difftext(old, new):
-    diff = unified_diff(old, new, 'oiginal', 'fixed')
+    diff = unified_diff(old, new, 'original', 'fixed')
     difftext = [line for line in diff]
     return "".join(difftext)
 
@@ -300,14 +309,15 @@ def main():
         print parser.format_help()
         return 1
     filename = args[0]
-    original_source = open(filename).read()
+    tmp_source = open(filename).read()
     fix = FixPEP8(filename, opts)
     fixed_source = fix.fix()
+    original_source = copy.copy(fix.original_source)
     for cnt in range(5):
-        diff = SequenceMatcher(None, fixed_source, original_source)
+        diff = SequenceMatcher(None, fixed_source, tmp_source)
         if 1.0 == diff.ratio():
             break
-        original_source = copy.copy(fixed_source)
+        tmp_source = copy.copy(fixed_source)
         filename = tempfile.mkstemp()[1]
         fp = open(filename, 'w')
         fp.write(fixed_source)
