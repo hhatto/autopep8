@@ -72,5 +72,8 @@ def func_e251_t(a, b=1, c = 3, d = 4):
     pass
 
 
+d = {4 : 2}
+
+
 if __name__ == '__main__': func_last()
 
