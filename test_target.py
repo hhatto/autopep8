@@ -6,9 +6,13 @@ def foo():
 
 print 1 
 print 2 # e261
+d = {# e261
+    1: 2
+}
 print 2  ## e262
 print 2  #### e262
 print 2  #e262
+print 2  #     e262
 1 /1
 1 *2
 1 +1

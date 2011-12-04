@@ -217,6 +217,15 @@ class FixPEP8(object):
     def fix_e261(self, result):
         target = self.source[result['line'] - 1]
         c = result['column']
+
+        # pep8 is sometiems off by one in cases like "{# comment"
+        if target[c] == '#':
+            pass
+        elif target[c - 1] == '#':
+            c = c - 1
+        else:
+            return
+
         fixed = target[:c] + " " + target[c:]
         self.source[result['line'] - 1] = fixed
 
