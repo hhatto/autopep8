@@ -15,7 +15,7 @@ import token
 import tokenize
 from optparse import OptionParser
 from subprocess import Popen, PIPE
-from difflib import unified_diff, SequenceMatcher
+from difflib import unified_diff
 import tempfile
 
 __version__ = '0.1.2'
@@ -82,7 +82,7 @@ class FixPEP8(object):
 
     def _get_indentword(self, source):
         sio = StringIO(source)
-        indent_word = ""
+        indent_word = "    "  # Default in case source has no indentation
         for t in tokenize.generate_tokens(sio.readline):
             if t[0] == token.INDENT:
                 indent_word = t[1]
@@ -165,21 +165,22 @@ class FixPEP8(object):
     #    self.source[result['line'] - 1] = fixed
 
     def fix_e201(self, result):
-        self._fix_whitespace(result, r"\( ", "(")
-        self._fix_whitespace(result, r"\[ ", "[")
-        self._fix_whitespace(result, r"{ ", "{")
+        self._fix_whitespace(result, r"\(\s+", "(")
+        self._fix_whitespace(result, r"\[\s+", "[")
+        self._fix_whitespace(result, r"{\s+", "{")
 
     def fix_e202(self, result):
-        self._fix_whitespace(result, r" \)", ")")
-        self._fix_whitespace(result, r" \]", "]")
-        self._fix_whitespace(result, r" }", "}")
+        self._fix_whitespace(result, r"\s+\)", ")")
+        self._fix_whitespace(result, r"\s+\]", "]")
+        self._fix_whitespace(result, r"\s+}", "}")
 
     def fix_e203(self, result):
-        self._fix_whitespace(result, r" :", ":")
-        self._fix_whitespace(result, r" ,", ",")
+        self._fix_whitespace(result, r"\s+:", ":")
+        self._fix_whitespace(result, r"\s+,", ",")
 
     def fix_e211(self, result):
-        self._fix_whitespace(result, r"( \()", "(")
+        self._fix_whitespace(result, r"\s+\(", "(")
+        self._fix_whitespace(result, r"\s+\[", "[")
 
     def fix_e221(self, result):
         """e221 and e222 fixed method"""
@@ -217,11 +218,20 @@ class FixPEP8(object):
     def fix_e261(self, result):
         target = self.source[result['line'] - 1]
         c = result['column']
+
+        # pep8 is sometiems off by one in cases like "{# comment"
+        if target[c] == '#':
+            pass
+        elif target[c - 1] == '#':
+            c = c - 1
+        else:
+            return
+
         fixed = target[:c] + " " + target[c:]
         self.source[result['line'] - 1] = fixed
 
     def fix_e262(self, result):
-        self._fix_whitespace(result, r"##*", "#")
+        self._fix_whitespace(result, r"##* *", "# ")
 
     def fix_e301(self, result):
         cr = self.newline
@@ -234,18 +244,33 @@ class FixPEP8(object):
 
     def fix_e303(self, result):
         delete_linenum = int(result['info'].split("(")[1].split(")")[0]) - 2
-        for cnt in range(delete_linenum):
-            line = result['line'] - 2 - cnt
+        delete_linenum = max(1, delete_linenum)
+
+        # We need to count because pep8 reports an offset line number if there
+        # are comments.
+        cnt = 0
+        line = result['line'] - 2
+        while cnt < delete_linenum:
+            if line < 0:
+                break
             if not self.source[line].strip():
                 self.source[line] = ''
+                cnt += 1
+            line -= 1
 
     def fix_e401(self, result):
-        target = self.source[result['line'] - 1]
-        indentation = target.split("import ")[0]
-        modules = target.split("import ")[1].split(",")
-        fixed_modulelist = \
-                [indentation + "import %s" % m.lstrip() for m in modules]
-        self.source[result['line'] - 1] = self.newline.join(fixed_modulelist)
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+
+        # Take care of semicolons first
+        if ';' in target:
+            self.source[line_index] = self._fix_multiple_statements(target)
+        else:
+            indentation = target.split("import ")[0]
+            modules = target.split("import ")[1].split(",")
+            fixed_modulelist = \
+                    [indentation + "import %s" % m.lstrip() for m in modules]
+            self.source[line_index] = self.newline.join(fixed_modulelist)
 
     def fix_e701(self, result):
         target = self.source[result['line'] - 1]
@@ -255,13 +280,15 @@ class FixPEP8(object):
                        self.indent_word * indent_level + target[c:].lstrip()
         self.source[result['line'] - 1] = fixed_source
 
-    def fix_e702(self, result):
-        target = self.source[result['line'] - 1]
+    def _fix_multiple_statements(self, target):
         non_whitespace_index = len(target) - len(target.lstrip())
         indentation = target[:non_whitespace_index]
-        f = [indentation + t.lstrip() for t in target.split(";")]
-        fixed = '\n'.join(f)
-        self.source[result['line'] - 1] = fixed
+        f = [indentation + t.strip() for t in target.split(";") if t.strip()]
+        return '\n'.join(f) + '\n'
+
+    def fix_e702(self, result):
+        target = self.source[result['line'] - 1]
+        self.source[result['line'] - 1] = self._fix_multiple_statements(target)
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()
@@ -290,8 +317,8 @@ class FixPEP8(object):
         pass
 
 
-def _get_difftext(old, new):
-    diff = unified_diff(old, new, 'original', 'fixed')
+def _get_difftext(old, new, filename):
+    diff = unified_diff(old, new, 'original/' + filename, 'fixed/' + filename)
     difftext = [line for line in diff]
     return "".join(difftext)
 
@@ -304,18 +331,20 @@ def main():
                       help='print to verbose result.')
     parser.add_option('-d', '--diff', action='store_true', dest='diff',
                       help='diff print of fixed source.')
+    parser.add_option('-p', '--pep8-passes', default=5, type='int',
+                      help='maximum number of additional pep8 passes')
     opts, args = parser.parse_args()
     if not len(args):
         print parser.format_help()
         return 1
     filename = args[0]
+    original_filename = filename
     tmp_source = open(filename).read()
     fix = FixPEP8(filename, opts)
     fixed_source = fix.fix()
     original_source = copy.copy(fix.original_source)
-    for cnt in range(5):
-        diff = SequenceMatcher(None, fixed_source, tmp_source)
-        if 1.0 == diff.ratio():
+    for cnt in range(opts.pep8_passes):
+        if fixed_source == tmp_source:
             break
         tmp_source = copy.copy(fixed_source)
         filename = tempfile.mkstemp()[1]
@@ -328,7 +357,7 @@ def main():
     if opts.diff:
         new = StringIO("".join(fix.source))
         new = new.readlines()
-        print _get_difftext(original_source, new),
+        print _get_difftext(original_source, new, original_filename),
     else:
         print fixed_source,
 
