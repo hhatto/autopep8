@@ -15,7 +15,7 @@ import token
 import tokenize
 from optparse import OptionParser
 from subprocess import Popen, PIPE
-from difflib import unified_diff, SequenceMatcher
+from difflib import unified_diff
 import tempfile
 
 __version__ = '0.1.2'
@@ -341,8 +341,7 @@ def main():
     fixed_source = fix.fix()
     original_source = copy.copy(fix.original_source)
     for cnt in range(opts.pep8_passes):
-        diff = SequenceMatcher(None, fixed_source, tmp_source)
-        if 1.0 == diff.ratio():
+        if fixed_source == tmp_source:
             break
         tmp_source = copy.copy(fixed_source)
         filename = tempfile.mkstemp()[1]
