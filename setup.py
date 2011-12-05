@@ -17,7 +17,7 @@ setup(
     author_email='hhatto.jp@gmail.com',
     url='https://github.com/hhatto/autopep8',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Environment :: Console',
         'Operating System :: Unix',

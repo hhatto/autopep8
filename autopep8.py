@@ -18,7 +18,7 @@ from subprocess import Popen, PIPE
 from difflib import unified_diff
 import tempfile
 
-__version__ = '0.1.2'
+__version__ = '0.3'
 
 
 pep8bin = 'pep8'
