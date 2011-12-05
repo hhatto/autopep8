@@ -58,7 +58,7 @@ def func11():
 
 
 
-
+# comment after too empty lines
 def func2():
     pass
 def func22():

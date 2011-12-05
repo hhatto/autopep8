@@ -245,10 +245,15 @@ class FixPEP8(object):
     def fix_e303(self, result):
         delete_linenum = int(result['info'].split("(")[1].split(")")[0]) - 2
         delete_linenum = max(1, delete_linenum)
-        for cnt in range(delete_linenum):
-            line = result['line'] - 2 - cnt
+        cnt = 0
+        line = result['line'] - 2
+        while cnt < delete_linenum:
+            if line < 0:
+                break
             if not self.source[line].strip():
                 self.source[line] = ''
+                cnt += 1
+            line -= 1
 
     def fix_e401(self, result):
         line_index = result['line'] - 1
