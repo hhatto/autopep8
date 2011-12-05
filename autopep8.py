@@ -245,6 +245,9 @@ class FixPEP8(object):
     def fix_e303(self, result):
         delete_linenum = int(result['info'].split("(")[1].split(")")[0]) - 2
         delete_linenum = max(1, delete_linenum)
+
+        # We need to count because pep8 reports an offset line number if there
+        # are comments.
         cnt = 0
         line = result['line'] - 2
         while cnt < delete_linenum:
