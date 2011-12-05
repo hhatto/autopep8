@@ -2,12 +2,18 @@ import sys, os
 
 def foo():
     import subprocess, argparse
+    import copy; import math, email
 
 
 print 1 
 print 2 # e261
+d = {# e261
+    1: 2
+}
 print 2  ## e262
 print 2  #### e262
+print 2  #e262
+print 2  #     e262
 1 /1
 1 *2
 1 +1
@@ -26,6 +32,8 @@ def dummy2(a) :
         print 1+1   # e225
         print 1 +1  # e225
         print 1+ 1  # e225
+
+
         print 1  +1  # e221+e225
         print 1  + 1  # e221
         print 1  * 1  # e221
@@ -50,7 +58,7 @@ def func11():
 
 
 
-
+# comment after too empty lines
 def func2():
     pass
 def func22():
@@ -73,28 +81,37 @@ def func_e251_t(a, b=1, c = 3, d = 4):
 
 
 # e201
-( 1)
-[ 1]
-{ 1: 2}
+(         1)
+[         1]
+{         1: 2}
 
 # e202
-(1 )
-[1 ]
-{1: 2 }
+(1        )
+[1        ]
+{1: 2     }
 
 # e203
-{4 : 2}
-[4 , 2]
+{4           : 2}
+[4           , 2]
+
+# e211
+d = [1]
+d  	 [0]
+dummy1  	  (0)
 
 
 def func_e702():
-    4; 1
+    4; 1;
+    4; 1;	  
+    4; 1;
+
+    4; 1;
     print 2; print 4;          6;8
     if True:
         1; 2; 3
 0; 1
 2;3
-4;     5
+4;     5;
 
 
 if __name__ == '__main__': func_last()
