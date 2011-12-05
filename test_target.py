@@ -114,5 +114,8 @@ def func_e702():
 4;     5;
 
 
+def func_w602():
+    raise ValueError, "w602 test"
+
 if __name__ == '__main__': func_last()
 

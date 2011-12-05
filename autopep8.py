@@ -32,23 +32,18 @@ class FixPEP8(object):
     """fix invalid code
 
     [fixed method list]
-    - e201
-    - e203
-    - e211
-    - e225
-    - e231
-    - e251
-    - e261
-    - e262
-    - e301
-    - e302
-    - e303
-    - e401
-    - e701
-    - e702
-    - w291
-    - w293
-    - w391
+        - e201,e202,e203
+        - e211
+        - e221,e225
+        - e231
+        - e251
+        - e261,e262
+        - e301,e302,e303
+        - e401
+        - e701,e702
+        - w291,w293
+        - w391
+        - w602
     """
     def __init__(self, filename, options):
         self.filename = filename
@@ -315,6 +310,26 @@ class FixPEP8(object):
 
     def fix_w601(self, result):
         pass
+
+    def fix_w602(self, result):
+        line = self.source[result['line'] - 1]
+        sio = StringIO(line)
+        fixed_line = ""
+        is_found_raise = False
+        for tokens in tokenize.generate_tokens(sio.readline):
+            if tokens[0] is token.INDENT:
+                fixed_line += tokens[1]
+            elif tokens[1] == 'raise':
+                fixed_line += "raise "
+                is_found_raise = True
+            elif tokens[0] is token.NAME and is_found_raise:
+                fixed_line += "%s(" % tokens[1]
+            elif tokens[0] is token.NEWLINE:
+                fixed_line += ")%s" % tokens[1]
+                break
+            elif tokens[0] not in (token.OP, token.DEDENT):
+                fixed_line += tokens[1]
+        self.source[result['line'] - 1] = fixed_line
 
 
 def _get_difftext(old, new, filename):
