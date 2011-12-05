@@ -323,6 +323,8 @@ def main():
                       help='print to verbose result.')
     parser.add_option('-d', '--diff', action='store_true', dest='diff',
                       help='diff print of fixed source.')
+    parser.add_option('-p', '--pep8-passes', default=5, type='int',
+                      help='maximum number of additional pep8 passes')
     opts, args = parser.parse_args()
     if not len(args):
         print parser.format_help()
@@ -333,7 +335,7 @@ def main():
     fix = FixPEP8(filename, opts)
     fixed_source = fix.fix()
     original_source = copy.copy(fix.original_source)
-    for cnt in range(5):
+    for cnt in range(opts.pep8_passes):
         diff = SequenceMatcher(None, fixed_source, tmp_source)
         if 1.0 == diff.ratio():
             break
