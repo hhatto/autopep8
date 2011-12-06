@@ -315,12 +315,20 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         line = self.source[line_index]
 
-        # Take care of semicolons and escaped newlines first
         if ';' in line:
+            # Take care of semicolons first
             self.source[line_index] = self._fix_multiple_statements(line)
             return
         elif len(line) >= 2 and line[-2] == '\\':
+            # Remove escaped newlines first
             self.source[line_index] = line[:-2]
+            return
+        elif '"""' in line:
+            # FIXME: We currently can't handle
+            #
+            #            raise ValueError, """
+            #                blah
+            #                """
             return
 
         sio = StringIO(line)
@@ -342,7 +350,7 @@ class FixPEP8(object):
                 if tokens[1].startswith(',') and not first_comma_found:
                     first_comma_found = True
                 elif tokens[1].startswith('#'):
-                    fixed_line += ')%s' % tokens[1]
+                    fixed_line += ')%s\n' % tokens[1]
                     break
                 else:
                     fixed_line += tokens[1]
