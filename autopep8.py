@@ -314,22 +314,33 @@ class FixPEP8(object):
     def fix_w602(self, result):
         line = self.source[result['line'] - 1]
         sio = StringIO(line)
-        fixed_line = ""
         is_found_raise = False
+        indentation = ''
+        exception_type = None
+        arguments = ''
+        comment = ''
         for tokens in tokenize.generate_tokens(sio.readline):
             if tokens[0] is token.INDENT:
-                fixed_line += tokens[1]
+                assert not indentation
+                indentation = tokens[1]
             elif tokens[1] == 'raise':
-                fixed_line += "raise "
                 is_found_raise = True
             elif tokens[0] is token.NAME and is_found_raise:
-                fixed_line += "%s(" % tokens[1]
+                exception_type = tokens[1]
             elif tokens[0] is token.NEWLINE:
-                fixed_line += ")%s" % tokens[1]
                 break
-            elif tokens[0] not in (token.OP, token.DEDENT):
-                fixed_line += tokens[1]
-        self.source[result['line'] - 1] = fixed_line
+            elif tokens[0] is not token.DEDENT:
+                if tokens[1].startswith('#'):
+                    assert not comment
+                    comment = tokens[1]
+                else:
+                    arguments += tokens[1]
+
+        assert exception_type
+        self.source[result['line'] - 1] = \
+            '%sraise %s(%s)  %s\n' % (indentation, exception_type,
+                                      ''.join(arguments.lstrip().lstrip(',')),
+                                      comment)
 
 
 def _get_difftext(old, new, filename):
