@@ -127,7 +127,7 @@ def func_w602():
 
     raise ValueError, "w602 test" # my comment
 
-    raise ValueError; print 2 # my comment
+    raise ValueError, 'arg'   ; print 2 # my comment
 
 if __name__ == '__main__': func_last()
 
