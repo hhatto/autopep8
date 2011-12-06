@@ -136,5 +136,13 @@ def func_w602():
 
     raise 'string'
 
+
+def func_w603():
+    if 1 <> 2:
+        if 2 <> 2:
+            print True
+        else:
+            print False
+
 if __name__ == '__main__': func_last()
 

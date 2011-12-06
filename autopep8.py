@@ -368,6 +368,10 @@ class FixPEP8(object):
                      ')',
                      comment, '\n'])
 
+    def fix_w603(self, result):
+        target = self.source[result['line'] - 1]
+        self.source[result['line'] - 1] = re.sub('<>', '!=', target)
+
 
 def _get_difftext(old, new, filename):
     diff = unified_diff(old, new, 'original/' + filename, 'fixed/' + filename)
