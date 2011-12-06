@@ -326,6 +326,7 @@ class FixPEP8(object):
         sio = StringIO(line)
         fixed_line = ""
         is_found_raise = False
+        first_comma_found = False
         for tokens in tokenize.generate_tokens(sio.readline):
             if tokens[0] is token.INDENT:
                 fixed_line += tokens[1]
@@ -337,8 +338,10 @@ class FixPEP8(object):
             elif tokens[0] is token.NEWLINE:
                 fixed_line += ")%s" % tokens[1]
                 break
-            elif tokens[0] not in (token.OP, token.DEDENT):
-                if tokens[1].startswith('#'):
+            elif tokens[0] is not token.DEDENT:
+                if tokens[1].startswith(',') and not first_comma_found:
+                    first_comma_found = True
+                elif tokens[1].startswith('#'):
                     fixed_line += ')%s' % tokens[1]
                     break
                 else:

@@ -129,5 +129,7 @@ def func_w602():
     raise ValueError, \
         'arg'  # my comment
 
+    raise ValueError, ('a', 'b')
+
 if __name__ == '__main__': func_last()
 
