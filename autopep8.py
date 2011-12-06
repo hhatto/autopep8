@@ -110,8 +110,10 @@ class FixPEP8(object):
         paths.reverse()
         for path in paths:
             if os.path.exists(path + '/' + pep8bin):
-                cmd = "%s/%s -r %s" % (path, pep8bin, targetfile)
-                p = Popen(cmd, stdout=PIPE, shell=True)
+                cmd = (["%s/%s" % (path, pep8bin), "-r", targetfile] +
+                       (["--ignore=" + self.options.ignore]
+                        if self.options.ignore else []))
+                p = Popen(cmd, stdout=PIPE)
                 return p.stdout.readlines()
         raise Exception("'%s' is not found." % pep8bin)
 
@@ -373,6 +375,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = re.sub('<>', '!=', target)
 
     def fix_w604(self, result):
+        # FIXME: b = ```a``` + ```a```
         target = self.source[result['line'] - 1]
         start = target.find('`')
         end = target[::-1].find('`') * -1
@@ -396,6 +399,8 @@ def main():
                       help='diff print of fixed source.')
     parser.add_option('-p', '--pep8-passes', default=5, type='int',
                       help='maximum number of additional pep8 passes')
+    parser.add_option('--ignore', default='',
+                      help='do not fix these errors/warnings (e.g. E4,W)')
     opts, args = parser.parse_args()
     if not len(args):
         print parser.format_help()
