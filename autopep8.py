@@ -43,7 +43,7 @@ class FixPEP8(object):
         - e701,e702
         - w291,w293
         - w391
-        - w602
+        - w602,w603,w604
     """
     def __init__(self, filename, options):
         self.filename = filename
