@@ -332,29 +332,41 @@ class FixPEP8(object):
             return
 
         sio = StringIO(line)
-        fixed_line = ""
         is_found_raise = False
         first_comma_found = False
+        comment = ''
+        args = ''
+        indentation = ''
+        exception_type = None
         for tokens in tokenize.generate_tokens(sio.readline):
             if tokens[0] is token.INDENT:
-                fixed_line += tokens[1]
+                assert not indentation
+                indentation = tokens[1]
             elif tokens[1] == 'raise':
-                fixed_line += "raise "
                 is_found_raise = True
             elif tokens[0] is token.NAME and is_found_raise:
-                fixed_line += "%s(" % tokens[1]
+                if exception_type:
+                    args += tokens[1]
+                else:
+                    exception_type = tokens[1]
             elif tokens[0] is token.NEWLINE:
-                fixed_line += ")%s" % tokens[1]
                 break
             elif tokens[0] is not token.DEDENT:
                 if tokens[1].startswith(',') and not first_comma_found:
                     first_comma_found = True
                 elif tokens[1].startswith('#'):
-                    fixed_line += ')%s\n' % tokens[1]
+                    assert not comment
+                    comment = tokens[1]
                     break
                 else:
-                    fixed_line += tokens[1]
-        self.source[result['line'] - 1] = fixed_line
+                    args += tokens[1]
+        assert exception_type
+        self.source[result['line'] - 1] = \
+            ''.join([indentation, 'raise ', exception_type,
+                     '(',
+                     args[1:-2] if args.startswith('(') else args,
+                     ')',
+                     comment, '\n'])
 
 
 def _get_difftext(old, new, filename):
