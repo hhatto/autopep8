@@ -144,5 +144,10 @@ def func_w603():
         else:
             print False
 
+
+def func_w604():
+    a = 1.1
+    b = ```a```
+
 if __name__ == '__main__': func_last()
 
