@@ -312,7 +312,14 @@ class FixPEP8(object):
         pass
 
     def fix_w602(self, result):
-        line = self.source[result['line'] - 1]
+        line_index = result['line'] - 1
+        line = self.source[line_index]
+
+        # Take care of semicolons first
+        if ';' in line:
+            self.source[line_index] = self._fix_multiple_statements(line)
+            return
+
         sio = StringIO(line)
         is_found_raise = False
         indentation = ''
