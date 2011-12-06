@@ -116,18 +116,18 @@ def func_e702():
 
 def func_w602():
     raise ValueError, "w602 test"
+    raise ValueError, "w602 test"  # my comment
 
+    raise ValueError
     raise ValueError  # comment
 
-    class MyException(Exception):
-        def __init__(a, b):
-            Exception.__init__('blah')
-
-    raise MyException, 1, 2
-
-    raise ValueError, "w602 test" # my comment
-
+    raise ValueError, 'arg'   ; print 1
     raise ValueError, 'arg'   ; print 2 # my comment
+
+    raise ValueError, \
+        'arg no comment'
+    raise ValueError, \
+        'arg'  # my comment
 
 if __name__ == '__main__': func_last()
 

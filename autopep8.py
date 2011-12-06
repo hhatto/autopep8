@@ -315,39 +315,35 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         line = self.source[line_index]
 
-        # Take care of semicolons first
+        # Take care of semicolons and escaped newlines first
         if ';' in line:
             self.source[line_index] = self._fix_multiple_statements(line)
             return
+        elif len(line) >= 2 and line[-2] == '\\':
+            self.source[line_index] = line[:-2]
+            return
 
         sio = StringIO(line)
+        fixed_line = ""
         is_found_raise = False
-        indentation = ''
-        exception_type = None
-        arguments = ''
-        comment = ''
         for tokens in tokenize.generate_tokens(sio.readline):
             if tokens[0] is token.INDENT:
-                assert not indentation
-                indentation = tokens[1]
+                fixed_line += tokens[1]
             elif tokens[1] == 'raise':
+                fixed_line += "raise "
                 is_found_raise = True
             elif tokens[0] is token.NAME and is_found_raise:
-                exception_type = tokens[1]
+                fixed_line += "%s(" % tokens[1]
             elif tokens[0] is token.NEWLINE:
+                fixed_line += ")%s" % tokens[1]
                 break
-            elif tokens[0] is not token.DEDENT:
+            elif tokens[0] not in (token.OP, token.DEDENT):
                 if tokens[1].startswith('#'):
-                    assert not comment
-                    comment = tokens[1]
+                    fixed_line += ')%s' % tokens[1]
+                    break
                 else:
-                    arguments += tokens[1]
-
-        assert exception_type
-        self.source[result['line'] - 1] = \
-            '%sraise %s(%s)  %s\n' % (indentation, exception_type,
-                                      ''.join(arguments.lstrip().lstrip(',')),
-                                      comment)
+                    fixed_line += tokens[1]
+        self.source[result['line'] - 1] = fixed_line
 
 
 def _get_difftext(old, new, filename):
