@@ -109,8 +109,8 @@ class FixPEP8(object):
         paths = os.environ['PATH'].split(':')
         paths.reverse()
         for path in paths:
-            if os.path.exists(path + '/' + pep8bin):
-                cmd = (["%s/%s" % (path, pep8bin), "-r", targetfile] +
+            if os.path.exists(os.path.join(path, pep8bin)):
+                cmd = ([os.path.join(path, pep8bin), "-r", targetfile] +
                        (["--ignore=" + self.options.ignore]
                         if self.options.ignore else []))
                 p = Popen(cmd, stdout=PIPE)
