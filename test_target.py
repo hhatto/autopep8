@@ -134,5 +134,7 @@ def func_w602():
     a = 'a'
     raise ValueError, "%s" % (a,)
 
+    raise 'string'
+
 if __name__ == '__main__': func_last()
 
