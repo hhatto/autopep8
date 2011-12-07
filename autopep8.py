@@ -27,6 +27,20 @@ LF = '\n'
 CRLF = '\r\n'
 
 
+def read_from_filename(filename, readlines=False):
+    """Simple open file, read contents, close file.
+    Ensures file gets closed without relying on CPython GC.
+    Jython requires files to be closed.
+    """
+    f = open(filename)
+    if readlines:
+        result = f.readlines()
+    else:
+        result = f.read()
+    f.close()
+    return result
+
+
 class FixPEP8(object):
 
     """fix invalid code
@@ -47,7 +61,7 @@ class FixPEP8(object):
     """
     def __init__(self, filename, options):
         self.filename = filename
-        self.source = open(filename).readlines()
+        self.source = read_from_filename(filename, readlines=True)
         self.original_source = copy.copy(self.source)
         self.newline = self._find_newline(self.source)
         self.results = []
@@ -407,7 +421,7 @@ def main():
         return 1
     filename = args[0]
     original_filename = filename
-    tmp_source = open(filename).read()
+    tmp_source = read_from_filename(filename)
     fix = FixPEP8(filename, opts)
     fixed_source = fix.fix()
     original_source = copy.copy(fix.original_source)
