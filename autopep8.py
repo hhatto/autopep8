@@ -18,6 +18,14 @@ from subprocess import Popen, PIPE
 from difflib import unified_diff
 import tempfile
 
+try:
+    import pep8
+    if not pep8.__version__ >= '0.5.1':
+        pep8 = None
+except ImportError:
+    pep8 = None
+
+
 __version__ = '0.3'
 
 
@@ -122,7 +130,7 @@ class FixPEP8(object):
         return dict(id=pep8id, filename=filename, line=line,
                     column=column, info=info)
 
-    def _execute_pep8(self, targetfile):
+    def _spawn_pep8(self, targetfile):
         """execute pep8 via subprocess.Popen."""
         paths = os.environ['PATH'].split(':')
         paths.reverse()
@@ -134,6 +142,18 @@ class FixPEP8(object):
                 p = Popen(cmd, stdout=PIPE)
                 return p.stdout.readlines()
         raise Exception("'%s' is not found." % pep8bin)
+
+    def _execute_pep8(self, targetfile):
+        """execute pep8 via python method calls."""
+        pep8.options, pep8.args = pep8.process_options(['pep8', '-r', self.filename])
+        sys_stdout = sys.stdout
+        fake_stdout = StringIO()
+        sys.stdout = fake_stdout
+        tmp_checker = pep8.Checker(self.filename, lines=self.source)
+        errors = tmp_checker.check_all()
+        sys.stdout = sys_stdout
+        result = fake_stdout.getvalue()
+        return StringIO(result).readlines()
 
     def _fix_source(self):
         for result in self.results:
@@ -156,7 +176,10 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed
 
     def fix(self):
-        pep8result = self._execute_pep8(self.filename)
+        if pep8:
+            pep8result = self._execute_pep8(self.filename)
+        else:
+            pep8result = self._spawn_pep8(self.filename)
         raw_results = [self._analyze_pep8result(line) for line in pep8result]
 
         # Only handle one error per line
@@ -433,13 +456,16 @@ def main():
         if fixed_source == tmp_source:
             break
         tmp_source = copy.copy(fixed_source)
-        filename = tempfile.mkstemp()[1]
-        fp = open(filename, 'w')
-        fp.write(fixed_source)
-        fp.close()
+        if not pep8:
+            filename = tempfile.mkstemp()[1]
+            print filename 
+            fp = open(filename, 'w')
+            fp.write(fixed_source)
+            fp.close()
         fix = FixPEP8(filename, opts, contents=tmp_source)
         fixed_source = fix.fix()
-        os.remove(filename)
+        if not pep8:
+            os.remove(filename)
     if opts.diff:
         new = StringIO("".join(fix.source))
         new = new.readlines()
