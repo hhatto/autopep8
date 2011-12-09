@@ -59,9 +59,13 @@ class FixPEP8(object):
         - w391
         - w602,w603,w604
     """
-    def __init__(self, filename, options):
+    def __init__(self, filename, options, contents=None):
         self.filename = filename
-        self.source = read_from_filename(filename, readlines=True)
+        if contents is None:
+            self.source = read_from_filename(filename, readlines=True)
+        else:
+            sio = StringIO(contents)
+            self.source = sio.readlines()
         self.original_source = copy.copy(self.source)
         self.newline = self._find_newline(self.source)
         self.results = []
@@ -422,7 +426,7 @@ def main():
     filename = args[0]
     original_filename = filename
     tmp_source = read_from_filename(filename)
-    fix = FixPEP8(filename, opts)
+    fix = FixPEP8(filename, opts, contents=tmp_source)
     fixed_source = fix.fix()
     original_source = copy.copy(fix.original_source)
     for cnt in range(opts.pep8_passes):
@@ -433,7 +437,7 @@ def main():
         fp = open(filename, 'w')
         fp.write(fixed_source)
         fp.close()
-        fix = FixPEP8(filename, opts)
+        fix = FixPEP8(filename, opts, contents=tmp_source)
         fixed_source = fix.fix()
         os.remove(filename)
     if opts.diff:
