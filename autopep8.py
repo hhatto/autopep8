@@ -150,7 +150,7 @@ class FixPEP8(object):
         fake_stdout = StringIO()
         sys.stdout = fake_stdout
         tmp_checker = pep8.Checker(self.filename, lines=self.source)
-        errors = tmp_checker.check_all()
+        tmp_checker.check_all()
         sys.stdout = sys_stdout
         result = fake_stdout.getvalue()
         return StringIO(result).readlines()
