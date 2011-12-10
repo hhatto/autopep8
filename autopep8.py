@@ -75,40 +75,12 @@ class FixPEP8(object):
             sio = StringIO(contents)
             self.source = sio.readlines()
         self.original_source = copy.copy(self.source)
-        self.newline = self._find_newline(self.source)
+        self.newline = _find_newline(self.source)
         self.results = []
         self.options = options
-        self.indent_word = self._get_indentword("".join(self.source))
+        self.indent_word = _get_indentword("".join(self.source))
         # method definition
         self.fix_e222 = self.fix_e221
-
-    def _find_newline(self, source):
-        cr, lf, crlf = 0, 0, 0
-        for s in source:
-            if CRLF in s:
-                crlf += 1
-            elif CR in s:
-                cr += 0
-            elif LF in s:
-                lf += 0
-        _max = max(cr, crlf, lf)
-        if _max == lf:
-            return LF
-        elif _max == crlf:
-            return CRLF
-        elif _max == cr:
-            return CR
-        else:
-            return LF
-
-    def _get_indentword(self, source):
-        sio = StringIO(source)
-        indent_word = "    "  # Default in case source has no indentation
-        for t in tokenize.generate_tokens(sio.readline):
-            if t[0] == token.INDENT:
-                indent_word = t[1]
-                break
-        return indent_word
 
     def _get_indentlevel(self, line):
         sio = StringIO(line)
@@ -119,16 +91,6 @@ class FixPEP8(object):
                 break
         indent_level = len(indent_word) / len(self.indent_word)
         return indent_level + 1
-
-    def _analyze_pep8result(self, result):
-        tmp = result.split(":")
-        filename = tmp[0]
-        line = int(tmp[1])
-        column = int(tmp[2])
-        info = " ".join(result.split()[1:])
-        pep8id = info.lstrip().split()[0]
-        return dict(id=pep8id, filename=filename, line=line,
-                    column=column, info=info)
 
     def _spawn_pep8(self, targetfile):
         """execute pep8 via subprocess.Popen."""
@@ -186,7 +148,7 @@ class FixPEP8(object):
             pep8result = self._execute_pep8(self.filename)
         else:
             pep8result = self._spawn_pep8(self.filename)
-        raw_results = [self._analyze_pep8result(line) for line in pep8result]
+        raw_results = [_analyze_pep8result(line) for line in pep8result]
 
         # Only handle one error per line
         line_results = {}
@@ -308,7 +270,7 @@ class FixPEP8(object):
 
         # Take care of semicolons first
         if ';' in target:
-            self.source[line_index] = self._fix_multiple_statements(target)
+            self.source[line_index] = _fix_multiple_statements(target)
         else:
             indentation = target.split("import ")[0]
             modules = target.split("import ")[1].split(",")
@@ -324,15 +286,9 @@ class FixPEP8(object):
                        self.indent_word * indent_level + target[c:].lstrip()
         self.source[result['line'] - 1] = fixed_source
 
-    def _fix_multiple_statements(self, target):
-        non_whitespace_index = len(target) - len(target.lstrip())
-        indentation = target[:non_whitespace_index]
-        f = [indentation + t.strip() for t in target.split(";") if t.strip()]
-        return '\n'.join(f) + '\n'
-
     def fix_e702(self, result):
         target = self.source[result['line'] - 1]
-        self.source[result['line'] - 1] = self._fix_multiple_statements(target)
+        self.source[result['line'] - 1] = _fix_multiple_statements(target)
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()
@@ -341,7 +297,7 @@ class FixPEP8(object):
     def fix_w293(self, result):
         self.source[result['line'] - 1] = self.newline
 
-    def fix_w391(self, result):
+    def fix_w391(self, _):
         source = copy.copy(self.source)
         source.reverse()
         found_notblank = False
@@ -366,7 +322,7 @@ class FixPEP8(object):
 
         if ';' in line:
             # Take care of semicolons first
-            self.source[line_index] = self._fix_multiple_statements(line)
+            self.source[line_index] = _fix_multiple_statements(line)
             return
         elif len(line) >= 2 and line[-2] == '\\':
             # Remove escaped newlines first
@@ -430,6 +386,54 @@ class FixPEP8(object):
                 target[:start], target[start + 1:end - 1], target[end:])
 
 
+def _find_newline(source):
+    cr, lf, crlf = 0, 0, 0
+    for s in source:
+        if CRLF in s:
+            crlf += 1
+        elif CR in s:
+            cr += 0
+        elif LF in s:
+            lf += 0
+    _max = max(cr, crlf, lf)
+    if _max == lf:
+        return LF
+    elif _max == crlf:
+        return CRLF
+    elif _max == cr:
+        return CR
+    else:
+        return LF
+
+
+def _get_indentword(source):
+    sio = StringIO(source)
+    indent_word = "    "  # Default in case source has no indentation
+    for t in tokenize.generate_tokens(sio.readline):
+        if t[0] == token.INDENT:
+            indent_word = t[1]
+            break
+    return indent_word
+
+
+def _fix_multiple_statements(target):
+    non_whitespace_index = len(target) - len(target.lstrip())
+    indentation = target[:non_whitespace_index]
+    f = [indentation + t.strip() for t in target.split(";") if t.strip()]
+    return '\n'.join(f) + '\n'
+
+
+def _analyze_pep8result(result):
+    tmp = result.split(":")
+    filename = tmp[0]
+    line = int(tmp[1])
+    column = int(tmp[2])
+    info = " ".join(result.split()[1:])
+    pep8id = info.lstrip().split()[0]
+    return dict(id=pep8id, filename=filename, line=line,
+                column=column, info=info)
+
+
 def _get_difftext(old, new, filename):
     diff = unified_diff(old, new, 'original/' + filename, 'fixed/' + filename)
     difftext = [line for line in diff]
@@ -458,7 +462,7 @@ def main():
     fix = FixPEP8(filename, opts, contents=tmp_source)
     fixed_source = fix.fix()
     original_source = copy.copy(fix.original_source)
-    for cnt in range(opts.pep8_passes):
+    for _ in range(opts.pep8_passes):
         if fixed_source == tmp_source:
             break
         tmp_source = copy.copy(fixed_source)
