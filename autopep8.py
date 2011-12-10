@@ -136,16 +136,16 @@ class FixPEP8(object):
         paths.reverse()
         for path in paths:
             if os.path.exists(os.path.join(path, pep8bin)):
-                cmd = ([os.path.join(path, pep8bin), "-r", targetfile] +
-                       (["--ignore=" + self.options.ignore]
-                        if self.options.ignore else []))
+                cmd = ([os.path.join(path, pep8bin)] +
+                       self._pep8_options(targetfile))
                 p = Popen(cmd, stdout=PIPE)
                 return p.stdout.readlines()
         raise Exception("'%s' is not found." % pep8bin)
 
     def _execute_pep8(self, targetfile):
         """execute pep8 via python method calls."""
-        pep8.options, pep8.args = pep8.process_options(['pep8', '-r', self.filename])
+        pep8.options, pep8.args = \
+                pep8.process_options(['pep8'] + self._pep8_options(targetfile))
         sys_stdout = sys.stdout
         fake_stdout = StringIO()
         sys.stdout = fake_stdout
@@ -154,6 +154,12 @@ class FixPEP8(object):
         sys.stdout = sys_stdout
         result = fake_stdout.getvalue()
         return StringIO(result).readlines()
+
+    def _pep8_options(self, targetfile):
+        """return options to be passed to pep8."""
+        return (["-r", targetfile] +
+                (["--ignore=" + self.options.ignore]
+                 if self.options.ignore else []))
 
     def _fix_source(self):
         for result in self.results:
@@ -458,7 +464,6 @@ def main():
         tmp_source = copy.copy(fixed_source)
         if not pep8:
             filename = tempfile.mkstemp()[1]
-            print filename 
             fp = open(filename, 'w')
             fp.write(fixed_source)
             fp.close()
