@@ -16,7 +16,9 @@ class TestFixPEP8Error(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        p = Popen(['autopep8', self.tempfile[1]], stdout=PIPE)
+        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+        p = Popen([os.path.join(root_dir, 'autopep8.py'),
+                   self.tempfile[1]], stdout=PIPE)
         self.result = p.stdout.read()
 
     def test_e401(self):
