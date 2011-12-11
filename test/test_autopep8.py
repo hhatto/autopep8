@@ -31,7 +31,19 @@ class TestFixPEP8Error(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    def test_w602(self):
+    def test_w602_arg_is_string(self):
+        line = "raise ValueError, \"w602 test\"\n"
+        fixed = "raise ValueError(\"w602 test\")\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w602_arg_is_string_with_comment(self):
+        line = "raise ValueError, \"w602 test\"  # comment\n"
+        fixed = "raise ValueError(\"w602 test\")  # comment\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w602_arg_is_tuple(self):
         line = "raise ValueError, ('a', 'b')\n"
         fixed = "raise ValueError('a', 'b')\n"
         self._inner_setup(line)
