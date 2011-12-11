@@ -41,16 +41,13 @@ def read_from_filename(filename, readlines=False):
     Jython requires files to be closed.
     """
     f = open(filename)
-    if readlines:
-        result = f.readlines()
-    else:
-        result = f.read()
-    f.close()
-    return result
+    try:
+        return f.readlines() if readlines else f.read()
+    finally:
+        f.close()
 
 
 class FixPEP8(object):
-
     """fix invalid code
 
     [fixed method list]
