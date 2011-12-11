@@ -6,14 +6,18 @@ from tempfile import mkstemp
 
 class TestFixPEP8Error(unittest.TestCase):
 
+    def setUp(self):
+        self.tempfile = mkstemp()
+
+    def tearDown(self):
+        os.remove(self.tempfile[1])
+
     def _inner_setup(self, line):
-        tempfile = mkstemp()
-        f = open(tempfile[1], 'w')
+        f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        p = Popen(['autopep8', tempfile[1]], stdout=PIPE)
+        p = Popen(['autopep8', self.tempfile[1]], stdout=PIPE)
         self.result = p.stdout.read()
-        os.remove(tempfile[1])
 
     def test_e401(self):
         line = "import os, sys\n"
@@ -24,6 +28,12 @@ class TestFixPEP8Error(unittest.TestCase):
     def test_e401_with_indentation(self):
         line = "def a():\n    import os, sys\n"
         fixed = "def a():\n    import os\n    import sys\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w602(self):
+        line = "raise ValueError, ('a', 'b')\n"
+        fixed = "raise ValueError('a', 'b')\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
