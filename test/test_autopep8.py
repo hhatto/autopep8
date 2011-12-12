@@ -21,6 +21,18 @@ class TestFixPEP8Error(unittest.TestCase):
                    self.tempfile[1]], stdout=PIPE)
         self.result = p.stdout.read()
 
+    def test_e261(self):
+        line = "print 'a b '# comment\n"
+        fixed = "print 'a b '  # comment\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e261_with_dictionary(self):
+        line = "d = {# comment\n1: 2}\n"
+        fixed = "d = {  # comment\n1: 2}\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e401(self):
         line = "import os, sys\n"
         fixed = "import os\nimport sys\n"
@@ -30,6 +42,18 @@ class TestFixPEP8Error(unittest.TestCase):
     def test_e401_with_indentation(self):
         line = "def a():\n    import os, sys\n"
         fixed = "def a():\n    import os\n    import sys\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w291(self):
+        line = "print 'a b '\t \n"
+        fixed = "print 'a b '\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w291_with_comment(self):
+        line = "print 'a b '  # comment\t \n"
+        fixed = "print 'a b '  # comment\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
@@ -48,18 +72,6 @@ class TestFixPEP8Error(unittest.TestCase):
     def test_w602_arg_is_tuple(self):
         line = "raise ValueError, ('a', 'b')\n"
         fixed = "raise ValueError('a', 'b')\n"
-        self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
-
-    def test_w291(self):
-        line = "print 'a b '\t \n"
-        fixed = "print 'a b '\n"
-        self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
-
-    def test_w291_with_comment(self):
-        line = "print 'a b '  # comment\t \n"
-        fixed = "print 'a b '  # comment\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
