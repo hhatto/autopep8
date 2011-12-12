@@ -33,6 +33,12 @@ class TestFixPEP8Error(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e303(self):
+        line = "\n\n\n# alpha\n\n1\n"
+        fixed = "\n\n# alpha\n1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e401(self):
         line = "import os, sys\n"
         fixed = "import os\nimport sys\n"
@@ -54,6 +60,12 @@ class TestFixPEP8Error(unittest.TestCase):
     def test_w291_with_comment(self):
         line = "print 'a b '  # comment\t \n"
         fixed = "print 'a b '  # comment\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w292(self):
+        line = "1\n2"
+        fixed = "1\n2\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 

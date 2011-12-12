@@ -291,6 +291,10 @@ class FixPEP8(object):
         fixed_line = self.source[result['line'] - 1].rstrip()
         self.source[result['line'] - 1] = "%s%s" % (fixed_line, self.newline)
 
+    def fix_w292(self, _):
+        # Missing newline gets fixed automatically
+        pass
+
     def fix_w293(self, result):
         self.source[result['line'] - 1] = self.newline
 
