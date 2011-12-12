@@ -366,7 +366,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = \
             ''.join([indentation, 'raise ', exception_type,
                      '(',
-                     args[1:-2] if args.startswith('(') else args,
+                     args[1:-1] if args.startswith('(') else args,
                      ')',
                      comment, '\n'])
 
