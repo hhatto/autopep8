@@ -51,5 +51,17 @@ class TestFixPEP8Error(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w291(self):
+        line = "print 'a b '\t \n"
+        fixed = "print 'a b '\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w291_with_comment(self):
+        line = "print 'a b '  # comment\t \n"
+        fixed = "print 'a b '  # comment\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
 if __name__ == '__main__':
     unittest.main()
