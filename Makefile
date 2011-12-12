@@ -3,7 +3,7 @@ all:
 
 
 TEST_DIR=test
-.PHONY: test_basic test_diff test_unit
+.PHONY: test test_basic test_diff test_unit
 test: test_basic test_diff test_unit
 
 test_basic:
