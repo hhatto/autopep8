@@ -51,6 +51,24 @@ class TestFixPEP8Error(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+
+class TestFixPEP8Warn(unittest.TestCase):
+
+    def setUp(self):
+        self.tempfile = mkstemp()
+
+    def tearDown(self):
+        os.remove(self.tempfile[1])
+
+    def _inner_setup(self, line):
+        f = open(self.tempfile[1], 'w')
+        f.write(line)
+        f.close()
+        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+        p = Popen([os.path.join(root_dir, 'autopep8.py'),
+                   self.tempfile[1]], stdout=PIPE)
+        self.result = p.stdout.read()
+
     def test_w291(self):
         line = "print 'a b '\t \n"
         fixed = "print 'a b '\n"
