@@ -21,6 +21,18 @@ class TestFixPEP8Error(unittest.TestCase):
                    self.tempfile[1]], stdout=PIPE)
         self.result = p.stdout.read()
 
+    def test_e111_short(self):
+        line = "class Dummy:\n  def __init__(self):\n    pass\n"
+        fixed = "class Dummy:\n    def __init__(self):\n        pass\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e111_long(self):
+        line = "class Dummy:\n     def __init__(self):\n          pass\n"
+        fixed = "class Dummy:\n    def __init__(self):\n        pass\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e261(self):
         line = "print 'a b '# comment\n"
         fixed = "print 'a b '  # comment\n"

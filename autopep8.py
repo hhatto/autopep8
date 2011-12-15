@@ -76,6 +76,7 @@ class FixPEP8(object):
         self.results = []
         self.options = options
         self.indent_word = _get_indentword("".join(self.source))
+        self.is_found_e111 = False
         # method definition
         self.fix_e222 = self.fix_e221
 
@@ -122,6 +123,8 @@ class FixPEP8(object):
 
     def _fix_source(self):
         for result in self.results:
+            if result['id'] == "E111" and self.is_found_e111:
+                continue
             fixed_methodname = "fix_%s" % result['id'].lower()
             if hasattr(self, fixed_methodname):
                 fix = getattr(self, fixed_methodname)
@@ -166,6 +169,27 @@ class FixPEP8(object):
     #        # FIXME: not implement
     #        fixed = target
     #    self.source[result['line'] - 1] = fixed
+
+    def fix_e111(self, result):
+        self.is_found_e111 = True
+        sio = StringIO("".join(self.source[result['line'] - 1:]))
+        last_line = ""
+        diff_cnt = 0
+        fixed_lines = []
+        for tokens in tokenize.generate_tokens(sio.readline):
+            if tokens[0] == token.INDENT:
+                _level = self._get_indentlevel(tokens[4])
+                diff_cnt = 4 * (_level - 1) - len(tokens[1])
+            if tokens[0] == token.DEDENT:
+                break
+            if tokens[4] != last_line:
+                last_line = tokens[4]
+                if diff_cnt >= 0:
+                    fixed_lines.append(" " * diff_cnt + tokens[4])
+                else:
+                    fixed_lines.append(tokens[4][abs(diff_cnt):])
+        for offset, fixed_line in enumerate(fixed_lines):
+            self.source[result['line'] - 1 + offset] = fixed_line
 
     def fix_e201(self, result):
         self._fix_whitespace(result, r"\(\s+", "(")
