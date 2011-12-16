@@ -33,6 +33,42 @@ class TestFixPEP8Error(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e221(self):
+        line = "a = 1  + 1\n"
+        fixed = "a = 1 + 1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e222(self):
+        line = "a = 1 +  1\n"
+        fixed = "a = 1 + 1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e223(self):
+        line = "a = 1	+ 1\n"  # include TAB
+        fixed = "a = 1 + 1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e223_double(self):
+        line = "a = 1		+ 1\n"  # include TAB
+        fixed = "a = 1 + 1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e224(self):
+        line = "a = 11 +	1\n"    # include TAB
+        fixed = "a = 11 + 1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e224_double(self):
+        line = "a = 11 +		1\n"    # include TAB
+        fixed = "a = 11 + 1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e261(self):
         line = "print 'a b '# comment\n"
         fixed = "print 'a b '  # comment\n"

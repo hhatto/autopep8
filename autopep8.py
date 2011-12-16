@@ -54,7 +54,7 @@ class FixPEP8(object):
         - e111
         - e201,e202,e203
         - e211
-        - e221,e222,e225
+        - e221,e222,e223,e224,e225
         - e231
         - e251
         - e261,e262
@@ -80,6 +80,7 @@ class FixPEP8(object):
         self.is_found_e111 = False
         # method definition
         self.fix_e222 = self.fix_e221
+        self.fix_e223 = self.fix_e221
 
     def _get_indentlevel(self, line):
         sio = StringIO(line)
@@ -211,10 +212,20 @@ class FixPEP8(object):
         self._fix_whitespace(result, r"\s+\[", "[")
 
     def fix_e221(self, result):
-        """e221 and e222 fixed method"""
+        """e221, e222 and e223 fixed method"""
         target = self.source[result['line'] - 1]
         c = result['column'] + 1
         fixed = re.sub(r'\s+', ' ', target[c::-1], 1)[::-1] + target[c + 1:]
+        if fixed == target:
+            # for e223 fixed method
+            fixed = re.sub(r'\t+', ' ', target[c::-1], 1)[::-1] + \
+                    target[c + 1:]
+        self.source[result['line'] - 1] = fixed
+
+    def fix_e224(self, result):
+        target = self.source[result['line'] - 1]
+        c = result['column'] + 1
+        fixed = re.sub(r'\t+', ' ', target, 1)
         self.source[result['line'] - 1] = fixed
 
     def fix_e225(self, result):
