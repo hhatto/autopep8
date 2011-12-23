@@ -33,6 +33,20 @@ class TestFixPEP8Error(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e111_bug(self):
+        line = """
+while True:
+    if True:
+       1
+"""
+        fixed = """
+while True:
+    if True:
+        1
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e221(self):
         line = "a = 1  + 1\n"
         fixed = "a = 1 + 1\n"
