@@ -124,13 +124,17 @@ class FixPEP8(object):
                  if self.options.ignore else []))
 
     def _fix_source(self):
+        completed_lines = []
         for result in self.results:
+            if result['line'] in completed_lines:
+                continue
             if result['id'] == "E111" and self.is_found_e111:
                 continue
             fixed_methodname = "fix_%s" % result['id'].lower()
             if hasattr(self, fixed_methodname):
                 fix = getattr(self, fixed_methodname)
                 fix(result)
+                completed_lines.append(result['line'])
             else:
                 print >> sys.stderr, "'%s' is not defined." % fixed_methodname
                 if self.options.verbose:
@@ -150,15 +154,7 @@ class FixPEP8(object):
             pep8result = self._execute_pep8(self.filename)
         else:
             pep8result = self._spawn_pep8(self.filename)
-        raw_results = [_analyze_pep8result(line) for line in pep8result]
-
-        # Only handle one error per line
-        line_results = {}
-        for result in raw_results:
-            line_results[result['line']] = result
-
-        self.results = line_results.values()
-
+        self.results = [_analyze_pep8result(line) for line in pep8result]
         self._fix_source()
         return "".join(self.source)
 
