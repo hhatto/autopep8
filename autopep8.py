@@ -89,7 +89,9 @@ class FixPEP8(object):
             if t[0] == token.INDENT:
                 indent_word = t[1]
                 break
-        indent_level = len(indent_word) / len(self.indent_word)
+        import math
+        indent_level = int(math.ceil(float(len(indent_word)) /
+                                     len(self.indent_word)))
         return indent_level + 1
 
     def _spawn_pep8(self, targetfile):
