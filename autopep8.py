@@ -255,7 +255,7 @@ class FixPEP8(object):
         target = self.source[result['line'] - 1]
         c = result['column']
 
-        # pep8 is sometiems off by one in cases like "{# comment"
+        # pep8 is sometimes off by one in cases like "{# comment"
         if target[c] == '#':
             pass
         elif target[c - 1] == '#':
