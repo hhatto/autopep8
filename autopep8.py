@@ -413,8 +413,13 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = re.sub('<>', '!=', target)
 
     def fix_w604(self, result):
-        # FIXME: b = ```a``` + ```a```
         target = self.source[result['line'] - 1]
+
+        # We do not support things like
+        #     ``1`` + ``1``
+        if len(re.findall('`+', target)) > 2:
+            return
+
         start = target.find('`')
         end = target[::-1].find('`') * -1
         self.source[result['line'] - 1] = "%srepr(%s)%s" % (

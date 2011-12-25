@@ -167,5 +167,18 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w604(self):
+        line = "`1`\n"
+        fixed = "repr(1)\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w604_skip_multiple_instances(self):
+        # We do not support this yet
+        line = "``1`` + ``b``\n"
+        fixed = "``1`` + ``b``\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
 if __name__ == '__main__':
     unittest.main()
