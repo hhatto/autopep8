@@ -222,7 +222,6 @@ class FixPEP8(object):
 
     def fix_e224(self, result):
         target = self.source[result['line'] - 1]
-        c = result['column'] + 1
         fixed = re.sub(r'\t+', ' ', target, 1)
         self.source[result['line'] - 1] = fixed
 
