@@ -149,6 +149,12 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w391(self):
+        line = "  \n"
+        fixed = "\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_w602_arg_is_string(self):
         line = "raise ValueError, \"w602 test\"\n"
         fixed = "raise ValueError(\"w602 test\")\n"

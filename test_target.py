@@ -150,4 +150,4 @@ def func_w604():
     b = ```a```
 
 if __name__ == '__main__': func_last()
-
+  

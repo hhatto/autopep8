@@ -337,6 +337,7 @@ class FixPEP8(object):
         found_notblank = False
         blank_count = 0
         for line in source:
+            line = line.rstrip()
             if re.match("^$", line):
                 blank_count += 1
             else:
