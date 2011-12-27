@@ -363,7 +363,7 @@ class FixPEP8(object):
             # Remove escaped newlines first
             self.source[line_index] = line[:-2]
             return
-        elif '"""' in line:
+        elif '"""' in line or "'''" in line:
             # FIXME: We currently can't handle
             #
             #            raise ValueError, """

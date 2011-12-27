@@ -173,6 +173,18 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w602_skip_multiline(self):
+        # We do not support this yet
+        line = 'raise ValueError, """\nhello"""\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
+    def test_w602_skip_multiline_with_double_quote(self):
+        # We do not support this yet
+        line = "raise ValueError, '''\nhello'''\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
     def test_w604(self):
         line = "`1`\n"
         fixed = "repr(1)\n"
@@ -182,9 +194,8 @@ class TestFixPEP8Warn(unittest.TestCase):
     def test_w604_skip_multiple_instances(self):
         # We do not support this yet
         line = "``1`` + ``b``\n"
-        fixed = "``1`` + ``b``\n"
         self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
+        self.assertEqual(self.result, line)
 
 if __name__ == '__main__':
     unittest.main()
