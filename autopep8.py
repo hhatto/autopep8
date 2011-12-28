@@ -351,7 +351,38 @@ class FixPEP8(object):
         self.source = source
 
     def fix_w601(self, result):
-        pass
+        target = self.source[result['line'] - 1]
+        _before = ""
+        _after = ""
+        _symbol = ""
+        _tmp = target.split(".has_key")
+
+        # find dict symbol
+        _target = _tmp[0]
+        for offset, t in enumerate(_target[::-1]):
+            if t == " ":
+                print offset
+                _before = _target[::-1][:offset - 1:-1]
+                break
+            else:
+                _symbol += t
+
+        # find arg of has_key
+        _target = _tmp[1]
+        _level = 0
+        _arg = ""
+        for offset, t in enumerate(_target):
+            if t == "(":
+                _level += 1
+            elif t == ")":
+                _level -= 1
+                if _level == 0:
+                    _after += _target[offset + 1:]
+                    break
+            else:
+                _arg += t
+        self.source[result['line'] - 1] = \
+            "".join([_before, _arg, " in ", _symbol, _after])
 
     def fix_w602(self, result):
         line_index = result['line'] - 1

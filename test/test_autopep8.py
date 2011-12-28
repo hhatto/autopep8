@@ -155,6 +155,12 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w601(self):
+        line = "a = {0: 1}\na.has_key(0)\n"
+        fixed = "a = {0: 1}\n0 in a\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_w602_arg_is_string(self):
         line = "raise ValueError, \"w602 test\"\n"
         fixed = "raise ValueError(\"w602 test\")\n"
