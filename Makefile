@@ -31,6 +31,7 @@ coverage:
 	@rm -rf htmlcov
 	@PATH=test/coverage_python:${PATH} python test/test_autopep8.py
 	@coverage combine
+	@coverage report
 	@coverage html
 	@echo 'Coverage report: htmlcov/index.html'
 	@rm .coverage
