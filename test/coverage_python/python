@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+# Run under coverage instead of regular Python.
+
+coverage run --branch --parallel $@

@@ -27,6 +27,14 @@ test_unit:
 	@echo '--->  Running unit tests'
 	python test/test_autopep8.py
 
+coverage:
+	@rm -rf htmlcov
+	@PATH=test/coverage_python:${PATH} python test/test_autopep8.py
+	@coverage combine
+	@coverage html
+	@echo 'Coverage report: htmlcov/index.html'
+	@rm .coverage
+
 pypireg:
 	python setup.py register
 	python setup.py sdist upload
