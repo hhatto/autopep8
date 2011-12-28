@@ -361,7 +361,6 @@ class FixPEP8(object):
         _target = _tmp[0]
         for offset, t in enumerate(_target[::-1]):
             if t == " ":
-                print offset
                 _before = _target[::-1][:offset - 1:-1]
                 break
             else:
