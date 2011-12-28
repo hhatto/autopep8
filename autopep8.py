@@ -520,7 +520,8 @@ def main():
     if opts.diff:
         new = StringIO("".join(fix.source))
         new = new.readlines()
-        sys.stdout.write(_get_difftext(original_source, new, original_filename))
+        sys.stdout.write(_get_difftext(original_source, new,
+                                       original_filename))
     else:
         sys.stdout.write(fixed_source)
 
