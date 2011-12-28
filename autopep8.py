@@ -138,13 +138,13 @@ class FixPEP8(object):
                 fix(result)
                 completed_lines.append(result['line'])
             else:
-                print >> sys.stderr, "'%s' is not defined." % fixed_methodname
+                sys.stderr.write("'%s' is not defined.\n" % fixed_methodname)
                 if self.options.verbose:
                     info = result['info'].strip()
-                    print >> sys.stderr, "%s:%s:%s:%s" % (result['filename'],
-                                                          result['line'],
-                                                          result['column'],
-                                                          info)
+                    sys.stderr.write("%s:%s:%s:%s\n" % (result['filename'],
+                                                        result['line'],
+                                                        result['column'],
+                                                        info))
 
     def _fix_whitespace(self, result, pattern, repl):
         target = self.source[result['line'] - 1]
@@ -325,8 +325,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = "%s%s" % (fixed_line, self.newline)
 
     def fix_w292(self, _):
-        # Missing newline gets fixed automatically
-        pass
+        self.source[-1] += '\n'
 
     def fix_w293(self, result):
         self.source[result['line'] - 1] = self.newline
@@ -494,7 +493,7 @@ def main():
                       help='do not fix these errors/warnings (e.g. E4,W)')
     opts, args = parser.parse_args()
     if not len(args):
-        print parser.format_help()
+        print(parser.format_help())
         return 1
     filename = args[0]
     original_filename = filename
@@ -518,9 +517,9 @@ def main():
     if opts.diff:
         new = StringIO("".join(fix.source))
         new = new.readlines()
-        print _get_difftext(original_source, new, original_filename),
+        sys.stdout.write(_get_difftext(original_source, new, original_filename))
     else:
-        print fixed_source,
+        sys.stdout.write(fixed_source)
 
 if __name__ == '__main__':
     main()

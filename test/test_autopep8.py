@@ -151,7 +151,7 @@ class TestFixPEP8Warn(unittest.TestCase):
 
     def test_w391(self):
         line = "  \n"
-        fixed = "\n"
+        fixed = ""
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
