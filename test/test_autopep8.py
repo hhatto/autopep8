@@ -19,7 +19,7 @@ class TestFixPEP8Error(unittest.TestCase):
         root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
         p = Popen([os.path.join(root_dir, 'autopep8.py'),
                    self.tempfile[1]], stdout=PIPE)
-        self.result = p.stdout.read()
+        self.result = p.communicate()[0].decode('utf8')
 
     def test_e111_short(self):
         line = "class Dummy:\n  def __init__(self):\n    pass\n"
@@ -129,7 +129,7 @@ class TestFixPEP8Warn(unittest.TestCase):
         root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
         p = Popen([os.path.join(root_dir, 'autopep8.py'),
                    self.tempfile[1]], stdout=PIPE)
-        self.result = p.stdout.read()
+        self.result = p.communicate()[0].decode('utf8')
 
     def test_w291(self):
         line = "print 'a b '\t \n"
