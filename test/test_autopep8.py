@@ -47,6 +47,36 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e201(self):
+        line = "(   1)\n"
+        fixed = "(1)\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e202(self):
+        line = "(1   )\n[2  ]\n{3  }\n"
+        fixed = "(1)\n[2]\n{3}\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e203_colon(self):
+        line = "{4 : 3}\n"
+        fixed = "{4: 3}\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e203_comma(self):
+        line = "[1 , 2  , 3]\n"
+        fixed = "[1, 2, 3]\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e211(self):
+        line = "d = [1, 2, 3]\nprint d  [0]\n"
+        fixed = "d = [1, 2, 3]\nprint d[0]\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e221(self):
         line = "a = 1  + 1\n"
         fixed = "a = 1 + 1\n"
@@ -83,6 +113,18 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e225(self):
+        line = "1+1\n2 +2\n3+ 3\n"
+        fixed = "1 + 1\n2 + 2\n3 + 3\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e251(self):
+        line = "def a(arg = 1):\n    print arg\n"
+        fixed = "def a(arg=1):\n    print arg\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e261(self):
         line = "print 'a b '# comment\n"
         fixed = "print 'a b '  # comment\n"
@@ -92,6 +134,30 @@ while True:
     def test_e261_with_dictionary(self):
         line = "d = {# comment\n1: 2}\n"
         fixed = "d = {  # comment\n1: 2}\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e262_more_space(self):
+        line = "print 'a b '  #  comment\n"
+        fixed = "print 'a b '  # comment\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e262_none_space(self):
+        line = "print 'a b '  #comment\n"
+        fixed = "print 'a b '  # comment\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e301(self):
+        line = "class k:\n    s = 0\n    def f():\n        print 1\n"
+        fixed = "class k:\n    s = 0\n\n    def f():\n        print 1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e302(self):
+        line = "def f():\n    print 1\n\ndef ff():\n    print 2\n"
+        fixed = "def f():\n    print 1\n\n\ndef ff():\n    print 2\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
@@ -110,6 +176,18 @@ while True:
     def test_e401_with_indentation(self):
         line = "def a():\n    import os, sys\n"
         fixed = "def a():\n    import os\n    import sys\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e701(self):
+        line = "if True: print True\n"
+        fixed = "if True:\n    print True\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e702(self):
+        line = "print 1; print 2\n"
+        fixed = "print 1\nprint 2\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
@@ -190,6 +268,12 @@ class TestFixPEP8Warn(unittest.TestCase):
         line = "raise ValueError, '''\nhello'''\n"
         self._inner_setup(line)
         self.assertEqual(self.result, line)
+
+    def test_w603(self):
+        line = "if 2 <> 2:\n    print False"
+        fixed = "if 2 != 2:\n    print False\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
 
     def test_w604(self):
         line = "`1`\n"
