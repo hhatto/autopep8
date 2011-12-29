@@ -227,6 +227,12 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w293(self):
+        line = "1\n \n2\n"
+        fixed = "1\n\n2\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_w391(self):
         line = "  \n"
         fixed = ""
