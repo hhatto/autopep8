@@ -395,9 +395,13 @@ class FixPEP8(object):
             self.source[line_index] = _fix_multiple_statements(line,
                                                                self.newline)
             return
-        elif len(line) >= 2 and line[-2] == '\\':
-            # Remove escaped newlines first
+        elif line[-2:] == '\\\n':
+            # Remove escaped LF first
             self.source[line_index] = line[:-2]
+            return
+        elif line[-3:] == '\\\r\n':
+            # Remove escaped CRLF first
+            self.source[line_index] = line[:-3]
             return
         elif '"""' in line or "'''" in line:
             # FIXME: We currently can't handle

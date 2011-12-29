@@ -275,6 +275,24 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+    def test_w602_escaped_lf(self):
+        line = 'raise ValueError, \\\n"hello"\n'
+        fixed = 'raise ValueError("hello")\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w602_escaped_crlf(self):
+        line = 'raise ValueError, \\\r\n"hello"\n'
+        fixed = 'raise ValueError("hello")\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w602_multiple_statements(self):
+        line = 'raise ValueError, "hello";print 1\n'
+        fixed = 'raise ValueError("hello")\nprint 1\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_w603(self):
         line = "if 2 <> 2:\n    print False"
         fixed = "if 2 != 2:\n    print False\n"
