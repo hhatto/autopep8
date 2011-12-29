@@ -303,7 +303,8 @@ class FixPEP8(object):
 
         # Take care of semicolons first
         if ';' in target:
-            self.source[line_index] = _fix_multiple_statements(target)
+            self.source[line_index] = _fix_multiple_statements(target,
+                                                               self.newline)
         else:
             indentation = target.split("import ")[0]
             modules = target.split("import ")[1].split(",")
@@ -321,16 +322,18 @@ class FixPEP8(object):
 
     def fix_e702(self, result):
         target = self.source[result['line'] - 1]
-        self.source[result['line'] - 1] = _fix_multiple_statements(target)
+        self.source[result['line'] - 1] = _fix_multiple_statements(target,
+                self.newline)
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()
         self.source[result['line'] - 1] = "%s%s" % (fixed_line, self.newline)
 
     def fix_w292(self, _):
-        self.source[-1] += '\n'
+        self.source[-1] += self.newline
 
     def fix_w293(self, result):
+        assert not self.source[result['line'] - 1].strip()
         self.source[result['line'] - 1] = self.newline
 
     def fix_w391(self, _):
@@ -389,7 +392,8 @@ class FixPEP8(object):
 
         if ';' in line:
             # Take care of semicolons first
-            self.source[line_index] = _fix_multiple_statements(line)
+            self.source[line_index] = _fix_multiple_statements(line,
+                                                               self.newline)
             return
         elif len(line) >= 2 and line[-2] == '\\':
             # Remove escaped newlines first
@@ -438,7 +442,7 @@ class FixPEP8(object):
                      '(',
                      args[1:-1] if args.startswith('(') else args,
                      ')',
-                     comment, '\n'])
+                     comment, self.newline])
 
     def fix_w603(self, result):
         target = self.source[result['line'] - 1]
@@ -488,11 +492,11 @@ def _get_indentword(source):
     return indent_word
 
 
-def _fix_multiple_statements(target):
+def _fix_multiple_statements(target, newline):
     non_whitespace_index = len(target) - len(target.lstrip())
     indentation = target[:non_whitespace_index]
     f = [indentation + t.strip() for t in target.split(";") if t.strip()]
-    return '\n'.join(f) + '\n'
+    return newline.join(f) + newline
 
 
 def _analyze_pep8result(result):
