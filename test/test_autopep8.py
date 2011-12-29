@@ -311,5 +311,42 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+
+class TestOptions(unittest.TestCase):
+
+    def setUp(self):
+        self.tempfile = mkstemp()
+
+    def tearDown(self):
+        os.remove(self.tempfile[1])
+
+    def _inner_setup(self, line, options):
+        f = open(self.tempfile[1], 'w')
+        f.write(line)
+        f.close()
+        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+        p = Popen([os.path.join(root_dir, 'autopep8.py'),
+                   self.tempfile[1]] + options,
+                  stdout=PIPE)
+        self.result = p.communicate()[0].decode('utf8')
+
+    def test_diff(self):
+        line = "'abc'  \n"
+        fixed = "-'abc'  \n+'abc'\n"
+        self._inner_setup(line, ['--diff'])
+        self.assertEqual('\n'.join(self.result.split('\n')[3:]), fixed)
+
+    def test_pep8_passes(self):
+        line = "'abc'  \n"
+        fixed = "'abc'\n"
+        self._inner_setup(line, ['--pep8-passes', '0'])
+        self.assertEqual(self.result, fixed)
+
+    def test_no_arguments(self):
+        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+        p = Popen([os.path.join(root_dir, 'autopep8.py')],
+                  stdout=PIPE)
+        self.assertIn('Usage:', p.communicate()[0].decode('utf8'))
+
 if __name__ == '__main__':
     unittest.main()
