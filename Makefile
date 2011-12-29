@@ -1,6 +1,7 @@
 all:
 	@echo "make test(test_basic, test_diff, test_unit)"
 	@echo "make pypireg"
+	@echo "make coverage"
 	@echo "make clean"
 
 
