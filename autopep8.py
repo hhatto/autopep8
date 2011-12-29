@@ -403,6 +403,12 @@ class FixPEP8(object):
             # Remove escaped CRLF first
             self.source[line_index] = line[:-3]
             return
+        elif line[-2:] == '\\\r':
+            # Remove escaped CR first
+            # NOTE: Doesn't get executed because pep8 doesn't seem to work with
+            #       CR line endings
+            self.source[line_index] = line[:-2]
+            return
         elif '"""' in line or "'''" in line:
             # FIXME: We currently can't handle
             #
