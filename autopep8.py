@@ -445,9 +445,9 @@ class FixPEP8(object):
             end_line_index = line_index
             if line.count(quotes) == 1:
                 for i in range(line_index + 1, len(self.source)):
+                    end_line_index = i
                     if quotes in self.source[i]:
                         break
-                end_line_index = i
 
             # We do not handle anything other than plain multiline strings
             if ('(' in self.source[end_line_index] or
