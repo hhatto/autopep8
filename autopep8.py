@@ -296,13 +296,17 @@ class FixPEP8(object):
         # are comments.
         cnt = 0
         line = result['line'] - 2
+        modified_lines = []
         while cnt < delete_linenum:
             if line < 0:
                 break
             if not self.source[line].strip():
                 self.source[line] = ''
+                modified_lines.append(line)
                 cnt += 1
             line -= 1
+
+        return modified_lines
 
     def fix_e401(self, result):
         line_index = result['line'] - 1
