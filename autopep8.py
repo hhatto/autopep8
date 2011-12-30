@@ -80,7 +80,6 @@ class FixPEP8(object):
         self.results = []
         self.options = options
         self.indent_word = _get_indentword("".join(self.source))
-        self.is_found_e111 = False
         # method definition
         self.fix_e222 = self.fix_e221
         self.fix_e223 = self.fix_e221
@@ -133,8 +132,6 @@ class FixPEP8(object):
         for result in self.results:
             if result['line'] in completed_lines:
                 continue
-            if result['id'] == "E111" and self.is_found_e111:
-                continue
             fixed_methodname = "fix_%s" % result['id'].lower()
             if hasattr(self, fixed_methodname):
                 fix = getattr(self, fixed_methodname)
@@ -176,7 +173,6 @@ class FixPEP8(object):
     #    self.source[result['line'] - 1] = fixed
 
     def fix_e111(self, result):
-        self.is_found_e111 = True
         sio = StringIO("".join(self.source[result['line'] - 1:]))
         last_line = ""
         diff_cnt = 0
@@ -195,6 +191,10 @@ class FixPEP8(object):
                     fixed_lines.append(tokens[4][abs(diff_cnt):])
         for offset, fixed_line in enumerate(fixed_lines):
             self.source[result['line'] - 1 + offset] = fixed_line
+
+        # Mark everything as modified since we don't want other instances of
+        # E111 fixes to interfere with this fix.
+        return range(len(self.source))
 
     def fix_e201(self, result):
         self._fix_whitespace(result, r"\(\s+", "(")
