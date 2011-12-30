@@ -557,6 +557,39 @@ def _get_difftext(old, new, filename):
     return "".join(difftext)
 
 
+def fix_file(filename, opts):
+    tmp_source = read_from_filename(filename)
+    fix = FixPEP8(filename, opts, contents=tmp_source)
+    fixed_source = fix.fix()
+    original_source = copy.copy(fix.original_source)
+    tmp_filename = filename
+    for _ in range(opts.pep8_passes):
+        if fixed_source == tmp_source:
+            break
+        tmp_source = copy.copy(fixed_source)
+        if not pep8:
+            tmp_filename = tempfile.mkstemp()[1]
+            fp = open(tmp_filename, 'w')
+            fp.write(fixed_source)
+            fp.close()
+        fix = FixPEP8(tmp_filename, opts, contents=tmp_source)
+        fixed_source = fix.fix()
+        if not pep8:
+            os.remove(tmp_filename)
+
+    if opts.diff:
+        new = StringIO("".join(fix.source))
+        new = new.readlines()
+        sys.stdout.write(_get_difftext(original_source, new,
+                                       filename))
+    elif opts.in_place:
+        fp = open(tmp_filename, 'w')
+        fp.write(fixed_source)
+        fp.close()
+    else:
+        sys.stdout.write(fixed_source)
+
+
 def main():
     """tool main"""
     parser = OptionParser(version="autopep8: %s" % __version__,
@@ -565,6 +598,8 @@ def main():
                       help='print to verbose result.')
     parser.add_option('-d', '--diff', action='store_true', dest='diff',
                       help='diff print of fixed source.')
+    parser.add_option('-i', '--in-place', action='store_true',
+                      help='make changes to files in place')
     parser.add_option('-p', '--pep8-passes', default=20, type='int',
                       help='maximum number of additional pep8 passes')
     parser.add_option('--ignore', default='',
@@ -573,32 +608,13 @@ def main():
     if not len(args):
         print(parser.format_help())
         return 1
-    filename = args[0]
-    original_filename = filename
-    tmp_source = read_from_filename(filename)
-    fix = FixPEP8(filename, opts, contents=tmp_source)
-    fixed_source = fix.fix()
-    original_source = copy.copy(fix.original_source)
-    for _ in range(opts.pep8_passes):
-        if fixed_source == tmp_source:
-            break
-        tmp_source = copy.copy(fixed_source)
-        if not pep8:
-            filename = tempfile.mkstemp()[1]
-            fp = open(filename, 'w')
-            fp.write(fixed_source)
-            fp.close()
-        fix = FixPEP8(filename, opts, contents=tmp_source)
-        fixed_source = fix.fix()
-        if not pep8:
-            os.remove(filename)
-    if opts.diff:
-        new = StringIO("".join(fix.source))
-        new = new.readlines()
-        sys.stdout.write(_get_difftext(original_source, new,
-                                       original_filename))
+
+    if opts.in_place:
+        for f in args:
+            fix_file(f, opts)
     else:
-        sys.stdout.write(fixed_source)
+        fix_file(args[0], opts)
+
 
 if __name__ == '__main__':
     main()
