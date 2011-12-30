@@ -561,7 +561,7 @@ def main():
                       help='print to verbose result.')
     parser.add_option('-d', '--diff', action='store_true', dest='diff',
                       help='diff print of fixed source.')
-    parser.add_option('-p', '--pep8-passes', default=5, type='int',
+    parser.add_option('-p', '--pep8-passes', default=20, type='int',
                       help='maximum number of additional pep8 passes')
     parser.add_option('--ignore', default='',
                       help='do not fix these errors/warnings (e.g. E4,W)')
