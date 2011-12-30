@@ -418,7 +418,7 @@ class FixPEP8(object):
         single = '"""'
         double = "'''"
         if double in line or single in line:
-            # Move full multiline comment to current line
+            # Move full multiline string to current line
             if double in line and single in line:
                 quotes = (double if line.find(double) < line.find(single)
                           else single)
