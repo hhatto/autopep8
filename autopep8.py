@@ -369,6 +369,10 @@ class FixPEP8(object):
         _before = ""
         _after = ""
         _symbol = ""
+
+        if target.count(".has_key") > 1:
+            return
+        assert target.count(".has_key") == 1
         _tmp = target.split(".has_key")
 
         # find dict symbol
@@ -378,7 +382,7 @@ class FixPEP8(object):
                 _before = _target[::-1][:offset - 1:-1]
                 break
             else:
-                _symbol += t
+                _symbol = t + _symbol
 
         # find arg of has_key
         _target = _tmp[1]
