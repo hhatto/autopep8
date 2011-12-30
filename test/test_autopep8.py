@@ -167,6 +167,18 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e304(self):
+        line = "@contextmanager\n\ndef f():\n    print 1\n"
+        fixed = "@contextmanager\ndef f():\n    print 1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e304_with_comment(self):
+        line = "@contextmanager\n#comment\n\ndef f():\n    print 1\n"
+        fixed = "@contextmanager\n#comment\ndef f():\n    print 1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e401(self):
         line = "import os, sys\n"
         fixed = "import os\nimport sys\n"

@@ -281,6 +281,11 @@ class FixPEP8(object):
         cr = self.newline * add_linenum
         self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
 
+    def fix_e304(self, result):
+        line = result['line'] - 2
+        if not self.source[line].strip():
+            self.source[line] = ''
+
     def fix_e303(self, result):
         delete_linenum = int(result['info'].split("(")[1].split(")")[0]) - 2
         delete_linenum = max(1, delete_linenum)
