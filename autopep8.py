@@ -140,8 +140,9 @@ class FixPEP8(object):
                     completed_lines += modified_lines
                 completed_lines.append(result['line'])
             else:
-                sys.stderr.write("'%s' is not defined.\n" % fixed_methodname)
                 if self.options.verbose:
+                    sys.stderr.write("'%s' is not defined.\n" % \
+                            fixed_methodname)
                     info = result['info'].strip()
                     sys.stderr.write("%s:%s:%s:%s\n" % (result['filename'],
                                                         result['line'],
@@ -440,15 +441,24 @@ class FixPEP8(object):
                 quotes = single
             assert quotes in line
 
+            # Find last line of multiline string
+            end_line_index = line_index
             if line.count(quotes) == 1:
                 for i in range(line_index + 1, len(self.source)):
-                    line_contents = self.source[i]
-                    self.source[line_index] += line_contents
-                    self.source[i] = ''
-                    if quotes in line_contents:
+                    if quotes in self.source[i]:
                         break
-                line = self.source[line_index]
-                modified_lines.append(line_index)
+                end_line_index = i
+
+            # We do not handle anything other than plain multiline strings
+            if '(' in self.source[end_line_index].split(quotes)[1]:
+                return []
+
+            for i in range(line_index + 1, end_line_index + 1):
+                line_contents = self.source[i]
+                self.source[line_index] += line_contents
+                self.source[i] = ''
+                modified_lines.append(i)
+            line = self.source[line_index]
 
         sio = StringIO(line)
         is_found_raise = False
