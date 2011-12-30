@@ -128,6 +128,16 @@ def func_w602():
         'arg no comment'
     raise ValueError, \
         'arg'  # my comment
+    raise ValueError, \
+        """arg"""  # my comment
+    raise ValueError, \
+        """arg
+        
+  """  # my comment
+    raise ValueError, \
+        '''multiline
+        
+'''  # my comment
 
     raise ValueError, ('a', 'b')
 

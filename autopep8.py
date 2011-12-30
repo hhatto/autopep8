@@ -414,13 +414,28 @@ class FixPEP8(object):
             #       CR line endings
             self.source[line_index] = line[:-2]
             return
-        elif '"""' in line or "'''" in line:
-            # FIXME: We currently can't handle
-            #
-            #            raise ValueError, """
-            #                blah
-            #                """
-            return
+
+        single = '"""'
+        double = "'''"
+        if double in line or single in line:
+            # Move full multiline comment to current line
+            if double in line and single in line:
+                quotes = (double if line.find(double) < line.find(single)
+                          else single)
+            elif double in line:
+                quotes = double
+            else:
+                quotes = single
+            assert quotes in line
+
+            if line.count(quotes) == 1:
+                for i in range(line_index + 1, len(self.source)):
+                    line_contents = self.source[i]
+                    self.source[line_index] += line_contents
+                    self.source[i] = ''
+                    if quotes in line_contents:
+                        break
+                line = self.source[line_index]
 
         sio = StringIO(line)
         is_found_raise = False

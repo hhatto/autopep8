@@ -275,15 +275,50 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    def test_w602_skip_multiline(self):
-        # We do not support this yet
-        line = 'raise ValueError, """\nhello"""\n'
+    def test_w602_triple_quotes(self):
+        line = 'raise ValueError, """hello"""\n1\n'
+        fixed = 'raise ValueError("""hello""")\n1\n'
         self._inner_setup(line)
-        self.assertEqual(self.result, line)
+        self.assertEqual(self.result, fixed)
 
-    def test_w602_skip_multiline_with_double_quote(self):
-        # We do not support this yet
+    def test_w602_multiline(self):
+        line = 'raise ValueError, """\nhello"""\n'
+        fixed = 'raise ValueError("""\nhello""")\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w602_multiline_with_escaped_newline(self):
+        line = 'raise ValueError, \\\n"""\nhello"""\n'
+        fixed = 'raise ValueError("""\nhello""")\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w602_multiline_with_escaped_newline_and_comment(self):
+        line = 'raise ValueError, \\\n"""\nhello"""  # comment\n'
+        fixed = 'raise ValueError("""\nhello""")  # comment\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w602_multiline_with_multiple_escaped_newlines(self):
+        line = 'raise ValueError, \\\n\\\n\\\n"""\nhello"""\n'
+        fixed = 'raise ValueError("""\nhello""")\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w602_multiline_with_nested_quotes(self):
+        line = 'raise ValueError, """hello\'\'\'blah"a"b"c"""\n'
+        fixed = 'raise ValueError("""hello\'\'\'blah"a"b"c""")\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w602_skip_multiline_with_single_quotes(self):
         line = "raise ValueError, '''\nhello'''\n"
+        fixed = "raise ValueError('''\nhello''')\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w602_multiline_string_stays_the_same(self):
+        line = 'raise """\nhello"""\n'
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
