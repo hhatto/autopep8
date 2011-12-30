@@ -373,5 +373,18 @@ class TestOptions(unittest.TestCase):
                   stdout=PIPE)
         self.assertIn('Usage:', p.communicate()[0].decode('utf8'))
 
+    def test_verbose(self):
+        line = '"' + 80 * 'a' + '"'
+        f = open(self.tempfile[1], 'w')
+        f.write(line)
+        f.close()
+        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+        p = Popen([os.path.join(root_dir, 'autopep8.py'),
+                   self.tempfile[1], '--verbose'],
+                  stdout=PIPE, stderr=PIPE)
+        verbose_error = p.communicate()[1].decode('utf8')
+        self.assertIn("'fix_e501' is not defined", verbose_error)
+        self.assertIn("too long", verbose_error)
+
 if __name__ == '__main__':
     unittest.main()
