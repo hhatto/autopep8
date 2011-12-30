@@ -450,7 +450,8 @@ class FixPEP8(object):
                 end_line_index = i
 
             # We do not handle anything other than plain multiline strings
-            if '(' in self.source[end_line_index].split(quotes)[1]:
+            if ('(' in self.source[end_line_index] or
+                '\\' in self.source[end_line_index]):
                 return []
 
             for i in range(line_index + 1, end_line_index + 1):
