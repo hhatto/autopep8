@@ -139,7 +139,7 @@ class FixPEP8(object):
             if hasattr(self, fixed_methodname):
                 fix = getattr(self, fixed_methodname)
                 modified_lines = fix(result)
-                if modified_lines is not None:
+                if modified_lines:
                     completed_lines += modified_lines
                 completed_lines.append(result['line'])
             else:
