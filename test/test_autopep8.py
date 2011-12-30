@@ -287,6 +287,12 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w602_multiline_with_trailing_spaces(self):
+        line = 'raise ValueError, """\nhello"""    \n'
+        fixed = 'raise ValueError("""\nhello""")\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_w602_multiline_with_escaped_newline(self):
         line = 'raise ValueError, \\\n"""\nhello"""\n'
         fixed = 'raise ValueError("""\nhello""")\n'

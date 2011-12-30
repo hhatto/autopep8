@@ -138,7 +138,9 @@ class FixPEP8(object):
             fixed_methodname = "fix_%s" % result['id'].lower()
             if hasattr(self, fixed_methodname):
                 fix = getattr(self, fixed_methodname)
-                fix(result)
+                modified_lines = fix(result)
+                if modified_lines is not None:
+                    completed_lines += modified_lines
                 completed_lines.append(result['line'])
             else:
                 sys.stderr.write("'%s' is not defined.\n" % fixed_methodname)
@@ -415,6 +417,8 @@ class FixPEP8(object):
             self.source[line_index] = line[:-2]
             return
 
+        modified_lines = [line_index]
+
         double = '"""'
         single = "'''"
         if double in line or single in line:
@@ -436,6 +440,7 @@ class FixPEP8(object):
                     if quotes in line_contents:
                         break
                 line = self.source[line_index]
+                modified_lines.append(line_index)
 
         sio = StringIO(line)
         is_found_raise = False
@@ -473,6 +478,8 @@ class FixPEP8(object):
                      args[1:-1] if args.startswith('(') else args,
                      ')',
                      comment, self.newline])
+
+        return modified_lines
 
     def fix_w603(self, result):
         target = self.source[result['line'] - 1]
