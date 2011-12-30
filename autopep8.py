@@ -580,6 +580,8 @@ def fix_file(filename, opts):
         fixed_source = fix.fix()
         if not pep8:
             os.remove(tmp_filename)
+    del tmp_filename
+    del tmp_source
 
     if opts.diff:
         new = StringIO("".join(fix.source))
@@ -587,7 +589,7 @@ def fix_file(filename, opts):
         sys.stdout.write(_get_difftext(original_source, new,
                                        filename))
     elif opts.in_place:
-        fp = open(tmp_filename, 'w')
+        fp = open(filename, 'w')
         fp.write(fixed_source)
         fp.close()
     else:
