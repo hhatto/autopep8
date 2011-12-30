@@ -415,8 +415,8 @@ class FixPEP8(object):
             self.source[line_index] = line[:-2]
             return
 
-        single = '"""'
-        double = "'''"
+        double = '"""'
+        single = "'''"
         if double in line or single in line:
             # Move full multiline string to current line
             if double in line and single in line:
