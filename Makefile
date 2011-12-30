@@ -12,17 +12,17 @@ test: test_basic test_diff test_unit
 test_basic:
 	@echo '--->  Running basic test'
 	python autopep8.py test_target.py > .tmp.test.py
-	pep8 -r .tmp.test.py
-	rm .tmp.test.py
+	pep8 -r .tmp.test.py && echo 'OK'
+	@rm .tmp.test.py
 
 test_diff:
 	@echo '--->  Running --diff test'
-	cp test_target.py .tmp.test_target.py
+	@cp test_target.py .tmp.test_target.py
 	python autopep8.py --diff .tmp.test_target.py > .tmp.test_target.py.patch
 	patch < .tmp.test_target.py.patch
-	rm .tmp.test_target.py.patch
-	pep8 -r .tmp.test_target.py
-	rm .tmp.test_target.py
+	@rm .tmp.test_target.py.patch
+	pep8 -r .tmp.test_target.py && echo 'OK'
+	@rm .tmp.test_target.py
 
 test_unit:
 	@echo '--->  Running unit tests'
