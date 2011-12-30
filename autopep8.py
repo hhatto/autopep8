@@ -99,7 +99,6 @@ class FixPEP8(object):
     def _spawn_pep8(self, targetfile):
         """execute pep8 via subprocess.Popen."""
         paths = os.environ['PATH'].split(':')
-        paths.reverse()
         for path in paths:
             if os.path.exists(os.path.join(path, pep8bin)):
                 cmd = ([os.path.join(path, pep8bin)] +
