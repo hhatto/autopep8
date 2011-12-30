@@ -457,5 +457,21 @@ class TestOptions(unittest.TestCase):
         self.assertIn("'fix_e501' is not defined", verbose_error)
         self.assertIn("too long", verbose_error)
 
+    def test_in_place(self):
+        line = "'abc'  \n"
+        fixed = "'abc'\n"
+
+        f = open(self.tempfile[1], 'w')
+        f.write(line)
+        f.close()
+        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+        p = Popen([os.path.join(root_dir, 'autopep8.py'),
+                   self.tempfile[1], '--in-place'])
+        p.wait()
+
+        f = open(self.tempfile[1])
+        self.assertEquals(f.read(), fixed)
+        f.close()
+
 if __name__ == '__main__':
     unittest.main()
