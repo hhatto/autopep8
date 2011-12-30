@@ -299,6 +299,12 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w602_indentation(self):
+        line = 'def foo():\n    raise ValueError, "hello"\n'
+        fixed = 'def foo():\n    raise ValueError("hello")\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     # Doesn't work because pep8 doesn't seem to work with CR line endings
     #def test_w602_escaped_cr(self):
     #    line = 'raise ValueError, \\\r"hello"\n'
