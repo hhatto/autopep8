@@ -272,10 +272,14 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed
 
     def fix_e262(self, result):
-        self._fix_whitespace(result, r"##* *", "# ")
+        target = self.source[result['line'] - 1]
+        split = target.rsplit('#', 1)
 
-        # Remove empty comments
-        self._fix_whitespace(result, r"##* *$", "")
+        assert len(split) == 2
+        comment = split[1].lstrip()
+        fixed = split[0].rstrip(' \t#') + ('  # ' + comment if comment else '')
+
+        self.source[result['line'] - 1] = fixed
 
     def fix_e301(self, result):
         cr = self.newline
