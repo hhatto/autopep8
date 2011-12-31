@@ -53,3 +53,4 @@ clean:
 	rm -rf temp
 	rm -rf *.pyc
 	rm -rf *egg-info dist build
+	rm -rf htmlcov
