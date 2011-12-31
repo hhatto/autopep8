@@ -15,7 +15,7 @@ from easy_install::
 
 Requirements
 ============
-autopep8 requires pep8_ (via subprocess).
+autopep8 requires pep8_.
 
 .. _pep8: https://github.com/jcrocholl/pep8
 
