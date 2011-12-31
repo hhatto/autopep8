@@ -381,10 +381,7 @@ class FixPEP8(object):
         if target.count('(') > 1:
             return
 
-        if target.count(".has_key") > 1:
-            return
-        assert target.count(".has_key") == 1
-        _tmp = target.split(".has_key")
+        _tmp = target.split(".has_key", 1)
 
         # find dict symbol
         _target = _tmp[0]
