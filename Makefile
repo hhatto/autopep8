@@ -40,7 +40,9 @@ coverage:
 
 check:
 	pep8 autopep8.py && echo 'OK'
-	pylint --reports=no --include-ids=yes --disable=C0111,C0103,R0902,W0511,R0914,R0912,R0915,R0904 --rcfile=/dev/null autopep8.py && echo 'OK'
+	pylint --reports=no --include-ids=yes \
+		--disable=C0111,C0103,R0902,W0511,R0914,R0912,R0915,R0904 \
+		--rcfile=/dev/null autopep8.py && echo 'OK'
 
 pypireg:
 	python setup.py register
