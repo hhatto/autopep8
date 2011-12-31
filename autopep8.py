@@ -405,6 +405,11 @@ class FixPEP8(object):
                     break
             else:
                 _arg += t
+
+        # Maintain precedence
+        if ' ' in _arg.strip():
+            _arg = '(' + _arg.strip() + ')'
+
         self.source[result['line'] - 1] = \
             "".join([_before, _arg, " in ", _symbol, _after])
 
