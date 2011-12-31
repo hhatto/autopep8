@@ -274,6 +274,9 @@ class FixPEP8(object):
     def fix_e262(self, result):
         self._fix_whitespace(result, r"##* *", "# ")
 
+        # Remove empty comments
+        self._fix_whitespace(result, r"##* *$", "")
+
     def fix_e301(self, result):
         cr = self.newline
         self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
