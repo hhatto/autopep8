@@ -287,6 +287,12 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+    def test_w601_skip_multiple_nested(self):
+        # We don't support this case
+        line = "alpha.has_key(nested.has_key(12)) and beta.has_key(1)\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
     def test_w602_arg_is_string(self):
         line = "raise ValueError, \"w602 test\"\n"
         fixed = "raise ValueError(\"w602 test\")\n"
