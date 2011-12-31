@@ -311,6 +311,12 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w601_skip_parens(self):
+        # We don't support this case
+        line = "alpha.has_key(foo(12))\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
     def test_w602_arg_is_string(self):
         line = "raise ValueError, \"w602 test\"\n"
         fixed = "raise ValueError(\"w602 test\")\n"

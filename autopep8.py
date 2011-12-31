@@ -377,6 +377,10 @@ class FixPEP8(object):
         _after = ""
         _symbol = ""
 
+        # Skip complicated cases
+        if target.count('(') > 1:
+            return
+
         if target.count(".has_key") > 1:
             return
         assert target.count(".has_key") == 1
