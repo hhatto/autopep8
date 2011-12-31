@@ -2,6 +2,7 @@ all:
 	@echo "make test(test_basic, test_diff, test_unit)"
 	@echo "make pypireg"
 	@echo "make coverage"
+	@echo "make check"
 	@echo "make clean"
 
 
@@ -36,6 +37,10 @@ coverage:
 	@coverage html
 	@echo 'Coverage report: htmlcov/index.html'
 	@rm .coverage
+
+check:
+	pep8 autopep8.py && echo 'OK'
+	pylint --reports=no --include-ids=yes --disable=C0111,C0103,R0902,W0511,R0914,R0912,R0915,R0904 --rcfile=/dev/null autopep8.py && echo 'OK'
 
 pypireg:
 	python setup.py register
