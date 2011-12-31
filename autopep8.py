@@ -378,7 +378,7 @@ class FixPEP8(object):
         _symbol = ""
 
         # Skip complicated cases
-        if target.count('(') > 1:
+        if target.count('(') > 1 or target.count(')') > 1:
             return
 
         _tmp = target.split(".has_key", 1)
