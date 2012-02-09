@@ -216,7 +216,7 @@ while True:
         self.assertEqual(self.result, fixed)
 
 
-class TestFixPEP8Warn(unittest.TestCase):
+class TestFixPEP8Warning(unittest.TestCase):
 
     def setUp(self):
         self.tempfile = mkstemp()
@@ -329,11 +329,10 @@ class TestFixPEP8Warn(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    def test_w602_arg_is_tuple(self):
-        line = "raise ValueError, ('a', 'b')\n"
-        fixed = "raise ValueError('a', 'b')\n"
+    def test_w602_skip_ambiguous_case(self):
+        line = "raise 'a', 'a', 'b'\n"
         self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
+        self.assertEqual(self.result, line)
 
     def test_w602_triple_quotes(self):
         line = 'raise ValueError, """hello"""\n1\n'

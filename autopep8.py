@@ -473,6 +473,12 @@ class FixPEP8(object):
                 modified_lines.append(i)
             line = self.source[line_index]
 
+        # Skip cases with multiple arguments as it is difficult to know
+        # whether "b" and "c" are exception types or arguments to "a" in
+        # "raise a, b, c".
+        if line.count(',') - line.count(',)') > 1:
+            return
+
         sio = StringIO(line)
         is_found_raise = False
         first_comma_found = False

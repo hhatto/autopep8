@@ -139,8 +139,6 @@ def func_w602():
         
 '''  # my comment
 
-    raise ValueError, ('a', 'b')
-
     a = 'a'
     raise ValueError, "%s" % (a,)
 
