@@ -473,9 +473,8 @@ class FixPEP8(object):
                 modified_lines.append(i)
             line = self.source[line_index]
 
-        # Skip cases with multiple arguments as it is difficult to know
-        # whether "b" and "c" are exception types or arguments to "a" in
-        # "raise a, b, c".
+        # Skip cases with multiple arguments as to not handle tracebacks
+        # incorrectly in cases such as "raise Exception, Value, Traceback".
         if line.count(',') - line.count(',)') > 1:
             return
 
