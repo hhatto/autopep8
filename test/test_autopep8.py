@@ -330,7 +330,7 @@ class TestFixPEP8Warning(unittest.TestCase):
         self.assertEqual(self.result, fixed)
 
     def test_w602_skip_ambiguous_case(self):
-        line = "raise 'a', 'a', 'b'\n"
+        line = "raise 'a', 'b', 'c'\n"
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
