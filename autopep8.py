@@ -476,7 +476,7 @@ class FixPEP8(object):
         # Skip cases with multiple arguments as to not handle tracebacks
         # incorrectly in cases such as "raise Exception, Value, Traceback".
         if line.count(',') - line.count(',)') > 1:
-            return
+            return modified_lines
 
         sio = StringIO(line)
         is_found_raise = False
