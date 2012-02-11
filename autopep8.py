@@ -476,6 +476,28 @@ class FixPEP8(object):
         # Skip cases with multiple arguments as to not handle tracebacks
         # incorrectly in cases such as "raise Exception, Value, Traceback".
         if line.count(',') - line.count(',)') > 1:
+            # TODO: Don't Care corner cases.
+            import ast
+            indent = (self._get_indentlevel(line) - 1) * self.indent_word
+            indent_offset = (self._get_indentlevel(line) - 1) * \
+                    len(self.indent_word)
+            ast_body = ast.parse(line[indent_offset:]).body[0]
+            _id = [indent, ]
+            for node in ast.iter_child_nodes(ast_body):
+                if ast.Str == type(node):
+                    quote_word = line[node.col_offset]
+                    if quote_word * 3 == \
+                            line[node.col_offset:node.col_offset + 3]:
+                        quote_word = quote_word * 3
+                    _id.append(quote_word + node.s + quote_word)
+                    continue
+                if ast.Name == type(node):
+                    _id.append(node.id)
+                    continue
+                _id.append(repr(ast.literal_eval(node)))
+            _id.append(self.newline)
+            self.source[result['line'] - 1] = "%sraise %s(%s), None, %s%s" % (
+                    tuple(_id))
             return modified_lines
 
         sio = StringIO(line)
