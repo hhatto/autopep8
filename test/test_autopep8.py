@@ -2,6 +2,30 @@ import os
 import unittest
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
+import autopep8
+
+
+class TestUtils(unittest.TestCase):
+
+    def test_find_newline_only_cr(self):
+        source = ["print 1\r", "print 2\r", "print3\r"]
+        self.assertEqual(autopep8.CR, autopep8._find_newline(source))
+
+    def test_find_newline_only_lf(self):
+        source = ["print 1\n", "print 2\n", "print3\n"]
+        self.assertEqual(autopep8.LF, autopep8._find_newline(source))
+
+    def test_find_newline_only_crlf(self):
+        source = ["print 1\r\n", "print 2\r\n", "print3\r\n"]
+        self.assertEqual(autopep8.CRLF, autopep8._find_newline(source))
+
+    def test_find_newline_cr1_and_lf2(self):
+        source = ["print 1\n", "print 2\r", "print3\n"]
+        self.assertEqual(autopep8.LF, autopep8._find_newline(source))
+
+    def test_find_newline_cr1_and_crlf2(self):
+        source = ["print 1\r\n", "print 2\r", "print3\r\n"]
+        self.assertEqual(autopep8.CRLF, autopep8._find_newline(source))
 
 
 class TestFixPEP8Error(unittest.TestCase):

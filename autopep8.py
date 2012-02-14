@@ -575,9 +575,9 @@ def _find_newline(source):
         if CRLF in s:
             crlf += 1
         elif CR in s:
-            cr += 0
+            cr += 1
         elif LF in s:
-            lf += 0
+            lf += 1
     _max = max(cr, crlf, lf)
     if _max == lf:
         return LF
