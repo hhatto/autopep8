@@ -507,6 +507,7 @@ class FixPEP8(object):
                     _id.append(self.newline)
                     break
                 old_tokens = tokens
+            # create to fixed source
             self.source[result['line'] - 1] = "%sraise %s(%s), None, %s%s" % (
                     tuple(_id))
             return modified_lines
