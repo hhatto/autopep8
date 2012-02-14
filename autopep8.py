@@ -495,7 +495,18 @@ class FixPEP8(object):
                     _id.append(node.id)
                     continue
                 _id.append(repr(ast.literal_eval(node)))
-            _id.append(self.newline)
+            # find space and comment
+            sio = StringIO(line)
+            old_tokens = None
+            for tokens in tokenize.generate_tokens(sio.readline):
+                if tokens[0] is tokenize.COMMENT:
+                    comment_offset = old_tokens[3][1]
+                    _id.append(line[comment_offset:])
+                    break
+                elif len(_id) == 4 and tokens[0] is token.NEWLINE:
+                    _id.append(self.newline)
+                    break
+                old_tokens = tokens
             self.source[result['line'] - 1] = "%sraise %s(%s), None, %s%s" % (
                     tuple(_id))
             return modified_lines
