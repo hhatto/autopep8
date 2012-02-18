@@ -2,6 +2,10 @@ import os
 import unittest
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
+
+import sys
+sys.path.insert(0,
+                os.path.split(os.path.abspath(os.path.dirname(__file__)))[0])
 import autopep8
 
 
