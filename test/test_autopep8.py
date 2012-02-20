@@ -40,13 +40,15 @@ class TestFixPEP8Error(unittest.TestCase):
     def tearDown(self):
         os.remove(self.tempfile[1])
 
-    def _inner_setup(self, line):
+    def _inner_setup(self, line, options=""):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
         root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        p = Popen([os.path.join(root_dir, 'autopep8.py'),
-                   self.tempfile[1]], stdout=PIPE)
+        cmd = [os.path.join(root_dir, 'autopep8.py')]
+        cmd.extend(options.split())
+        cmd.append(self.tempfile[1])
+        p = Popen(cmd, stdout=PIPE)
         self.result = p.communicate()[0].decode('utf8')
 
     def test_e111_short(self):
@@ -145,6 +147,30 @@ while True:
         line = "1+1\n2 +2\n3+ 3\n"
         fixed = "1 + 1\n2 + 2\n3 + 3\n"
         self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e241(self):
+        line = "l = (1,  2)\n"
+        fixed = "l = (1, 2)\n"
+        self._inner_setup(line, "--ignore W")
+        self.assertEqual(self.result, fixed)
+
+    def test_e241_double(self):
+        line = "l = (1,   2)\n"
+        fixed = "l = (1, 2)\n"
+        self._inner_setup(line, "--ignore W")
+        self.assertEqual(self.result, fixed)
+
+    def test_e242(self):
+        line = "l = (1,\t2)\n"
+        fixed = "l = (1, 2)\n"
+        self._inner_setup(line, "--ignore W")
+        self.assertEqual(self.result, fixed)
+
+    def test_e242_double(self):
+        line = "l = (1,\t\t2)\n"
+        fixed = "l = (1, 2)\n"
+        self._inner_setup(line, "--ignore W")
         self.assertEqual(self.result, fixed)
 
     def test_e251(self):

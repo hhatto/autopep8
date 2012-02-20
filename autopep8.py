@@ -83,6 +83,8 @@ class FixPEP8(object):
         # method definition
         self.fix_e222 = self.fix_e221
         self.fix_e223 = self.fix_e221
+        self.fix_e241 = self.fix_e221
+        self.fix_e242 = self.fix_e224
 
     def _get_indentlevel(self, line):
         sio = StringIO(line)
