@@ -20,6 +20,7 @@ from optparse import OptionParser
 from subprocess import Popen, PIPE
 from difflib import unified_diff
 import tempfile
+import ast
 
 try:
     import pep8
@@ -477,13 +478,12 @@ class FixPEP8(object):
 
         # Skip cases with multiple arguments as to not handle tracebacks
         # incorrectly in cases such as "raise Exception, Value, Traceback".
-        if line.count(',') - line.count(',)') > 1:
+        indent = (self._get_indentlevel(line) - 1) * self.indent_word
+        indent_offset = (self._get_indentlevel(line) - 1) * \
+                len(self.indent_word)
+        ast_body = ast.parse(line[indent_offset:]).body[0]
+        if len(ast_body._fields) == 3 and ast_body.tback is not None:
             # TODO: Don't Care corner cases.
-            import ast
-            indent = (self._get_indentlevel(line) - 1) * self.indent_word
-            indent_offset = (self._get_indentlevel(line) - 1) * \
-                    len(self.indent_word)
-            ast_body = ast.parse(line[indent_offset:]).body[0]
             _id = [indent, ]
             for node in ast.iter_child_nodes(ast_body):
                 if ast.Str == type(node):

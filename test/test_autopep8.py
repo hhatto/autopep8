@@ -490,6 +490,12 @@ class TestFixPEP8Warning(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w602_raise_argument_triple_fake(self):
+        line = 'raise ValueError, "info, info2"\n'
+        fixed = 'raise ValueError("info, info2")\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_w603(self):
         line = "if 2 <> 2:\n    print False"
         fixed = "if 2 != 2:\n    print False\n"
