@@ -604,7 +604,7 @@ class TestOptions(unittest.TestCase):
         p.wait()
 
         f = open(self.tempfile[1])
-        self.assertEquals(f.read(), fixed)
+        self.assertEqual(f.read(), fixed)
         f.close()
 
 if __name__ == '__main__':
