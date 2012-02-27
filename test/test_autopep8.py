@@ -1,4 +1,5 @@
 import os
+import sys
 import unittest
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
@@ -7,6 +8,12 @@ import sys
 sys.path.insert(0,
                 os.path.split(os.path.abspath(os.path.dirname(__file__)))[0])
 import autopep8
+
+
+def only_py2(func):
+    if sys.version_info[0] != 2:
+        func = None
+    return func
 
 
 class TestUtils(unittest.TestCase):
@@ -371,94 +378,110 @@ class TestFixPEP8Warning(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+    @only_py2
     def test_w602_arg_is_string(self):
         line = "raise ValueError, \"w602 test\"\n"
         fixed = "raise ValueError(\"w602 test\")\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_arg_is_string_with_comment(self):
         line = "raise ValueError, \"w602 test\"  # comment\n"
         fixed = "raise ValueError(\"w602 test\")  # comment\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_skip_ambiguous_case(self):
         line = "raise 'a', 'b', 'c'\n"
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+    @only_py2
     def test_w602_triple_quotes(self):
         line = 'raise ValueError, """hello"""\n1\n'
         fixed = 'raise ValueError("""hello""")\n1\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_multiline(self):
         line = 'raise ValueError, """\nhello"""\n'
         fixed = 'raise ValueError("""\nhello""")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_skip_complex_multiline(self):
         # We do not handle formatted multiline strings
         line = 'raise ValueError, """\nhello %s %s""" % (1,\n2)\n'
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+    @only_py2
     def test_w602_multiline_with_trailing_spaces(self):
         line = 'raise ValueError, """\nhello"""    \n'
         fixed = 'raise ValueError("""\nhello""")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_multiline_with_escaped_newline(self):
         line = 'raise ValueError, \\\n"""\nhello"""\n'
         fixed = 'raise ValueError("""\nhello""")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_multiline_with_escaped_newline_and_comment(self):
         line = 'raise ValueError, \\\n"""\nhello"""  # comment\n'
         fixed = 'raise ValueError("""\nhello""")  # comment\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_multiline_with_multiple_escaped_newlines(self):
         line = 'raise ValueError, \\\n\\\n\\\n"""\nhello"""\n'
         fixed = 'raise ValueError("""\nhello""")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_multiline_with_nested_quotes(self):
         line = 'raise ValueError, """hello\'\'\'blah"a"b"c"""\n'
         fixed = 'raise ValueError("""hello\'\'\'blah"a"b"c""")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_skip_multiline_with_single_quotes(self):
         line = "raise ValueError, '''\nhello'''\n"
         fixed = "raise ValueError('''\nhello''')\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_multiline_string_stays_the_same(self):
         line = 'raise """\nhello"""\n'
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+    @only_py2
     def test_w602_escaped_lf(self):
         line = 'raise ValueError, \\\n"hello"\n'
         fixed = 'raise ValueError("hello")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_escaped_crlf(self):
         line = 'raise ValueError, \\\r\n"hello"\n'
         fixed = 'raise ValueError("hello")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_indentation(self):
         line = 'def foo():\n    raise ValueError, "hello"\n'
         fixed = 'def foo():\n    raise ValueError("hello")\n'
@@ -472,24 +495,28 @@ class TestFixPEP8Warning(unittest.TestCase):
     #    self._inner_setup(line)
     #    self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_multiple_statements(self):
         line = 'raise ValueError, "hello";print 1\n'
         fixed = 'raise ValueError("hello")\nprint 1\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_raise_argument_triple(self):
         line = 'raise ValueError, "info", traceback\n'
         fixed = 'raise ValueError("info"), None, traceback\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_raise_argument_triple_with_comment(self):
         line = 'raise ValueError, "info", traceback  # comment\n'
         fixed = 'raise ValueError("info"), None, traceback  # comment\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @only_py2
     def test_w602_raise_argument_triple_fake(self):
         line = 'raise ValueError, "info, info2"\n'
         fixed = 'raise ValueError("info, info2")\n'
