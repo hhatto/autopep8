@@ -10,7 +10,7 @@ sys.path.insert(0,
 import autopep8
 
 
-def py27_and_over(func):
+def py27_and_above(func):
     if sys.version_info[0] == 2 and sys.version_info[1] < 7:
         func = None
     return func
@@ -578,14 +578,14 @@ class TestOptions(unittest.TestCase):
         self._inner_setup(line, ['--pep8-passes', '0'])
         self.assertEqual(self.result, fixed)
 
-    @py27_and_over
+    @py27_and_above
     def test_no_arguments(self):
         root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
         p = Popen([os.path.join(root_dir, 'autopep8.py')],
                   stdout=PIPE)
         self.assertIn('Usage:', p.communicate()[0].decode('utf8'))
 
-    @py27_and_over
+    @py27_and_above
     def test_verbose(self):
         line = '"' + 80 * 'a' + '"'
         f = open(self.tempfile[1], 'w')
