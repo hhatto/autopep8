@@ -156,6 +156,20 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e224_and_e225(self):
+        line = """
+class Foo():
+    def __init__(self):
+        x= 	3
+""".lstrip()
+        fixed = """
+class Foo():
+    def __init__(self):
+        x = 3
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e225(self):
         line = "1+1\n2 +2\n3+ 3\n"
         fixed = "1 + 1\n2 + 2\n3 + 3\n"
