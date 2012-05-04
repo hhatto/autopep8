@@ -143,6 +143,20 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e223_with_tab_indentation(self):
+        line = """
+class Foo():
+\tdef __init__(self):
+\t\tx= 1\t+ 3
+""".lstrip()
+        fixed = """
+class Foo():
+\tdef __init__(self):
+\t\tx = 1 + 3
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e224(self):
         line = "a = 11 +	1\n"    # include TAB
         fixed = "a = 11 + 1\n"
@@ -159,7 +173,7 @@ while True:
         line = """
 class Foo():
 \tdef __init__(self):
-\t\tx= 	3
+\t\tx= \t3
 """.lstrip()
         fixed = """
 class Foo():
