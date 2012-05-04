@@ -158,8 +158,8 @@ while True:
     def test_e224_and_e225(self):
         line = """
 class Foo():
-    def __init__(self):
-        x= 	3
+	def __init__(self):
+		x= 	3
 """.lstrip()
         fixed = """
 class Foo():
