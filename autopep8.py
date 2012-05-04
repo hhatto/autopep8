@@ -230,7 +230,10 @@ class FixPEP8(object):
 
     def fix_e224(self, result):
         target = self.source[result['line'] - 1]
-        fixed = re.sub(r'\t+', ' ', target, 1)
+        offset = result['column']
+        prefix = target[:offset - 1]
+        suffix = target[offset - 1:].replace('\t', ' ')
+        fixed = prefix + " " + suffix
         self.source[result['line'] - 1] = fixed
 
     def fix_e225(self, result):
