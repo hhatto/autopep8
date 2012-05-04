@@ -155,7 +155,7 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    def test_e224_and_e225(self):
+    def test_e224_with_tab_indentation(self):
         line = """
 class Foo():
 \tdef __init__(self):
