@@ -189,6 +189,12 @@ class Foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e231(self):
+        line = "[1,2,3]\n"
+        fixed = "[1, 2, 3]\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e241(self):
         line = "l = (1,  2)\n"
         fixed = "l = (1, 2)\n"
