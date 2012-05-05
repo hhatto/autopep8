@@ -180,7 +180,6 @@ class FixPEP8(object):
         last_line = ""
         diff_cnt = 0
         fixed_lines = []
-        current_line = result['line']
         for tokens in tokenize.generate_tokens(sio.readline):
             if tokens[0] == token.INDENT:
                 _level = self._get_indentlevel(tokens[4])
@@ -193,11 +192,10 @@ class FixPEP8(object):
                     fixed_lines.append(" " * diff_cnt + tokens[4])
                 else:
                     fixed_lines.append(tokens[4][abs(diff_cnt):])
-                current_line += 1
         for offset, fixed_line in enumerate(fixed_lines):
             self.source[result['line'] - 1 + offset] = fixed_line
 
-        return range(result['line'], current_line)
+        return range(result['line'], result['line'] + len(fixed_lines))
 
     def fix_e201(self, result):
         self._fix_whitespace(result, r"\(\s+", "(")
