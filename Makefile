@@ -35,6 +35,7 @@ coverage:
 	@coverage combine
 	@coverage report
 	@coverage html
+	@coverage xml --include=autopep8.py
 	@echo 'Coverage report: htmlcov/index.html'
 	@rm .coverage
 
@@ -53,4 +54,4 @@ clean:
 	rm -rf temp
 	rm -rf *.pyc
 	rm -rf *egg-info dist build
-	rm -rf htmlcov
+	rm -rf htmlcov coverage.xml
