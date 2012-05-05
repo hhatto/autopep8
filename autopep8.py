@@ -678,7 +678,7 @@ def main():
                       help='diff print of fixed source.')
     parser.add_option('-i', '--in-place', action='store_true',
                       help='make changes to files in place')
-    parser.add_option('-p', '--pep8-passes', default=20, type='int',
+    parser.add_option('-p', '--pep8-passes', default=100, type='int',
                       help='maximum number of additional pep8 passes')
     parser.add_option('--ignore', default='',
                       help='do not fix these errors/warnings (e.g. E4,W)')
