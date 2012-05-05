@@ -477,8 +477,6 @@ class FixPEP8(object):
                 modified_lines.append(i)
             line = self.source[line_index]
 
-        # Skip cases with multiple arguments as to not handle tracebacks
-        # incorrectly in cases such as "raise Exception, Value, Traceback".
         indent = (self._get_indentlevel(line) - 1) * self.indent_word
         indent_offset = (self._get_indentlevel(line) - 1) * \
                 len(self.indent_word)
