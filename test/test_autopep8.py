@@ -75,6 +75,24 @@ class TestFixPEP8Error(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e111_longer(self):
+        line = """
+while True:
+      if True:
+            1
+      elif True:
+            2
+""".lstrip()
+        fixed = """
+while True:
+    if True:
+        1
+    elif True:
+        2
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e111_multiple_levels(self):
         line = """
 while True:
