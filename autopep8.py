@@ -561,7 +561,10 @@ class FixPEP8(object):
 
         # We do not support things like
         #     ``1`` + ``1``
-        if len(re.findall('`+', target)) > 2:
+        # And we do not support multiple lines like
+        #     `(1
+        #      )`
+        if len(re.findall('`+', target)) != 2:
             return
 
         start = target.find('`')

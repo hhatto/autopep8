@@ -577,8 +577,16 @@ class TestFixPEP8Warning(unittest.TestCase):
     def test_w604_skip_multiple_instances(self):
         # We do not support this yet
         line = "``1`` + ``b``\n"
+        fixed = line
         self._inner_setup(line)
-        self.assertEqual(self.result, line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w604_skip_multiple_lines(self):
+        # We do not support this yet
+        line = "`(1\n)`\n"
+        fixed = line
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
 
 
 class TestOptions(unittest.TestCase):
