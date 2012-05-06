@@ -77,6 +77,24 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e101_with_comments(self):
+        line = """
+while True:
+    if True:
+    \t# My comment
+    \t1
+    \t# My other comment
+""".lstrip()
+        fixed = """
+while True:
+    if True:
+        # My comment
+        1
+        # My other comment
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e111_short(self):
         line = "class Dummy:\n  def __init__(self):\n    pass\n"
         fixed = "class Dummy:\n    def __init__(self):\n        pass\n"
