@@ -626,6 +626,7 @@ class Reindenter:
 
         # Raw file lines.
         self.raw = input_text
+        self.after = None
 
         # File lines, rstripped & tab-expanded.  Dummy at start is so
         # that we can use tokenize's 1-based line numbering easily.
@@ -722,34 +723,34 @@ class Reindenter:
             self.index += 1
         return line
 
-    def tokeneater(self, type, token, (sline, scol), end, line,
+    def tokeneater(self, token_type, _, (sline, __), ___, line,
                    INDENT=tokenize.INDENT,
                    DEDENT=tokenize.DEDENT,
                    NEWLINE=tokenize.NEWLINE,
                    COMMENT=tokenize.COMMENT,
                    NL=tokenize.NL):
         """Line-eater for tokenize."""
-        if type == NEWLINE:
+        if token_type == NEWLINE:
             # A program statement, or ENDMARKER, will eventually follow,
             # after some (possibly empty) run of tokens of the form
             #     (NL | COMMENT)* (INDENT | DEDENT+)?
             self.find_stmt = 1
 
-        elif type == INDENT:
+        elif token_type == INDENT:
             self.find_stmt = 1
             self.level += 1
 
-        elif type == DEDENT:
+        elif token_type == DEDENT:
             self.find_stmt = 1
             self.level -= 1
 
-        elif type == COMMENT:
+        elif token_type == COMMENT:
             if self.find_stmt:
                 self.stats.append((sline, -1))
                 # but we're still looking for a new stmt, so leave
                 # find_stmt alone
 
-        elif type == NL:
+        elif token_type == NL:
             pass
 
         elif self.find_stmt:
