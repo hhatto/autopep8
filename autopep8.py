@@ -650,7 +650,9 @@ class Reindenter:
         self.stats = []
 
     def run(self):
-        tokenize.tokenize(self.getline, self.tokeneater)
+        tokens = tokenize.generate_tokens(self.getline)
+        for t in tokens:
+            self.tokeneater(*t)
         # Remove trailing empty lines.
         lines = self.lines
         while lines and lines[-1] == "\n":
@@ -730,13 +732,14 @@ class Reindenter:
             self.index += 1
         return line
 
-    def tokeneater(self, token_type, _, (sline, __), ___, line,
+    def tokeneater(self, token_type, _, start, __, line,
                    INDENT=tokenize.INDENT,
                    DEDENT=tokenize.DEDENT,
                    NEWLINE=tokenize.NEWLINE,
                    COMMENT=tokenize.COMMENT,
                    NL=tokenize.NL):
         """Line-eater for tokenize."""
+        sline = start[0]
         if token_type == NEWLINE:
             # A program statement, or ENDMARKER, will eventually follow,
             # after some (possibly empty) run of tokens of the form
