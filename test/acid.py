@@ -5,7 +5,7 @@ Test that autopep8 runs without crashing on various Python files.
 import sys
 
 
-def run(filename, report_incomplete_fix=False):
+def run(filename, report_incomplete_fix=False, passes=2000):
     """Run autopep8 on file at filename.
     Return True on success.
     """
@@ -13,12 +13,14 @@ def run(filename, report_incomplete_fix=False):
     autopep8_path = os.path.split(os.path.abspath(
             os.path.dirname(__file__)))[0]
     autoppe8_bin = os.path.join(autopep8_path, 'autopep8.py')
+    command = [autoppe8_bin, '--pep8-passes={p}'.format(p=passes),
+               filename]
 
     import subprocess
     if report_incomplete_fix:
         import tempfile
         with tempfile.NamedTemporaryFile(suffix='.py') as f:
-            if 0 != subprocess.call([autoppe8_bin, filename], stdout=f):
+            if 0 != subprocess.call(command, stdout=f):
                 sys.stderr.write('autopep8 crashed on ' + filename + '\n')
                 return False
 
@@ -27,7 +29,7 @@ def run(filename, report_incomplete_fix=False):
                 sys.stderr.write('autopep8 did not completely fix ' +
                                  filename + '\n')
     else:
-        if 0 != subprocess.call([autoppe8_bin, '--diff', filename]):
+        if 0 != subprocess.call(command + ['--diff']):
             sys.stderr.write('autopep8 crashed on ' + filename + '\n')
             return False
 
