@@ -157,5 +157,10 @@ def func_w604():
     a = 1.1
     b = ```a```
 
+def func_e101():
+	print('abc')
+	if True:
+	    print('hello')
+
 if __name__ == '__main__': func_last()
   

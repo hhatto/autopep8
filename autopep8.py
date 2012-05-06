@@ -133,7 +133,7 @@ class FixPEP8(object):
 
     def _fix_source(self):
         completed_lines = []
-        for result in self.results:
+        for result in sorted(self.results, key=_priority_key):
             if result['line'] in completed_lines:
                 continue
             fixed_methodname = "fix_%s" % result['id'].lower()
@@ -612,6 +612,15 @@ def _get_difftext(old, new, filename):
     diff = unified_diff(old, new, 'original/' + filename, 'fixed/' + filename)
     difftext = [line for line in diff]
     return "".join(difftext)
+
+
+def _priority_key(pep8_result):
+    """Key for sorting PEP8 results.
+    Global fixes should be done first. This is important for things
+    like indentation.
+    """
+    high_priority = ['e101', 'e111', 'w191']
+    return pep8_result['id'].lower() not in high_priority
 
 
 class Reindenter:
