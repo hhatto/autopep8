@@ -412,6 +412,11 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         line = self.source[line_index]
 
+        split_line = line.split(',')
+        if len(split_line) > 1 and split_line[1].strip().startswith('('):
+            # Give up
+            return []
+
         if line.rstrip().endswith(';'):
             # Take care of semicolons first
             self.source[line_index] = _fix_multiple_statements(line,
