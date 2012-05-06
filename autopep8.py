@@ -321,11 +321,8 @@ class FixPEP8(object):
         target = self.source[line_index]
         c = result['column']
 
-        non_whitespace_index = len(target) - len(target.lstrip())
-        indentation = target[:non_whitespace_index]
-
         fixed_source = target[:c] + self.newline + \
-                       indentation + self.indent_word + target[c:].lstrip()
+                       _get_indentation(target) + self.indent_word + target[c:].lstrip()
         self.source[result['line'] - 1] = fixed_source
 
     def fix_e702(self, result):
@@ -604,10 +601,13 @@ def _get_indentword(source):
     return indent_word
 
 
+def _get_indentation(line):
+    non_whitespace_index = len(line) - len(line.lstrip())
+    return line[:non_whitespace_index]
+
+
 def _fix_multiple_statements(target, newline):
-    non_whitespace_index = len(target) - len(target.lstrip())
-    indentation = target[:non_whitespace_index]
-    f = [indentation + t.strip() for t in target.split(";") if t.strip()]
+    f = [_get_indentation(target) + t.strip() for t in target.split(";") if t.strip()]
     return newline.join(f) + newline
 
 
