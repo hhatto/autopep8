@@ -322,7 +322,8 @@ class FixPEP8(object):
         c = result['column']
 
         fixed_source = target[:c] + self.newline + \
-                       _get_indentation(target) + self.indent_word + target[c:].lstrip()
+                       _get_indentation(target) + self.indent_word + \
+                       target[c:].lstrip()
         self.source[result['line'] - 1] = fixed_source
 
     def fix_e702(self, result):
@@ -607,7 +608,8 @@ def _get_indentation(line):
 
 
 def _fix_multiple_statements(target, newline):
-    f = [_get_indentation(target) + t.strip() for t in target.split(";") if t.strip()]
+    f = [_get_indentation(target) + t.strip()
+         for t in target.split(";") if t.strip()]
     return newline.join(f) + newline
 
 
