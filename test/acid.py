@@ -45,7 +45,7 @@ def main():
         for root, dirnames, filenames in os.walk(p):
             import fnmatch
             for f in fnmatch.filter(filenames, '*.py'):
-                sys.stderr.write('---> Testing with ' + f + '\n')
+                sys.stderr.write('--->  Testing with ' + f + '\n')
 
                 if not run(os.path.join(root, f),
                            opts.report_incomplete_fix):
