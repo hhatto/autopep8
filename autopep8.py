@@ -159,9 +159,9 @@ class FixPEP8(object):
                                                         info))
 
     def _fix_whitespace(self, result, pattern, repl):
-        target = self.source[result['line'] - 1]
-        fixed = re.sub(pattern, repl, target)
-        self.source[result['line'] - 1] = fixed
+        (indent, rest) = _split_indentation(self.source[result['line'] - 1])
+        fixed = re.sub(pattern, repl, rest)
+        self.source[result['line'] - 1] = indent + fixed
 
     def fix(self):
         if pep8:
@@ -605,6 +605,12 @@ def _get_indentword(source):
 def _get_indentation(line):
     non_whitespace_index = len(line) - len(line.lstrip())
     return line[:non_whitespace_index]
+
+
+def _split_indentation(line):
+    """Split into tuple (indentation, rest)."""
+    non_whitespace_index = len(line) - len(line.lstrip())
+    return (line[:non_whitespace_index], line[non_whitespace_index:])
 
 
 def _fix_multiple_statements(target, newline):
