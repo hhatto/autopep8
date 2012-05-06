@@ -34,6 +34,7 @@ __version__ = '0.5.2'
 
 
 pep8bin = 'pep8'
+PEP8_PASSES_MAX = 100
 CR = '\r'
 LF = '\n'
 CRLF = '\r\n'
@@ -688,8 +689,10 @@ def main():
                       help='diff print of fixed source.')
     parser.add_option('-i', '--in-place', action='store_true',
                       help='make changes to files in place')
-    parser.add_option('-p', '--pep8-passes', default=100, type='int',
-                      help='maximum number of additional pep8 passes')
+    parser.add_option('-p', '--pep8-passes',
+                      default=PEP8_PASSES_MAX, type='int',
+                      help='maximum number of additional pep8 passes'
+                           ' (default:%d)' % PEP8_PASSES_MAX)
     parser.add_option('--ignore', default='',
                       help='do not fix these errors/warnings (e.g. E4,W)')
     opts, args = parser.parse_args()
