@@ -306,7 +306,7 @@ class FixPEP8(object):
         target = self.source[line_index]
 
         # Take care of semicolons first
-        if ';' in target:
+        if target.rstrip().endswith(';'):
             self.source[line_index] = _fix_multiple_statements(target,
                                                                self.newline)
         else:
@@ -410,7 +410,7 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         line = self.source[line_index]
 
-        if ';' in line:
+        if line.rstrip().endswith(';'):
             # Take care of semicolons first
             self.source[line_index] = _fix_multiple_statements(line,
                                                                self.newline)
