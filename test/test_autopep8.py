@@ -63,6 +63,20 @@ class TestFixPEP8Error(unittest.TestCase):
         p = Popen(cmd, stdout=PIPE)
         self.result = p.communicate()[0].decode('utf8')
 
+    def test_e101(self):
+        line = """
+while True:
+    if True:
+    \t1
+""".lstrip()
+        fixed = """
+while True:
+    if True:
+        1
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e111_short(self):
         line = "class Dummy:\n  def __init__(self):\n    pass\n"
         fixed = "class Dummy:\n    def __init__(self):\n        pass\n"
@@ -98,12 +112,64 @@ while True:
 while True:
     if True:
        1
-"""
+""".lstrip()
         fixed = """
 while True:
     if True:
         1
-"""
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e111_with_dedent(self):
+        line = """
+def foo():
+    if True:
+         2
+    1
+""".lstrip()
+        fixed = """
+def foo():
+    if True:
+        2
+    1
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e111_with_other_errors(self):
+        line = """
+def foo():
+    if True:
+         (2 , 1)
+    1
+    if True:
+           print('hello')  
+    2
+""".lstrip()
+        fixed = """
+def foo():
+    if True:
+        (2, 1)
+    1
+    if True:
+        print('hello')
+    2
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e191(self):
+        line = """
+while True:
+\tif True:
+\t\t1
+""".lstrip()
+        fixed = """
+while True:
+    if True:
+        1
+""".lstrip()
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
@@ -172,7 +238,7 @@ class Foo():
 \tdef __init__(self):
 \t\tx = 1 + 3
 """.lstrip()
-        self._inner_setup(line)
+        self._inner_setup(line, options='--ignore=W191')
         self.assertEqual(self.result, fixed)
 
     def test_e224(self):
@@ -198,7 +264,7 @@ class Foo():
 \tdef __init__(self):
 \t\tx = 3
 """.lstrip()
-        self._inner_setup(line)
+        self._inner_setup(line, options='--ignore=W191')
         self.assertEqual(self.result, fixed)
 
     def test_e225(self):

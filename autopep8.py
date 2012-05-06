@@ -82,10 +82,12 @@ class FixPEP8(object):
         self.options = options
         self.indent_word = _get_indentword("".join(self.source))
         # method definition
+        self.fix_e111 = self.fix_e101
         self.fix_e222 = self.fix_e221
         self.fix_e223 = self.fix_e221
         self.fix_e241 = self.fix_e221
         self.fix_e242 = self.fix_e224
+        self.fix_w191 = self.fix_e101
 
     def _get_indentlevel(self, line):
         sio = StringIO(line)
@@ -169,45 +171,17 @@ class FixPEP8(object):
         self._fix_source()
         return "".join(self.source)
 
-    #def fix_e101(self, result):
-    #    target = self.source[result['line'] - 1]
-    #    offset = result['column'] - 1
-    #    if target[offset] == '\t':
-    #        fixed = self.indent_word + target[offset + 1:]
-    #    else:
-    #        # FIXME: not implement
-    #        fixed = target
-    #    self.source[result['line'] - 1] = fixed
+    def fix_e101(self, _):
+        """Reindent all lines."""
+        reindenter = Reindenter(self.source)
+        if reindenter.run():
+            lines = reindenter.fixed_lines()
+            for i in range(len(lines)):
+                self.source[i] = lines[i]
 
-    def fix_e111(self, result):
-        # TODO: Handle things like,
-        # def foo():
-        #     if True:
-        #          2
-        #     1
-        sio = StringIO("".join(self.source[result['line'] - 1:]))
-        last_line = ""
-        diff_cnt = 0
-        fixed_lines = []
-        try:
-            for tokens in tokenize.generate_tokens(sio.readline):
-                if tokens[0] == token.INDENT:
-                    _level = self._get_indentlevel(tokens[4])
-                    diff_cnt = 4 * (_level - 1) - len(tokens[1])
-                if tokens[0] == token.DEDENT:
-                    break
-                if tokens[4] != last_line:
-                    last_line = tokens[4]
-                    if diff_cnt >= 0:
-                        fixed_lines.append(" " * diff_cnt + tokens[4])
-                    else:
-                        fixed_lines.append(tokens[4][abs(diff_cnt):])
-        except IndentationError:
+            return range(len(lines))
+        else:
             return []
-        for offset, fixed_line in enumerate(fixed_lines):
-            self.source[result['line'] - 1 + offset] = fixed_line
-
-        return range(result['line'], result['line'] + len(fixed_lines))
 
     def fix_e201(self, result):
         self._fix_whitespace(result, r"\(\s+", "(")
@@ -641,6 +615,158 @@ def _get_difftext(old, new, filename):
     diff = unified_diff(old, new, 'original/' + filename, 'fixed/' + filename)
     difftext = [line for line in diff]
     return "".join(difftext)
+
+
+class Reindenter:
+    """Reindents badly-indented code to uniformly use four-space indentation.
+    Released to the public domain, by Tim Peters, 03 October 2000."""
+    def __init__(self, input_text):
+        self.find_stmt = 1  # next token begins a fresh stmt?
+        self.level = 0  # current indent level
+
+        # Raw file lines.
+        self.raw = input_text
+
+        # File lines, rstripped & tab-expanded.  Dummy at start is so
+        # that we can use tokenize's 1-based line numbering easily.
+        # Note that a line is all-blank iff it's "\n".
+        self.lines = [line.rstrip('\n \t').expandtabs() + "\n"
+                      for line in self.raw]
+        self.lines.insert(0, None)
+        self.index = 1  # index into self.lines of next line
+
+        # List of (lineno, indentlevel) pairs, one for each stmt and
+        # comment line.  indentlevel is -1 for comment lines, as a
+        # signal that tokenize doesn't know what to do about them;
+        # indeed, they're our headache!
+        self.stats = []
+
+    def run(self):
+        tokenize.tokenize(self.getline, self.tokeneater)
+        # Remove trailing empty lines.
+        lines = self.lines
+        while lines and lines[-1] == "\n":
+            lines.pop()
+        # Sentinel.
+        stats = self.stats
+        stats.append((len(lines), 0))
+        # Map count of leading spaces to # we want.
+        have2want = {}
+        # Program after transformation.
+        after = self.after = []
+        # Copy over initial empty lines -- there's nothing to do until
+        # we see a line with *something* on it.
+        i = stats[0][0]
+        after.extend(lines[1:i])
+        for i in range(len(stats) - 1):
+            thisstmt, thislevel = stats[i]
+            nextstmt = stats[i + 1][0]
+            have = _getlspace(lines[thisstmt])
+            want = thislevel * 4
+            if want < 0:
+                # A comment line.
+                if have:
+                    # An indented comment line.  If we saw the same
+                    # indentation before, reuse what it most recently
+                    # mapped to.
+                    want = have2want.get(have, - 1)
+                    if want < 0:
+                        # Then it probably belongs to the next real stmt.
+                        for j in xrange(i + 1, len(stats) - 1):
+                            jline, jlevel = stats[j]
+                            if jlevel >= 0:
+                                if have == _getlspace(lines[jline]):
+                                    want = jlevel * 4
+                                break
+                    if want < 0:           # Maybe it's a hanging
+                                           # comment like this one,
+                        # in which case we should shift it like its base
+                        # line got shifted.
+                        for j in xrange(i - 1, -1, -1):
+                            jline, jlevel = stats[j]
+                            if jlevel >= 0:
+                                want = have + _getlspace(after[jline - 1]) - \
+                                       _getlspace(lines[jline])
+                                break
+                    if want < 0:
+                        # Still no luck -- leave it alone.
+                        want = have
+                else:
+                    want = 0
+            assert want >= 0
+            have2want[have] = want
+            diff = want - have
+            if diff == 0 or have == 0:
+                after.extend(lines[thisstmt:nextstmt])
+            else:
+                for line in lines[thisstmt:nextstmt]:
+                    if diff > 0:
+                        if line == "\n":
+                            after.append(line)
+                        else:
+                            after.append(" " * diff + line)
+                    else:
+                        remove = min(_getlspace(line), -diff)
+                        after.append(line[remove:])
+        return self.raw != self.after
+
+    def fixed_lines(self):
+        return self.after
+
+    def getline(self):
+        """Line-getter for tokenize."""
+        if self.index >= len(self.lines):
+            line = ""
+        else:
+            line = self.lines[self.index]
+            self.index += 1
+        return line
+
+    def tokeneater(self, type, token, (sline, scol), end, line,
+                   INDENT=tokenize.INDENT,
+                   DEDENT=tokenize.DEDENT,
+                   NEWLINE=tokenize.NEWLINE,
+                   COMMENT=tokenize.COMMENT,
+                   NL=tokenize.NL):
+        """Line-eater for tokenize."""
+        if type == NEWLINE:
+            # A program statement, or ENDMARKER, will eventually follow,
+            # after some (possibly empty) run of tokens of the form
+            #     (NL | COMMENT)* (INDENT | DEDENT+)?
+            self.find_stmt = 1
+
+        elif type == INDENT:
+            self.find_stmt = 1
+            self.level += 1
+
+        elif type == DEDENT:
+            self.find_stmt = 1
+            self.level -= 1
+
+        elif type == COMMENT:
+            if self.find_stmt:
+                self.stats.append((sline, -1))
+                # but we're still looking for a new stmt, so leave
+                # find_stmt alone
+
+        elif type == NL:
+            pass
+
+        elif self.find_stmt:
+            # This is the first "real token" following a NEWLINE, so it
+            # must be the first token of the next program statement, or an
+            # ENDMARKER.
+            self.find_stmt = 0
+            if line:   # not endmarker
+                self.stats.append((sline, self.level))
+
+
+def _getlspace(line):
+    """Count number of leading blanks."""
+    i = 0
+    while i < len(line) and line[i] == " ":
+        i += 1
+    return i
 
 
 def fix_file(filename, opts):
