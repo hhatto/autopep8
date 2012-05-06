@@ -468,9 +468,13 @@ class FixPEP8(object):
         indent = (self._get_indentlevel(line) - 1) * self.indent_word
         indent_offset = (self._get_indentlevel(line) - 1) * \
                 len(self.indent_word)
-        ast_body = ast.parse(line[indent_offset:]).body[0]
+        try:
+            ast_body = ast.parse(line[indent_offset:]).body[0]
+        except SyntaxError:
+            # Give up
+            return []
+
         if len(ast_body._fields) == 3 and ast_body.tback is not None:
-            # TODO: Don't Care corner cases.
             _id = [indent, ]
             for node in ast.iter_child_nodes(ast_body):
                 if ast.Str == type(node):
@@ -483,7 +487,12 @@ class FixPEP8(object):
                 if ast.Name == type(node):
                     _id.append(node.id)
                     continue
-                _id.append(repr(ast.literal_eval(node)))
+                try:
+                    _id.append(repr(ast.literal_eval(node)))
+                except ValueError:
+                    # Give up
+                    return []
+
             # find space and comment
             sio = StringIO(line)
             old_tokens = None
