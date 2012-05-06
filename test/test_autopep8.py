@@ -132,11 +132,18 @@ while True:
 while True:
     if True:
        1
+
+# My comment
+print('abc')
+
 """.lstrip()
         fixed = """
 while True:
     if True:
         1
+
+# My comment
+print('abc')
 """.lstrip()
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
