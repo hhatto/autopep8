@@ -22,7 +22,8 @@ def run(filename, report_incomplete_fix=False):
                 sys.stderr.write('autopep8 crashed on ' + filename + '\n')
                 return False
 
-            if 0 != subprocess.call(['pep8', '--ignore=E501', f.name]):
+            if 0 != subprocess.call(['pep8', '--ignore=E501',
+                                     '--show-source', f.name]):
                 sys.stderr.write('autopep8 did not completely fix ' +
                                  filename + '\n')
     else:
