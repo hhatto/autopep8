@@ -317,11 +317,15 @@ class FixPEP8(object):
             self.source[line_index] = self.newline.join(fixed_modulelist)
 
     def fix_e701(self, result):
-        target = self.source[result['line'] - 1]
+        line_index = result['line'] - 1
+        target = self.source[line_index]
         c = result['column']
-        indent_level = self._get_indentlevel(target)
+
+        non_whitespace_index = len(target) - len(target.lstrip())
+        indentation = target[:non_whitespace_index]
+
         fixed_source = target[:c] + self.newline + \
-                       self.indent_word * indent_level + target[c:].lstrip()
+                       indentation + self.indent_word + target[c:].lstrip()
         self.source[result['line'] - 1] = fixed_source
 
     def fix_e702(self, result):
