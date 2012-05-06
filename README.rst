@@ -1,10 +1,15 @@
+autopep8
+========
+.. image:: https://secure.travis-ci.org/hhatto/autopep8.png?branch=master
+
+
 About
-=====
+-----
 autopep8 formats Python code based on the output of the pep8_ utility.
 
 
 Installation
-============
+------------
 from pip::
 
     pip install --upgrade autopep8
@@ -13,15 +18,16 @@ from easy_install::
 
     easy_install -ZU autopep8
 
+
 Requirements
-============
+------------
 autopep8 requires pep8_.
 
 .. _pep8: https://github.com/jcrocholl/pep8
 
 
 Usage
-=====
+-----
 execute tool::
 
     $ autopep8 TARGET.py
@@ -90,3 +96,16 @@ after::
 
     def func3():
         pass
+
+
+Links
+-----
+* PyPI_
+* GitHub_
+* `Travis-CI`_
+* Jenkins_
+
+.. _PyPI: http://pypi.python.org/pypi/autopep8/
+.. _GitHub: https://github.com/hhatto/autopep8
+.. _`Travis-CI`: http://travis-ci.org/#!/hhatto/autopep8
+.. _Jenkins: http://jenkins.hexacosa.net/job/autopep8/
