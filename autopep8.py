@@ -175,11 +175,8 @@ class FixPEP8(object):
         """Reindent all lines."""
         reindenter = Reindenter(self.source)
         if reindenter.run():
-            lines = reindenter.fixed_lines()
-            for i in range(len(lines)):
-                self.source[i] = lines[i]
-
-            return range(len(lines))
+            self.source = reindenter.fixed_lines()
+            return range(len(self.source))
         else:
             return []
 
