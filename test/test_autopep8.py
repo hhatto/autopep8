@@ -80,7 +80,9 @@ while True:
     def test_e101_with_comments(self):
         line = """
 while True:  # My inline comment
-             # with a hanging comment.
+             # with a hanging
+             # comment.
+    # Hello
     if True:
     \t# My comment
     \t1
@@ -88,7 +90,9 @@ while True:  # My inline comment
 """.lstrip()
         fixed = """
 while True:  # My inline comment
-             # with a hanging comment.
+             # with a hanging
+             # comment.
+    # Hello
     if True:
         # My comment
         1
