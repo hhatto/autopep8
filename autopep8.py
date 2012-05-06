@@ -140,6 +140,10 @@ class FixPEP8(object):
                 modified_lines = fix(result)
                 if modified_lines:
                     completed_lines += modified_lines
+                if self.options.verbose:
+                    if modified_lines == []:
+                        sys.stderr.write('Not fixing {f} on line {l}\n'.format(
+                                f=result['id'], l=result['line']))
                 completed_lines.append(result['line'])
             else:
                 if self.options.verbose:
@@ -176,22 +180,30 @@ class FixPEP8(object):
     #    self.source[result['line'] - 1] = fixed
 
     def fix_e111(self, result):
+        # TODO: Handle things like,
+        # def foo():
+        #     if True:
+        #          2
+        #     1
         sio = StringIO("".join(self.source[result['line'] - 1:]))
         last_line = ""
         diff_cnt = 0
         fixed_lines = []
-        for tokens in tokenize.generate_tokens(sio.readline):
-            if tokens[0] == token.INDENT:
-                _level = self._get_indentlevel(tokens[4])
-                diff_cnt = 4 * (_level - 1) - len(tokens[1])
-            if tokens[0] == token.DEDENT:
-                break
-            if tokens[4] != last_line:
-                last_line = tokens[4]
-                if diff_cnt >= 0:
-                    fixed_lines.append(" " * diff_cnt + tokens[4])
-                else:
-                    fixed_lines.append(tokens[4][abs(diff_cnt):])
+        try:
+            for tokens in tokenize.generate_tokens(sio.readline):
+                if tokens[0] == token.INDENT:
+                    _level = self._get_indentlevel(tokens[4])
+                    diff_cnt = 4 * (_level - 1) - len(tokens[1])
+                if tokens[0] == token.DEDENT:
+                    break
+                if tokens[4] != last_line:
+                    last_line = tokens[4]
+                    if diff_cnt >= 0:
+                        fixed_lines.append(" " * diff_cnt + tokens[4])
+                    else:
+                        fixed_lines.append(tokens[4][abs(diff_cnt):])
+        except IndentationError:
+            return []
         for offset, fixed_line in enumerate(fixed_lines):
             self.source[result['line'] - 1 + offset] = fixed_line
 
