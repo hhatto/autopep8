@@ -3,9 +3,11 @@
 Test that autopep8 runs without crashing on various Python files.
 """
 import sys
+import subprocess
+import tempfile
 
 
-def run(filename, log_file, report_incomplete_fix=False, passes=2000,
+def run(filename, log_file, slow_check=False, passes=2000,
         ignore_list=['E501']):
     """Run autopep8 on file at filename.
     Return True on success.
@@ -19,19 +21,21 @@ def run(filename, log_file, report_incomplete_fix=False, passes=2000,
     command = [autoppe8_bin, '--pep8-passes={p}'.format(p=passes),
                ignore_option, filename]
 
-    import subprocess
-    if report_incomplete_fix:
-        import tempfile
-        with tempfile.NamedTemporaryFile(suffix='.py') as f:
-            if 0 != subprocess.call(command, stdout=f, stderr=log_file):
+    if slow_check:
+        with tempfile.NamedTemporaryFile(suffix='.py') as tmp_file:
+            if 0 != subprocess.call(command, stdout=tmp_file, stderr=log_file):
                 log_file.write('autopep8 crashed on ' + filename + '\n')
                 return False
 
             if 0 != subprocess.call(['pep8', ignore_option,
-                                     '--show-source', f.name],
-                                    stderr=f):
+                                     '--show-source', tmp_file.name],
+                                    stderr=tmp_file):
                 log_file.write('autopep8 did not completely fix ' +
                                filename + '\n')
+
+            if _check_syntax(filename) and not _check_syntax(tmp_file.name):
+                log_file.write('autopep8 broke ' + filename + '\n')
+                return False
     else:
         if 0 != subprocess.call(command + ['--diff'], stderr=log_file):
             log_file.write('autopep8 crashed on ' + filename + '\n')
@@ -40,11 +44,20 @@ def run(filename, log_file, report_incomplete_fix=False, passes=2000,
     return True
 
 
+def _check_syntax(filename):
+    """Return True if syntax is okay."""
+    with tempfile.NamedTemporaryFile(suffix='.py') as tmp_file:
+        import shutil
+        shutil.copyfile(src=filename, dst=tmp_file.name)
+        # Doing this as a subprocess to avoid crashing
+        return 0 == subprocess.call(['python', '-m', 'py_compile', tmp_file.name])
+
+
 def main():
     import optparse
     parser = optparse.OptionParser()
-    parser.add_option('--report-incomplete-fix', action='store_true',
-                      help='report incomplete PEP8 fixes')
+    parser.add_option('--slow-check', action='store_true',
+                      help='report incomplete PEP8 fixes and broken files')
     parser.add_option('--log-errors',
                       help='log autopep8 errors instead of exiting')
     opts, args = parser.parse_args()
@@ -64,7 +77,7 @@ def main():
 
                     if not run(os.path.join(root, f),
                             log_file=log_file,
-                            report_incomplete_fix=opts.report_incomplete_fix):
+                            slow_check=opts.slow_check):
                         if not opts.log_errors:
                             sys.exit(1)
     finally:
