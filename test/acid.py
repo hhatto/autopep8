@@ -2,6 +2,7 @@
 """
 Test that autopep8 runs without crashing on various Python files.
 """
+import os
 import sys
 import subprocess
 import tempfile
@@ -14,7 +15,6 @@ def run(filename, log_file, slow_check=False, passes=2000,
     """
     ignore_option = '--ignore=' + ','.join(ignore_list)
 
-    import os
     autopep8_path = os.path.split(os.path.abspath(
             os.path.dirname(__file__)))[0]
     autoppe8_bin = os.path.join(autopep8_path, 'autopep8.py')
@@ -50,7 +50,11 @@ def _check_syntax(filename):
         import shutil
         shutil.copyfile(src=filename, dst=tmp_file.name)
         # Doing this as a subprocess to avoid crashing
-        return 0 == subprocess.call(['python', '-m', 'py_compile', tmp_file.name])
+        result = 0 == subprocess.call(['python', '-m', 'py_compile',
+                                       tmp_file.name])
+        if result:
+            os.remove(tmp_file.name + 'c')
+        return result
 
 
 def main():
@@ -68,7 +72,6 @@ def main():
         log_file = sys.stderr
 
     try:
-        import os
         for p in sys.path:
             for root, dirnames, filenames in os.walk(p):
                 import fnmatch
