@@ -221,8 +221,10 @@ class FixPEP8(object):
         offset = result['column']
         fixed = target[:offset - 1] + " " + target[offset - 1:]
 
-        # Only proceed if non-whitespace characters match
-        if fixed.replace(' ', '') == target.replace(' ', ''):
+        # Only proceed if non-whitespace characters match.
+        # And make sure we don't break the indentation.
+        if (fixed.replace(' ', '') == target.replace(' ', '') and
+            _get_indentation(fixed) == _get_indentation(target)):
             self.source[result['line'] - 1] = fixed
 
     def fix_e231(self, result):
