@@ -60,9 +60,8 @@ def main():
                     sys.stderr.write('--->  Testing with ' + f + '\n')
 
                     if not run(os.path.join(root, f),
-                               log_file=log_file,
-                               report_incomplete_fix=
-                                       opts.report_incomplete_fix):
+                            log_file=log_file,
+                            report_incomplete_fix=opts.report_incomplete_fix):
                         if not opts.log_errors:
                             sys.exit(1)
     finally:
