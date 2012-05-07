@@ -502,10 +502,15 @@ class FixPEP8(object):
                     _id.append(self.newline)
                     break
                 old_tokens = tokens
-            # create to fixed source
-            self.source[result['line'] - 1] = "%sraise %s(%s), None, %s%s" % (
-                    tuple(_id))
-            return modified_lines
+            # Create fixed line and check for correctness
+            candidate = "%sraise %s(%s), None, %s%s" % tuple(_id)
+            pattern = '[)(, ]'
+            if (re.sub(pattern, repl='', string=candidate).replace('None', '')
+                    == re.sub(pattern, repl='', string=line)):
+                self.source[result['line'] - 1] = candidate
+                return modified_lines
+            else:
+                return []
 
         sio = StringIO(line)
         is_found_raise = False

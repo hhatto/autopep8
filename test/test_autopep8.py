@@ -672,6 +672,14 @@ class TestFixPEP8Warning(unittest.TestCase):
         self.assertEqual(self.result, fixed)
 
     @only_py2
+    def test_w602_raise_argument_triple_skip_with_indentation(self):
+        # We do not handle this properly yet.
+        line = 'if True:\n    raise TypeError, "error", tb\n'
+        fixed = line
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    @only_py2
     def test_w602_raise_argument_triple_with_comment(self):
         line = 'raise ValueError, "info", traceback  # comment\n'
         fixed = 'raise ValueError("info"), None, traceback  # comment\n'
