@@ -90,18 +90,6 @@ class FixPEP8(object):
         self.fix_e242 = self.fix_e224
         self.fix_w191 = self.fix_e101
 
-    def _get_indentlevel(self, line):
-        sio = StringIO(line)
-        indent_word = ""
-        for t in tokenize.generate_tokens(sio.readline):
-            if t[0] == token.INDENT:
-                indent_word = t[1]
-                break
-        import math
-        indent_level = int(math.ceil(float(len(indent_word)) /
-                                     len(self.indent_word)))
-        return indent_level + 1
-
     def _spawn_pep8(self, targetfile):
         """execute pep8 via subprocess.Popen."""
         paths = os.environ['PATH'].split(':')
@@ -476,11 +464,9 @@ class FixPEP8(object):
                 modified_lines.append(i)
             line = self.source[line_index]
 
-        indent = (self._get_indentlevel(line) - 1) * self.indent_word
-        indent_offset = (self._get_indentlevel(line) - 1) * \
-                len(self.indent_word)
+        indent, rest = _split_indentation(line)
         try:
-            ast_body = ast.parse(line[indent_offset:]).body[0]
+            ast_body = ast.parse(rest).body[0]
         except SyntaxError:
             # Give up
             return []
