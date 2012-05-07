@@ -20,7 +20,7 @@ def run(filename, log_file, report_incomplete_fix=False, passes=2000):
     if report_incomplete_fix:
         import tempfile
         with tempfile.NamedTemporaryFile(suffix='.py') as f:
-            if 0 != subprocess.call(command, stdout=f):
+            if 0 != subprocess.call(command, stdout=f, stderr=log_file):
                 log_file.write('autopep8 crashed on ' + filename + '\n')
                 return False
 
@@ -30,7 +30,7 @@ def run(filename, log_file, report_incomplete_fix=False, passes=2000):
                 log_file.write('autopep8 did not completely fix ' +
                                filename + '\n')
     else:
-        if 0 != subprocess.call(command + ['--diff']):
+        if 0 != subprocess.call(command + ['--diff'], stderr=log_file):
             log_file.write('autopep8 crashed on ' + filename + '\n')
             return False
 
