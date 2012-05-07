@@ -53,8 +53,12 @@ def _check_syntax(filename):
                                     os.path.basename(filename))
         shutil.copyfile(src=filename, dst=tmp_filename)
         # Doing this as a subprocess to avoid crashing
-        return 0 == subprocess.call(['python', '-m', 'py_compile',
-                                     tmp_filename])
+        import py_compile
+        try:
+            py_compile.compile(tmp_filename, doraise=True)
+            return True
+        except py_compile.PyCompileError:
+            return False
     finally:
         shutil.rmtree(tmp_dir)
 
@@ -73,8 +77,17 @@ def main():
     else:
         log_file = sys.stderr
 
+    if args:
+        dir_paths = args
+        for d in dir_paths:
+            if not os.path.isdir(d):
+                sys.stderr.write(d + ' is not a directory\n')
+                sys.exit(1)
+    else:
+        dir_paths = sys.path
+
     try:
-        for p in sys.path:
+        for p in dir_paths:
             for root, dirnames, filenames in os.walk(p):
                 import fnmatch
                 for f in fnmatch.filter(filenames, '*.py'):
