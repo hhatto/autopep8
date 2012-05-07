@@ -226,6 +226,8 @@ class FixPEP8(object):
         if (fixed.replace(' ', '') == target.replace(' ', '') and
             _get_indentation(fixed) == _get_indentation(target)):
             self.source[result['line'] - 1] = fixed
+        else:
+            return []
 
     def fix_e231(self, result):
         target = self.source[result['line'] - 1]
