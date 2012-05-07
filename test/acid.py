@@ -63,7 +63,8 @@ def main():
                                log_file=log_file,
                                report_incomplete_fix=
                                        opts.report_incomplete_fix):
-                        sys.exit(1)
+                        if not opts.log_errors:
+                            sys.exit(1)
     finally:
         log_file.close()
 
