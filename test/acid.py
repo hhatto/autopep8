@@ -46,15 +46,17 @@ def run(filename, log_file, slow_check=False, passes=2000,
 
 def _check_syntax(filename):
     """Return True if syntax is okay."""
-    with tempfile.NamedTemporaryFile(suffix='.py') as tmp_file:
-        import shutil
-        shutil.copyfile(src=filename, dst=tmp_file.name)
+    tmp_dir = tempfile.mkdtemp()
+    import shutil
+    try:
+        tmp_filename = os.path.join(tmp_dir,
+                                    os.path.basename(filename))
+        shutil.copyfile(src=filename, dst=tmp_filename)
         # Doing this as a subprocess to avoid crashing
-        result = 0 == subprocess.call(['python', '-m', 'py_compile',
-                                       tmp_file.name])
-        if result:
-            os.remove(tmp_file.name + 'c')
-        return result
+        return 0 == subprocess.call(['python', '-m', 'py_compile',
+                                     tmp_filename])
+    finally:
+        shutil.rmtree(tmp_dir)
 
 
 def main():
@@ -84,7 +86,9 @@ def main():
                         if not opts.log_errors:
                             sys.exit(1)
     finally:
-        log_file.close()
+        # Only close if it is an actual log file
+        if opts.log_errors:
+            log_file.close()
 
 
 if __name__ == '__main__':
