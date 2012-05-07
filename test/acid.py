@@ -5,16 +5,19 @@ Test that autopep8 runs without crashing on various Python files.
 import sys
 
 
-def run(filename, log_file, report_incomplete_fix=False, passes=2000):
+def run(filename, log_file, report_incomplete_fix=False, passes=2000,
+        ignore_list=['E501']):
     """Run autopep8 on file at filename.
     Return True on success.
     """
+    ignore_option = '--ignore=' + ','.join(ignore_list)
+
     import os
     autopep8_path = os.path.split(os.path.abspath(
             os.path.dirname(__file__)))[0]
     autoppe8_bin = os.path.join(autopep8_path, 'autopep8.py')
     command = [autoppe8_bin, '--pep8-passes={p}'.format(p=passes),
-               filename]
+               ignore_option, filename]
 
     import subprocess
     if report_incomplete_fix:
@@ -24,7 +27,7 @@ def run(filename, log_file, report_incomplete_fix=False, passes=2000):
                 log_file.write('autopep8 crashed on ' + filename + '\n')
                 return False
 
-            if 0 != subprocess.call(['pep8', '--ignore=E501',
+            if 0 != subprocess.call(['pep8', ignore_option,
                                      '--show-source', f.name],
                                     stderr=f):
                 log_file.write('autopep8 did not completely fix ' +
