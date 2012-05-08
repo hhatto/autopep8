@@ -540,6 +540,16 @@ class TestFixPEP8Warning(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+    def test_w601_skip_multi_line(self):
+        # We don't support this case
+        line = """
+a.has_key(
+0)
+""".lstrip()
+        fixed = line
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     @only_py2
     def test_w602_arg_is_string(self):
         line = "raise ValueError, \"w602 test\"\n"

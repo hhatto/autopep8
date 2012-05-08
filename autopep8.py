@@ -369,7 +369,9 @@ class FixPEP8(object):
 
         # Skip complicated cases
         if target.count('(') > 1 or target.count(')') > 1:
-            return
+            return []
+        if target.count('(') != target.count(')'):
+            return []
 
         _tmp = target.split(".has_key", 1)
 
