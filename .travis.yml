@@ -3,8 +3,7 @@ python:
     - "2.6"
     - "2.7"
     - "3.2"
-    - "pypy"
 install:
-    - pip install --use-mirrors .
+    - python setup.py install
 script:
     - nosetests -w test
