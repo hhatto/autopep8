@@ -30,7 +30,7 @@ except ImportError:
     pep8 = None
 
 
-__version__ = '0.5.2'
+__version__ = '0.6'
 
 
 pep8bin = 'pep8'
@@ -164,8 +164,9 @@ class FixPEP8(object):
         """Reindent all lines."""
         reindenter = Reindenter(self.source)
         if reindenter.run():
+            original_length = len(self.source)
             self.source = reindenter.fixed_lines()
-            return range(len(self.source))
+            return range(1, 1 + original_length)
         else:
             return []
 
@@ -287,7 +288,7 @@ class FixPEP8(object):
                 break
             if not self.source[line].strip():
                 self.source[line] = ''
-                modified_lines.append(line)
+                modified_lines.append(1 + line)  # Line indexed at 1
                 cnt += 1
             line -= 1
 
@@ -355,7 +356,10 @@ class FixPEP8(object):
                 break
         source = source[blank_count:]
         source.reverse()
+
+        original_length = len(self.source)
         self.source = source
+        return range(1, 1 + original_length)
 
     def fix_w601(self, result):
         target = self.source[result['line'] - 1]
@@ -429,7 +433,7 @@ class FixPEP8(object):
             self.source[line_index] = line[:-2]
             return
 
-        modified_lines = [line_index]
+        modified_lines = [1 + line_index]  # Line indexed at 1
 
         double = '"""'
         single = "'''"
@@ -461,7 +465,7 @@ class FixPEP8(object):
                 line_contents = self.source[i]
                 self.source[line_index] += line_contents
                 self.source[i] = ''
-                modified_lines.append(i)
+                modified_lines.append(1 + i)  # Line indexed at 1
             line = self.source[line_index]
 
         indent, rest = _split_indentation(line)
