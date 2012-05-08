@@ -5,6 +5,6 @@ python:
     - "3.2"
     - "pypy"
 install:
-    - python setup.py install
+    - pip install --use-mirrors .
 script:
     - nosetests -w test
