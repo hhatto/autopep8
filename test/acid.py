@@ -46,21 +46,12 @@ def run(filename, log_file, slow_check=False, passes=2000,
 
 def _check_syntax(filename):
     """Return True if syntax is okay."""
-    tmp_dir = tempfile.mkdtemp()
-    import shutil
-    try:
-        tmp_filename = os.path.join(tmp_dir,
-                                    os.path.basename(filename))
-        shutil.copyfile(src=filename, dst=tmp_filename)
-        # Doing this as a subprocess to avoid crashing
-        import py_compile
+    with open(filename, 'U') as f:
         try:
-            py_compile.compile(tmp_filename, doraise=True)
+            compile(f.read(), '<string>', 'exec')
             return True
-        except py_compile.PyCompileError:
+        except (SyntaxError, TypeError):
             return False
-    finally:
-        shutil.rmtree(tmp_dir)
 
 
 def main():
