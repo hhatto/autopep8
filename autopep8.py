@@ -256,7 +256,8 @@ class FixPEP8(object):
 
         assert len(split) == 2
         comment = split[1].lstrip()
-        fixed = split[0].rstrip(' \t#') + ('  # ' + comment if comment else '')
+        fixed = split[0].rstrip(' \t#') + ('  # ' + comment if comment
+                                           else self.newline)
 
         self.source[result['line'] - 1] = fixed
 
@@ -371,6 +372,8 @@ class FixPEP8(object):
         if target.count('(') > 1 or target.count(')') > 1:
             return []
         if target.count('(') != target.count(')'):
+            return []
+        if target.count(',') > 0:
             return []
 
         _tmp = target.split(".has_key", 1)

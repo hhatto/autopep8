@@ -358,6 +358,12 @@ class Foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e262_with_no_comment(self):
+        line = "1  #\n123\n"
+        fixed = "1\n123\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e262_none_space(self):
         line = "print 'a b '  #comment\n"
         fixed = "print 'a b '  # comment\n"
