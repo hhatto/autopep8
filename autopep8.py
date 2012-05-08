@@ -322,12 +322,18 @@ class FixPEP8(object):
 
     def fix_e702(self, result):
         target = self.source[result['line'] - 1]
+
+        # We currently do not support things like
+        #     """
+        #         hello
+        #       """; foo()
         if '"""' in target:
-            # We currently do not support things like
-            #     """
-            #         hello
-            #       """; foo()
             return []
+
+        # Make sure we aren't likely in a string
+        if target.strip().startswith('"') or target.strip().startswith("'"):
+            return []
+
         self.source[result['line'] - 1] = _fix_multiple_statements(target,
                 self.newline)
 
