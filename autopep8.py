@@ -856,9 +856,9 @@ def main():
     parser = OptionParser(version="autopep8: %s" % __version__,
                           description=__doc__)
     parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
-                      help='print to verbose result.')
+                      help='print verbose messages')
     parser.add_option('-d', '--diff', action='store_true', dest='diff',
-                      help='diff print of fixed source.')
+                      help='print the diff for the fixed source')
     parser.add_option('-i', '--in-place', action='store_true',
                       help='make changes to files in place')
     parser.add_option('-p', '--pep8-passes',
