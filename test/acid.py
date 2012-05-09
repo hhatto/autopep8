@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 
 
-def run(filename, log_file, slow_check=False, passes=2000,
+def run(filename, log_file, fast_check=False, passes=2000,
         ignore_list=['E501']):
     """Run autopep8 on file at filename.
     Return True on success.
@@ -21,7 +21,11 @@ def run(filename, log_file, slow_check=False, passes=2000,
     command = [autoppe8_bin, '--pep8-passes={p}'.format(p=passes),
                ignore_option, filename]
 
-    if slow_check:
+    if fast_check:
+        if 0 != subprocess.call(command + ['--diff'], stderr=log_file):
+            log_file.write('autopep8 crashed on ' + filename + '\n')
+            return False
+    else:
         with tempfile.NamedTemporaryFile(suffix='.py') as tmp_file:
             if 0 != subprocess.call(command, stdout=tmp_file, stderr=log_file):
                 log_file.write('autopep8 crashed on ' + filename + '\n')
@@ -36,10 +40,6 @@ def run(filename, log_file, slow_check=False, passes=2000,
             if _check_syntax(filename) and not _check_syntax(tmp_file.name):
                 log_file.write('autopep8 broke ' + filename + '\n')
                 return False
-    else:
-        if 0 != subprocess.call(command + ['--diff'], stderr=log_file):
-            log_file.write('autopep8 crashed on ' + filename + '\n')
-            return False
 
     return True
 
@@ -57,8 +57,8 @@ def _check_syntax(filename):
 def main():
     import optparse
     parser = optparse.OptionParser()
-    parser.add_option('--slow-check', action='store_true',
-                      help='report incomplete PEP8 fixes and broken files')
+    parser.add_option('--fast-check', action='store_true',
+                      help='ignore incomplete PEP8 fixes and broken files')
     parser.add_option('--log-errors',
                       help='log autopep8 errors instead of exiting')
     opts, args = parser.parse_args()
@@ -86,7 +86,7 @@ def main():
 
                     if not run(os.path.join(root, f),
                             log_file=log_file,
-                            slow_check=opts.slow_check):
+                            fast_check=opts.fast_check):
                         if not opts.log_errors:
                             sys.exit(1)
     finally:
