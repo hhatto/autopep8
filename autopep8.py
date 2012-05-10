@@ -879,7 +879,7 @@ def main():
     else:
         if len(args) > 1:
             parser.error('autopep8 only takes one filename as argument '
-                         'unless the "--in-place" option is used\n')
+                         'unless the "--in-place" option is used')
         fix_file(args[0], opts)
 
 
