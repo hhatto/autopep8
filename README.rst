@@ -64,7 +64,6 @@ before::
     def func3():
         pass
 
-
 after::
 
     import sys
@@ -96,6 +95,23 @@ after::
 
     def func3():
         pass
+
+options::
+
+    Usage: autopep8.py [options]
+
+     A tool that automatically formats Python code to conform to the PEP 8 style
+    guide.
+
+    Options:
+      --version             show program's version number and exit
+      -h, --help            show this help message and exit
+      -v, --verbose         print verbose messages
+      -d, --diff            print the diff for the fixed source
+      -i, --in-place        make changes to files in place
+      -p PEP8_PASSES, --pep8-passes=PEP8_PASSES
+                            maximum number of additional pep8 passes (default:100)
+      --ignore=IGNORE       do not fix these errors/warnings (e.g. E4,W)
 
 
 Links
