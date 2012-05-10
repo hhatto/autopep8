@@ -767,9 +767,9 @@ class TestOptions(unittest.TestCase):
         self.assertEqual(self.result, fixed)
 
     @py27_and_above
-    def test_no_arguments(self):
+    def test_help(self):
         root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        p = Popen([os.path.join(root_dir, 'autopep8.py')],
+        p = Popen([os.path.join(root_dir, 'autopep8.py'), '-h'],
                   stdout=PIPE)
         self.assertIn('Usage:', p.communicate()[0].decode('utf8'))
 
