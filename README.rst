@@ -98,7 +98,7 @@ after::
 
 options::
 
-    Usage: autopep8.py [options]
+    Usage: autopep8 [options] [filename [filename ...]]
 
      A tool that automatically formats Python code to conform to the PEP 8 style
     guide.

@@ -853,8 +853,10 @@ def fix_file(filename, opts):
 
 def main():
     """tool main"""
-    parser = OptionParser(version="autopep8: %s" % __version__,
-                          description=__doc__)
+    parser = OptionParser(usage='Usage: autopep8 [options] [filename [filename ...]]',
+                          version="autopep8: %s" % __version__,
+                          description=__doc__,
+                          prog='autopep8')
     parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
                       help='print verbose messages')
     parser.add_option('-d', '--diff', action='store_true', dest='diff',
@@ -869,13 +871,15 @@ def main():
                       help='do not fix these errors/warnings (e.g. E4,W)')
     opts, args = parser.parse_args()
     if not len(args):
-        print(parser.format_help())
-        return 1
+        parser.error('incorrect number of arguments')
 
     if opts.in_place:
         for f in args:
             fix_file(f, opts)
     else:
+        if len(args) > 1:
+            parser.error('autopep8 only takes one filename as argument '
+                         'unless the "--in-place" option is used\n')
         fix_file(args[0], opts)
 
 
