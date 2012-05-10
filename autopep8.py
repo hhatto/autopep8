@@ -853,7 +853,8 @@ def fix_file(filename, opts):
 
 def main():
     """tool main"""
-    parser = OptionParser(usage='Usage: autopep8 [options] [filename [filename ...]]',
+    parser = OptionParser(usage='Usage: autopep8 [options] '
+                                '[filename [filename ...]]',
                           version="autopep8: %s" % __version__,
                           description=__doc__,
                           prog='autopep8')
