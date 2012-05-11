@@ -595,7 +595,7 @@ def _split_indentation(line):
 
 def _fix_multiple_statements(target, newline):
     f = [_get_indentation(target) + t.strip()
-         for t in target.split(";") if t.strip()]
+         for t in target.rsplit(";", 1) if t.strip()]
     return newline.join(f) + newline
 
 

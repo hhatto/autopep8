@@ -436,6 +436,12 @@ class Foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e702_with_semicolon_in_string(self):
+        line = 'print(";");\n'
+        fixed = 'print(";")\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e702_skip_with_triple_quote(self):
         # We do not support this yet.
         # We would expect '"""\n      hello\n   """\n1\n'.
