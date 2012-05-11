@@ -626,7 +626,7 @@ def _priority_key(pep8_result):
 
 
 def _fix_basic_raise(line, newline):
-    """Fix W601 basic case"""
+    """Fix W602 basic case"""
     sio = StringIO(line)
     is_found_raise = False
     first_comma_found = False
