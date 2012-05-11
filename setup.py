@@ -7,6 +7,15 @@ except ImportError:
     from distutils.core import setup
 import autopep8
 
+# Hack to prevent stupid "TypeError: 'NoneType' object is not callable" error
+# in multiprocessing/util.py _exit_function when running `python
+# setup.py test` (see
+# http://www.eby-sarna.com/pipermail/peak/2010-May/003357.html)
+try:
+    import multiprocessing
+except ImportError:
+    pass
+
 setup(
     name='autopep8',
     version=autopep8.__version__,
@@ -28,6 +37,8 @@ setup(
     ],
     keywords="automation pep8",
     install_requires=['pep8'],
+    tests_require=['nose'],
+    test_suite='nose.collector',
     py_modules=['autopep8'],
     zip_safe=False,
     entry_points={'console_scripts': ['autopep8 = autopep8:main']},
