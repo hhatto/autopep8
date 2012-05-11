@@ -526,43 +526,8 @@ class FixPEP8(object):
                 return modified_lines
             else:
                 return []
-
-        sio = StringIO(line)
-        is_found_raise = False
-        first_comma_found = False
-        comment = ''
-        args = ''
-        indentation = ''
-        exception_type = None
-        for tokens in tokenize.generate_tokens(sio.readline):
-            if tokens[0] is token.INDENT:
-                assert not indentation
-                indentation = tokens[1]
-            elif tokens[1] == 'raise':
-                is_found_raise = True
-            elif tokens[0] is token.NAME and is_found_raise:
-                if exception_type:
-                    args += tokens[1]
-                else:
-                    exception_type = tokens[1]
-            elif tokens[0] is token.NEWLINE:
-                break
-            elif tokens[0] is not token.DEDENT:
-                if tokens[1].startswith(',') and not first_comma_found:
-                    first_comma_found = True
-                elif tokens[1].startswith('#'):
-                    assert not comment
-                    comment = tokens[1]
-                    break
-                else:
-                    args += tokens[1]
-        assert exception_type
-        self.source[result['line'] - 1] = \
-            ''.join([indentation, 'raise ', exception_type,
-                     '(',
-                     args[1:-1] if args.startswith('(') else args,
-                     ')',
-                     comment, self.newline])
+        else:
+            self.source[line_index] = _fix_basic_raise(line, self.newline)
 
         return modified_lines
 
@@ -658,6 +623,45 @@ def _priority_key(pep8_result):
     """
     high_priority = ['e101', 'e111', 'w191']
     return pep8_result['id'].lower() not in high_priority
+
+
+def _fix_basic_raise(line, newline):
+    """Fix W601 basic case"""
+    sio = StringIO(line)
+    is_found_raise = False
+    first_comma_found = False
+    comment = ''
+    args = ''
+    indentation = ''
+    exception_type = None
+    for tokens in tokenize.generate_tokens(sio.readline):
+        if tokens[0] is token.INDENT:
+            assert not indentation
+            indentation = tokens[1]
+        elif tokens[1] == 'raise':
+            is_found_raise = True
+        elif tokens[0] is token.NAME and is_found_raise:
+            if exception_type:
+                args += tokens[1]
+            else:
+                exception_type = tokens[1]
+        elif tokens[0] is token.NEWLINE:
+            break
+        elif tokens[0] is not token.DEDENT:
+            if tokens[1].startswith(',') and not first_comma_found:
+                first_comma_found = True
+            elif tokens[1].startswith('#'):
+                assert not comment
+                comment = tokens[1]
+                break
+            else:
+                args += tokens[1]
+    assert exception_type
+    return ''.join([indentation, 'raise ', exception_type,
+                    '(',
+                    args[1:-1] if args.startswith('(') else args,
+                    ')',
+                    comment, newline])
 
 
 class Reindenter:
