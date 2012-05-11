@@ -62,7 +62,8 @@ before::
         pass
 
     def func3():
-        pass
+        if bar : bar+=1;  bar=bar*bar   ; return bar
+        else: raise ValueError, 'i am an error'
 
 after::
 
@@ -94,7 +95,13 @@ after::
 
 
     def func3():
-        pass
+        if bar:
+            bar += 1
+            bar = bar * bar
+            return bar
+        else:
+            raise ValueError('i am an error')
+
 
 options::
 
