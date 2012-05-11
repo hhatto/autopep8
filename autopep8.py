@@ -429,9 +429,9 @@ class FixPEP8(object):
             self.source[line_index] = _fix_multiple_statements(line,
                                                                self.newline)
             return
-        elif (line[-2:] == '\\\n' or
-              line[-3:] == '\\\r\n' or
-              line[-2:] == '\\\r'):
+        elif (line.endswith('\\\n') or
+              line.endswith('\\\r\n') or
+              line.endswith('\\\r')):
             self.source[line_index] = line.rstrip('\n\r \t\\')
             self.source[line_index + 1] = \
                     ' ' + self.source[line_index + 1].lstrip()
