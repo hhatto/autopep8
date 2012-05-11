@@ -22,7 +22,7 @@ test_diff:
 	python autopep8.py --diff .tmp.test_target.py > .tmp.test_target.py.patch
 	patch < .tmp.test_target.py.patch
 	@rm .tmp.test_target.py.patch
-	pep8 -r .tmp.test_target.py && echo 'OK'
+	pep8 -r .tmp.test_target.py && python -m py_compile .tmp.test_target.py && echo 'OK'
 	@rm .tmp.test_target.py
 
 test_unit:
