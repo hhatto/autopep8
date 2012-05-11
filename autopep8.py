@@ -429,20 +429,13 @@ class FixPEP8(object):
             self.source[line_index] = _fix_multiple_statements(line,
                                                                self.newline)
             return
-        elif line[-2:] == '\\\n':
-            # Remove escaped LF first
-            self.source[line_index] = line[:-2]
-            return
-        elif line[-3:] == '\\\r\n':
-            # Remove escaped CRLF first
-            self.source[line_index] = line[:-3]
-            return
-        elif line[-2:] == '\\\r':
-            # Remove escaped CR first
-            # NOTE: Doesn't get executed because pep8 doesn't seem to work with
-            #       CR line endings
-            self.source[line_index] = line[:-2]
-            return
+        elif (line[-2:] == '\\\n' or
+              line[-3:] == '\\\r\n' or
+              line[-2:] == '\\\r'):
+            self.source[line_index] = line.rstrip('\n\r \t\\')
+            self.source[line_index + 1] = \
+                    ' ' + self.source[line_index + 1].lstrip()
+            return [line_index + 1, line_index + 2]  # Line indexed at 1
 
         modified_lines = [1 + line_index]  # Line indexed at 1
 
