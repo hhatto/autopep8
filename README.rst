@@ -37,18 +37,18 @@ before::
     import sys, os
 
 
-    print 1 
+    print('hello' );
 
 
-    def func1():
-        print "A"
-        
-        return 0
+    def func1(   foo  ):
+            print( 'A'+ foo);
+            
+            return 0
 
 
 
     def func11():
-        a = (1,2, 3,"a")
+        a = (1,2, 3,"a");
         b = [1, 2, 3,"b"]
         return 1
 
@@ -57,7 +57,7 @@ before::
 
 
     def func2():
-        pass
+            pass
     def func22():
         pass
 
@@ -70,11 +70,11 @@ after::
     import os
 
 
-    print 1
+    print('hello')
 
 
-    def func1():
-        print "A"
+    def func1(foo):
+        print('A' + foo)
 
         return 0
 
