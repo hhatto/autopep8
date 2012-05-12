@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+"""
+Run pep8 with fake path stripped out.
+"""
+import sys
+
+
+def main():
+    import subprocess
+    import os
+    tmp_env = os.environ.copy()
+    tmp_env['PYTHONPATH'] = \
+            ':'.join([e for e in os.environ['PYTHONPATH'].split(':')
+                      if 'fake_pep8' not in e])
+    tmp_env['PATH'] = ':'.join([e for e in os.environ['PATH'].split(':')
+                                if 'fake_pep8' not in e])
+    return subprocess.call(['pep8'] + sys.argv[1:],
+            env=tmp_env)
+
+
+if __name__ == '__main__':
+    sys.exit(main())

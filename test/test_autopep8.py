@@ -833,5 +833,43 @@ class TestOptions(unittest.TestCase):
         self.assertEqual(f.read(), fixed)
         f.close()
 
+
+class TestSpawnPEP8Process(unittest.TestCase):
+
+    def setUp(self):
+        self.tempfile = mkstemp()
+
+    def tearDown(self):
+        os.remove(self.tempfile[1])
+
+    def _inner_setup(self, line, options=""):
+        f = open(self.tempfile[1], 'w')
+        f.write(line)
+        f.close()
+        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+        cmd = [os.path.join(root_dir, 'autopep8.py')]
+        cmd.extend(options.split())
+        cmd.append(self.tempfile[1])
+
+        # Put fake pep8 path in front. It will cause autopep8 to launch a
+        # a subprocess by pretending to be an older version of pep8.
+        tmp_env = os.environ.copy()
+        tmp_env['PYTHONPATH'] = (os.path.join(root_dir, 'test',
+                                              'fake_pep8', 'site-packages') +
+                                 ':' + tmp_env['PYTHONPATH'])
+        tmp_env['PATH'] = (os.path.join(root_dir, 'test',
+                                        'fake_pep8', 'bin') +
+                           ':' + tmp_env['PATH'])
+
+        p = Popen(cmd, stdout=PIPE, env=tmp_env)
+        self.result = p.communicate()[0].decode('utf8')
+
+    def test_basic(self):
+        line = "print('abc')    \n"
+        fixed = "print('abc')\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+
 if __name__ == '__main__':
     unittest.main()
