@@ -13,7 +13,7 @@ test: test_basic test_diff test_unit
 test_basic:
 	@echo '--->  Running basic test'
 	python autopep8.py test_target.py > .tmp.test.py
-	pep8 -r .tmp.test.py && echo 'OK'
+	pep8 --repeat .tmp.test.py && echo 'OK'
 	@rm .tmp.test.py
 
 test_diff:
@@ -22,7 +22,7 @@ test_diff:
 	python autopep8.py --diff .tmp.test_target.py > .tmp.test_target.py.patch
 	patch < .tmp.test_target.py.patch
 	@rm .tmp.test_target.py.patch
-	pep8 -r .tmp.test_target.py && python -m py_compile .tmp.test_target.py && echo 'OK'
+	pep8 --repeat .tmp.test_target.py && python -m py_compile .tmp.test_target.py && echo 'OK'
 	@rm .tmp.test_target.py
 
 test_unit:

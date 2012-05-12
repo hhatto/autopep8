@@ -117,7 +117,7 @@ class FixPEP8(object):
 
     def _pep8_options(self, targetfile):
         """return options to be passed to pep8."""
-        return (["-r", targetfile] +
+        return (["--repeat", targetfile] +
                 (["--ignore=" + self.options.ignore]
                  if self.options.ignore else []))
 
