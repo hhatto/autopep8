@@ -99,7 +99,7 @@ class FixPEP8(object):
                 cmd = ([os.path.join(path, pep8bin)] +
                        self._pep8_options(targetfile))
                 p = Popen(cmd, stdout=PIPE)
-                return p.stdout.readlines()
+                return [l.decode('utf8') for l in p.stdout.readlines()]
         raise Exception("'%s' is not found." % pep8bin)
 
     def _execute_pep8(self, targetfile):
