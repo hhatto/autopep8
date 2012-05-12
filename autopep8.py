@@ -257,9 +257,9 @@ class FixPEP8(object):
         offset = result['column']
 
         code = target[:offset].rstrip(' \t#')
-        comment = target[offset:].lstrip('#').strip()
+        comment = target[offset:].lstrip(' \t#')
 
-        fixed = code + ('  # ' + comment if comment
+        fixed = code + ('  # ' + comment if comment.strip()
                         else self.newline)
 
         self.source[result['line'] - 1] = fixed

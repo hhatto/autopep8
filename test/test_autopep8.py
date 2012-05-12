@@ -388,6 +388,12 @@ class Foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e262_more_complex(self):
+        line = "print 'a b '  #comment\n123\n"
+        fixed = "print 'a b '  # comment\n123\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e301(self):
         line = "class k:\n    s = 0\n    def f():\n        print 1\n"
         fixed = "class k:\n    s = 0\n\n    def f():\n        print 1\n"
