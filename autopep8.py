@@ -299,16 +299,11 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
 
-        # Take care of semicolons first
-        if target.rstrip().endswith(';'):
-            self.source[line_index] = _fix_multiple_statements(target,
-                                                               self.newline)
-        else:
-            indentation = target.split("import ")[0]
-            modules = target.split("import ")[1].split(",")
-            fixed_modulelist = \
-                    [indentation + "import %s" % m.lstrip() for m in modules]
-            self.source[line_index] = self.newline.join(fixed_modulelist)
+        indentation = target.split("import ")[0]
+        modules = target.split("import ")[1].split(",")
+        fixed_modulelist = \
+                [indentation + "import %s" % m.lstrip() for m in modules]
+        self.source[line_index] = self.newline.join(fixed_modulelist)
 
     def fix_e701(self, result):
         line_index = result['line'] - 1
@@ -321,6 +316,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed_source
 
     def fix_e702(self, result):
+        """Fix multiple statements on one line."""
         target = self.source[result['line'] - 1]
 
         # We currently do not support things like
@@ -334,8 +330,14 @@ class FixPEP8(object):
         if target.strip().startswith('"') or target.strip().startswith("'"):
             return []
 
-        self.source[result['line'] - 1] = _fix_multiple_statements(target,
-                self.newline)
+        offset = result['column'] - 1
+        first = target[:offset].rstrip(';')
+        second = target[offset:].lstrip(';')
+
+        f = [_get_indentation(target) + t.strip()
+             for t in [first, second] if t.strip()]
+
+        self.source[result['line'] - 1] = self.newline.join(f) + self.newline
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()
@@ -424,14 +426,9 @@ class FixPEP8(object):
             # Give up
             return []
 
-        if line.rstrip().endswith(';'):
-            # Take care of semicolons first
-            self.source[line_index] = _fix_multiple_statements(line,
-                                                               self.newline)
-            return
-        elif (line.endswith('\\\n') or
-              line.endswith('\\\r\n') or
-              line.endswith('\\\r')):
+        if (line.endswith('\\\n') or
+            line.endswith('\\\r\n') or
+            line.endswith('\\\r')):
             self.source[line_index] = line.rstrip('\n\r \t\\')
             self.source[line_index + 1] = \
                     ' ' + self.source[line_index + 1].lstrip()
@@ -586,12 +583,6 @@ def _split_indentation(line):
     return (line[:non_whitespace_index], line[non_whitespace_index:])
 
 
-def _fix_multiple_statements(target, newline):
-    f = [_get_indentation(target) + t.strip()
-         for t in target.rsplit(";", 1) if t.strip()]
-    return newline.join(f) + newline
-
-
 def _analyze_pep8result(result):
     tmp = result.split(":")
     filename = tmp[0]
@@ -614,8 +605,15 @@ def _priority_key(pep8_result):
     Global fixes should be done first. This is important for things
     like indentation.
     """
-    high_priority = ['e101', 'e111', 'w191']
-    return pep8_result['id'].lower() not in high_priority
+    priority = ['e101', 'e111', 'w191',  # Global fixes
+                'e702',  # Break multiline statements early
+               ]
+    key = pep8_result['id'].lower()
+    if key in priority:
+        return priority.index(key)
+    else:
+        # Lowest priority
+        return 1 + len(priority)
 
 
 def _fix_basic_raise(line, newline):
