@@ -352,6 +352,12 @@ class Foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e261_with_dictionary_no_space(self):
+        line = "d = {#comment\n1: 2}\n"
+        fixed = "d = {  # comment\n1: 2}\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e262_more_space(self):
         line = "print 'a b '  #  comment\n"
         fixed = "print 'a b '  # comment\n"

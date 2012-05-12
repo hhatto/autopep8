@@ -88,6 +88,7 @@ class FixPEP8(object):
         self.fix_e223 = self.fix_e221
         self.fix_e241 = self.fix_e221
         self.fix_e242 = self.fix_e224
+        self.fix_e261 = self.fix_e262
         self.fix_w191 = self.fix_e101
 
     def _spawn_pep8(self, targetfile):
@@ -233,22 +234,6 @@ class FixPEP8(object):
         target = self.source[result['line'] - 1]
         c = result['column'] - 1
         fixed = target[:c] + re.sub(r'\s*=\s*', '=', target[c:], 1)
-        self.source[result['line'] - 1] = fixed
-
-    def fix_e261(self, result):
-        """Fix spacing before comment hash."""
-        target = self.source[result['line'] - 1]
-        c = result['column']
-
-        # pep8 is sometimes off by one in cases like "{# comment"
-        if target[c] == '#':
-            pass
-        elif target[c - 1] == '#':
-            c = c - 1
-        else:
-            return
-
-        fixed = target[:c] + " " + target[c:]
         self.source[result['line'] - 1] = fixed
 
     def fix_e262(self, result):
