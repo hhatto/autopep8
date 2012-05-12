@@ -9,10 +9,22 @@ def main():
     import subprocess
     import os
     tmp_env = os.environ.copy()
+
+    if 'PYTHONPATH' in os.environ:
+        old_python_path = os.environ['PYTHONPATH']
+    else:
+        old_python_path = ''
+
     tmp_env['PYTHONPATH'] = \
-            ':'.join([e for e in os.environ['PYTHONPATH'].split(':')
+            ':'.join([e for e in old_python_path.split(':')
                       if 'fake_pep8' not in e])
-    tmp_env['PATH'] = ':'.join([e for e in os.environ['PATH'].split(':')
+
+    if 'PATH' in os.environ:
+        old_path = os.environ['PATH']
+    else:
+        old_path = ''
+
+    tmp_env['PATH'] = ':'.join([e for e in old_path.split(':')
                                 if 'fake_pep8' not in e])
     return subprocess.call(['pep8'] + sys.argv[1:],
             env=tmp_env)

@@ -834,7 +834,6 @@ class TestOptions(unittest.TestCase):
         f.close()
 
 
-"""
 class TestSpawnPEP8Process(unittest.TestCase):
 
     def setUp(self):
@@ -855,12 +854,24 @@ class TestSpawnPEP8Process(unittest.TestCase):
         # Put fake pep8 path in front. It will cause autopep8 to launch a
         # a subprocess by pretending to be an older version of pep8.
         tmp_env = os.environ.copy()
+
+        if 'PYTHONPATH' in os.environ:
+            old_python_path = os.environ['PYTHONPATH']
+        else:
+            old_python_path = ''
+
         tmp_env['PYTHONPATH'] = (os.path.join(root_dir, 'test',
                                               'fake_pep8', 'site-packages') +
-                                 ':' + tmp_env['PYTHONPATH'])
+                                 ':' + old_python_path)
+
+        if 'PATH' in os.environ:
+            old_path = os.environ['PATH']
+        else:
+            old_path = ''
+
         tmp_env['PATH'] = (os.path.join(root_dir, 'test',
                                         'fake_pep8', 'bin') +
-                           ':' + tmp_env['PATH'])
+                           ':' + old_path)
 
         p = Popen(cmd, stdout=PIPE, env=tmp_env)
         self.result = p.communicate()[0].decode('utf8')
@@ -870,7 +881,6 @@ class TestSpawnPEP8Process(unittest.TestCase):
         fixed = "print('abc')\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
-"""
 
 
 if __name__ == '__main__':
