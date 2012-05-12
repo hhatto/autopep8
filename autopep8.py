@@ -236,6 +236,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed
 
     def fix_e261(self, result):
+        """Fix spacing before comment hash."""
         target = self.source[result['line'] - 1]
         c = result['column']
 
@@ -251,13 +252,15 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed
 
     def fix_e262(self, result):
+        """Fix spacing after comment hash."""
         target = self.source[result['line'] - 1]
-        split = target.rsplit('#', 1)
+        offset = result['column']
 
-        assert len(split) == 2
-        comment = split[1].lstrip()
-        fixed = split[0].rstrip(' \t#') + ('  # ' + comment if comment
-                                           else self.newline)
+        code = target[:offset].rstrip(' \t#')
+        comment = target[offset:].lstrip('#').strip()
+
+        fixed = code + ('  # ' + comment if comment
+                        else self.newline)
 
         self.source[result['line'] - 1] = fixed
 

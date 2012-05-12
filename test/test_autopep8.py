@@ -376,6 +376,12 @@ class Foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e262_hash_in_string_and_multiple_hashes(self):
+        line = "print 'a b  #string'  #comment #comment\n"
+        fixed = "print 'a b  #string'  # comment #comment\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e262_empty_comment(self):
         line = "print 'a b'  #\n"
         fixed = "print 'a b'\n"
