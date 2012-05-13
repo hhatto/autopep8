@@ -31,7 +31,7 @@ test_unit:
 
 coverage:
 	@rm -rf htmlcov
-	@PATH=test/coverage_python:${PATH} python test/test_autopep8.py
+	@PATH=test/coverage_python:${PATH} AUTOPEP8_COVERAGE=1 python test/test_autopep8.py
 	@coverage combine
 	@coverage report
 	@coverage html

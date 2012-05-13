@@ -4,9 +4,19 @@ import unittest
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
 
-sys.path.insert(0,
-                os.path.split(os.path.abspath(os.path.dirname(__file__)))[0])
+ROOT_DIR = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+
+sys.path.insert(0, ROOT_DIR)
 import autopep8
+
+if 'AUTOPEP8_COVERAGE' in os.environ and int(os.environ['AUTOPEP8_COVERAGE']):
+    # Coverage doesn't like the executable in front.
+    AUTOPEP8_CMD_TUPLE = (os.path.join(ROOT_DIR, 'autopep8.py'),)
+else:
+    # We need to specify the executable to make sure the correct Python
+    # interpreter gets used.
+    AUTOPEP8_CMD_TUPLE = (sys.executable,
+                          os.path.join(ROOT_DIR, 'autopep8.py'),)
 
 
 def py27_and_above(func):
@@ -56,8 +66,7 @@ class TestFixPEP8Error(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        cmd = [sys.executable, os.path.join(root_dir, 'autopep8.py')]
+        cmd = list(AUTOPEP8_CMD_TUPLE)
         cmd.extend(options.split())
         cmd.append(self.tempfile[1])
         p = Popen(cmd, stdout=PIPE)
@@ -487,9 +496,7 @@ class TestFixPEP8Warning(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        p = Popen([sys.executable, os.path.join(root_dir, 'autopep8.py'),
-                   self.tempfile[1]], stdout=PIPE)
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1]], stdout=PIPE)
         self.result = p.communicate()[0].decode('utf8')
 
     def test_w291(self):
@@ -784,9 +791,7 @@ class TestOptions(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        p = Popen([sys.executable, os.path.join(root_dir, 'autopep8.py'),
-                   self.tempfile[1]] + options,
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1]] + options,
                   stdout=PIPE)
         self.result = p.communicate()[0].decode('utf8')
 
@@ -804,8 +809,7 @@ class TestOptions(unittest.TestCase):
 
     @py27_and_above
     def test_help(self):
-        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        p = Popen([sys.executable, os.path.join(root_dir, 'autopep8.py'), '-h'],
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['-h'],
                   stdout=PIPE)
         self.assertIn('Usage:', p.communicate()[0].decode('utf8'))
 
@@ -815,9 +819,7 @@ class TestOptions(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        p = Popen([sys.executable, os.path.join(root_dir, 'autopep8.py'),
-                   self.tempfile[1], '--verbose'],
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--verbose'],
                   stdout=PIPE, stderr=PIPE)
         verbose_error = p.communicate()[1].decode('utf8')
         self.assertIn("'fix_e501' is not defined", verbose_error)
@@ -830,9 +832,7 @@ class TestOptions(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        p = Popen([sys.executable, os.path.join(root_dir, 'autopep8.py'),
-                   self.tempfile[1], '--in-place'])
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--in-place'])
         p.wait()
 
         f = open(self.tempfile[1])
@@ -852,8 +852,7 @@ class TestSpawnPEP8Process(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        cmd = [sys.executable, os.path.join(root_dir, 'autopep8.py')]
+        cmd = list(AUTOPEP8_CMD_TUPLE)
         cmd.extend(options.split())
         cmd.append(self.tempfile[1])
 
@@ -866,7 +865,7 @@ class TestSpawnPEP8Process(unittest.TestCase):
         else:
             old_python_path = ''
 
-        tmp_env['PYTHONPATH'] = (os.path.join(root_dir, 'test',
+        tmp_env['PYTHONPATH'] = (os.path.join(ROOT_DIR, 'test',
                                               'fake_pep8', 'site-packages') +
                                  ':' + old_python_path)
 
@@ -875,7 +874,7 @@ class TestSpawnPEP8Process(unittest.TestCase):
         else:
             old_path = ''
 
-        tmp_env['PATH'] = (os.path.join(root_dir, 'test',
+        tmp_env['PATH'] = (os.path.join(ROOT_DIR, 'test',
                                         'fake_pep8', 'bin') +
                            ':' + old_path)
 
