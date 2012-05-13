@@ -522,6 +522,12 @@ class TestFixPEP8Warning(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w391_more_complex(self):
+        line = "123\n456\n  \n"
+        fixed = "123\n456\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_w601(self):
         line = "a = {0: 1}\na.has_key(0)\n"
         fixed = "a = {0: 1}\n0 in a\n"

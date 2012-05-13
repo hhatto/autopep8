@@ -341,16 +341,13 @@ class FixPEP8(object):
     def fix_w391(self, _):
         source = copy.copy(self.source)
         source.reverse()
-        found_notblank = False
         blank_count = 0
         for line in source:
             line = line.rstrip()
             if line:
-                found_notblank = True
+                break
             else:
                 blank_count += 1
-            if found_notblank and line:
-                break
         source = source[blank_count:]
         source.reverse()
 
