@@ -31,7 +31,7 @@ test_unit:
 
 coverage:
 	@rm -rf htmlcov
-	@AUTOPEP8_COVERAGE=1 python test/test_autopep8.py
+	@AUTOPEP8_COVERAGE=1 coverage run --branch --parallel test/test_autopep8.py
 	@coverage combine
 	@coverage report
 	@coverage html
