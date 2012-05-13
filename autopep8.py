@@ -22,9 +22,10 @@ from difflib import unified_diff
 import tempfile
 import ast
 
+from distutils.version import StrictVersion
 try:
     import pep8
-    if not pep8.__version__ >= '0.5.1':
+    if StrictVersion(pep8.__version__) < StrictVersion('0.5.1'):
         pep8 = None
 except ImportError:
     pep8 = None
@@ -403,6 +404,7 @@ class FixPEP8(object):
             "".join([_before, _arg, " in ", _symbol, _after])
 
     def fix_w602(self, result):
+        """Fix deprecated form of raising exception."""
         line_index = result['line'] - 1
         line = self.source[line_index]
 
