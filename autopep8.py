@@ -600,7 +600,7 @@ def _priority_key(pep8_result):
         return priority.index(key)
     else:
         # Lowest priority
-        return 1 + len(priority)
+        return len(priority)
 
 
 def _fix_basic_raise(line, newline):
