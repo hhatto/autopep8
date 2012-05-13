@@ -34,7 +34,7 @@ except ImportError:
 __version__ = '0.6'
 
 
-pep8bin = 'pep8'
+PEP8_BIN = 'pep8'
 PEP8_PASSES_MAX = 100
 CR = '\r'
 LF = '\n'
@@ -96,12 +96,12 @@ class FixPEP8(object):
         """execute pep8 via subprocess.Popen."""
         paths = os.environ['PATH'].split(':')
         for path in paths:
-            if os.path.exists(os.path.join(path, pep8bin)):
-                cmd = ([os.path.join(path, pep8bin)] +
+            if os.path.exists(os.path.join(path, PEP8_BIN)):
+                cmd = ([os.path.join(path, PEP8_BIN)] +
                        self._pep8_options(targetfile))
                 p = Popen(cmd, stdout=PIPE)
                 return [l.decode('utf8') for l in p.stdout.readlines()]
-        raise Exception("'%s' is not found." % pep8bin)
+        raise Exception("'%s' is not found." % PEP8_BIN)
 
     def _execute_pep8(self, targetfile):
         """execute pep8 via python method calls."""
