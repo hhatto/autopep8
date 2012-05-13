@@ -345,11 +345,11 @@ class FixPEP8(object):
         blank_count = 0
         for line in source:
             line = line.rstrip()
-            if re.match("^$", line):
-                blank_count += 1
-            else:
+            if line:
                 found_notblank = True
-            if found_notblank and not re.match("^$", line):
+            else:
+                blank_count += 1
+            if found_notblank and line:
                 break
         source = source[blank_count:]
         source.reverse()
