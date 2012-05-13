@@ -642,7 +642,7 @@ def _fix_basic_raise(line, newline):
                     comment, newline])
 
 
-class Reindenter:
+class Reindenter(object):
     """Reindents badly-indented code to uniformly use four-space indentation.
     Released to the public domain, by Tim Peters, 03 October 2000."""
     def __init__(self, input_text):
