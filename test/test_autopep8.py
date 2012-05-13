@@ -57,7 +57,7 @@ class TestFixPEP8Error(unittest.TestCase):
         f.write(line)
         f.close()
         root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        cmd = [os.path.join(root_dir, 'autopep8.py')]
+        cmd = [sys.executable, os.path.join(root_dir, 'autopep8.py')]
         cmd.extend(options.split())
         cmd.append(self.tempfile[1])
         p = Popen(cmd, stdout=PIPE)
@@ -488,7 +488,7 @@ class TestFixPEP8Warning(unittest.TestCase):
         f.write(line)
         f.close()
         root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        p = Popen([os.path.join(root_dir, 'autopep8.py'),
+        p = Popen([sys.executable, os.path.join(root_dir, 'autopep8.py'),
                    self.tempfile[1]], stdout=PIPE)
         self.result = p.communicate()[0].decode('utf8')
 
@@ -785,7 +785,7 @@ class TestOptions(unittest.TestCase):
         f.write(line)
         f.close()
         root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        p = Popen([os.path.join(root_dir, 'autopep8.py'),
+        p = Popen([sys.executable, os.path.join(root_dir, 'autopep8.py'),
                    self.tempfile[1]] + options,
                   stdout=PIPE)
         self.result = p.communicate()[0].decode('utf8')
@@ -805,7 +805,7 @@ class TestOptions(unittest.TestCase):
     @py27_and_above
     def test_help(self):
         root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        p = Popen([os.path.join(root_dir, 'autopep8.py'), '-h'],
+        p = Popen([sys.executable, os.path.join(root_dir, 'autopep8.py'), '-h'],
                   stdout=PIPE)
         self.assertIn('Usage:', p.communicate()[0].decode('utf8'))
 
@@ -816,7 +816,7 @@ class TestOptions(unittest.TestCase):
         f.write(line)
         f.close()
         root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        p = Popen([os.path.join(root_dir, 'autopep8.py'),
+        p = Popen([sys.executable, os.path.join(root_dir, 'autopep8.py'),
                    self.tempfile[1], '--verbose'],
                   stdout=PIPE, stderr=PIPE)
         verbose_error = p.communicate()[1].decode('utf8')
@@ -831,7 +831,7 @@ class TestOptions(unittest.TestCase):
         f.write(line)
         f.close()
         root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        p = Popen([os.path.join(root_dir, 'autopep8.py'),
+        p = Popen([sys.executable, os.path.join(root_dir, 'autopep8.py'),
                    self.tempfile[1], '--in-place'])
         p.wait()
 
@@ -853,7 +853,7 @@ class TestSpawnPEP8Process(unittest.TestCase):
         f.write(line)
         f.close()
         root_dir = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
-        cmd = [os.path.join(root_dir, 'autopep8.py')]
+        cmd = [sys.executable, os.path.join(root_dir, 'autopep8.py')]
         cmd.extend(options.split())
         cmd.append(self.tempfile[1])
 
