@@ -10,8 +10,8 @@ sys.path.insert(0, ROOT_DIR)
 import autopep8
 
 if 'AUTOPEP8_COVERAGE' in os.environ and int(os.environ['AUTOPEP8_COVERAGE']):
-    # Coverage doesn't like the executable in front.
-    AUTOPEP8_CMD_TUPLE = (os.path.join(ROOT_DIR, 'autopep8.py'),)
+    AUTOPEP8_CMD_TUPLE = ('coverage', 'run', '--branch', '--parallel',
+                          'autopep8.py')
 else:
     # We need to specify the executable to make sure the correct Python
     # interpreter gets used.
