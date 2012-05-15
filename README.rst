@@ -1,7 +1,8 @@
 autopep8
 ========
 .. image:: https://secure.travis-ci.org/hhatto/autopep8.png?branch=master
-    :target: https://secure.travis-ci.org/hhatto/autopep8
+   :target: https://secure.travis-ci.org/hhatto/autopep8
+   :alt: Build status
 
 
 About
