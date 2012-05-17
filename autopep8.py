@@ -856,14 +856,18 @@ def main():
     if not len(args):
         parser.error('incorrect number of arguments')
 
-    if opts.in_place:
-        for f in args:
-            fix_file(f, opts)
-    else:
-        if len(args) > 1:
-            parser.error('autopep8 only takes one filename as argument '
-                         'unless the "--in-place" option is used')
-        fix_file(args[0], opts)
+    try:
+        if opts.in_place:
+            for f in args:
+                fix_file(f, opts)
+        else:
+            if len(args) > 1:
+                parser.error('autopep8 only takes one filename as argument '
+                             'unless the "--in-place" option is used')
+            fix_file(args[0], opts)
+    except IOError as error:
+        sys.stderr.write(str(error) + '\n')
+        return 1
 
 
 if __name__ == '__main__':
