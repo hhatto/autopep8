@@ -133,11 +133,12 @@ class FixPEP8(object):
                 modified_lines = fix(result)
                 if modified_lines:
                     completed_lines += modified_lines
-                if self.options.verbose:
-                    if modified_lines == []:
+                elif modified_lines == []:  # Empty list means no fix
+                    if self.options.verbose:
                         sys.stderr.write('Not fixing {f} on line {l}\n'.format(
                                 f=result['id'], l=result['line']))
-                completed_lines.append(result['line'])
+                else:  # We assume one-line fix when None
+                    completed_lines.append(result['line'])
             else:
                 if self.options.verbose:
                     sys.stderr.write("'%s' is not defined.\n" % \

@@ -478,7 +478,7 @@ class Foo():
     def test_e702_skip_with_triple_quote(self):
         # We do not support this yet.
         # We would expect '"""\n      hello\n   """\n1\n'.
-        line = '"""\n      hello\n   """;1\n'
+        line = '"""\n      hello\n   """; 1\n'
         fixed = line
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
