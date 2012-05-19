@@ -414,6 +414,10 @@ class FixPEP8(object):
             # Give up
             return []
 
+        if ' or ' in line or ' and ' in line:
+            # Give up
+            return []
+
         if (line.endswith('\\\n') or
             line.endswith('\\\r\n') or
             line.endswith('\\\r')):

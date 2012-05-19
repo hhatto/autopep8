@@ -620,6 +620,12 @@ a.has_key(
         self.assertEqual(self.result, line)
 
     @only_py2
+    def test_w602_skip_logic(self):
+        line = "raise TypeError, e or 'hello'\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
+    @only_py2
     def test_w602_triple_quotes(self):
         line = 'raise ValueError, """hello"""\n1\n'
         fixed = 'raise ValueError("""hello""")\n1\n'
