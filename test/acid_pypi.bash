@@ -34,7 +34,7 @@ do
     tar xf "$package"*.tar.gz
     if [ $? -ne 0 ]
     then
-        unzip "$package"*.zip
+        unzip -q "$package"*.zip
         if [ $? -ne 0 ]
         then
             echo 'ERROR: Both untar and unzip failed'
