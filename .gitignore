@@ -8,3 +8,4 @@ htmlcov
 .tox
 *.class
 coverage.xml
+test/pypi_tmp/
