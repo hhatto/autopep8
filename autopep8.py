@@ -233,9 +233,23 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed
 
     def fix_e251(self, result):
-        target = self.source[result['line'] - 1]
+        line_index = result['line'] - 1
+        target = self.source[line_index]
         c = result['column'] - 1
         fixed = target[:c] + re.sub(r'\s*=\s*', '=', target[c:], 1)
+
+        # There could be an escaped newline
+        #
+        #     def foo(a=\
+        #             1)
+        if (fixed.endswith('=\\\n') or
+            fixed.endswith('=\\\r\n') or
+            fixed.endswith('=\\\r')):
+            self.source[line_index] = fixed.rstrip('\n\r \t\\')
+            self.source[line_index + 1] = \
+                    self.source[line_index + 1].lstrip()
+            return [line_index + 1, line_index + 2]  # Line indexed at 1
+
         self.source[result['line'] - 1] = fixed
 
     def fix_e262(self, result):

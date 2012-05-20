@@ -349,6 +349,12 @@ class Foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e251_with_escaped_newline(self):
+        line = "1\n\n\ndef a(arg=\\\n1):\n    print(arg)\n"
+        fixed = "1\n\n\ndef a(arg=1):\n    print(arg)\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e261(self):
         line = "print 'a b '# comment\n"
         fixed = "print 'a b '  # comment\n"
