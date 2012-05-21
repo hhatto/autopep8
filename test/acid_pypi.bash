@@ -10,7 +10,7 @@ ACID="$PWD/acid.py"
 TMP_DIR="$PWD/pypi_tmp"
 mkdir "$TMP_DIR"
 
-for package in $(yolk -C "$LAST_HOURS" | grep -v '^	' | sed 's/ .*//')
+for package in $(yolk -L "$LAST_HOURS" | sed 's/ .*//')
 do
     echo
     echo "$package"
