@@ -107,12 +107,15 @@ class FixPEP8(object):
         """execute pep8 via python method calls."""
         pep8.options, pep8.args = \
                 pep8.process_options(['pep8'] + self._pep8_options(targetfile))
+        # Override sys.stdout to get results from pep8
         sys_stdout = sys.stdout
-        fake_stdout = StringIO()
-        sys.stdout = fake_stdout
-        tmp_checker = pep8.Checker(self.filename, lines=self.source)
-        tmp_checker.check_all()
-        sys.stdout = sys_stdout
+        try:
+            fake_stdout = StringIO()
+            sys.stdout = fake_stdout
+            tmp_checker = pep8.Checker(self.filename, lines=self.source)
+            tmp_checker.check_all()
+        finally:
+            sys.stdout = sys_stdout
         result = fake_stdout.getvalue()
         return StringIO(result).readlines()
 
