@@ -124,7 +124,9 @@ class FixPEP8(object):
         """return options to be passed to pep8."""
         return (["--repeat", targetfile] +
                 (["--ignore=" + self.options.ignore]
-                 if self.options.ignore else []))
+                 if self.options.ignore else []) +
+                (["--select=" + self.options.select]
+                 if self.options.select else []))
 
     def _fix_source(self):
         completed_lines = []
@@ -899,6 +901,8 @@ def main():
                            ' (default:%d)' % PEP8_PASSES_MAX)
     parser.add_option('--ignore', default='',
                       help='do not fix these errors/warnings (e.g. E4,W)')
+    parser.add_option('--select', default='',
+                      help='select errors/warnings (e.g. E4,W)')
     opts, args = parser.parse_args()
     if not len(args):
         parser.error('incorrect number of arguments')
