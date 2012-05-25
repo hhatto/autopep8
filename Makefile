@@ -50,8 +50,6 @@ pypireg:
 	python setup.py sdist upload
 
 clean:
-	rm -rf .tmp.test.py
-	rm -rf temp
-	rm -rf *.pyc
-	rm -rf *egg-info dist build
-	rm -rf htmlcov coverage.xml
+	rm -rf .tmp.test.py temp *.pyc *egg-info dist build \
+		__pycache__ */__pycache__ */*/__pycache__ \
+		htmlcov coverage.xml
