@@ -313,6 +313,20 @@ class Foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e225_with_indentation_fix(self):
+        line = """
+class Foo(object):
+  def bar(self):
+    return self.elephant!=None
+""".lstrip()
+        fixed = """
+class Foo(object):
+    def bar(self):
+        return self.elephant != None
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e231(self):
         line = "[1,2,3]\n"
         fixed = "[1, 2, 3]\n"
