@@ -7,6 +7,7 @@ import copy
 import os
 import re
 import sys
+from code import compile_command
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -311,6 +312,30 @@ class FixPEP8(object):
         fixed_modulelist = \
                 [indentation + "import %s" % m.lstrip() for m in modules]
         self.source[line_index] = self.newline.join(fixed_modulelist)
+
+    def fix_e501(self, result):
+        # FIXME: lazy implementation
+        RETURN_COLUMN = 75
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+        indent = _get_indentation(target)
+        source = target[len(indent):]
+        sio = StringIO(target)
+        try:
+            tokenize.generate_tokens(sio.readline)
+        except (tokenize.TokenError, IndentationError):
+            return
+        for offset in range(50):
+            fixed = "%s" % source[:RETURN_COLUMN - len(indent) - offset] + \
+                    " \\\n" + indent + "    " + \
+                    source[RETURN_COLUMN - len(indent) - offset:]
+            try:
+                ret = compile_command(fixed)
+            except SyntaxError:
+                continue
+            if ret:
+                self.source[line_index] = indent + fixed
+                break
 
     def fix_e701(self, result):
         line_index = result['line'] - 1
