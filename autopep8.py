@@ -590,10 +590,13 @@ def _find_newline(source):
 def _get_indentword(source):
     sio = StringIO(source)
     indent_word = "    "  # Default in case source has no indentation
-    for t in tokenize.generate_tokens(sio.readline):
-        if t[0] == token.INDENT:
-            indent_word = t[1]
-            break
+    try:
+        for t in tokenize.generate_tokens(sio.readline):
+            if t[0] == token.INDENT:
+                indent_word = t[1]
+                break
+    except tokenize.TokenError:
+        pass
     return indent_word
 
 

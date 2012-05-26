@@ -865,15 +865,14 @@ class TestOptions(unittest.TestCase):
 
     @py27_and_above
     def test_verbose(self):
-        line = '"' + 80 * 'a' + '"'
+        line = 'bad_syntax)'
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--verbose'],
                   stdout=PIPE, stderr=PIPE)
         verbose_error = p.communicate()[1].decode('utf8')
-        self.assertIn("'fix_e501' is not defined", verbose_error)
-        self.assertIn("too long", verbose_error)
+        self.assertIn("'fix_e901' is not defined", verbose_error)
 
     def test_in_place(self):
         line = "'abc'  \n"
