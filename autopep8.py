@@ -43,8 +43,10 @@ CRLF = '\r\n'
 
 def read_from_filename(filename, readlines=False):
     """Simple open file, read contents, close file.
+
     Ensures file gets closed without relying on CPython GC.
     Jython requires files to be closed.
+
     """
     f = open(filename)
     try:
@@ -54,7 +56,8 @@ def read_from_filename(filename, readlines=False):
 
 
 class FixPEP8(object):
-    """fix invalid code
+
+    """Fix invalid code.
 
     [fixed method list]
         - e111
@@ -70,7 +73,9 @@ class FixPEP8(object):
         - w291,w293
         - w391
         - w602,w603,w604
+
     """
+
     def __init__(self, filename, options, contents=None):
         self.filename = filename
         if contents is None:
@@ -96,7 +101,7 @@ class FixPEP8(object):
         self.fix_w191 = self.fix_e101
 
     def _spawn_pep8(self, targetfile):
-        """execute pep8 via subprocess.Popen."""
+        """Execute pep8 via subprocess.Popen."""
         paths = os.environ['PATH'].split(':')
         for path in paths:
             if os.path.exists(os.path.join(path, PEP8_BIN)):
@@ -107,7 +112,7 @@ class FixPEP8(object):
         raise Exception("'%s' is not found." % PEP8_BIN)
 
     def _execute_pep8(self, targetfile):
-        """execute pep8 via python method calls."""
+        """Execute pep8 via python method calls."""
         pep8.options, pep8.args = \
                 pep8.process_options(['pep8'] + self._pep8_options(targetfile))
         # Override sys.stdout to get results from pep8
@@ -123,7 +128,7 @@ class FixPEP8(object):
         return StringIO(result).readlines()
 
     def _pep8_options(self, targetfile):
-        """return options to be passed to pep8."""
+        """Return options to be passed to pep8."""
         return (["--repeat", targetfile] +
                 (["--ignore=" + self.options.ignore]
                  if self.options.ignore else []))
@@ -198,7 +203,7 @@ class FixPEP8(object):
         self._fix_whitespace(result, r"\s+\[", "[")
 
     def fix_e221(self, result):
-        """e221, e222 and e223 fixed method"""
+        """Fix E221, E222, and E223."""
         target = self.source[result['line'] - 1]
         c = result['column'] + 1
         fixed = re.sub(r'\s+', ' ', target[c::-1], 1)[::-1] + target[c + 1:]
@@ -631,8 +636,10 @@ def _get_difftext(old, new, filename):
 
 def _priority_key(pep8_result):
     """Key for sorting PEP8 results.
+
     Global fixes should be done first. This is important for things
     like indentation.
+
     """
     priority = ['e101', 'e111', 'w191',  # Global fixes
                 'e702',  # Break multiline statements early
@@ -646,7 +653,7 @@ def _priority_key(pep8_result):
 
 
 def _fix_basic_raise(line, newline):
-    """Fix W602 basic case"""
+    """Fix W602 basic case."""
     sio = StringIO(line)
     is_found_raise = False
     first_comma_found = False
@@ -685,8 +692,13 @@ def _fix_basic_raise(line, newline):
 
 
 class Reindenter(object):
+
     """Reindents badly-indented code to uniformly use four-space indentation.
-    Released to the public domain, by Tim Peters, 03 October 2000."""
+
+    Released to the public domain, by Tim Peters, 03 October 2000.
+
+    """
+
     def __init__(self, input_text):
         self.find_stmt = 1  # next token begins a fresh stmt?
         self.level = 0  # current indent level
@@ -876,7 +888,7 @@ def fix_file(filename, opts):
 
 
 def main():
-    """tool main"""
+    """Tool main."""
     parser = OptionParser(usage='Usage: autopep8 [options] '
                                 '[filename [filename ...]]',
                           version="autopep8: %s" % __version__,
