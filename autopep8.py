@@ -630,8 +630,7 @@ def _analyze_pep8result(result):
 
 def _get_difftext(old, new, filename):
     diff = unified_diff(old, new, 'original/' + filename, 'fixed/' + filename)
-    difftext = [line for line in diff]
-    return "".join(difftext)
+    return "".join(diff)
 
 
 def _priority_key(pep8_result):
