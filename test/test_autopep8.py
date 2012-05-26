@@ -429,6 +429,30 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e271(self):
+        line = "True and  False\n"
+        fixed = "True and False\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e272(self):
+        line = "True  and False\n"
+        fixed = "True and False\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e273(self):
+        line = "True and\tFalse\n"
+        fixed = "True and False\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e274(self):
+        line = "True\tand False\n"
+        fixed = "True and False\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e301(self):
         line = "class k:\n    s = 0\n    def f():\n        print 1\n"
         fixed = "class k:\n    s = 0\n\n    def f():\n        print 1\n"

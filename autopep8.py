@@ -90,6 +90,9 @@ class FixPEP8(object):
         self.fix_e241 = self.fix_e221
         self.fix_e242 = self.fix_e224
         self.fix_e261 = self.fix_e262
+        self.fix_e272 = self.fix_e271
+        self.fix_e273 = self.fix_e271
+        self.fix_e274 = self.fix_e271
         self.fix_w191 = self.fix_e101
 
     def _spawn_pep8(self, targetfile):
@@ -267,6 +270,19 @@ class FixPEP8(object):
                         else self.newline)
 
         self.source[result['line'] - 1] = fixed
+
+    def fix_e271(self, result):
+        """Fix extraneous whitespace around keywords."""
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+        offset = result['column'] - 1
+
+        # Proceed safely
+        if target[offset] not in [' ', '\t']:
+            return []
+
+        fixed = target[:offset].rstrip() + ' ' + target[offset:].lstrip()
+        self.source[line_index] = fixed
 
     def fix_e301(self, result):
         cr = self.newline
