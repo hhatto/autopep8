@@ -731,8 +731,11 @@ class Reindenter(object):
 
     def run(self):
         tokens = tokenize.generate_tokens(self.getline)
-        for t in tokens:
-            self.tokeneater(*t)
+        try:
+            for t in tokens:
+                self.tokeneater(*t)
+        except IndentationError:
+            return False
         # Remove trailing empty lines.
         lines = self.lines
         while lines and lines[-1] == "\n":
