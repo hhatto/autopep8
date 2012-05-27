@@ -41,6 +41,18 @@ LF = '\n'
 CRLF = '\r\n'
 
 
+def open_with_encoding(filename):
+    """Open file with proper encoding."""
+    try:
+        # Python 3
+        with open(filename, 'rb') as input_file:
+            encoding = tokenize.detect_encoding(input_file.readline)
+
+        return open(filename, encoding=encoding[0])
+    except AttributeError:
+        return open(filename)
+
+
 def read_from_filename(filename, readlines=False):
     """Simple open file, read contents, close file.
 
@@ -48,11 +60,8 @@ def read_from_filename(filename, readlines=False):
     Jython requires files to be closed.
 
     """
-    f = open(filename)
-    try:
-        return f.readlines() if readlines else f.read()
-    finally:
-        f.close()
+    with open_with_encoding(filename) as input_file:
+        return input_file.readlines() if readlines else input_file.read()
 
 
 class FixPEP8(object):
