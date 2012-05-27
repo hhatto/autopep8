@@ -161,7 +161,7 @@ class FixPEP8(object):
                     completed_lines.append(result['line'])
             else:
                 if self.options.verbose:
-                    sys.stderr.write("'%s' is not defined.\n" % \
+                    sys.stderr.write("'%s' is not defined.\n" %
                             fixed_methodname)
                     info = result['info'].strip()
                     sys.stderr.write("%s:%s:%s:%s\n" % (result['filename'],
