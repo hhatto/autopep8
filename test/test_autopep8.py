@@ -495,6 +495,17 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_basic(self):
+        line = \
+"""print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
+"""
+        fixed = \
+"""print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, \\
+     333, 333, 333)
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e701(self):
         line = "if True: print True\n"
         fixed = "if True:\n    print True\n"
