@@ -345,10 +345,13 @@ class FixPEP8(object):
         indent = _get_indentation(target)
         source = target[len(indent):]
         sio = StringIO(target)
+
+        # don't fix when multiline string
         try:
             tokenize.generate_tokens(sio.readline)
         except (tokenize.TokenError, IndentationError):
             return
+
         for offset in range(50):
             fixed = "%s" % source[:RETURN_COLUMN - len(indent) - offset] + \
                     " \\\n" + indent + "    " + \
