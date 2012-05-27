@@ -110,6 +110,16 @@ while True:  # My inline comment
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e101_skip_if_bad_indentation(self):
+        line = """
+try:
+\t    pass
+    except:
+        pass
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
     def test_e111_short(self):
         line = "class Dummy:\n  def __init__(self):\n    pass\n"
         fixed = "class Dummy:\n    def __init__(self):\n        pass\n"
