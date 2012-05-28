@@ -41,16 +41,23 @@ LF = '\n'
 CRLF = '\r\n'
 
 
-def open_with_encoding(filename):
-    """Open file with proper encoding."""
+def open_with_encoding(filename, encoding, mode='r'):
+    """Open file with a specific encoding."""
+    try:
+        # Python 3
+        return open(filename, mode=mode, encoding=encoding)
+    except TypeError:
+        return open(filename, mode=mode)
+
+
+def detect_encoding(filename):
+    """Return file encoding."""
     try:
         # Python 3
         with open(filename, 'rb') as input_file:
-            encoding = tokenize.detect_encoding(input_file.readline)
-
-        return open(filename, encoding=encoding[0])
+            return tokenize.detect_encoding(input_file.readline)[0]
     except AttributeError:
-        return open(filename)
+        return 'utf-8'
 
 
 def read_from_filename(filename, readlines=False):
@@ -60,7 +67,8 @@ def read_from_filename(filename, readlines=False):
     Jython requires files to be closed.
 
     """
-    with open_with_encoding(filename) as input_file:
+    with open_with_encoding(filename,
+                            encoding=detect_encoding(filename)) as input_file:
         return input_file.readlines() if readlines else input_file.read()
 
 
@@ -891,7 +899,8 @@ def fix_file(filename, opts):
         sys.stdout.write(_get_difftext(original_source, new,
                                        filename))
     elif opts.in_place:
-        fp = open(filename, 'w')
+        fp = open_with_encoding(filename, encoding=detect_encoding(filename),
+                                mode='w')
         fp.write(fixed_source)
         fp.close()
     else:
