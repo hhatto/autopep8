@@ -9,11 +9,11 @@ import tempfile
 
 
 def run(filename, log_file, fast_check=False, passes=2000,
-        ignore_list=['E501']):
+        ignore='E501'):
     """Run autopep8 on file at filename.
     Return True on success.
     """
-    ignore_option = '--ignore=' + ','.join(ignore_list)
+    ignore_option = '--ignore=' + ignore
 
     autopep8_path = os.path.split(os.path.abspath(
             os.path.dirname(__file__)))[0]
@@ -61,6 +61,9 @@ def main():
                       help='ignore incomplete PEP8 fixes and broken files')
     parser.add_option('--log-errors',
                       help='log autopep8 errors instead of exiting')
+    parser.add_option('--ignore',
+                      help='comma-separated errors to ignore',
+                      default='E501')
     opts, args = parser.parse_args()
 
     if opts.log_errors:
@@ -86,7 +89,8 @@ def main():
 
                     if not run(os.path.join(root, f),
                             log_file=log_file,
-                            fast_check=opts.fast_check):
+                            fast_check=opts.fast_check,
+                            ignore=opts.ignore):
                         if not opts.log_errors:
                             sys.exit(1)
     finally:
