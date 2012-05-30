@@ -354,6 +354,13 @@ class FixPEP8(object):
                 [indentation + "import %s" % m.lstrip() for m in modules]
         self.source[line_index] = self.newline.join(fixed_modulelist)
 
+    def fix_e502(self, result):
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+        c = result['column']
+        new = re.sub(r'\s*\\(\s+)', '\\1', target)
+        self.source[line_index] = new
+
     def fix_e701(self, result):
         line_index = result['line'] - 1
         target = self.source[line_index]
