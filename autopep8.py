@@ -22,10 +22,10 @@ from difflib import unified_diff
 import tempfile
 import ast
 
-from distutils.version import StrictVersion
+from distutils.version import LooseVersion
 try:
     import pep8
-    if StrictVersion(pep8.__version__) < StrictVersion('0.5.1'):
+    if LooseVersion(pep8.__version__) < LooseVersion('0.5.1'):
         pep8 = None
 except ImportError:
     pep8 = None
@@ -84,8 +84,10 @@ class FixPEP8(object):
         - e231
         - e251
         - e261,e262
+        - e271,e272,e273,e274
         - e301,e302,e303
         - e401
+        - e502
         - e701,e702
         - w291,w293
         - w391
@@ -322,6 +324,12 @@ class FixPEP8(object):
         fixed_modulelist = \
                 [indentation + "import %s" % m.lstrip() for m in modules]
         self.source[line_index] = self.newline.join(fixed_modulelist)
+
+    def fix_e502(self, result):
+        """Remove extraneous escape of newline."""
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+        self.source[line_index] = target.rstrip('\n\r \t\\') + self.newline
 
     def fix_e701(self, result):
         line_index = result['line'] - 1

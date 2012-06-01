@@ -513,6 +513,12 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e502(self):
+        line = "print('abc'\\\n'def')\n"
+        fixed = "print('abc'\n'def')\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e701(self):
         line = "if True: print True\n"
         fixed = "if True:\n    print True\n"
