@@ -11,8 +11,8 @@ before_install:
     - export JYTHON_URL='http://sourceforge.net/projects/jython/files/jython-dev/2.7.0a1/jython_installer-2.7a1.jar/download'
     - if [ "$TRAVIS_PYTHON_VERSION" == "jython" ]; then wget $JYTHON_URL -O jython_installer.jar; java -jar jython_installer.jar -s -d $HOME/jython; export PATH=$HOME/jython:$PATH; fi
     - if [ "$TRAVIS_PYTHON_VERSION" == "jython" ]; then export ENV_PYTHON=jython; jython -c "print('')"; else export ENV_PYTHON=python; fi
-    # We will spawn pep8
-    - if [ "$TRAVIS_PYTHON_VERSION" == "jython" ]; then pip install pep8; fi
+    # We will spawn pep8 under Jython rather than importing it
+    - if [ "$TRAVIS_PYTHON_VERSION" == "jython" ]; then sudo pip install pep8; fi
 
 install:
     - $ENV_PYTHON setup.py install
