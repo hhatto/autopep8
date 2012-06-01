@@ -3,6 +3,13 @@ import sys
 import unittest
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
+try:
+    from cStringIO import StringIO
+except ImportError:
+    try:
+        from StringIO import StringIO
+    except ImportError:
+        from io import StringIO
 
 ROOT_DIR = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
 
@@ -66,11 +73,12 @@ class TestFixPEP8Error(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        cmd = list(AUTOPEP8_CMD_TUPLE)
-        cmd.extend(options.split())
-        cmd.append(self.tempfile[1])
-        p = Popen(cmd, stdout=PIPE)
-        self.result = p.communicate()[0].decode('utf8')
+        opts, _ = autopep8.parse_args(options.split() + [self.tempfile[1]])
+        sio = StringIO()
+        autopep8.fix_file(filename=self.tempfile[1],
+                          opts=opts,
+                          output=sio)
+        self.result = sio.getvalue()
 
     def test_e101(self):
         line = """
@@ -109,6 +117,16 @@ while True:  # My inline comment
 """.lstrip()
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
+
+    def test_e101_skip_if_bad_indentation(self):
+        line = """
+try:
+\t    pass
+    except:
+        pass
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
 
     def test_e111_short(self):
         line = "class Dummy:\n  def __init__(self):\n    pass\n"
@@ -506,6 +524,12 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e502(self):
+        line = "print('abc'\\\n'def')\n"
+        fixed = "print('abc'\n'def')\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e701(self):
         line = "if True: print True\n"
         fixed = "if True:\n    print True\n"
@@ -551,8 +575,12 @@ class TestFixPEP8Warning(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1]], stdout=PIPE)
-        self.result = p.communicate()[0].decode('utf8')
+        opts, _ = autopep8.parse_args([self.tempfile[1]])
+        sio = StringIO()
+        autopep8.fix_file(filename=self.tempfile[1],
+                          opts=opts,
+                          output=sio)
+        self.result = sio.getvalue()
 
     def test_w291(self):
         line = "print 'a b '\t \n"
@@ -942,8 +970,8 @@ class TestSpawnPEP8Process(unittest.TestCase):
         self.result = p.communicate()[0].decode('utf8')
 
     def test_basic(self):
-        line = "print('abc')    \n"
-        fixed = "print('abc')\n"
+        line = "print('abc' )    \n1*1\n"
+        fixed = "print('abc')\n1 * 1\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 

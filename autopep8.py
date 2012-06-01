@@ -23,16 +23,16 @@ from difflib import unified_diff
 import tempfile
 import ast
 
-from distutils.version import StrictVersion
+from distutils.version import LooseVersion
 try:
     import pep8
-    if StrictVersion(pep8.__version__) < StrictVersion('0.5.1'):
+    if LooseVersion(pep8.__version__) < LooseVersion('0.5.1'):
         pep8 = None
 except ImportError:
     pep8 = None
 
 
-__version__ = '0.6.1'
+__version__ = '0.6.2'
 
 
 PEP8_BIN = 'pep8'
@@ -42,6 +42,25 @@ LF = '\n'
 CRLF = '\r\n'
 
 
+def open_with_encoding(filename, encoding, mode='r'):
+    """Open file with a specific encoding."""
+    try:
+        # Python 3
+        return open(filename, mode=mode, encoding=encoding)
+    except TypeError:
+        return open(filename, mode=mode)
+
+
+def detect_encoding(filename):
+    """Return file encoding."""
+    try:
+        # Python 3
+        with open(filename, 'rb') as input_file:
+            return tokenize.detect_encoding(input_file.readline)[0]
+    except AttributeError:
+        return 'utf-8'
+
+
 def read_from_filename(filename, readlines=False):
     """Simple open file, read contents, close file.
 
@@ -49,11 +68,9 @@ def read_from_filename(filename, readlines=False):
     Jython requires files to be closed.
 
     """
-    f = open(filename)
-    try:
-        return f.readlines() if readlines else f.read()
-    finally:
-        f.close()
+    with open_with_encoding(filename,
+                            encoding=detect_encoding(filename)) as input_file:
+        return input_file.readlines() if readlines else input_file.read()
 
 
 class FixPEP8(object):
@@ -68,8 +85,10 @@ class FixPEP8(object):
         - e231
         - e251
         - e261,e262
+        - e271,e272,e273,e274
         - e301,e302,e303
         - e401
+        - e502
         - e701,e702
         - w291,w293
         - w391
@@ -86,7 +105,6 @@ class FixPEP8(object):
             self.source = sio.readlines()
         self.original_source = copy.copy(self.source)
         self.newline = _find_newline(self.source)
-        self.results = []
         self.options = options
         self.indent_word = _get_indentword("".join(self.source))
         # method definition
@@ -101,33 +119,6 @@ class FixPEP8(object):
         self.fix_e274 = self.fix_e271
         self.fix_w191 = self.fix_e101
 
-    def _spawn_pep8(self, targetfile):
-        """Execute pep8 via subprocess.Popen."""
-        paths = os.environ['PATH'].split(':')
-        for path in paths:
-            if os.path.exists(os.path.join(path, PEP8_BIN)):
-                cmd = ([os.path.join(path, PEP8_BIN)] +
-                       self._pep8_options(targetfile))
-                p = Popen(cmd, stdout=PIPE)
-                return [l.decode('utf8') for l in p.stdout.readlines()]
-        raise Exception("'%s' is not found." % PEP8_BIN)
-
-    def _execute_pep8(self, targetfile):
-        """Execute pep8 via python method calls."""
-        pep8.options, pep8.args = \
-                pep8.process_options(['pep8'] + self._pep8_options(targetfile))
-        # Override sys.stdout to get results from pep8
-        sys_stdout = sys.stdout
-        try:
-            fake_stdout = StringIO()
-            sys.stdout = fake_stdout
-            tmp_checker = pep8.Checker(self.filename, lines=self.source)
-            tmp_checker.check_all()
-        finally:
-            sys.stdout = sys_stdout
-        result = fake_stdout.getvalue()
-        return StringIO(result).readlines()
-
     def _pep8_options(self, targetfile):
         """Return options to be passed to pep8."""
         return (["--repeat", targetfile] +
@@ -136,9 +127,9 @@ class FixPEP8(object):
                 (["--select=" + self.options.select]
                  if self.options.select else []))
 
-    def _fix_source(self):
+    def _fix_source(self, results):
         completed_lines = []
-        for result in sorted(self.results, key=_priority_key):
+        for result in sorted(results, key=_priority_key):
             if result['line'] in completed_lines:
                 continue
             fixed_methodname = "fix_%s" % result['id'].lower()
@@ -155,10 +146,10 @@ class FixPEP8(object):
                     completed_lines.append(result['line'])
             else:
                 if self.options.verbose:
-                    sys.stderr.write("'%s' is not defined.\n" % \
+                    sys.stderr.write("'%s' is not defined.\n" %
                             fixed_methodname)
                     info = result['info'].strip()
-                    sys.stderr.write("%s:%s:%s:%s\n" % (result['filename'],
+                    sys.stderr.write("%s:%s:%s:%s\n" % (self.filename,
                                                         result['line'],
                                                         result['column'],
                                                         info))
@@ -169,12 +160,12 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = indent + fixed
 
     def fix(self):
+        pep8_options = self._pep8_options(self.filename)
         if pep8:
-            pep8result = self._execute_pep8(self.filename)
+            results = _execute_pep8(pep8_options, self.source)
         else:
-            pep8result = self._spawn_pep8(self.filename)
-        self.results = [_analyze_pep8result(line) for line in pep8result]
-        self._fix_source()
+            results = _spawn_pep8(pep8_options)
+        self._fix_source(results)
         return "".join(self.source)
 
     def fix_e101(self, _):
@@ -363,6 +354,12 @@ class FixPEP8(object):
             if ret:
                 self.source[line_index] = indent + fixed
                 break
+
+    def fix_e502(self, result):
+        """Remove extraneous escape of newline."""
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+        self.source[line_index] = target.rstrip('\n\r \t\\') + self.newline
 
     def fix_e701(self, result):
         line_index = result['line'] - 1
@@ -720,6 +717,47 @@ def _fix_basic_raise(line, newline):
                     comment, newline])
 
 
+def _spawn_pep8(pep8_options):
+    """Execute pep8 via subprocess.Popen."""
+    paths = os.environ['PATH'].split(':')
+    for path in paths:
+        if os.path.exists(os.path.join(path, PEP8_BIN)):
+            cmd = ([os.path.join(path, PEP8_BIN)] +
+                   pep8_options)
+            p = Popen(cmd, stdout=PIPE)
+            return [_analyze_pep8result(l.decode('utf8'))
+                    for l in p.stdout.readlines()]
+    raise Exception("'%s' is not found." % PEP8_BIN)
+
+
+def _execute_pep8(pep8_options, source):
+    """Execute pep8 via python method calls."""
+    pep8.options, pep8.args = (pep8.process_options(['pep8'] + pep8_options))
+
+    class QuietChecker(pep8.Checker):
+
+        """Version of checker that does not print."""
+
+        def __init__(self, filename, lines):
+            pep8.Checker.__init__(self, filename, lines=lines)
+            self.__results = None
+
+        def report_error(self, line_number, offset, text, check):
+            """Collect errors."""
+            self.__results.append(
+                    dict(id=text.split()[0], line=line_number,
+                         column=offset + 1, info=text))
+
+        def check_all(self, expected=None, line_offset=0):
+            """Check code and return results."""
+            self.__results = []
+            pep8.Checker.check_all(self, expected, line_offset)
+            return self.__results
+
+    checker = QuietChecker('', lines=source)
+    return checker.check_all()
+
+
 class Reindenter(object):
 
     """Reindents badly-indented code to uniformly use four-space indentation.
@@ -752,8 +790,11 @@ class Reindenter(object):
 
     def run(self):
         tokens = tokenize.generate_tokens(self.getline)
-        for t in tokens:
-            self.tokeneater(*t)
+        try:
+            for t in tokens:
+                self.tokeneater(*t)
+        except IndentationError:
+            return False
         # Remove trailing empty lines.
         lines = self.lines
         while lines and lines[-1] == "\n":
@@ -881,7 +922,7 @@ def _getlspace(line):
     return i
 
 
-def fix_file(filename, opts):
+def fix_file(filename, opts, output=sys.stdout):
     tmp_source = read_from_filename(filename)
     fix = FixPEP8(filename, opts, contents=tmp_source)
     fixed_source = fix.fix()
@@ -904,20 +945,20 @@ def fix_file(filename, opts):
     del tmp_source
 
     if opts.diff:
-        new = StringIO("".join(fix.source))
+        new = StringIO(''.join(fix.source))
         new = new.readlines()
-        sys.stdout.write(_get_difftext(original_source, new,
-                                       filename))
+        output.write(_get_difftext(original_source, new, filename))
     elif opts.in_place:
-        fp = open(filename, 'w')
+        fp = open_with_encoding(filename, encoding=detect_encoding(filename),
+                                mode='w')
         fp.write(fixed_source)
         fp.close()
     else:
-        sys.stdout.write(fixed_source)
+        output.write(fixed_source)
 
 
-def main():
-    """Tool main."""
+def parse_args(args):
+    """Parse command-line options."""
     parser = OptionParser(usage='Usage: autopep8 [options] '
                                 '[filename [filename ...]]',
                           version="autopep8: %s" % __version__,
@@ -937,18 +978,27 @@ def main():
                       help='do not fix these errors/warnings (e.g. E4,W)')
     parser.add_option('--select', default='',
                       help='select errors/warnings (e.g. E4,W)')
-    opts, args = parser.parse_args()
+    opts, args = parser.parse_args(args)
+
     if not len(args):
         parser.error('incorrect number of arguments')
 
+    if len(args) > 1 and not (opts.in_place or opts.diff):
+        parser.error('autopep8 only takes one filename as argument '
+                     'unless the "--in-place" or "--diff" options are '
+                     'used')
+
+    return opts, args
+
+
+def main():
+    """Tool main."""
+    opts, args = parse_args(sys.argv[1:])
     try:
-        if opts.in_place:
-            for f in args:
+        if opts.in_place or opts.diff:
+            for f in set(args):
                 fix_file(f, opts)
         else:
-            if len(args) > 1:
-                parser.error('autopep8 only takes one filename as argument '
-                             'unless the "--in-place" option is used')
             fix_file(args[0], opts)
     except IOError as error:
         sys.stderr.write(str(error) + '\n')
