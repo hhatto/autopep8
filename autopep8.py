@@ -908,7 +908,7 @@ def fix_file(filename, opts):
     del tmp_source
 
     if opts.diff:
-        new = StringIO("".join(fix.source))
+        new = StringIO(''.join(fix.source))
         new = new.readlines()
         sys.stdout.write(_get_difftext(original_source, new,
                                        filename))
