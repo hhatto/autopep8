@@ -343,16 +343,17 @@ class FixPEP8(object):
         except (tokenize.TokenError, IndentationError):
             return []
 
-        # line sparate with OPERATOR
+        # line separate with OPERATOR
         _tokens.reverse()
         for tkn in _tokens:
-            # Don't break on keyword '=' as this violates PEP 8.
+            # Don't break on '=' after keyword as this violates PEP 8.
             if token.OP == tkn[0] and tkn[1] != '=':
                 offset = tkn[2][1] + 1
-                if offset > (79 - len(indent) - 4):
+                if offset > (79 - len(indent) - len(self.indent_word)):
                     continue
-                fixed = "%s" % source[:offset - len(indent)] + "\n" + \
-                        indent + "    " + source[offset - len(indent):]
+                fixed = ("%s" % source[:offset - len(indent)] + "\n" +
+                         indent + self.indent_word +
+                         source[offset - len(indent):])
                 try:
                     ret = compile(fixed, '<string>', 'exec')
                 except SyntaxError:
