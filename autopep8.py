@@ -132,17 +132,25 @@ class FixPEP8(object):
         """Execute pep8 via python method calls."""
         pep8.options, pep8.args = \
                 pep8.process_options(['pep8'] + self._pep8_options(targetfile))
-        # Override sys.stdout to get results from pep8
-        sys_stdout = sys.stdout
-        try:
-            fake_stdout = StringIO()
-            sys.stdout = fake_stdout
-            tmp_checker = pep8.Checker(self.filename, lines=self.source)
-            tmp_checker.check_all()
-        finally:
-            sys.stdout = sys_stdout
-        result = fake_stdout.getvalue()
-        return StringIO(result).readlines()
+
+        class QuietChecker(pep8.Checker):
+
+            """Version of checker that does not print."""
+
+            def __init__(self, filename, lines):
+                pep8.Checker.__init__(self, filename, lines=lines)
+                self.results = []
+
+            def report_error(self, line_number, offset, text, check):
+                """Collect errors."""
+                self.results.append(
+                        dict(id=text.split()[0], line=line_number,
+                             column=offset + 1, info=text))
+
+        checker = QuietChecker(self.filename, lines=self.source)
+        checker.check_all()
+
+        return checker.results
 
     def _pep8_options(self, targetfile):
         """Return options to be passed to pep8."""
@@ -172,7 +180,7 @@ class FixPEP8(object):
                     sys.stderr.write("'%s' is not defined.\n" %
                             fixed_methodname)
                     info = result['info'].strip()
-                    sys.stderr.write("%s:%s:%s:%s\n" % (result['filename'],
+                    sys.stderr.write("%s:%s:%s:%s\n" % (self.filename,
                                                         result['line'],
                                                         result['column'],
                                                         info))
@@ -184,10 +192,10 @@ class FixPEP8(object):
 
     def fix(self):
         if pep8:
-            pep8result = self._execute_pep8(self.filename)
+            self.results = self._execute_pep8(self.filename)
         else:
             pep8result = self._spawn_pep8(self.filename)
-        self.results = [_analyze_pep8result(line) for line in pep8result]
+            self.results = [_analyze_pep8result(line) for line in pep8result]
         self._fix_source()
         return "".join(self.source)
 
