@@ -3,6 +3,13 @@ import sys
 import unittest
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
+try:
+    from cStringIO import StringIO
+except ImportError:
+    try:
+        from StringIO import StringIO
+    except ImportError:
+        from io import StringIO
 
 ROOT_DIR = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
 
@@ -66,11 +73,12 @@ class TestFixPEP8Error(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        cmd = list(AUTOPEP8_CMD_TUPLE)
-        cmd.extend(options.split())
-        cmd.append(self.tempfile[1])
-        p = Popen(cmd, stdout=PIPE)
-        self.result = p.communicate()[0].decode('utf8')
+        opts, _ = autopep8.parse_args(options.split() + [self.tempfile[1]])
+        sio = StringIO()
+        autopep8.fix_file(filename=self.tempfile[1],
+                          opts=opts,
+                          output=sio)
+        self.result = sio.getvalue()
 
     def test_e101(self):
         line = """
@@ -550,8 +558,12 @@ class TestFixPEP8Warning(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1]], stdout=PIPE)
-        self.result = p.communicate()[0].decode('utf8')
+        opts, _ = autopep8.parse_args([self.tempfile[1]])
+        sio = StringIO()
+        autopep8.fix_file(filename=self.tempfile[1],
+                          opts=opts,
+                          output=sio)
+        self.result = sio.getvalue()
 
     def test_w291(self):
         line = "print 'a b '\t \n"

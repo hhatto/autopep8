@@ -884,7 +884,7 @@ def _getlspace(line):
     return i
 
 
-def fix_file(filename, opts):
+def fix_file(filename, opts, output=sys.stdout):
     tmp_source = read_from_filename(filename)
     fix = FixPEP8(filename, opts, contents=tmp_source)
     fixed_source = fix.fix()
@@ -909,15 +909,14 @@ def fix_file(filename, opts):
     if opts.diff:
         new = StringIO(''.join(fix.source))
         new = new.readlines()
-        sys.stdout.write(_get_difftext(original_source, new,
-                                       filename))
+        output.write(_get_difftext(original_source, new, filename))
     elif opts.in_place:
         fp = open_with_encoding(filename, encoding=detect_encoding(filename),
                                 mode='w')
         fp.write(fixed_source)
         fp.close()
     else:
-        sys.stdout.write(fixed_source)
+        output.write(fixed_source)
 
 
 def parse_args(args):
