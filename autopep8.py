@@ -694,8 +694,7 @@ def _spawn_pep8(pep8_options):
 
 def _execute_pep8(pep8_options, source):
     """Execute pep8 via python method calls."""
-    pep8.options, pep8.args = (pep8.process_options(['pep8'] +
-                               pep8_options))
+    pep8.options, pep8.args = (pep8.process_options(['pep8'] + pep8_options))
 
     class QuietChecker(pep8.Checker):
 
@@ -921,8 +920,8 @@ def fix_file(filename, opts):
         sys.stdout.write(fixed_source)
 
 
-def main():
-    """Tool main."""
+def parse_args(args):
+    """Parse command-line options."""
     parser = OptionParser(usage='Usage: autopep8 [options] '
                                 '[filename [filename ...]]',
                           version="autopep8: %s" % __version__,
@@ -940,19 +939,27 @@ def main():
                            ' (default:%d)' % PEP8_PASSES_MAX)
     parser.add_option('--ignore', default='',
                       help='do not fix these errors/warnings (e.g. E4,W)')
-    opts, args = parser.parse_args()
+    opts, args = parser.parse_args(args)
+
     if not len(args):
         parser.error('incorrect number of arguments')
 
+    if len(args) > 1 and not (opts.in_place or opts.diff):
+        parser.error('autopep8 only takes one filename as argument '
+                     'unless the "--in-place" or "--diff" options are '
+                     'used')
+
+    return opts, args
+
+
+def main():
+    """Tool main."""
+    opts, args = parse_args(sys.argv[1:])
     try:
         if opts.in_place or opts.diff:
             for f in set(args):
                 fix_file(f, opts)
         else:
-            if len(args) > 1:
-                parser.error('autopep8 only takes one filename as argument '
-                             'unless the "--in-place" or "--diff" options are '
-                             'used')
             fix_file(args[0], opts)
     except IOError as error:
         sys.stderr.write(str(error) + '\n')
