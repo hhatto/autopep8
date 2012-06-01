@@ -43,27 +43,30 @@ before::
 
 
     def func1(   foo  ):
-            print( 'A'+ foo);
+        print( 'A'+ foo);
             
-            return 0
+        return 0
 
 
 
     def func11():
         a = (1,2, 3,"a");
-        b = [1, 2, 3,"b"]
-        return 1
+        b = [100,200,300,9876543210,'This is my very long string that goes on and one and on']
+
+
+
+        return (a, b)
 
 
 
 
 
     def func2():
-            pass
+    	pass
     def func22():
         pass
 
-    def func3():
+    def func3(bar):
         if bar : bar+=1;  bar=bar*bar   ; return bar
         else: raise ValueError, 'i am an error'
 
@@ -84,8 +87,10 @@ after::
 
     def func11():
         a = (1, 2, 3, "a")
-        b = [1, 2, 3, "b"]
-        return 1
+        b = [100, 200, 300, 9876543210,
+            'This is my very long string that goes on and one and on']
+
+        return (a, b)
 
 
     def func2():
@@ -96,14 +101,13 @@ after::
         pass
 
 
-    def func3():
+    def func3(bar):
         if bar:
             bar += 1
             bar = bar * bar
             return bar
         else:
             raise ValueError('i am an error')
-
 
 options::
 
