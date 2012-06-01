@@ -19,3 +19,7 @@ install:
 
 script:
     - $ENV_PYTHON test/test_autopep8.py
+
+matrix:
+    allow_failures:
+        - python: jython
