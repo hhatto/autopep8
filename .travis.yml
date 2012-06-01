@@ -1,10 +1,20 @@
 language: python
+
 python:
     - "2.6"
     - "2.7"
-    - "pypy"
     - "3.2"
+    - "pypy"
+    - "jython"
+
+before_install:
+    - export JYTHON_URL='http://sourceforge.net/projects/jython/files/jython-dev/2.7.0a1/jython_installer-2.7a1.jar/download'
+    - if [ "$TRAVIS_PYTHON_VERSION" == "jython" ]; then wget $JYTHON_URL -O jython_installer.jar; java -jar jython_installer.jar -s -d $HOME/jython; export PATH=$HOME/jython:$PATH; fi
+
+before_script: if [ "$TRAVIS_PYTHON_VERSION" == "jython" ]; then export ENV_PYTHON=jython; jython -c "print ''"; else export ENV_PYTHON=python; fi
+
 install:
-    - python setup.py install
+    - $ENV_PYTHON setup.py install
+
 script:
-    - nosetests -w test
+    - $ENV_PYTHON python test/test_autopep8.py
