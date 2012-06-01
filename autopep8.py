@@ -117,45 +117,6 @@ class FixPEP8(object):
         self.fix_e274 = self.fix_e271
         self.fix_w191 = self.fix_e101
 
-    def _spawn_pep8(self, targetfile):
-        """Execute pep8 via subprocess.Popen."""
-        paths = os.environ['PATH'].split(':')
-        for path in paths:
-            if os.path.exists(os.path.join(path, PEP8_BIN)):
-                cmd = ([os.path.join(path, PEP8_BIN)] +
-                       self._pep8_options(targetfile))
-                p = Popen(cmd, stdout=PIPE)
-                return [l.decode('utf8') for l in p.stdout.readlines()]
-        raise Exception("'%s' is not found." % PEP8_BIN)
-
-    def _execute_pep8(self, targetfile):
-        """Execute pep8 via python method calls."""
-        pep8.options, pep8.args = \
-                pep8.process_options(['pep8'] + self._pep8_options(targetfile))
-
-        class QuietChecker(pep8.Checker):
-
-            """Version of checker that does not print."""
-
-            def __init__(self, filename, lines):
-                pep8.Checker.__init__(self, filename, lines=lines)
-                self.__results = None
-
-            def report_error(self, line_number, offset, text, check):
-                """Collect errors."""
-                self.__results.append(
-                        dict(id=text.split()[0], line=line_number,
-                             column=offset + 1, info=text))
-
-            def check_all(self, expected=None, line_offset=0):
-                """Check code and return results."""
-                self.__results = []
-                pep8.Checker.check_all(self, expected, line_offset)
-                return self.__results
-
-        checker = QuietChecker(self.filename, lines=self.source)
-        return checker.check_all()
-
     def _pep8_options(self, targetfile):
         """Return options to be passed to pep8."""
         return (["--repeat", targetfile] +
@@ -195,11 +156,13 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = indent + fixed
 
     def fix(self):
+        pep8_options = self._pep8_options(self.filename)
         if pep8:
-            self.results = self._execute_pep8(self.filename)
+            self.results = _execute_pep8(self.filename, pep8_options,
+                                         self.source)
         else:
-            pep8result = self._spawn_pep8(self.filename)
-            self.results = [_analyze_pep8result(line) for line in pep8result]
+            self.results = [_analyze_pep8result(line)
+                            for line in _spawn_pep8(pep8_options)]
         self._fix_source()
         return "".join(self.source)
 
@@ -717,6 +680,47 @@ def _fix_basic_raise(line, newline):
                     args[1:-1] if args.startswith('(') else args,
                     ')',
                     comment, newline])
+
+
+def _spawn_pep8(pep8_options):
+    """Execute pep8 via subprocess.Popen."""
+    paths = os.environ['PATH'].split(':')
+    for path in paths:
+        if os.path.exists(os.path.join(path, PEP8_BIN)):
+            cmd = ([os.path.join(path, PEP8_BIN)] +
+                   pep8_options)
+            p = Popen(cmd, stdout=PIPE)
+            return [l.decode('utf8') for l in p.stdout.readlines()]
+    raise Exception("'%s' is not found." % PEP8_BIN)
+
+
+def _execute_pep8(targetfile, pep8_options, source):
+    """Execute pep8 via python method calls."""
+    pep8.options, pep8.args = (pep8.process_options(['pep8'] +
+                               pep8_options))
+
+    class QuietChecker(pep8.Checker):
+
+        """Version of checker that does not print."""
+
+        def __init__(self, filename, lines):
+            pep8.Checker.__init__(self, filename, lines=lines)
+            self.__results = None
+
+        def report_error(self, line_number, offset, text, check):
+            """Collect errors."""
+            self.__results.append(
+                    dict(id=text.split()[0], line=line_number,
+                         column=offset + 1, info=text))
+
+        def check_all(self, expected=None, line_offset=0):
+            """Check code and return results."""
+            self.__results = []
+            pep8.Checker.check_all(self, expected, line_offset)
+            return self.__results
+
+    checker = QuietChecker(targetfile, lines=source)
+    return checker.check_all()
 
 
 class Reindenter(object):
