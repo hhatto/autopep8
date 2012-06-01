@@ -965,6 +965,8 @@ def main():
     try:
         if opts.in_place or opts.diff:
             for f in set(args):
+                if opts.verbose and len(args) > 1:
+                    sys.stderr.write('[file:%s]\n' % f)
                 fix_file(f, opts)
         else:
             fix_file(args[0], opts)
