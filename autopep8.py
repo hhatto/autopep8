@@ -157,7 +157,7 @@ class FixPEP8(object):
     def fix(self):
         pep8_options = self._pep8_options(self.filename)
         if pep8:
-            results = _execute_pep8(self.filename, pep8_options, self.source)
+            results = _execute_pep8(pep8_options, self.source)
         else:
             results = _spawn_pep8(pep8_options)
         self._fix_source(results)
@@ -692,7 +692,7 @@ def _spawn_pep8(pep8_options):
     raise Exception("'%s' is not found." % PEP8_BIN)
 
 
-def _execute_pep8(targetfile, pep8_options, source):
+def _execute_pep8(pep8_options, source):
     """Execute pep8 via python method calls."""
     pep8.options, pep8.args = (pep8.process_options(['pep8'] +
                                pep8_options))
@@ -717,7 +717,7 @@ def _execute_pep8(targetfile, pep8_options, source):
             pep8.Checker.check_all(self, expected, line_offset)
             return self.__results
 
-    checker = QuietChecker(targetfile, lines=source)
+    checker = QuietChecker('', lines=source)
     return checker.check_all()
 
 
