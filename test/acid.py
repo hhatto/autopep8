@@ -44,9 +44,29 @@ def run(filename, log_file, fast_check=False, passes=2000,
     return True
 
 
+def _detect_encoding(filename):
+    """Return file encoding."""
+    try:
+        # Python 3
+        with open(filename, 'rb') as input_file:
+            import tokenize
+            return tokenize.detect_encoding(input_file.readline)[0]
+    except AttributeError:
+        return 'utf-8'
+
+
+def _open_with_encoding(filename, encoding, mode='r'):
+    """Open file with a specific encoding."""
+    try:
+        # Python 3
+        return open(filename, mode=mode, encoding=encoding)
+    except TypeError:
+        return open(filename, mode=mode)
+
+
 def _check_syntax(filename):
     """Return True if syntax is okay."""
-    with open(filename, 'U') as f:
+    with _open_with_encoding(filename, _detect_encoding(filename)) as f:
         try:
             compile(f.read(), '<string>', 'exec')
             return True
