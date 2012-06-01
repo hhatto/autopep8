@@ -330,7 +330,7 @@ class FixPEP8(object):
 
     def fix_e501(self, result):
         # FIXME: lazy implementation
-        RETURN_COLUMN = 75
+        #RETURN_COLUMN = 75
         line_index = result['line'] - 1
         target = self.source[line_index]
         indent = _get_indentation(target)
@@ -342,7 +342,7 @@ class FixPEP8(object):
             tokens = tokenize.generate_tokens(sio.readline)
             _tokens = [t for t in tokens]
         except (tokenize.TokenError, IndentationError):
-            return
+            return []
 
         # line sparate with OPERATOR
         _tokens.reverse()
