@@ -7,7 +7,6 @@ import copy
 import os
 import re
 import sys
-from code import compile_command
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -354,7 +353,7 @@ class FixPEP8(object):
                 fixed = "%s" % source[:offset - len(indent)] + "\n" + \
                         indent + "    " + source[offset - len(indent):]
                 try:
-                    ret = compile_command(fixed)
+                    ret = compile(fixed, '<string>', 'exec')
                 except SyntaxError:
                     continue
                 if ret:

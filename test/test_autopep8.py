@@ -537,6 +537,17 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_more_complicated(self):
+        line = \
+"""blahblah = os.environ.get('blahblah') or os.environ.get('blahblahblah') or os.environ.get('blahblahblahblah')
+"""
+        fixed = \
+"""blahblah = os.environ.get('blahblah') or os.environ.get(
+    'blahblahblah') or os.environ.get('blahblahblahblah')
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e502(self):
         line = "print('abc'\\\n'def')\n"
         fixed = "print('abc'\n'def')\n"
