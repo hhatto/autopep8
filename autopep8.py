@@ -102,7 +102,6 @@ class FixPEP8(object):
             self.source = sio.readlines()
         self.original_source = copy.copy(self.source)
         self.newline = _find_newline(self.source)
-        self.results = []
         self.options = options
         self.indent_word = _get_indentword("".join(self.source))
         # method definition
@@ -123,9 +122,9 @@ class FixPEP8(object):
                 (["--ignore=" + self.options.ignore]
                  if self.options.ignore else []))
 
-    def _fix_source(self):
+    def _fix_source(self, results):
         completed_lines = []
-        for result in sorted(self.results, key=_priority_key):
+        for result in sorted(results, key=_priority_key):
             if result['line'] in completed_lines:
                 continue
             fixed_methodname = "fix_%s" % result['id'].lower()
@@ -158,12 +157,10 @@ class FixPEP8(object):
     def fix(self):
         pep8_options = self._pep8_options(self.filename)
         if pep8:
-            self.results = _execute_pep8(self.filename, pep8_options,
-                                         self.source)
+            results = _execute_pep8(self.filename, pep8_options, self.source)
         else:
-            self.results = [_analyze_pep8result(line)
-                            for line in _spawn_pep8(pep8_options)]
-        self._fix_source()
+            results = _spawn_pep8(pep8_options)
+        self._fix_source(results)
         return "".join(self.source)
 
     def fix_e101(self, _):
@@ -690,7 +687,8 @@ def _spawn_pep8(pep8_options):
             cmd = ([os.path.join(path, PEP8_BIN)] +
                    pep8_options)
             p = Popen(cmd, stdout=PIPE)
-            return [l.decode('utf8') for l in p.stdout.readlines()]
+            return [_analyze_pep8result(l.decode('utf8'))
+                    for l in p.stdout.readlines()]
     raise Exception("'%s' is not found." % PEP8_BIN)
 
 
