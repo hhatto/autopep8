@@ -9,7 +9,7 @@ import tempfile
 
 
 def run(filename, log_file, fast_check=False, passes=2000,
-        ignore='E501'):
+        ignore=''):
     """Run autopep8 on file at filename.
     Return True on success.
     """
@@ -63,7 +63,7 @@ def main():
                       help='log autopep8 errors instead of exiting')
     parser.add_option('--ignore',
                       help='comma-separated errors to ignore',
-                      default='E501')
+                      default='')
     opts, args = parser.parse_args()
 
     if opts.log_errors:
