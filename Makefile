@@ -5,6 +5,7 @@ all:
 	@echo "make check"
 	@echo "make clean"
 
+PYTHON?=python
 
 TEST_DIR=test
 .PHONY: test test_basic test_diff test_unit
@@ -12,22 +13,22 @@ test: test_basic test_diff test_unit
 
 test_basic:
 	@echo '--->  Running basic test'
-	python autopep8.py example.py > .tmp.test.py
+	${PYTHON} autopep8.py example.py > .tmp.test.py
 	pep8 --repeat .tmp.test.py && echo 'OK'
 	@rm .tmp.test.py
 
 test_diff:
 	@echo '--->  Running --diff test'
 	@cp example.py .tmp.example.py
-	python autopep8.py --diff .tmp.example.py > .tmp.example.py.patch
+	${PYTHON} autopep8.py --diff .tmp.example.py > .tmp.example.py.patch
 	patch < .tmp.example.py.patch
 	@rm .tmp.example.py.patch
-	pep8 --repeat .tmp.example.py && python -m py_compile .tmp.example.py && echo 'OK'
+	pep8 --repeat .tmp.example.py && ${PYTHON} -m py_compile .tmp.example.py && echo 'OK'
 	@rm .tmp.example.py
 
 test_unit:
 	@echo '--->  Running unit tests'
-	python test/test_autopep8.py
+	${PYTHON} test/test_autopep8.py
 
 coverage:
 	@rm -rf htmlcov
@@ -46,8 +47,8 @@ check:
 		--rcfile=/dev/null autopep8.py && echo 'OK'
 
 pypireg:
-	python setup.py register
-	python setup.py sdist upload
+	${PYTHON} setup.py register
+	${PYTHON} setup.py sdist upload
 
 clean:
 	rm -rf .tmp.test.py temp *.pyc *egg-info dist build \
