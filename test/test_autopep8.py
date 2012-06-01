@@ -581,6 +581,21 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e702_more_complicated(self):
+        line = """\
+def foo():
+    if bar : bar+=1;  bar=bar*bar   ; return bar
+"""
+        fixed = """\
+def foo():
+    if bar:
+        bar += 1
+        bar = bar * bar
+        return bar
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e702_with_semicolon_in_string(self):
         line = 'print(";");\n'
         fixed = 'print(";")\n'
