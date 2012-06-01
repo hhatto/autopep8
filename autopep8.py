@@ -7,6 +7,7 @@ import copy
 import os
 import re
 import sys
+from code import compile_command
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -122,7 +123,9 @@ class FixPEP8(object):
         """Return options to be passed to pep8."""
         return (["--repeat", targetfile] +
                 (["--ignore=" + self.options.ignore]
-                 if self.options.ignore else []))
+                 if self.options.ignore else []) +
+                (["--select=" + self.options.select]
+                 if self.options.select else []))
 
     def _fix_source(self, results):
         completed_lines = []
@@ -324,6 +327,52 @@ class FixPEP8(object):
         fixed_modulelist = \
                 [indentation + "import %s" % m.lstrip() for m in modules]
         self.source[line_index] = self.newline.join(fixed_modulelist)
+
+    def fix_e501(self, result):
+        # FIXME: lazy implementation
+        RETURN_COLUMN = 75
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+        indent = _get_indentation(target)
+        source = target[len(indent):]
+        sio = StringIO(target)
+
+        # don't fix when multiline string
+        try:
+            tokens = tokenize.generate_tokens(sio.readline)
+            _tokens = [t for t in tokens]
+        except (tokenize.TokenError, IndentationError):
+            return
+
+        # line sparate with OPERATOR
+        _tokens.reverse()
+        for tkn in _tokens:
+            if token.OP == tkn[0]:
+                offset = tkn[2][1] + 1
+                if offset > (79 - len(indent) - 4):
+                    continue
+                fixed = "%s" % source[:offset - len(indent)] + "\n" + \
+                        indent + "    " + source[offset - len(indent):]
+                try:
+                    ret = compile_command(fixed)
+                except SyntaxError:
+                    continue
+                if ret:
+                    self.source[line_index] = indent + fixed
+                    return
+
+        # FIXME: disable now
+        #for offset in range(50):
+        #    fixed = "%s" % source[:RETURN_COLUMN - len(indent) - offset] + \
+        #            " \\\n" + indent + "    " + \
+        #            source[RETURN_COLUMN - len(indent) - offset:]
+        #    try:
+        #        ret = compile_command(fixed)
+        #    except SyntaxError:
+        #        continue
+        #    if ret:
+        #        self.source[line_index] = indent + fixed
+        #        break
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""
@@ -946,6 +995,8 @@ def parse_args(args):
                            ' (default:%d)' % PEP8_PASSES_MAX)
     parser.add_option('--ignore', default='',
                       help='do not fix these errors/warnings (e.g. E4,W)')
+    parser.add_option('--select', default='',
+                      help='select errors/warnings (e.g. E4,W)')
     opts, args = parser.parse_args(args)
 
     if not len(args):
@@ -965,6 +1016,8 @@ def main():
     try:
         if opts.in_place or opts.diff:
             for f in set(args):
+                if opts.verbose and len(args) > 1:
+                    sys.stderr.write('[file:%s]\n' % f)
                 fix_file(f, opts)
         else:
             fix_file(args[0], opts)
