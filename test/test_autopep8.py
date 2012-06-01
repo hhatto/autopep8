@@ -941,8 +941,8 @@ class TestSpawnPEP8Process(unittest.TestCase):
         self.result = p.communicate()[0].decode('utf8')
 
     def test_basic(self):
-        line = "print('abc')    \n"
-        fixed = "print('abc')\n"
+        line = "print('abc' )    \n1*1\n"
+        fixed = "print('abc')\n1 * 1\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
