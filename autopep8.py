@@ -339,21 +339,40 @@ class FixPEP8(object):
 
         # don't fix when multiline string
         try:
-            tokenize.generate_tokens(sio.readline)
+            tokens = tokenize.generate_tokens(sio.readline)
+            _tokens = [t for t in tokens]
         except (tokenize.TokenError, IndentationError):
             return
 
-        for offset in range(50):
-            fixed = "%s" % source[:RETURN_COLUMN - len(indent) - offset] + \
-                    " \\\n" + indent + "    " + \
-                    source[RETURN_COLUMN - len(indent) - offset:]
-            try:
-                ret = compile_command(fixed)
-            except SyntaxError:
-                continue
-            if ret:
-                self.source[line_index] = indent + fixed
-                break
+        # line sparate with OPERATOR
+        _tokens.reverse()
+        for tkn in _tokens:
+            if token.OP == tkn[0]:
+                offset = tkn[2][1] + 1
+                if offset > (79 - len(indent) - 4):
+                    continue
+                fixed = "%s" % source[:offset - len(indent)] + "\n" + \
+                        indent + "    " + source[offset - len(indent):]
+                try:
+                    ret = compile_command(fixed)
+                except SyntaxError:
+                    continue
+                if ret:
+                    self.source[line_index] = indent + fixed
+                    return
+
+        # FIXME: disable now
+        #for offset in range(50):
+        #    fixed = "%s" % source[:RETURN_COLUMN - len(indent) - offset] + \
+        #            " \\\n" + indent + "    " + \
+        #            source[RETURN_COLUMN - len(indent) - offset:]
+        #    try:
+        #        ret = compile_command(fixed)
+        #    except SyntaxError:
+        #        continue
+        #    if ret:
+        #        self.source[line_index] = indent + fixed
+        #        break
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""
