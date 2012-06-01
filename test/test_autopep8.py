@@ -524,6 +524,19 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_with_indent(self):
+        line = \
+"""def d():
+    print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
+"""
+        fixed = \
+"""def d():
+    print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222,
+         222, 333, 333, 333, 333)
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e502(self):
         line = "print('abc'\\\n'def')\n"
         fixed = "print('abc'\n'def')\n"
