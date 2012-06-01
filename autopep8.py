@@ -346,7 +346,8 @@ class FixPEP8(object):
         # line sparate with OPERATOR
         _tokens.reverse()
         for tkn in _tokens:
-            if token.OP == tkn[0]:
+            # Don't break on keyword '=' as this violates PEP 8.
+            if token.OP == tkn[0] and tkn[1] != '=':
                 offset = tkn[2][1] + 1
                 if offset > (79 - len(indent) - 4):
                     continue

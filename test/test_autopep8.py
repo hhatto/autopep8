@@ -548,6 +548,21 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_do_not_break_on_keyword(self):
+        # We don't want to put a newline after equals for keywords as this
+        # violates PEP 8.
+        line = \
+"""if True:
+    long_variable_name = tempfile.mkstemp(prefix='abcdefghijklmnopqrstuvwxyz0123456789')
+"""
+        fixed = \
+"""if True:
+    long_variable_name = tempfile.mkstemp(
+        prefix='abcdefghijklmnopqrstuvwxyz0123456789')
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e502(self):
         line = "print('abc'\\\n'def')\n"
         fixed = "print('abc'\n'def')\n"
