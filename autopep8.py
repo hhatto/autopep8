@@ -139,18 +139,22 @@ class FixPEP8(object):
 
             def __init__(self, filename, lines):
                 pep8.Checker.__init__(self, filename, lines=lines)
-                self.results = []
+                self.__results = None
 
             def report_error(self, line_number, offset, text, check):
                 """Collect errors."""
-                self.results.append(
+                self.__results.append(
                         dict(id=text.split()[0], line=line_number,
                              column=offset + 1, info=text))
 
-        checker = QuietChecker(self.filename, lines=self.source)
-        checker.check_all()
+            def check_all(self, expected=None, line_offset=0):
+                """Check code and return results."""
+                self.__results = []
+                pep8.Checker.check_all(self, expected, line_offset)
+                return self.__results
 
-        return checker.results
+        checker = QuietChecker(self.filename, lines=self.source)
+        return checker.check_all()
 
     def _pep8_options(self, targetfile):
         """Return options to be passed to pep8."""
