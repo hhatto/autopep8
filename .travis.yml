@@ -13,7 +13,7 @@ before_install:
     - if [ "$TRAVIS_PYTHON_VERSION" == "jython" ]; then export ENV_PYTHON=jython; jython -c "print('')"; else export ENV_PYTHON=python; fi
     - export DISTRIBUTE_BASE_NAME='distribute-0.6.27'
     - export DISTRIBUTE_URL="http://pypi.python.org/packages/source/d/distribute/$DISTRIBUTE_BASE_NAME.tar.gz"
-    - if [ "$TRAVIS_PYTHON_VERSION" == "jython" ]; then wget "$DISTRIBUTE_URL"; tar xf "$DISTRIBUTE_BASE_NAME.tar.gz"; cd "$DISTRIBUTE_BASE_NAME"; jython setup.py install; fi
+    - if [ "$TRAVIS_PYTHON_VERSION" == "jython" ]; then wget "$DISTRIBUTE_URL"; tar xf "$DISTRIBUTE_BASE_NAME.tar.gz"; pushd "$DISTRIBUTE_BASE_NAME"; jython setup.py install; popd; fi
 
 install:
     - $ENV_PYTHON setup.py install
