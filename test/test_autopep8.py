@@ -973,6 +973,11 @@ class TestOptions(unittest.TestCase):
         self._inner_setup(line, ['--pep8-passes', '0'])
         self.assertEqual(self.result, fixed)
 
+    def test_pep8_ignore(self):
+        line = "'abc'  \n"
+        self._inner_setup(line, ['--ignore=E,W'])
+        self.assertEqual(self.result, line)
+
     @py27_and_above
     def test_help(self):
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['-h'],
