@@ -1085,34 +1085,20 @@ class TestSpawnPEP8Process(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        cmd = list(AUTOPEP8_CMD_TUPLE)
-        cmd.extend(options.split())
-        cmd.append(self.tempfile[1])
+        opts, _ = autopep8.parse_args(options.split() + [self.tempfile[1]])
+        sio = StringIO()
 
-        # Put fake pep8 path in front. It will cause autopep8 to launch a
-        # a subprocess by pretending to be an older version of pep8.
-        tmp_env = os.environ.copy()
+        # Monkey patch pep8 to trigger spawning
+        original_pep8 = autopep8.pep8
+        try:
+            autopep8.pep8 = None
+            autopep8.fix_file(filename=self.tempfile[1],
+                              opts=opts,
+                              output=sio)
+        finally:
+            autopep8.pep8 = original_pep8
 
-        if 'PYTHONPATH' in os.environ:
-            old_python_path = os.environ['PYTHONPATH']
-        else:
-            old_python_path = ''
-
-        tmp_env['PYTHONPATH'] = (os.path.join(ROOT_DIR, 'test',
-                                              'fake_pep8', 'site-packages') +
-                                 ':' + old_python_path)
-
-        if 'PATH' in os.environ:
-            old_path = os.environ['PATH']
-        else:
-            old_path = ''
-
-        tmp_env['PATH'] = (os.path.join(ROOT_DIR, 'test',
-                                        'fake_pep8', 'bin') +
-                           ':' + old_path)
-
-        p = Popen(cmd, stdout=PIPE, env=tmp_env)
-        self.result = p.communicate()[0].decode('utf8')
+        self.result = sio.getvalue()
 
     def test_basic(self):
         line = "print('abc' )    \n1*1\n"
