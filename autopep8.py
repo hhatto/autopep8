@@ -363,7 +363,9 @@ class FixPEP8(object):
             self.source[line_index] = candidate0
         elif candidate1:
             self.source[line_index] = candidate1
-        # Otherwise both don't work
+        else:
+            # Otherwise both don't work
+            return []
 
         # FIXME: disable now
         #for offset in range(50):
