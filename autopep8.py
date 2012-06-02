@@ -328,57 +328,69 @@ class FixPEP8(object):
         self.source[line_index] = self.newline.join(fixed_modulelist)
 
     def fix_e501(self, result):
-        # FIXME: lazy implementation
-        #RETURN_COLUMN = 75
         line_index = result['line'] - 1
         target = self.source[line_index]
         indent = _get_indentation(target)
-        source = target[len(indent):]
-        sio = StringIO(target)
 
-        # don't fix when multiline string
-        try:
-            tokens = tokenize.generate_tokens(sio.readline)
-            _tokens = [t for t in tokens]
-        except (tokenize.TokenError, IndentationError):
-            return []
-
-        # Prefer
-        # my_long_function_name(
-        #     x, y, z, ...)
-        #
-        # over
-        # my_long_function_name(x, y,
-        #     z, ...)
-        candidate0 = _split_line(_tokens, source, target, indent,
-                                 self.indent_word, reverse=False)
-        candidate1 = _split_line(_tokens, source, target, indent,
-                                 self.indent_word, reverse=True)
-        if candidate0 and candidate1:
-            if candidate0.split(self.newline)[0].endswith('('):
-                self.source[line_index] = candidate0
-            else:
-                self.source[line_index] = candidate1
-        elif candidate0:
-            self.source[line_index] = candidate0
-        elif candidate1:
-            self.source[line_index] = candidate1
+        if target.lstrip().startswith('#'):
+            # Wrap commented lines
+            indent += '# '
+            import textwrap
+            self.source[line_index] = self.newline.join(
+                textwrap.wrap(target.lstrip(' \t#'),
+                              initial_indent=indent,
+                              subsequent_indent=indent,
+                              width=79))
+            return
         else:
-            # Otherwise both don't work
-            return []
+            # FIXME: lazy implementation
+            #RETURN_COLUMN = 75
+            source = target[len(indent):]
+            sio = StringIO(target)
 
-        # FIXME: disable now
-        #for offset in range(50):
-        #    fixed = "%s" % source[:RETURN_COLUMN - len(indent) - offset] + \
-        #            " \\\n" + indent + "    " + \
-        #            source[RETURN_COLUMN - len(indent) - offset:]
-        #    try:
-        #        ret = compile_command(fixed)
-        #    except SyntaxError:
-        #        continue
-        #    if ret:
-        #        self.source[line_index] = indent + fixed
-        #        break
+            # don't fix when multiline string
+            try:
+                tokens = tokenize.generate_tokens(sio.readline)
+                _tokens = [t for t in tokens]
+            except (tokenize.TokenError, IndentationError):
+                return []
+
+            # Prefer
+            # my_long_function_name(
+            #     x, y, z, ...)
+            #
+            # over
+            # my_long_function_name(x, y,
+            #     z, ...)
+            candidate0 = _split_line(_tokens, source, target, indent,
+                                     self.indent_word, reverse=False)
+            candidate1 = _split_line(_tokens, source, target, indent,
+                                     self.indent_word, reverse=True)
+            if candidate0 and candidate1:
+                if candidate0.split(self.newline)[0].endswith('('):
+                    self.source[line_index] = candidate0
+                else:
+                    self.source[line_index] = candidate1
+            elif candidate0:
+                self.source[line_index] = candidate0
+            elif candidate1:
+                self.source[line_index] = candidate1
+            else:
+                # Otherwise both don't work
+                return []
+
+            # FIXME: disable now
+            #for offset in range(50):
+            #    fixed = "%s" % source[:RETURN_COLUMN - len(indent) - offset] + \
+            #            " \\\n" + indent + "    " + \
+            #            source[RETURN_COLUMN - len(indent) - offset:]
+            #    try:
+            #        ret = compile_command(fixed)
+            #    except SyntaxError:
+            #        continue
+            #    if ret:
+            #        self.source[line_index] = indent + fixed
+            #        break
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""

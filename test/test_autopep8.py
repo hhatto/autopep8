@@ -575,6 +575,17 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_with_comment(self):
+        line = """123
+                        # This is a long comment that should be wrapped. I will wrap it using textwrap.
+"""
+        fixed = """123
+                        # This is a long comment that should be wrapped. I will
+                        # wrap it using textwrap.
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e502(self):
         line = "print('abc'\\\n'def')\n"
         fixed = "print('abc'\n'def')\n"
