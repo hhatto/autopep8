@@ -587,6 +587,15 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_do_not_break_if_useless(self):
+        line = \
+"""
+123
+('bbb', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
     def test_e501_with_comment(self):
         line = """123
                         # This is a long comment that should be wrapped. I will wrap it using textwrap.

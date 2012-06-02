@@ -761,16 +761,21 @@ def _split_line(tokens, source, target, indentation, indent_word,
         if token.OP == tkn[0] and tkn[1] != '=':
             offset = tkn[2][1] + 1
             if reverse:
-                if offset > (79 - len(indentation) - len(indent_word)):
+                if offset > (MAX_LINE_WIDTH - len(indentation) -
+                             len(indent_word)):
                     continue
             else:
                 if (len(target.rstrip()) - offset >
-                        (79 - len(indentation) - len(indent_word))):
+                        (MAX_LINE_WIDTH - len(indentation) -
+                         len(indent_word))):
                     continue
             first = source[:offset - len(indentation)]
             second = (indentation + indent_word +
                       source[offset - len(indentation):])
             if not second.strip():
+                continue
+            # Don't modify if lines are not short enough
+            if len(first) > MAX_LINE_WIDTH or len(second) > MAX_LINE_WIDTH:
                 continue
             fixed = first + "\n" + second
             try:
