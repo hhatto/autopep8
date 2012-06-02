@@ -548,6 +548,18 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_skip_even_more_complicated(self):
+        line = \
+"""if True:
+    if True:
+        if True:
+            blah = blah.blah_blah_blah_bla_bl(blahb.blah, blah.blah,
+                                              blah=blah.label, blah_blah=blah_blah,
+                                              blah_blah2=blah_blah)
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
     def test_e501_prefer_to_break_at_begnning(self):
         """We prefer not to leave part of the arguments hanging."""
         line = \

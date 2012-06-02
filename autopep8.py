@@ -771,9 +771,12 @@ def _split_line(tokens, source, target, indentation, indent_word,
                 if (len(target.rstrip()) - offset >
                         (79 - len(indentation) - len(indent_word))):
                     continue
-            fixed = ("%s" % source[:offset - len(indentation)] + "\n" +
-                     indentation + indent_word +
-                     source[offset - len(indentation):])
+            first = source[:offset - len(indentation)]
+            second = (indentation + indent_word +
+                      source[offset - len(indentation):])
+            if not second.strip():
+                continue
+            fixed = first + "\n" + second
             try:
                 ret = compile(fixed, '<string>', 'exec')
             except SyntaxError:
