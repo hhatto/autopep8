@@ -611,6 +611,18 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_should_cut_comment_pattern(self):
+        line = """123
+# -- Randy's datastructure -----------------------------------------------------
+321
+"""
+        fixed = """123
+# -- Randy's datastructure ----------------------------------------------------
+321
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e502(self):
         line = "print('abc'\\\n'def')\n"
         fixed = "print('abc'\n'def')\n"

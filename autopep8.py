@@ -39,6 +39,7 @@ PEP8_PASSES_MAX = 100
 CR = '\r'
 LF = '\n'
 CRLF = '\r\n'
+MAX_LINE_WIDTH = 79
 
 
 def open_with_encoding(filename, encoding, mode='r'):
@@ -330,21 +331,16 @@ class FixPEP8(object):
     def fix_e501(self, result):
         line_index = result['line'] - 1
         target = self.source[line_index]
-        indent = _get_indentation(target)
 
         if target.lstrip().startswith('#'):
             # Wrap commented lines
-            indent += '# '
-            import textwrap
-            self.source[line_index] = self.newline.join(
-                textwrap.wrap(target.lstrip(' \t#'),
-                              initial_indent=indent,
-                              subsequent_indent=indent,
-                              width=79)) + self.newline
+            self.source[line_index] = _split_comment(line=target,
+                                                     newline=self.newline)
             return
         else:
             # FIXME: lazy implementation
             #RETURN_COLUMN = 75
+            indent = _get_indentation(target)
             source = target[len(indent):]
             sio = StringIO(target)
 
@@ -784,6 +780,25 @@ def _split_line(tokens, source, target, indentation, indent_word,
             if ret:
                 return indentation + fixed
     return None
+
+
+def _split_comment(line, newline):
+    """Return trimmed or split long comment line."""
+    assert len(line) > MAX_LINE_WIDTH
+    line = line.rstrip()
+
+    MIN_CHARACTER_REPEAT = 5
+    if len(line) - len(line.rstrip(line[-1])) >= MIN_CHARACTER_REPEAT:
+        # Trim comments that end with things like ---------
+        return line[:MAX_LINE_WIDTH] + newline
+    else:
+        indentation = _get_indentation(line) + '# '
+        import textwrap
+        split_lines = textwrap.wrap(line.lstrip(' \t#'),
+                                    initial_indent=indentation,
+                                    subsequent_indent=indentation,
+                                    width=MAX_LINE_WIDTH)
+        return newline.join(split_lines) + newline
 
 
 def _spawn_pep8(pep8_options):
