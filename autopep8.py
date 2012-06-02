@@ -379,18 +379,18 @@ class FixPEP8(object):
                 # Otherwise both don't work
                 return []
 
-            # FIXME: disable now
-            #for offset in range(50):
-            #    fixed = "%s" % source[:RETURN_COLUMN - len(indent) - offset] + \
-            #            " \\\n" + indent + "    " + \
-            #            source[RETURN_COLUMN - len(indent) - offset:]
-            #    try:
-            #        ret = compile_command(fixed)
-            #    except SyntaxError:
-            #        continue
-            #    if ret:
-            #        self.source[line_index] = indent + fixed
-            #        break
+        # FIXME: disable now
+        #for offset in range(50):
+        #    fixed = "%s" % source[:RETURN_COLUMN - len(indent) - offset] + \
+        #            " \\\n" + indent + "    " + \
+        #            source[RETURN_COLUMN - len(indent) - offset:]
+        #    try:
+        #        ret = compile_command(fixed)
+        #    except SyntaxError:
+        #        continue
+        #    if ret:
+        #        self.source[line_index] = indent + fixed
+        #        break
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""
@@ -798,7 +798,7 @@ def _spawn_pep8(pep8_options):
 
 def _execute_pep8(pep8_options, source):
     """Execute pep8 via python method calls."""
-    pep8.options, pep8.args = (pep8.process_options(['pep8'] + pep8_options))
+    pep8.process_options(['pep8'] + pep8_options)
 
     class QuietChecker(pep8.Checker):
 
