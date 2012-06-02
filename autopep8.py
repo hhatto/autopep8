@@ -410,7 +410,7 @@ class FixPEP8(object):
         target = self.source[line_index]
 
         if target.rstrip().endswith(';'):
-            self.source[line_index] = target.rstrip('\n \t;') + self.newline
+            self.source[line_index] = target.rstrip('\n \r\t;') + self.newline
             return
 
         # We currently do not support things like
