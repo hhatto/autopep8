@@ -340,7 +340,7 @@ class FixPEP8(object):
                 textwrap.wrap(target.lstrip(' \t#'),
                               initial_indent=indent,
                               subsequent_indent=indent,
-                              width=79))
+                              width=79)) + self.newline
             return
         else:
             # FIXME: lazy implementation
