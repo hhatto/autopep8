@@ -752,10 +752,13 @@ def _split_line(tokens, source, target, indentation, indent_word,
         # Don't break on '=' after keyword as this violates PEP 8.
         if token.OP == tkn[0] and tkn[1] != '=':
             offset = tkn[2][1] + 1
-            if (len(target.rstrip()) - offset >
-                    (79 - len(indentation) - len(indent_word)) or
-                offset > (79 - len(indentation) - len(indent_word))):
-                continue
+            if reverse:
+                if offset > (79 - len(indentation) - len(indent_word)):
+                    continue
+            else:
+                if (len(target.rstrip()) - offset >
+                        (79 - len(indentation) - len(indent_word))):
+                    continue
             fixed = ("%s" % source[:offset - len(indentation)] + "\n" +
                      indentation + indent_word +
                      source[offset - len(indentation):])
