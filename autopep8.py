@@ -819,8 +819,11 @@ def _spawn_pep8(pep8_options):
             cmd = ([os.path.join(path, PEP8_BIN)] +
                    pep8_options)
             p = Popen(cmd, stdout=PIPE)
-            return [_analyze_pep8result(l.decode('utf8'))
-                    for l in p.stdout.readlines()]
+            try:
+                return [_analyze_pep8result(l.decode('utf8'))
+                        for l in p.stdout.readlines()]
+            finally:
+                p.stdout.close()
     raise Exception("'%s' is not found." % PEP8_BIN)
 
 
