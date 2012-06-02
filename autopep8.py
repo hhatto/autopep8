@@ -1069,7 +1069,7 @@ def parse_args(args):
     parser.add_option('-p', '--pep8-passes',
                       default=PEP8_PASSES_MAX, type='int',
                       help='maximum number of additional pep8 passes'
-                           ' (default:%d)' % PEP8_PASSES_MAX)
+                           ' (default: %default)')
     parser.add_option('--ignore', default='',
                       help='do not fix these errors/warnings (e.g. E4,W)')
     parser.add_option('--select', default='',
