@@ -665,7 +665,7 @@ def _get_indentword(source):
             if t[0] == token.INDENT:
                 indent_word = t[1]
                 break
-    except tokenize.TokenError:
+    except (tokenize.TokenError, IndentationError):
         pass
     return indent_word
 
@@ -864,7 +864,7 @@ class Reindenter(object):
         try:
             for t in tokens:
                 self.tokeneater(*t)
-        except IndentationError:
+        except (tokenize.TokenError, IndentationError):
             return False
         # Remove trailing empty lines.
         lines = self.lines
