@@ -810,9 +810,11 @@ def _execute_pep8(pep8_options, source):
 
         def report_error(self, line_number, offset, text, check):
             """Collect errors."""
-            self.__results.append(
-                    dict(id=text.split()[0], line=line_number,
-                         column=offset + 1, info=text))
+            code = text[:4]
+            if not pep8.ignore_code(code):
+                self.__results.append(
+                        dict(id=text.split()[0], line=line_number,
+                             column=offset + 1, info=text))
 
         def check_all(self, expected=None, line_offset=0):
             """Check code and return results."""
