@@ -60,6 +60,11 @@ class TestUtils(unittest.TestCase):
         source = ["print 1\r\n", "print 2\r", "print3\r\n"]
         self.assertEqual(autopep8.CRLF, autopep8._find_newline(source))
 
+    def test_shorten_comment(self):
+        self.assertEqual('# ' + 'x' * 77 + '\n',
+                         autopep8.shorten_comment('# ' + 'x' * 100 + '\n',
+                                                  '\n'))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 

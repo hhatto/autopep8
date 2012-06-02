@@ -334,8 +334,8 @@ class FixPEP8(object):
 
         if target.lstrip().startswith('#'):
             # Wrap commented lines
-            self.source[line_index] = _split_comment(line=target,
-                                                     newline=self.newline)
+            self.source[line_index] = shorten_comment(line=target,
+                                                      newline=self.newline)
             return
         else:
             # FIXME: lazy implementation
@@ -358,10 +358,10 @@ class FixPEP8(object):
             # over
             # my_long_function_name(x, y,
             #     z, ...)
-            candidate0 = _split_line(_tokens, source, target, indent,
-                                     self.indent_word, reverse=False)
-            candidate1 = _split_line(_tokens, source, target, indent,
-                                     self.indent_word, reverse=True)
+            candidate0 = _shorten_line(_tokens, source, target, indent,
+                                       self.indent_word, reverse=False)
+            candidate1 = _shorten_line(_tokens, source, target, indent,
+                                       self.indent_word, reverse=True)
             if candidate0 and candidate1:
                 if candidate0.split(self.newline)[0].endswith('('):
                     self.source[line_index] = candidate0
@@ -756,8 +756,8 @@ def _fix_basic_raise(line, newline):
                     comment, newline])
 
 
-def _split_line(tokens, source, target, indentation, indent_word,
-                reverse=False):
+def _shorten_line(tokens, source, target, indentation, indent_word,
+                  reverse=False):
     """Separate line at OPERATOR."""
     if reverse:
         tokens.reverse()
@@ -792,7 +792,7 @@ def _split_line(tokens, source, target, indentation, indent_word,
     return None
 
 
-def _split_comment(line, newline):
+def shorten_comment(line, newline):
     """Return trimmed or split long comment line."""
     assert len(line) > MAX_LINE_WIDTH
     line = line.rstrip()
