@@ -548,6 +548,18 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_prefer_to_break_at_begnning(self):
+        """We prefer not to leave part of the arguments hanging."""
+        line = \
+"""looooooooooooooong = foo(one, two, three, four, five, six, seven, eight, nine, ten)
+"""
+        fixed = \
+"""looooooooooooooong = foo(
+    one, two, three, four, five, six, seven, eight, nine, ten)
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e501_do_not_break_on_keyword(self):
         # We don't want to put a newline after equals for keywords as this
         # violates PEP 8.

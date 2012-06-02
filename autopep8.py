@@ -343,24 +343,28 @@ class FixPEP8(object):
         except (tokenize.TokenError, IndentationError):
             return []
 
-        # line separate with OPERATOR
-        _tokens.reverse()
-        for tkn in _tokens:
-            # Don't break on '=' after keyword as this violates PEP 8.
-            if token.OP == tkn[0] and tkn[1] != '=':
-                offset = tkn[2][1] + 1
-                if offset > (79 - len(indent) - len(self.indent_word)):
-                    continue
-                fixed = ("%s" % source[:offset - len(indent)] + "\n" +
-                         indent + self.indent_word +
-                         source[offset - len(indent):])
-                try:
-                    ret = compile(fixed, '<string>', 'exec')
-                except SyntaxError:
-                    continue
-                if ret:
-                    self.source[line_index] = indent + fixed
-                    return
+
+        # Prefer
+        # my_long_function_name(
+        #     x, y, z, ...)
+        #
+        # over hanging
+        # my_long_function_name(x, y,
+        #     z, ...)
+        candidate0 = _split_line(_tokens, source, target, indent,
+                                 self.indent_word, reverse=False)
+        candidate1 = _split_line(_tokens, source, target, indent,
+                                 self.indent_word, reverse=True)
+        if candidate0 and candidate1:
+            if candidate0.split(self.newline)[0].endswith('('):
+                self.source[line_index] = candidate0
+            else:
+                self.source[line_index] = candidate1
+        else:
+            if candidate0:
+                self.source[line_index] = candidate0
+            if candidate1:
+                self.source[line_index] = candidate1
 
         # FIXME: disable now
         #for offset in range(50):
@@ -736,6 +740,30 @@ def _fix_basic_raise(line, newline):
                     args[1:-1] if args.startswith('(') else args,
                     ')',
                     comment, newline])
+
+
+def _split_line(tokens, source, target, indentation, indent_word, reverse=False):
+    """Separate line at OPERATOR."""
+    if reverse:
+        tokens.reverse()
+    for tkn in tokens:
+        # Don't break on '=' after keyword as this violates PEP 8.
+        if token.OP == tkn[0] and tkn[1] != '=':
+            offset = tkn[2][1] + 1
+            if (len(target.rstrip()) - offset >
+                    (79 - len(indentation) - len(indent_word)) or
+                offset > (79 - len(indentation) - len(indent_word))):
+                continue
+            fixed = ("%s" % source[:offset - len(indentation)] + "\n" +
+                     indentation + indent_word +
+                     source[offset - len(indentation):])
+            try:
+                ret = compile(fixed, '<string>', 'exec')
+            except SyntaxError:
+                continue
+            if ret:
+                return indentation + fixed
+    return None
 
 
 def _spawn_pep8(pep8_options):
