@@ -406,7 +406,12 @@ class FixPEP8(object):
 
     def fix_e702(self, result):
         """Fix multiple statements on one line."""
-        target = self.source[result['line'] - 1]
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+
+        if target.rstrip().endswith(';'):
+            self.source[line_index] = target.rstrip('\n \t;') + self.newline
+            return
 
         # We currently do not support things like
         #     """
@@ -426,7 +431,7 @@ class FixPEP8(object):
         f = [_get_indentation(target) + t.strip()
              for t in [first, second] if t.strip()]
 
-        self.source[result['line'] - 1] = self.newline.join(f) + self.newline
+        self.source[line_index] = self.newline.join(f) + self.newline
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()

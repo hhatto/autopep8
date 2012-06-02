@@ -685,6 +685,18 @@ def foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e702_with_semicolon_after_string(self):
+        line = """
+raise IOError('abc '
+              'def.');
+""".lstrip()
+        fixed = """
+raise IOError('abc '
+              'def.')
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
 
 class TestFixPEP8Warning(unittest.TestCase):
 
