@@ -343,12 +343,11 @@ class FixPEP8(object):
         except (tokenize.TokenError, IndentationError):
             return []
 
-
         # Prefer
         # my_long_function_name(
         #     x, y, z, ...)
         #
-        # over hanging
+        # over
         # my_long_function_name(x, y,
         #     z, ...)
         candidate0 = _split_line(_tokens, source, target, indent,
@@ -742,7 +741,8 @@ def _fix_basic_raise(line, newline):
                     comment, newline])
 
 
-def _split_line(tokens, source, target, indentation, indent_word, reverse=False):
+def _split_line(tokens, source, target, indentation, indent_word,
+                reverse=False):
     """Separate line at OPERATOR."""
     if reverse:
         tokens.reverse()
