@@ -273,10 +273,6 @@ class FixPEP8(object):
         target = self.source[line_index]
         offset = result['column'] - 1
 
-        # Proceed safely
-        if target[offset] not in [' ', '\t']:
-            return []
-
         fixed = target[:offset].rstrip() + ' ' + target[offset:].lstrip()
         self.source[line_index] = fixed
 
