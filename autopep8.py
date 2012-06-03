@@ -147,13 +147,13 @@ class FixPEP8(object):
                 elif modified_lines == []:  # Empty list means no fix
                     if self.options.verbose:
                         sys.stderr.write('Not fixing {f} on line {l}\n'.format(
-                                f=result['id'], l=result['line']))
+                            f=result['id'], l=result['line']))
                 else:  # We assume one-line fix when None
                     completed_lines.append(result['line'])
             else:
                 if self.options.verbose:
                     sys.stderr.write("'%s' is not defined.\n" %
-                            fixed_methodname)
+                                     fixed_methodname)
                     info = result['info'].strip()
                     sys.stderr.write("%s:%s:%s:%s\n" % (self.filename,
                                                         result['line'],
@@ -209,8 +209,8 @@ class FixPEP8(object):
         fixed = re.sub(r'\s+', ' ', target[c::-1], 1)[::-1] + target[c + 1:]
         if fixed == target:
             # for e223 fixed method
-            fixed = re.sub(r'\t+', ' ', target[c::-1], 1)[::-1] + \
-                    target[c + 1:]
+            fixed = (re.sub(r'\t+', ' ', target[c::-1], 1)[::-1] +
+                     target[c + 1:])
         self.source[result['line'] - 1] = fixed
 
     def fix_e224(self, result):
@@ -228,7 +228,7 @@ class FixPEP8(object):
         # Only proceed if non-whitespace characters match.
         # And make sure we don't break the indentation.
         if (fixed.replace(' ', '') == target.replace(' ', '') and
-            _get_indentation(fixed) == _get_indentation(target)):
+                _get_indentation(fixed) == _get_indentation(target)):
             self.source[result['line'] - 1] = fixed
         else:
             return []
@@ -255,11 +255,11 @@ class FixPEP8(object):
         #     def foo(a=\
         #             1)
         if (fixed.endswith('=\\\n') or
-            fixed.endswith('=\\\r\n') or
-            fixed.endswith('=\\\r')):
+                fixed.endswith('=\\\r\n') or
+                fixed.endswith('=\\\r')):
             self.source[line_index] = fixed.rstrip('\n\r \t\\')
             self.source[line_index + 1] = \
-                    self.source[line_index + 1].lstrip()
+                self.source[line_index + 1].lstrip()
             return [line_index + 1, line_index + 2]  # Line indexed at 1
 
         self.source[result['line'] - 1] = fixed
@@ -331,7 +331,7 @@ class FixPEP8(object):
         indentation = target.split("import ")[0]
         modules = target.split("import ")[1].split(",")
         fixed_modulelist = \
-                [indentation + "import %s" % m.lstrip() for m in modules]
+            [indentation + "import %s" % m.lstrip() for m in modules]
         self.source[line_index] = self.newline.join(fixed_modulelist)
 
     def fix_e501(self, result):
@@ -405,9 +405,9 @@ class FixPEP8(object):
         target = self.source[line_index]
         c = result['column']
 
-        fixed_source = target[:c] + self.newline + \
-                       _get_indentation(target) + self.indent_word + \
-                       target[c:].lstrip()
+        fixed_source = (target[:c] + self.newline +
+                        _get_indentation(target) + self.indent_word +
+                        target[c:].lstrip())
         self.source[result['line'] - 1] = fixed_source
 
     def fix_e702(self, result):
@@ -529,11 +529,11 @@ class FixPEP8(object):
             return []
 
         if (line.endswith('\\\n') or
-            line.endswith('\\\r\n') or
-            line.endswith('\\\r')):
+                line.endswith('\\\r\n') or
+                line.endswith('\\\r')):
             self.source[line_index] = line.rstrip('\n\r \t\\')
             self.source[line_index + 1] = \
-                    ' ' + self.source[line_index + 1].lstrip()
+                ' ' + self.source[line_index + 1].lstrip()
             return [line_index + 1, line_index + 2]  # Line indexed at 1
 
         modified_lines = [1 + line_index]  # Line indexed at 1
@@ -561,7 +561,7 @@ class FixPEP8(object):
 
             # We do not handle anything other than plain multiline strings
             if ('(' in self.source[end_line_index] or
-                '\\' in self.source[end_line_index]):
+                    '\\' in self.source[end_line_index]):
                 return []
 
             for i in range(line_index + 1, end_line_index + 1):
@@ -641,7 +641,7 @@ class FixPEP8(object):
         start = target.find('`')
         end = target[::-1].find('`') * -1
         self.source[result['line'] - 1] = "%srepr(%s)%s" % (
-                target[:start], target[start + 1:end - 1], target[end:])
+            target[:start], target[start + 1:end - 1], target[end:])
 
 
 def _find_newline(source):
@@ -713,8 +713,7 @@ def _priority_key(pep8_result):
     """
     priority = ['e101', 'e111', 'w191',  # Global fixes
                 'e701',  # Fix multiline colon-based before semicolon based
-                'e702',  # Break multiline statements early
-               ]
+                'e702']  # Break multiline statements early
     key = pep8_result['id'].lower()
     if key in priority:
         return priority.index(key)
@@ -848,8 +847,8 @@ def _execute_pep8(pep8_options, source):
             code = text[:4]
             if not pep8.ignore_code(code):
                 self.__results.append(
-                        dict(id=text.split()[0], line=line_number,
-                             column=offset + 1, info=text))
+                    dict(id=text.split()[0], line=line_number,
+                         column=offset + 1, info=text))
 
         def check_all(self, expected=None, line_offset=0):
             """Check code and return results."""
@@ -940,8 +939,8 @@ class Reindenter(object):
                         for j in range(i - 1, -1, -1):
                             jline, jlevel = stats[j]
                             if jlevel >= 0:
-                                want = have + _getlspace(after[jline - 1]) - \
-                                       _getlspace(lines[jline])
+                                want = (have + _getlspace(after[jline - 1]) -
+                                        _getlspace(lines[jline]))
                                 break
                     if want < 0:
                         # Still no luck -- leave it alone.
