@@ -797,7 +797,9 @@ def shorten_comment(line, newline):
 
 def fix_whitespace(line, offset, replacement):
     """Replace whitespace at offset and return fixed line."""
-    return line[:offset].rstrip() + replacement + line[offset:].lstrip()
+    # Replace escaped newlines too
+    return (line[:offset].rstrip('\n\r \t\\') +
+            replacement + line[offset:].lstrip('\n\r \t\\'))
 
 
 def _spawn_pep8(pep8_options):
