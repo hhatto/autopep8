@@ -118,6 +118,9 @@ class FixPEP8(object):
         self.indent_word = _get_indentword("".join(self.source))
         # method definition
         self.fix_e111 = self.fix_e101
+        self.fix_e202 = self.fix_e201
+        self.fix_e203 = self.fix_e201
+        self.fix_e211 = self.fix_e201
         self.fix_e221 = self.fix_e271
         self.fix_e222 = self.fix_e271
         self.fix_e223 = self.fix_e271
@@ -164,11 +167,6 @@ class FixPEP8(object):
                                                         result['column'],
                                                         info))
 
-    def _fix_whitespace(self, result, pattern, repl):
-        (indent, rest) = _split_indentation(self.source[result['line'] - 1])
-        fixed = re.sub(pattern, repl, rest)
-        self.source[result['line'] - 1] = indent + fixed
-
     def fix(self):
         pep8_options = self._pep8_options(self.filename)
         if pep8:
@@ -189,22 +187,13 @@ class FixPEP8(object):
             return []
 
     def fix_e201(self, result):
-        self._fix_whitespace(result, r"\(\s+", "(")
-        self._fix_whitespace(result, r"\[\s+", "[")
-        self._fix_whitespace(result, r"{\s+", "{")
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+        offset = result['column'] - 1
 
-    def fix_e202(self, result):
-        self._fix_whitespace(result, r"\s+\)", ")")
-        self._fix_whitespace(result, r"\s+\]", "]")
-        self._fix_whitespace(result, r"\s+}", "}")
-
-    def fix_e203(self, result):
-        self._fix_whitespace(result, r"\s+:", ":")
-        self._fix_whitespace(result, r"\s+,", ",")
-
-    def fix_e211(self, result):
-        self._fix_whitespace(result, r"\s+\(", "(")
-        self._fix_whitespace(result, r"\s+\[", "[")
+        self.source[line_index] = fix_whitespace(target,
+                                                 offset=offset,
+                                                 replacement='')
 
     def fix_e224(self, result):
         target = self.source[result['line'] - 1]
@@ -276,8 +265,9 @@ class FixPEP8(object):
         target = self.source[line_index]
         offset = result['column'] - 1
 
-        fixed = target[:offset].rstrip() + ' ' + target[offset:].lstrip()
-        self.source[line_index] = fixed
+        self.source[line_index] = fix_whitespace(target,
+                                                 offset=offset,
+                                                 replacement=' ')
 
     def fix_e301(self, result):
         cr = self.newline
@@ -803,6 +793,11 @@ def shorten_comment(line, newline):
                                     subsequent_indent=indentation,
                                     width=MAX_LINE_WIDTH)
         return newline.join(split_lines) + newline
+
+
+def fix_whitespace(line, offset, replacement):
+    """Replace whitespace at offset and return fixed line."""
+    return line[:offset].rstrip() + replacement + line[offset:].lstrip()
 
 
 def _spawn_pep8(pep8_options):

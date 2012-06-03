@@ -78,6 +78,16 @@ class TestUtils(unittest.TestCase):
             autopep8.read_from_filename(
                 os.path.join(ROOT_DIR, 'test', 'bad_encoding.py')))
 
+    def test_fix_whitespace(self):
+        self.assertEqual(
+            'a b',
+            autopep8.fix_whitespace('a    b', offset=1, replacement=' '))
+
+    def test_fix_whitespace_with_tabs(self):
+        self.assertEqual(
+            'a b',
+            autopep8.fix_whitespace('a\t  \t  b', offset=1, replacement=' '))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 
@@ -271,6 +281,12 @@ while True:
         line = "[1 , 2  , 3]\n"
         fixed = "[1, 2, 3]\n"
         self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e203_semicolon(self):
+        line = "print(a, end=' ') ; nl = 0\n"
+        fixed = "print(a, end=' '); nl = 0\n"
+        self._inner_setup(line, options='--select=E203')
         self.assertEqual(self.result, fixed)
 
     def test_e211(self):
