@@ -78,6 +78,11 @@ class TestUtils(unittest.TestCase):
             autopep8.read_from_filename(
                 os.path.join(ROOT_DIR, 'test', 'bad_encoding.py')))
 
+    def test_read_from_filename_with_bad_encoding2(self):
+        """Bad encoding should not cause an exception."""
+        self.assertTrue(autopep8.read_from_filename(
+            os.path.join(ROOT_DIR, 'test', 'bad_encoding2.py')))
+
     def test_fix_whitespace(self):
         self.assertEqual(
             'a b',

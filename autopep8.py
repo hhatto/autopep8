@@ -64,7 +64,7 @@ def detect_encoding(filename):
                 input_file.read()
 
             return encoding
-        except (SyntaxError, UnicodeDecodeError):
+        except (SyntaxError, LookupError, UnicodeDecodeError):
             return 'latin-1'
     except AttributeError:
         return 'utf-8'
