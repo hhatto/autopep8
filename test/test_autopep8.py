@@ -65,6 +65,19 @@ class TestUtils(unittest.TestCase):
                          autopep8.shorten_comment('# ' + 'x' * 100 + '\n',
                                                   '\n'))
 
+    def test_detect_encoding(self):
+        self.assertEqual(
+            'utf-8',
+            autopep8.detect_encoding(
+                os.path.join(ROOT_DIR, 'setup.py')))
+
+    def test_read_from_filename_with_bad_encoding(self):
+        """Bad encoding should not cause an exception."""
+        self.assertEqual(
+            '# -*- coding: zlatin-1 -*-\n',
+            autopep8.read_from_filename(
+                os.path.join(ROOT_DIR, 'test', 'bad_encoding.py')))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 
