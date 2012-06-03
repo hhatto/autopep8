@@ -115,9 +115,10 @@ class FixPEP8(object):
         self.indent_word = _get_indentword("".join(self.source))
         # method definition
         self.fix_e111 = self.fix_e101
-        self.fix_e222 = self.fix_e221
-        self.fix_e223 = self.fix_e221
-        self.fix_e241 = self.fix_e221
+        self.fix_e221 = self.fix_e271
+        self.fix_e222 = self.fix_e271
+        self.fix_e223 = self.fix_e271
+        self.fix_e241 = self.fix_e271
         self.fix_e242 = self.fix_e224
         self.fix_e261 = self.fix_e262
         self.fix_e272 = self.fix_e271
@@ -201,17 +202,6 @@ class FixPEP8(object):
     def fix_e211(self, result):
         self._fix_whitespace(result, r"\s+\(", "(")
         self._fix_whitespace(result, r"\s+\[", "[")
-
-    def fix_e221(self, result):
-        """Fix E221, E222, and E223."""
-        target = self.source[result['line'] - 1]
-        c = result['column'] + 1
-        fixed = re.sub(r'\s+', ' ', target[c::-1], 1)[::-1] + target[c + 1:]
-        if fixed == target:
-            # for e223 fixed method
-            fixed = (re.sub(r'\t+', ' ', target[c::-1], 1)[::-1] +
-                     target[c + 1:])
-        self.source[result['line'] - 1] = fixed
 
     def fix_e224(self, result):
         target = self.source[result['line'] - 1]
