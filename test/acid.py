@@ -50,7 +50,13 @@ def _detect_encoding(filename):
         # Python 3
         with open(filename, 'rb') as input_file:
             import tokenize
-            return tokenize.detect_encoding(input_file.readline)[0]
+            encoding = tokenize.detect_encoding(input_file.readline)[0]
+        try:
+            with open(filename, encoding=encoding) as input_file:
+                input_file.read()
+            return encoding
+        except UnicodeDecodeError:
+            return 'latin-1'
     except AttributeError:
         return 'utf-8'
 
