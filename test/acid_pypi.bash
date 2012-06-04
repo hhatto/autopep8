@@ -3,7 +3,7 @@
 # Run acid test against latest packages on PyPi.
 
 # Check all packages released in the last $LAST_HOURS hours
-LAST_HOURS=100
+LAST_HOURS=500
 
 # Assume we are running from the correct directory
 ACID="$PWD/acid.py"
