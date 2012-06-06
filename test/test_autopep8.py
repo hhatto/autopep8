@@ -250,6 +250,23 @@ def foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e12_reindent(self):
+        #import pdb; pdb.set_trace()
+        line = """
+
+def foo_bar(baz, frop,
+    fizz, bang):
+    pass
+"""
+        fixed = """
+
+def foo_bar(baz, frop,
+            fizz, bang):
+    pass
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e191(self):
         line = """
 while True:
@@ -446,13 +463,13 @@ class Foo(object):
 
     def test_e261_with_dictionary(self):
         line = "d = {# comment\n1: 2}\n"
-        fixed = "d = {  # comment\n1: 2}\n"
+        fixed = "d = {  # comment\n    1: 2}\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
     def test_e261_with_dictionary_no_space(self):
         line = "d = {#comment\n1: 2}\n"
-        fixed = "d = {  # comment\n1: 2}\n"
+        fixed = "d = {  # comment\n    1: 2}\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
@@ -570,7 +587,7 @@ class Foo(object):
 """
         fixed = \
 """print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
-    333, 333, 333)
+      333, 333, 333)
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
@@ -583,7 +600,7 @@ class Foo(object):
         fixed = \
 """def d():
     print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222,
-        222, 333, 333, 333, 333)
+          222, 333, 333, 333, 333)
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
@@ -697,8 +714,8 @@ class Foo(object):
         self.assertEqual(self.result, fixed)
 
     def test_e502(self):
-        line = "print('abc'\\\n'def')\n"
-        fixed = "print('abc'\n'def')\n"
+        line = "print('abc'\\\n      'def')\n"
+        fixed = "print('abc'\n      'def')\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
@@ -874,7 +891,8 @@ class TestFixPEP8Warning(unittest.TestCase):
         # We don't support this case
         line = """
 a.has_key(
-0)
+    0
+)
 """.lstrip()
         fixed = line
         self._inner_setup(line)
@@ -923,7 +941,7 @@ a.has_key(
     @only_py2
     def test_w602_skip_complex_multiline(self):
         # We do not handle formatted multiline strings
-        line = 'raise ValueError, """\nhello %s %s""" % (1,\n2)\n'
+        line = 'raise ValueError, """\nhello %s %s""" % (\n    1, 2)\n'
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
