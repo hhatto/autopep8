@@ -28,9 +28,10 @@ setup(
     url='https://github.com/hhatto/autopep8',
     classifiers=[
         'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
         'Environment :: Console',
-        'Operating System :: Unix',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
