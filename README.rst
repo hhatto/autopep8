@@ -123,8 +123,10 @@ options::
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
       -p PEP8_PASSES, --pep8-passes=PEP8_PASSES
-                            maximum number of additional pep8 passes (default:100)
+                            maximum number of additional pep8 passes (default:
+                            100)
       --ignore=IGNORE       do not fix these errors/warnings (e.g. E4,W)
+      --select=SELECT       select errors/warnings (e.g. E4,W)
 
 
 Links
