@@ -344,9 +344,11 @@ class FixPEP8(object):
             # my_long_function_name(x, y,
             #     z, ...)
             candidate0 = _shorten_line(_tokens, source, target, indent,
-                                       self.indent_word, reverse=False)
+                                       self.indent_word, reverse=False,
+                                       newline=self.newline)
             candidate1 = _shorten_line(_tokens, source, target, indent,
-                                       self.indent_word, reverse=True)
+                                       self.indent_word, reverse=True,
+                                       newline=self.newline)
             if candidate0 and candidate1:
                 if candidate0.split(self.newline)[0].endswith('('):
                     self.source[line_index] = candidate0
@@ -741,7 +743,7 @@ def _fix_basic_raise(line, newline):
 
 
 def _shorten_line(tokens, source, target, indentation, indent_word,
-                  reverse=False):
+                  reverse=False, newline=LF):
     """Separate line at OPERATOR."""
     if reverse:
         tokens.reverse()
@@ -766,7 +768,7 @@ def _shorten_line(tokens, source, target, indentation, indent_word,
             # Don't modify if lines are not short enough
             if len(first) > MAX_LINE_WIDTH or len(second) > MAX_LINE_WIDTH:
                 continue
-            fixed = first + "\n" + second
+            fixed = first + newline + second
             try:
                 ret = compile(fixed, '<string>', 'exec')
             except SyntaxError:
