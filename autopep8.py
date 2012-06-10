@@ -31,7 +31,7 @@ except ImportError:
     pep8 = None
 
 
-__version__ = '0.6.4'
+__version__ = '0.6.5'
 
 
 PEP8_BIN = 'pep8'
