@@ -1,1 +1,3 @@
 include README.rst
+include test/bad_encoding.py
+include test/bad_encoding2.py
