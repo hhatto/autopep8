@@ -168,10 +168,14 @@ class FixPEP8(object):
                                                         info))
 
     def fix(self):
-        pep8_options = self._pep8_options(self.filename)
         if pep8:
+            pep8_options = {
+                'ignore': self.options.ignore and self.options.ignore.split(','),
+                'select': self.options.select and self.options.select.split(','),
+            }
             results = _execute_pep8(pep8_options, self.source)
         else:
+            pep8_options = self._pep8_options(self.filename)
             results = _spawn_pep8(pep8_options)
         self._fix_source(results)
         return "".join(self.source)
@@ -820,31 +824,22 @@ def _spawn_pep8(pep8_options):
 
 def _execute_pep8(pep8_options, source):
     """Execute pep8 via python method calls."""
-    class QuietChecker(pep8.Checker):
-
+    class QuietReport(pep8.BaseReport):
         """Version of checker that does not print."""
-
-        def __init__(self, filename, lines, options):
-            pep8.Checker.__init__(self, filename, lines=lines, options=options)
-            self.report_error = self.error
-            self.__results = None
-
-        def check_all(self, expected=None, line_offset=0):
-            """Check code and return results."""
-            self.__results = []
-            pep8.Checker.check_all(self, expected, line_offset)
-            return self.__results
+        def __init__(self, options):
+            super(QuietReporter, self).__init__(options)
+            self.result = []
 
         def error(self, line_number, offset, text, _):
             """Collect errors."""
-            code = text[:4]
-            if not self.report._ignore_code(code):
-                self.__results.append(
-                    dict(id=text.split()[0], line=line_number,
+            code = super(QuietReporter, self).error(line_number, offset, text, _)
+            if code:
+                self.result.append(
+                    dict(id=code, line=line_number,
                          column=offset + 1, info=text))
 
-    style_guide = pep8.StyleGuide(arglist=(['pep8'] + pep8_options))
-    checker = QuietChecker('', lines=source, options=style_guide.options)
+    checker = pep8.Checker(self.filename, lines=source,
+                           reporter=QuietReport, **pep8_options)
     return checker.check_all()
 
 
