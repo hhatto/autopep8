@@ -822,7 +822,7 @@ def _spawn_pep8(pep8_options):
     raise Exception("'%s' is not found." % PEP8_BIN)
 
 
-def _execute_pep8(pep8_options, source):
+def _execute_pep8(pep8_options, source, filename=''):
     """Execute pep8 via python method calls."""
     class QuietReport(pep8.BaseReport):
         """Version of checker that does not print."""
@@ -838,7 +838,7 @@ def _execute_pep8(pep8_options, source):
                     dict(id=code, line=line_number,
                          column=offset + 1, info=text))
 
-    checker = pep8.Checker(self.filename, lines=source,
+    checker = pep8.Checker(filename, lines=source,
                            reporter=QuietReport, **pep8_options)
     return checker.check_all()
 
