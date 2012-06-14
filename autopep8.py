@@ -22,10 +22,10 @@ from difflib import unified_diff
 import tempfile
 import ast
 
-from distutils.version import LooseVersion
+from distutils.version import StrictVersion
 try:
     import pep8
-    if LooseVersion(pep8.__version__) < LooseVersion('0.5.1'):
+    if StrictVersion(pep8.__version__) < StrictVersion('1.3a1'):
         pep8 = None
 except ImportError:
     pep8 = None
@@ -820,23 +820,14 @@ def _spawn_pep8(pep8_options):
 
 def _execute_pep8(pep8_options, source):
     """Execute pep8 via python method calls."""
-    pep8.process_options(['pep8'] + pep8_options)
-
     class QuietChecker(pep8.Checker):
 
         """Version of checker that does not print."""
 
-        def __init__(self, filename, lines):
-            pep8.Checker.__init__(self, filename, lines=lines)
+        def __init__(self, filename, lines, options):
+            pep8.Checker.__init__(self, filename, lines=lines, options=options)
+            self.report_error = self.error
             self.__results = None
-
-        def report_error(self, line_number, offset, text, check):
-            """Collect errors."""
-            code = text[:4]
-            if not pep8.ignore_code(code):
-                self.__results.append(
-                    dict(id=text.split()[0], line=line_number,
-                         column=offset + 1, info=text))
 
         def check_all(self, expected=None, line_offset=0):
             """Check code and return results."""
@@ -844,7 +835,16 @@ def _execute_pep8(pep8_options, source):
             pep8.Checker.check_all(self, expected, line_offset)
             return self.__results
 
-    checker = QuietChecker('', lines=source)
+        def error(self, line_number, offset, text, _):
+            """Collect errors."""
+            code = text[:4]
+            if not self.report._ignore_code(code):
+                self.__results.append(
+                    dict(id=text.split()[0], line=line_number,
+                         column=offset + 1, info=text))
+
+    style_guide = pep8.StyleGuide(arglist=(['pep8'] + pep8_options))
+    checker = QuietChecker('', lines=source, options=style_guide.options)
     return checker.check_all()
 
 
