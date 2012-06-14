@@ -827,12 +827,12 @@ def _execute_pep8(pep8_options, source):
     class QuietReport(pep8.BaseReport):
         """Version of checker that does not print."""
         def __init__(self, options):
-            super(QuietReporter, self).__init__(options)
+            super(QuietReport, self).__init__(options)
             self.result = []
 
         def error(self, line_number, offset, text, _):
             """Collect errors."""
-            code = super(QuietReporter, self).error(line_number, offset, text, _)
+            code = super(QuietReport, self).error(line_number, offset, text, _)
             if code:
                 self.result.append(
                     dict(id=code, line=line_number,
