@@ -31,7 +31,7 @@ except ImportError:
     pep8 = None
 
 
-__version__ = '0.6.4'
+__version__ = '0.6.5'
 
 
 PEP8_BIN = 'pep8'
@@ -327,8 +327,6 @@ class FixPEP8(object):
                                                       newline=self.newline)
             return
         else:
-            # FIXME: lazy implementation
-            #RETURN_COLUMN = 75
             indent = _get_indentation(target)
             source = target[len(indent):]
             sio = StringIO(target)
@@ -365,19 +363,6 @@ class FixPEP8(object):
             else:
                 # Otherwise both don't work
                 return []
-
-        # FIXME: disable now
-        #for offset in range(50):
-        #    fixed = "%s" % source[:RETURN_COLUMN - len(indent) - offset] + \
-        #            " \\\n" + indent + "    " + \
-        #            source[RETURN_COLUMN - len(indent) - offset:]
-        #    try:
-        #        ret = compile_command(fixed)
-        #    except SyntaxError:
-        #        continue
-        #    if ret:
-        #        self.source[line_index] = indent + fixed
-        #        break
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""
