@@ -954,35 +954,30 @@ class Reindenter(object):
             self.index += 1
         return line
 
-    def tokeneater(self, token_type, _, start, __, line,
-                   INDENT=tokenize.INDENT,
-                   DEDENT=tokenize.DEDENT,
-                   NEWLINE=tokenize.NEWLINE,
-                   COMMENT=tokenize.COMMENT,
-                   NL=tokenize.NL):
+    def tokeneater(self, token_type, _, start, __, line):
         """Line-eater for tokenize."""
         sline = start[0]
-        if token_type == NEWLINE:
+        if token_type == tokenize.NEWLINE:
             # A program statement, or ENDMARKER, will eventually follow,
             # after some (possibly empty) run of tokens of the form
             #     (NL | COMMENT)* (INDENT | DEDENT+)?
             self.find_stmt = 1
 
-        elif token_type == INDENT:
+        elif token_type == tokenize.INDENT:
             self.find_stmt = 1
             self.level += 1
 
-        elif token_type == DEDENT:
+        elif token_type == tokenize.DEDENT:
             self.find_stmt = 1
             self.level -= 1
 
-        elif token_type == COMMENT:
+        elif token_type == tokenize.COMMENT:
             if self.find_stmt:
                 self.stats.append((sline, -1))
                 # but we're still looking for a new stmt, so leave
                 # find_stmt alone
 
-        elif token_type == NL:
+        elif token_type == tokenize.NL:
             pass
 
         elif self.find_stmt:
