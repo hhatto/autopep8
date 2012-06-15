@@ -30,6 +30,13 @@ try:
 except ImportError:
     pep8 = None
 
+    # This mode does not work properly in Python 2.6. The temporary file that
+    # is used in this mode gets corrupted under Python 2.6. This is possibly
+    # due to a unicode issue.
+    import platform
+    if platform.python_version_tuple() <= ('2', '6'):
+        sys.stderr.write('Warning: Please upgrade pep8\n')
+
 
 __version__ = '0.6.5'
 
@@ -1010,13 +1017,15 @@ def fix_file(filename, opts, output=sys.stdout):
     fixed_source = fix.fix()
     original_source = copy.copy(fix.original_source)
     tmp_filename = filename
+    if not pep8 or opts.in_place:
+        encoding = detect_encoding(filename)
     for _ in range(opts.pep8_passes):
         if fixed_source == tmp_source:
             break
         tmp_source = copy.copy(fixed_source)
         if not pep8:
             tmp_filename = tempfile.mkstemp()[1]
-            fp = open(tmp_filename, 'w')
+            fp = open_with_encoding(tmp_filename, encoding=encoding, mode='w')
             fp.write(fixed_source)
             fp.close()
         fix = FixPEP8(tmp_filename, opts, contents=tmp_source)
@@ -1031,7 +1040,7 @@ def fix_file(filename, opts, output=sys.stdout):
         new = new.readlines()
         output.write(_get_difftext(original_source, new, filename))
     elif opts.in_place:
-        fp = open_with_encoding(filename, encoding=detect_encoding(filename),
+        fp = open_with_encoding(filename, encoding=encoding,
                                 mode='w')
         fp.write(fixed_source)
         fp.close()
