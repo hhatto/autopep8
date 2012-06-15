@@ -42,7 +42,7 @@ do
         fi
     fi
 
-    "$ACID" "$TMP_DIR/$package"
+    "$ACID" $@ "$TMP_DIR/$package"
     if [ $? -ne 0 ]
     then
         break;
