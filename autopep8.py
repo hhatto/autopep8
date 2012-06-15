@@ -888,7 +888,7 @@ class Reindenter(object):
         for i in range(len(stats) - 1):
             thisstmt, thislevel = stats[i]
             nextstmt = stats[i + 1][0]
-            have = _leading_blank_count(lines[thisstmt])
+            have = _leading_space_count(lines[thisstmt])
             want = thislevel * 4
             if want < 0:
                 # A comment line.
@@ -902,7 +902,7 @@ class Reindenter(object):
                         for j in range(i + 1, len(stats) - 1):
                             jline, jlevel = stats[j]
                             if jlevel >= 0:
-                                if have == _leading_blank_count(lines[jline]):
+                                if have == _leading_space_count(lines[jline]):
                                     want = jlevel * 4
                                 break
                     if want < 0:           # Maybe it's a hanging
@@ -913,9 +913,9 @@ class Reindenter(object):
                             jline, jlevel = stats[j]
                             if jlevel >= 0:
                                 want = (have +
-                                        _leading_blank_count(
+                                        _leading_space_count(
                                             after[jline - 1]) -
-                                        _leading_blank_count(lines[jline]))
+                                        _leading_space_count(lines[jline]))
                                 break
                     if want < 0:
                         # Still no luck -- leave it alone.
@@ -935,7 +935,7 @@ class Reindenter(object):
                         else:
                             after.append(" " * diff + line)
                     else:
-                        remove = min(_leading_blank_count(line), -diff)
+                        remove = min(_leading_space_count(line), -diff)
                         after.append(line[remove:])
         return self.raw != self.after
 
@@ -991,8 +991,8 @@ class Reindenter(object):
                 self.stats.append((sline, self.level))
 
 
-def _leading_blank_count(line):
-    """Return number of leading blanks in line."""
+def _leading_space_count(line):
+    """Return number of leading spaces in line."""
     i = 0
     while i < len(line) and line[i] == ' ':
         i += 1
