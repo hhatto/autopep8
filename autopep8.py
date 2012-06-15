@@ -132,14 +132,6 @@ class FixPEP8(object):
         self.fix_e274 = self.fix_e271
         self.fix_w191 = self.fix_e101
 
-    def _pep8_options(self, targetfile):
-        """Return options to be passed to pep8."""
-        return (["--repeat", targetfile] +
-                (["--ignore=" + self.options.ignore]
-                 if self.options.ignore else []) +
-                (["--select=" + self.options.select]
-                 if self.options.select else []))
-
     def _fix_source(self, results):
         completed_lines = []
         for result in sorted(results, key=_priority_key):
@@ -170,13 +162,18 @@ class FixPEP8(object):
     def fix(self):
         if pep8:
             pep8_options = {
-                'ignore': self.options.ignore and self.options.ignore.split(','),
-                'select': self.options.select and self.options.select.split(','),
+                'ignore':
+                self.options.ignore and self.options.ignore.split(','),
+                'select':
+                self.options.select and self.options.select.split(','),
             }
             results = _execute_pep8(pep8_options, self.source)
         else:
-            pep8_options = self._pep8_options(self.filename)
-            results = _spawn_pep8(pep8_options)
+            results = _spawn_pep8((["--ignore=" + self.options.ignore]
+                                   if self.options.ignore else []) +
+                                  (["--select=" + self.options.select]
+                                   if self.options.select else []) +
+                                  [self.filename])
         self._fix_source(results)
         return "".join(self.source)
 
