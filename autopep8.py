@@ -30,13 +30,6 @@ try:
 except ImportError:
     pep8 = None
 
-    # This mode does not work properly in Python 2.6. The temporary file that
-    # is used in this mode gets corrupted under Python 2.6. This is possibly
-    # due to a unicode issue.
-    import platform
-    if platform.python_version_tuple() <= ('2', '6'):
-        sys.stderr.write('Warning: Please upgrade pep8\n')
-
 
 __version__ = '0.6.5'
 
@@ -227,15 +220,12 @@ class FixPEP8(object):
             return []
 
     def fix_e231(self, result):
-        target = self.source[result['line'] - 1]
-        target_char = result['info'].split()[-1][1]
-        fixed = ""
-        fixed_end = 0
-        for i in re.finditer("%s\S" % target_char, target):
-            fixed += target[fixed_end:i.start()] + "%s " % target_char
-            fixed_end = i.end() - 1
-        fixed += target[fixed_end:]
-        self.source[result['line'] - 1] = fixed
+        """Add missing whitespace."""
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+        offset = result['column']
+        fixed = target[:offset] + ' ' + target[offset:]
+        self.source[line_index] = fixed
 
     def fix_e251(self, result):
         line_index = result['line'] - 1
