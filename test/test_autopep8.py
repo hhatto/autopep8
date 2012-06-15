@@ -294,6 +294,12 @@ while True:
         self._inner_setup(line, options='--select=E203')
         self.assertEqual(self.result, fixed)
 
+    def test_e203_with_newline(self):
+        line = "print(a\n, end=' ')\n"
+        fixed = "print(a, end=' ')\n"
+        self._inner_setup(line, options='--select=E203')
+        self.assertEqual(self.result, fixed)
+
     def test_e211(self):
         line = "d = [1, 2, 3]\nprint d  [0]\n"
         fixed = "d = [1, 2, 3]\nprint d[0]\n"
