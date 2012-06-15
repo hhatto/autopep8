@@ -43,7 +43,7 @@ MAX_LINE_WIDTH = 79
 
 
 def open_with_encoding(filename, encoding, mode='r'):
-    """Open file with a specific encoding."""
+    """Return opened file with a specific encoding."""
     try:
         # Python 3
         return open(filename, mode=mode, encoding=encoding)
@@ -71,12 +71,7 @@ def detect_encoding(filename):
 
 
 def read_from_filename(filename, readlines=False):
-    """Simple open file, read contents, close file.
-
-    Ensures file gets closed without relying on CPython GC.
-    Jython requires files to be closed.
-
-    """
+    """Return contents of file."""
     with open_with_encoding(filename,
                             encoding=detect_encoding(filename)) as input_file:
         return input_file.readlines() if readlines else input_file.read()
@@ -160,6 +155,7 @@ class FixPEP8(object):
                                                         info))
 
     def fix(self):
+        """Return a version of the source code with PEP 8 violations fixed."""
         if pep8:
             pep8_options = {
                 'ignore':
@@ -609,6 +605,7 @@ class FixPEP8(object):
 
 
 def _find_newline(source):
+    """Return type of newline used in source."""
     cr, lf, crlf = 0, 0, 0
     for s in source:
         if CRLF in s:
@@ -629,6 +626,7 @@ def _find_newline(source):
 
 
 def _get_indentword(source):
+    """Return indentation type."""
     sio = StringIO(source)
     indent_word = "    "  # Default in case source has no indentation
     try:
@@ -642,12 +640,13 @@ def _get_indentword(source):
 
 
 def _get_indentation(line):
+    """Return leading whitespace."""
     non_whitespace_index = len(line) - len(line.lstrip())
     return line[:non_whitespace_index]
 
 
 def _split_indentation(line):
-    """Split into tuple (indentation, rest)."""
+    """Return line split into tuple (indentation, rest)."""
     non_whitespace_index = len(line) - len(line.lstrip())
     return (line[:non_whitespace_index], line[non_whitespace_index:])
 
@@ -889,7 +888,7 @@ class Reindenter(object):
         for i in range(len(stats) - 1):
             thisstmt, thislevel = stats[i]
             nextstmt = stats[i + 1][0]
-            have = _getlspace(lines[thisstmt])
+            have = _leading_blank_count(lines[thisstmt])
             want = thislevel * 4
             if want < 0:
                 # A comment line.
@@ -903,7 +902,7 @@ class Reindenter(object):
                         for j in range(i + 1, len(stats) - 1):
                             jline, jlevel = stats[j]
                             if jlevel >= 0:
-                                if have == _getlspace(lines[jline]):
+                                if have == _leading_blank_count(lines[jline]):
                                     want = jlevel * 4
                                 break
                     if want < 0:           # Maybe it's a hanging
@@ -913,8 +912,10 @@ class Reindenter(object):
                         for j in range(i - 1, -1, -1):
                             jline, jlevel = stats[j]
                             if jlevel >= 0:
-                                want = (have + _getlspace(after[jline - 1]) -
-                                        _getlspace(lines[jline]))
+                                want = (have +
+                                        _leading_blank_count(
+                                            after[jline - 1]) -
+                                        _leading_blank_count(lines[jline]))
                                 break
                     if want < 0:
                         # Still no luck -- leave it alone.
@@ -934,7 +935,7 @@ class Reindenter(object):
                         else:
                             after.append(" " * diff + line)
                     else:
-                        remove = min(_getlspace(line), -diff)
+                        remove = min(_leading_blank_count(line), -diff)
                         after.append(line[remove:])
         return self.raw != self.after
 
@@ -990,10 +991,10 @@ class Reindenter(object):
                 self.stats.append((sline, self.level))
 
 
-def _getlspace(line):
-    """Count number of leading blanks."""
+def _leading_blank_count(line):
+    """Return number of leading blanks in line."""
     i = 0
-    while i < len(line) and line[i] == " ":
+    while i < len(line) and line[i] == ' ':
         i += 1
     return i
 
