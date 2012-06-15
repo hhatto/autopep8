@@ -301,6 +301,9 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
 
+        if not target.lstrip().startswith('import'):
+            return []
+
         indentation = target.split("import ")[0]
         modules = target.split("import ")[1].split(",")
         fixed_modulelist = \
