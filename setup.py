@@ -3,15 +3,6 @@
 
 from setuptools import setup
 
-# Hack to prevent stupid "TypeError: 'NoneType' object is not callable" error
-# in multiprocessing/util.py _exit_function when running `python
-# setup.py test` (see
-# http://www.eby-sarna.com/pipermail/peak/2010-May/003357.html)
-try:
-    import multiprocessing
-except ImportError:
-    pass
-
 
 def version():
     """Return version string."""
@@ -46,8 +37,7 @@ with open('README.rst') as readme:
         ],
         keywords="automation pep8",
         install_requires=['pep8'],
-        tests_require=['nose'],
-        test_suite='nose.collector',
+        test_suite='test.test_autopep8',
         py_modules=['autopep8'],
         zip_safe=False,
         entry_points={'console_scripts': ['autopep8 = autopep8:main']},
