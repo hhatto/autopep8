@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup
-import autopep8
 
 # Hack to prevent stupid "TypeError: 'NoneType' object is not callable" error
 # in multiprocessing/util.py _exit_function when running `python
@@ -14,10 +13,19 @@ except ImportError:
     pass
 
 
+def version():
+    """Return version string."""
+    with open('autopep8.py') as input_file:
+        for line in input_file:
+            if line.startswith('__version__'):
+                import ast
+                return ast.literal_eval(line.split('=')[1].strip())
+
+
 with open('README.rst') as readme:
     setup(
         name='autopep8',
-        version=autopep8.__version__,
+        version=version(),
         description="A tool that automatically formats Python code to conform to "
                     "the PEP 8 style guide",
         long_description=readme.read(),
