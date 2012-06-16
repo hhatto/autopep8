@@ -165,6 +165,9 @@ class FixPEP8(object):
             }
             results = _execute_pep8(pep8_options, self.source)
         else:
+            if self.options.verbose:
+                sys.stderr.write('Running in compatibility mode. Consider '
+                                 'upgrading to the latest pep8.\n')
             results = _spawn_pep8((["--ignore=" + self.options.ignore]
                                    if self.options.ignore else []) +
                                   (["--select=" + self.options.select]
