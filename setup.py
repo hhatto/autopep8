@@ -17,8 +17,8 @@ with open('README.rst') as readme:
     setup(
         name='autopep8',
         version=version(),
-        description="A tool that automatically formats Python code to conform to "
-                    "the PEP 8 style guide",
+        description='A tool that automatically formats Python code to conform '
+                    'to the PEP 8 style guide',
         long_description=readme.read(),
         license='Expat License',
         author='Hideo Hattori',
@@ -35,7 +35,7 @@ with open('README.rst') as readme:
             'Programming Language :: Python :: 3',
             'Programming Language :: Unix Shell',
         ],
-        keywords="automation pep8",
+        keywords='automation, pep8, format',
         install_requires=['pep8'],
         test_suite='test.test_autopep8',
         py_modules=['autopep8'],
