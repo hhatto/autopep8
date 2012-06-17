@@ -36,7 +36,7 @@ with open('README.rst') as readme:
             'Programming Language :: Unix Shell',
         ],
         keywords='automation, pep8, format',
-        install_requires=['pep8'],
+        install_requires=['pep8 >= 1.3'],
         test_suite='test.test_autopep8',
         py_modules=['autopep8'],
         zip_safe=False,
