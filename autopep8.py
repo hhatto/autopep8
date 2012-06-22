@@ -918,9 +918,8 @@ class Reindenter(object):
                         for j in range(i - 1, -1, -1):
                             jline, jlevel = stats[j]
                             if jlevel >= 0:
-                                want = (have +
-                                        _leading_space_count(
-                                            after[jline - 1]) -
+                                want = (have + _leading_space_count(
+                                        after[jline - 1]) -
                                         _leading_space_count(lines[jline]))
                                 break
                     if want < 0:
