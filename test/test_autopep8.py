@@ -582,6 +582,19 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_arithmetic_operator_with_indent(self):
+        line = \
+"""def d():
+    111 + 111 + 111 + 111 + 111 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 333 + 333 + 333 + 333
+"""
+        fixed = \
+"""def d():
+    111 + 111 + 111 + 111 + 111 + 222 + 222 + 222 + 222 + 222 + 222 + \\
+        222 + 222 + 222 + 333 + 333 + 333 + 333
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e501_more_complicated(self):
         line = \
 """blahblah = os.environ.get('blahblah') or os.environ.get('blahblahblah') or os.environ.get('blahblahblahblah')
