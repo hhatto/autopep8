@@ -750,13 +750,16 @@ def _shorten_line(tokens, source, target, indentation, indent_word,
                     continue
             first = source[:offset - len(indentation)]
             second = (indentation + indent_word +
-                      source[offset - len(indentation):])
+                      source[offset - len(indentation):].lstrip())
             if not second.strip():
                 continue
             # Don't modify if lines are not short enough
             if len(first) > MAX_LINE_WIDTH or len(second) > MAX_LINE_WIDTH:
                 continue
-            fixed = first + newline + second
+            if tkn[1] in '+-*/':
+                fixed = first + ' \\' + newline + second
+            else:
+                fixed = first + newline + second
             try:
                 ret = compile(fixed, '<string>', 'exec')
             except SyntaxError:

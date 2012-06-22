@@ -564,7 +564,7 @@ class Foo(object):
 """
         fixed = \
 """print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
-     333, 333, 333)
+    333, 333, 333)
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
@@ -577,7 +577,7 @@ class Foo(object):
         fixed = \
 """def d():
     print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222,
-         222, 333, 333, 333, 333)
+        222, 333, 333, 333, 333)
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
