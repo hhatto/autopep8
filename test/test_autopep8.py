@@ -1191,7 +1191,7 @@ class TestCoverage(unittest.TestCase):
         try:
             autopep8.parse_args([])
             self.assertEqual("not work", "test is failed!!")
-        except SystemExit, e:
+        except SystemExit as e:
             self.assertEqual(e.code, 2)
         sys.stderr.close()
         sys.stderr = _tmp
@@ -1202,7 +1202,7 @@ class TestCoverage(unittest.TestCase):
         try:
             autopep8.parse_args(['test.py', 'dummy.py'])
             self.assertEqual("not work", "test is failed!!")
-        except SystemExit, e:
+        except SystemExit as e:
             self.assertEqual(e.code, 2)
         sys.stderr.close()
         sys.stderr = _tmp
