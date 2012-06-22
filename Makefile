@@ -42,7 +42,7 @@ coverage:
 
 check:
 	pep8 autopep8.py && echo 'OK'
-	pylint --reports=no --include-ids=yes \
+	pylint --reports=no --include-ids=yes --max-module-lines=1500 \
 		--disable=C0111,C0103,F0401,R0902,W0511,R0914,R0912,R0915,R0904,R0911,R0913,W0142,W0212,C0302 \
 		--rcfile=/dev/null autopep8.py && echo 'OK'
 
