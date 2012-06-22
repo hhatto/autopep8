@@ -1178,5 +1178,27 @@ class TestCoverage(unittest.TestCase):
         pep8obj = autopep8.FixPEP8(self.tempfile[1], None)
         self.assertEqual("".join(pep8obj.source), line)
 
+    def test_no_argument(self):
+        _tmp = sys.stderr
+        sys.stderr = open('/dev/null', 'w')
+        try:
+            autopep8.parse_args([])
+            self.assertEqual("not work", "test is failed!!")
+        except SystemExit, e:
+            self.assertEqual(e.code, 2)
+        sys.stderr.close()
+        sys.stderr = _tmp
+
+    def test_inplace_with_multi_files(self):
+        _tmp = sys.stderr
+        sys.stderr = open('/dev/null', 'w')
+        try:
+            autopep8.parse_args(['test.py', 'dummy.py'])
+            self.assertEqual("not work", "test is failed!!")
+        except SystemExit, e:
+            self.assertEqual(e.code, 2)
+        sys.stderr.close()
+        sys.stderr = _tmp
+
 if __name__ == '__main__':
     unittest.main()
