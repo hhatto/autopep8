@@ -6,6 +6,10 @@
 
 # E501: We should wrap after comman instead of before. From
 #       Intellect-1.4.8.4/intellect/grammar/PolicyParser.py
+def dummy():
+    if True:
+        if True:
+            if True:
                 object = ModifyAction( [MODIFY70.text, OBJECTBINDING71.text, COLON72.text], MODIFY70.getLine(), MODIFY70.getCharPositionInLine() )
 
 # E501: This should be wrapped similar to how pprint does it
