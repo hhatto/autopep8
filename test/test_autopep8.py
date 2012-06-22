@@ -1160,5 +1160,23 @@ class TestSpawnPEP8Process(unittest.TestCase):
         self.assertEqual(self.result, fixed)
 
 
+class TestCoverage(unittest.TestCase):
+
+    def setUp(self):
+        self.tempfile = mkstemp()
+
+    def tearDown(self):
+        os.remove(self.tempfile[1])
+
+    def _inner_setup(self, line, options=""):
+        f = open(self.tempfile[1], 'w')
+        f.write(line)
+
+    def test_fixpep8_class_constructor(self):
+        line = "print 1\nprint 2\n"
+        self._inner_setup(line)
+        pep8obj = autopep8.FixPEP8(self.tempfile[1], None)
+        self.assertEqual("".join(pep8obj.source), line)
+
 if __name__ == '__main__':
     unittest.main()
