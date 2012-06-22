@@ -38,6 +38,12 @@ def only_py2(func):
     return func
 
 
+def not_pypy(func):
+    if 'pypy' == sys.subversion[0].lower():
+        func = None
+    return func
+
+
 class TestUtils(unittest.TestCase):
 
     def test_find_newline_only_cr(self):
@@ -1172,6 +1178,7 @@ class TestCoverage(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
 
+    @not_pypy
     def test_fixpep8_class_constructor(self):
         line = "print 1\nprint 2\n"
         self._inner_setup(line)
