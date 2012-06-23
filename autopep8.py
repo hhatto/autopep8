@@ -59,8 +59,9 @@ def detect_encoding(filename):
             with open(filename, 'rb') as input_file:
                 encoding = tokenize.detect_encoding(input_file.readline)[0]
 
-            # Check for correctness of encoding
-            with open(filename, encoding=encoding) as input_file:
+                # Check for correctness of encoding
+                import io
+                input_file = io.TextIOWrapper(input_file, encoding)
                 input_file.read()
 
             return encoding
