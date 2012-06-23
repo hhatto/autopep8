@@ -1,6 +1,7 @@
 import os
 import sys
 import unittest
+import contextlib
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
 try:
@@ -1175,28 +1176,32 @@ class TestCoverage(unittest.TestCase):
         self.assertEqual("".join(pep8obj.source), line)
 
     def test_no_argument(self):
-        with open('/dev/null', 'w') as fake_stderr:
-            _tmp = sys.stderr
-            sys.stderr = fake_stderr
+        with disable_stderr():
             try:
                 autopep8.parse_args([])
                 self.assertEqual("not work", "test has failed!!")
             except SystemExit as e:
                 self.assertEqual(e.code, 2)
-            finally:
-                sys.stderr = _tmp
 
     def test_inplace_with_multi_files(self):
-        with open('/dev/null', 'w') as fake_stderr:
-            _tmp = sys.stderr
-            sys.stderr = fake_stderr
+        with disable_stderr():
             try:
                 autopep8.parse_args(['test.py', 'dummy.py'])
                 self.assertEqual("not work", "test has failed!!")
             except SystemExit as e:
                 self.assertEqual(e.code, 2)
-            finally:
-                sys.stderr = _tmp
+
+
+@contextlib.contextmanager
+def disable_stderr():
+    with open('/dev/null', 'w') as fake_stderr:
+        _tmp = sys.stderr
+        sys.stderr = fake_stderr
+        try:
+            yield
+        finally:
+            sys.stderr = _tmp
+
 
 if __name__ == '__main__':
     unittest.main()
