@@ -1175,26 +1175,28 @@ class TestCoverage(unittest.TestCase):
         self.assertEqual("".join(pep8obj.source), line)
 
     def test_no_argument(self):
-        _tmp = sys.stderr
-        sys.stderr = open('/dev/null', 'w')
-        try:
-            autopep8.parse_args([])
-            self.assertEqual("not work", "test is failed!!")
-        except SystemExit as e:
-            self.assertEqual(e.code, 2)
-        sys.stderr.close()
-        sys.stderr = _tmp
+        with open('/dev/null', 'w') as fake_stderr:
+            _tmp = sys.stderr
+            sys.stderr = fake_stderr
+            try:
+                autopep8.parse_args([])
+                self.assertEqual("not work", "test has failed!!")
+            except SystemExit as e:
+                self.assertEqual(e.code, 2)
+            finally:
+                sys.stderr = _tmp
 
     def test_inplace_with_multi_files(self):
-        _tmp = sys.stderr
-        sys.stderr = open('/dev/null', 'w')
-        try:
-            autopep8.parse_args(['test.py', 'dummy.py'])
-            self.assertEqual("not work", "test is failed!!")
-        except SystemExit as e:
-            self.assertEqual(e.code, 2)
-        sys.stderr.close()
-        sys.stderr = _tmp
+        with open('/dev/null', 'w') as fake_stderr:
+            _tmp = sys.stderr
+            sys.stderr = fake_stderr
+            try:
+                autopep8.parse_args(['test.py', 'dummy.py'])
+                self.assertEqual("not work", "test has failed!!")
+            except SystemExit as e:
+                self.assertEqual(e.code, 2)
+            finally:
+                sys.stderr = _tmp
 
 if __name__ == '__main__':
     unittest.main()
