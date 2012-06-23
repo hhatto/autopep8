@@ -8,7 +8,7 @@ all:
 PYTHON?=python
 
 TEST_DIR=test
-.PHONY: test test_basic test_diff test_unit
+.PHONY: test
 test: test_basic test_diff test_unit
 
 test_basic:
