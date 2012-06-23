@@ -6,6 +6,7 @@ all:
 	@echo "make clean"
 
 PYTHON?=python
+COVERAGE?=coverage
 
 TEST_DIR=test
 .PHONY: test
@@ -32,11 +33,11 @@ test_unit:
 
 coverage:
 	@rm -rf htmlcov
-	@AUTOPEP8_COVERAGE=1 coverage run --branch --parallel test/test_autopep8.py
-	@coverage combine
-	@coverage report
-	@coverage html
-	@coverage xml --include=autopep8.py
+	@AUTOPEP8_COVERAGE=1 ${COVERAGE} run --branch --parallel test/test_autopep8.py
+	@${COVERAGE} combine
+	@${COVERAGE} report
+	@${COVERAGE} html
+	@${COVERAGE} xml --include=autopep8.py
 	@echo 'Coverage report: htmlcov/index.html'
 	@rm .coverage
 
