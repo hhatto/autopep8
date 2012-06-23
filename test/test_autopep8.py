@@ -103,9 +103,8 @@ class TestFixPEP8Error(unittest.TestCase):
         os.remove(self.tempfile[1])
 
     def _inner_setup(self, line, options=""):
-        f = open(self.tempfile[1], 'w')
-        f.write(line)
-        f.close()
+        with open(self.tempfile[1], 'w') as temp_file:
+            temp_file.write(line)
         opts, _ = autopep8.parse_args(options.split() + [self.tempfile[1]])
         sio = StringIO()
         autopep8.fix_file(filename=self.tempfile[1],
@@ -765,9 +764,8 @@ class TestFixPEP8Warning(unittest.TestCase):
         os.remove(self.tempfile[1])
 
     def _inner_setup(self, line):
-        f = open(self.tempfile[1], 'w')
-        f.write(line)
-        f.close()
+        with open(self.tempfile[1], 'w') as temp_file:
+            temp_file.write(line)
         opts, _ = autopep8.parse_args([self.tempfile[1]])
         sio = StringIO()
         autopep8.fix_file(filename=self.tempfile[1],
@@ -1070,9 +1068,8 @@ class TestOptions(unittest.TestCase):
         os.remove(self.tempfile[1])
 
     def _inner_setup(self, line, options):
-        f = open(self.tempfile[1], 'w')
-        f.write(line)
-        f.close()
+        with open(self.tempfile[1], 'w') as temp_file:
+            temp_file.write(line)
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1]] + options,
                   stdout=PIPE)
         self.result = p.communicate()[0].decode('utf8')
@@ -1135,9 +1132,8 @@ class TestSpawnPEP8Process(unittest.TestCase):
         os.remove(self.tempfile[1])
 
     def _inner_setup(self, line, options=""):
-        f = open(self.tempfile[1], 'w')
-        f.write(line)
-        f.close()
+        with open(self.tempfile[1], 'w') as temp_file:
+            temp_file.write(line)
         opts, _ = autopep8.parse_args(options.split() + [self.tempfile[1]])
         sio = StringIO()
 
