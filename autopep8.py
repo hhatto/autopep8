@@ -61,8 +61,8 @@ def detect_encoding(filename):
 
                 # Check for correctness of encoding
                 import io
-                input_file = io.TextIOWrapper(input_file, encoding)
-                input_file.read()
+                with io.TextIOWrapper(input_file, encoding) as wrapper:
+                    wrapper.read()
 
             return encoding
         except (SyntaxError, LookupError, UnicodeDecodeError):
