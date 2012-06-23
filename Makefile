@@ -14,7 +14,7 @@ test: test_basic test_diff test_unit
 test_basic:
 	@echo '--->  Running basic test'
 	${PYTHON} autopep8.py example.py > .tmp.test.py
-	pep8 --repeat .tmp.test.py && echo 'OK'
+	pep8 --repeat .tmp.test.py
 	@rm .tmp.test.py
 
 test_diff:
@@ -23,7 +23,7 @@ test_diff:
 	${PYTHON} autopep8.py --diff .tmp.example.py > .tmp.example.py.patch
 	patch < .tmp.example.py.patch
 	@rm .tmp.example.py.patch
-	pep8 --repeat .tmp.example.py && ${PYTHON} -m py_compile .tmp.example.py && echo 'OK'
+	pep8 --repeat .tmp.example.py && ${PYTHON} -m py_compile .tmp.example.py
 	@rm .tmp.example.py
 
 test_unit:
@@ -40,11 +40,14 @@ coverage:
 	@echo 'Coverage report: htmlcov/index.html'
 	@rm .coverage
 
+open_coverage: coverage
+	@python -m webbrowser -n "file://${PWD}/htmlcov/index.html"
+
 check:
-	pep8 autopep8.py && echo 'OK'
+	pep8 autopep8.py
 	pylint --reports=no --include-ids=yes --max-module-lines=1500 \
 		--disable=C0111,C0103,F0401,R0902,W0511,R0914,R0912,R0915,R0904,R0911,R0913,W0142,W0212,C0302 \
-		--rcfile=/dev/null autopep8.py && echo 'OK'
+		--rcfile=/dev/null autopep8.py
 
 pypireg:
 	${PYTHON} setup.py register
