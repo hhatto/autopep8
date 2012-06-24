@@ -39,10 +39,10 @@ before::
     import sys, os
 
 
-    print('hello' );
+    print(                'hello' );
 
 
-    def func1(   foo  ):
+    def func1(                             foo                            ):
         print( 'A'+ foo);
             
         return 0
