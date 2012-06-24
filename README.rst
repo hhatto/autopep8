@@ -40,11 +40,11 @@ before::
 
 
     print(                'hello' );
-
-
     def someone_likes_semicolons(                             foo                            ):
         print( 'A'+ foo);
             
+        
+        
         return 0;;
 
 
