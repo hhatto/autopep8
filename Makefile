@@ -44,6 +44,9 @@ coverage:
 open_coverage: coverage
 	@python -m webbrowser -n "file://${PWD}/htmlcov/index.html"
 
+README.rst: autopep8.py
+	python2.7 update_readme.py
+
 check:
 	pep8 autopep8.py
 	pylint --reports=no --include-ids=yes --max-module-lines=1500 \

@@ -109,6 +109,7 @@ after::
         else:
             raise ValueError('I am an error')
 
+
 options::
 
     Usage: autopep8 [options] [filename [filename ...]]
