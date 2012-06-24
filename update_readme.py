@@ -57,6 +57,16 @@ def indent(text):
     """Indent text by four spaces."""
     return '\n'.join([indent_line(line) for line in text.split('\n')])
 
+def clean_diff(diff_text):
+    """Remove non-deterministic stuff from diff."""
+    clean_lines = []
+    for line in diff_text.split('\n'):
+        if line.startswith('---') or line.startswith('+++'):
+            clean_lines.append(line.split('/')[0])
+        else:
+            clean_lines.append(line)
+    return '\n'.join(clean_lines)
+
 
 def main():
     README_PATH = 'README.rst'
@@ -76,8 +86,9 @@ def main():
             [top,
              BEFORE_KEY, before,
              AFTER_KEY, indent(run_autopep8(textwrap.dedent(before))),
-             DIFF_KEY, indent(run_autopep8(textwrap.dedent(before),
-                                           options=['--diff'])),
+             DIFF_KEY, indent(
+                 clean_diff(run_autopep8(textwrap.dedent(before),
+                                         options=['--diff']))),
              bottom]))
 
 

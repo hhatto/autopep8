@@ -119,8 +119,8 @@ after::
 
 diff::
 
-    --- original//Users/myint/projects/autopep8/tmpMHMQfH
-    +++ fixed//Users/myint/projects/autopep8/tmpMHMQfH
+    --- original
+    +++ fixed
     @@ -1,32 +1,42 @@
     -import sys, os;;;;
     +import sys
