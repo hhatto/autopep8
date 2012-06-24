@@ -39,7 +39,10 @@ def run_autopep8(source, options=()):
         autopep8.fix_file(filename=temp[1],
                           opts=opts,
                           output=sio)
-        return sio.getvalue()
+        output = sio.getvalue()
+        if not output.strip():
+            raise ValueError('autopep8 failed')
+        return output
     finally:
         import os
         os.remove(temp[1])
@@ -81,16 +84,18 @@ def main():
                                          diff_key=DIFF_KEY,
                                          end_key='options::')
 
+    import textwrap
+    new_readme = '\n\n'.join([
+        top,
+        BEFORE_KEY, before,
+        AFTER_KEY, indent(run_autopep8(textwrap.dedent(before))),
+        DIFF_KEY, indent(
+            clean_diff(run_autopep8(textwrap.dedent(before),
+                                    options=['--diff']))),
+        bottom])
+
     with open(README_PATH, 'w') as output_file:
-        import textwrap
-        output_file.write('\n\n'.join([
-            top,
-            BEFORE_KEY, before,
-            AFTER_KEY, indent(run_autopep8(textwrap.dedent(before))),
-            DIFF_KEY, indent(
-                clean_diff(run_autopep8(textwrap.dedent(before),
-                                        options=['--diff']))),
-            bottom]))
+        output_file.write(new_readme)
 
 
 if __name__ == '__main__':
