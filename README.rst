@@ -79,7 +79,7 @@ after::
 
 
     def someone_likes_semicolons(foo):
-        print('A' != foo)  # != is a deprecated form of !=
+        print('A' != foo)  # <> is a deprecated form of !=
 
         return 0
 

@@ -592,7 +592,7 @@ class FixPEP8(object):
 
     def fix_w603(self, result):
         target = self.source[result['line'] - 1]
-        self.source[result['line'] - 1] = re.sub('<>', '!=', target)
+        self.source[result['line'] - 1] = re.sub('<>', '!=', target, count=1)
 
     def fix_w604(self, result):
         target = self.source[result['line'] - 1]
