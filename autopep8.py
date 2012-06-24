@@ -109,7 +109,7 @@ class FixPEP8(object):
             sio = StringIO(contents)
             self.source = sio.readlines()
         self.original_source = copy.copy(self.source)
-        self.newline = _find_newline(self.source)
+        self.newline = find_newline(self.source)
         self.options = options
         self.indent_word = _get_indentword("".join(self.source))
         # method definition
@@ -611,7 +611,7 @@ class FixPEP8(object):
             target[:start], target[start + 1:end - 1], target[end:])
 
 
-def _find_newline(source):
+def find_newline(source):
     """Return type of newline used in source."""
     cr, lf, crlf = 0, 0, 0
     for s in source:
@@ -1005,6 +1005,12 @@ def _leading_space_count(line):
 
 def fix_file(filename, opts, output=sys.stdout):
     tmp_source = read_from_filename(filename)
+
+    # Add missing newline (important for diff)
+    tmp_newline = find_newline(tmp_source)
+    if tmp_source == tmp_source.rstrip(tmp_newline):
+        tmp_source += tmp_newline
+
     fix = FixPEP8(filename, opts, contents=tmp_source)
     fixed_source = fix.fix()
     original_source = copy.copy(fix.original_source)
