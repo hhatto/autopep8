@@ -65,10 +65,14 @@ before::
       total = (324942324324 + 32434234234234 - 23423234243 / 324342342. + 324234223432423412191) / 12345.
     def func22():
         pass
+    class UselessClass(object):
 
-    def func3(bar):
-        if bar : bar+=1;  bar=bar*bar   ; return bar
-        else: raise ValueError, 'I am an error'
+
+        def func3(self, bar):
+            if bar : bar+=1;  bar=bar*bar   ; return bar
+            else: raise ValueError, 'I am an error'
+        def my_method(self):
+            print(self)
 
 after::
 
@@ -102,13 +106,18 @@ after::
         pass
 
 
-    def func3(bar):
-        if bar:
-            bar += 1
-            bar = bar * bar
-            return bar
-        else:
-            raise ValueError('I am an error')
+    class UselessClass(object):
+
+        def func3(self, bar):
+            if bar:
+                bar += 1
+                bar = bar * bar
+                return bar
+            else:
+                raise ValueError('I am an error')
+
+        def my_method(self):
+            print(self)
 
 
 options::
