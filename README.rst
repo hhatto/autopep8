@@ -42,7 +42,7 @@ before::
     print(                'hello' );
 
 
-    def func1(                             foo                            ):
+    def someone_likes_semicolons(                             foo                            ):
         print( 'A'+ foo);
             
         return 0;;
@@ -78,7 +78,7 @@ after::
     print('hello')
 
 
-    def func1(foo):
+    def someone_likes_semicolons(foo):
         print('A' + foo)
 
         return 0
