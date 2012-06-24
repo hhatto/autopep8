@@ -52,21 +52,21 @@ before::
 
 
     def func11():
-        a = (1,2, 3,"a");
-        b = [100,200,300,9876543210,'This is my very long string that goes on and one and on']
+        a=(   1,2, 3,"a"  );
+        b  =[100,200,300,9876543210,'This is my very long string that goes on and one and on'  ]
 
 
 
         return (a, b)
     def func2():
-      total = (324942324324 + 32434234234234 - 23423234243 / 324342342. + 324234223432423412191) / 12345.
+      total =(324942324324 + 32434234234234 - 23423234243 / 324342342. + 324234223432423412191) / 12345.
     def func22():
         pass;
     class UselessClass(object):
 
 
         def __init__    ( self, bar ):
-         if bar : bar+=1;  bar=bar*bar   ; return bar
+         if bar : bar+=1;  bar=bar* bar   ; return bar
          else: raise ValueError, 'I am an error'
         def my_method(self):
           print(self);;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
