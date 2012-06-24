@@ -343,11 +343,11 @@ class FixPEP8(object):
             # my_long_function_name(x, y,
             #     z, ...)
             candidate0 = _shorten_line(_tokens, source, target, indent,
-                                       self.indent_word, reverse=False,
-                                       newline=self.newline)
+                                       self.indent_word, newline=self.newline,
+                                       reverse=False)
             candidate1 = _shorten_line(_tokens, source, target, indent,
-                                       self.indent_word, reverse=True,
-                                       newline=self.newline)
+                                       self.indent_word, newline=self.newline,
+                                       reverse=True)
             if candidate0 and candidate1:
                 if candidate0.split(self.newline)[0].endswith('('):
                     self.source[line_index] = candidate0
@@ -731,8 +731,8 @@ def _fix_basic_raise(line, newline):
                     comment, newline])
 
 
-def _shorten_line(tokens, source, target, indentation, indent_word,
-                  reverse=False, newline=LF):
+def _shorten_line(tokens, source, target, indentation, indent_word, newline,
+                  reverse=False):
     """Separate line at OPERATOR."""
     if reverse:
         tokens.reverse()
