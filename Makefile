@@ -44,7 +44,7 @@ coverage:
 open_coverage: coverage
 	@python -m webbrowser -n "file://${PWD}/htmlcov/index.html"
 
-README.rst: autopep8.py
+readme:
 	python2.7 update_readme.py
 
 check:
