@@ -39,9 +39,9 @@ before::
     import sys, os;;;;
 
 
-    print(                'hello' );
+    print(                `'hello'` );
     def someone_likes_semicolons(                             foo                            ):
-        print( 'A'+ foo);
+        print( 'A'<>foo)            #<> is a deprecated form of !=
             
         
         
@@ -75,11 +75,11 @@ after::
     import os
 
 
-    print('hello')
+    print(repr('hello'))
 
 
     def someone_likes_semicolons(foo):
-        print('A' + foo)
+        print('A' != foo)  # != is a deprecated form of !=
 
         return 0
 
