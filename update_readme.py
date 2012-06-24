@@ -34,7 +34,7 @@ def run_autopep8(source, options=()):
 
     try:
         import autopep8
-        opts, _ = autopep8.parse_args(list(options) +[temp[1]])
+        opts, _ = autopep8.parse_args(list(options) + [temp[1]])
         sio = StringIO()
         autopep8.fix_file(filename=temp[1],
                           opts=opts,
@@ -56,6 +56,7 @@ def indent_line(line):
 def indent(text):
     """Indent text by four spaces."""
     return '\n'.join([indent_line(line) for line in text.split('\n')])
+
 
 def clean_diff(diff_text):
     """Remove non-deterministic stuff from diff."""
@@ -82,14 +83,14 @@ def main():
 
     with open(README_PATH, 'w') as output_file:
         import textwrap
-        output_file.write('\n\n'.join(
-            [top,
-             BEFORE_KEY, before,
-             AFTER_KEY, indent(run_autopep8(textwrap.dedent(before))),
-             DIFF_KEY, indent(
-                 clean_diff(run_autopep8(textwrap.dedent(before),
-                                         options=['--diff']))),
-             bottom]))
+        output_file.write('\n\n'.join([
+            top,
+            BEFORE_KEY, before,
+            AFTER_KEY, indent(run_autopep8(textwrap.dedent(before))),
+            DIFF_KEY, indent(
+                clean_diff(run_autopep8(textwrap.dedent(before),
+                                        options=['--diff']))),
+            bottom]))
 
 
 if __name__ == '__main__':
