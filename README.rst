@@ -40,7 +40,7 @@ before::
 
 
     print(                `'hello'` );
-    def someone_likes_semicolons(                             foo                            ):
+    def someone_likes_semicolons(                             foo  = None                          ):
         print( 'A'<>foo)            #<> is a deprecated form of !=
             
         
@@ -63,7 +63,7 @@ before::
     class UselessClass(object):
 
 
-        def func3    ( self, bar ):
+        def __init__    ( self, bar ):
          if bar : bar+=1;  bar=bar*bar   ; return bar
          else: raise ValueError, 'I am an error'
         def my_method(self):
@@ -78,7 +78,7 @@ after::
     print(repr('hello'))
 
 
-    def someone_likes_semicolons(foo):
+    def someone_likes_semicolons(foo=None):
         print('A' != foo)  # <> is a deprecated form of !=
 
         return 0
@@ -103,7 +103,7 @@ after::
 
     class UselessClass(object):
 
-        def func3(self, bar):
+        def __init__(self, bar):
             if bar:
                 bar += 1
                 bar = bar * bar
