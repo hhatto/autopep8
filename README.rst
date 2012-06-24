@@ -69,10 +69,10 @@ before::
 
 
         def func3(self, bar):
-            if bar : bar+=1;  bar=bar*bar   ; return bar
-            else: raise ValueError, 'I am an error'
+         if bar : bar+=1;  bar=bar*bar   ; return bar
+         else: raise ValueError, 'I am an error'
         def my_method(self):
-            print(self)
+          print(self)
 
 after::
 
