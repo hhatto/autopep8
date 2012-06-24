@@ -63,7 +63,7 @@ before::
     class UselessClass(object):
 
 
-        def func3(self, bar):
+        def func3    ( self, bar ):
          if bar : bar+=1;  bar=bar*bar   ; return bar
          else: raise ValueError, 'I am an error'
         def my_method(self):
