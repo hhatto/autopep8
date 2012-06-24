@@ -36,7 +36,7 @@ execute tool::
 
 before::
 
-    import sys, os
+    import sys, os;;;;
 
 
     print(                'hello' );
@@ -45,7 +45,7 @@ before::
     def func1(                             foo                            ):
         print( 'A'+ foo);
             
-        return 0
+        return 0;;
 
 
 
@@ -59,7 +59,7 @@ before::
     def func2():
       total = (324942324324 + 32434234234234 - 23423234243 / 324342342. + 324234223432423412191) / 12345.
     def func22():
-        pass
+        pass;
     class UselessClass(object):
 
 
@@ -67,7 +67,7 @@ before::
          if bar : bar+=1;  bar=bar*bar   ; return bar
          else: raise ValueError, 'I am an error'
         def my_method(self):
-          print(self)
+          print(self);
 
 after::
 
