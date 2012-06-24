@@ -116,6 +116,9 @@ after::
         def my_method(self):
             print(self)
 
+diff::
+
+    todo
 
 options::
 
