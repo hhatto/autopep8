@@ -228,7 +228,10 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
         c = result['column'] - 1
-        fixed = target[:c] + re.sub(r'\s*=\s*', '=', target[c:], 1)
+        if target[c].strip():
+            fixed = target
+        else:
+            fixed = target[:c].rstrip() + target[c:].lstrip()
 
         # There could be an escaped newline
         #

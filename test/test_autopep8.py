@@ -432,6 +432,12 @@ class Foo(object):
         self._inner_setup(line, options='--select=E251')
         self.assertEqual(self.result, fixed)
 
+    def test_e251_with_calling(self):
+        line = "foo(bar= True)\n"
+        fixed = "foo(bar=True)\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e261(self):
         line = "print 'a b '# comment\n"
         fixed = "print 'a b '  # comment\n"
