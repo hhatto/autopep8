@@ -40,7 +40,7 @@ def run_autopep8(source, options=()):
                           opts=opts,
                           output=sio)
         output = sio.getvalue()
-        if not output.strip():
+        if source.strip() and not output.strip():
             raise ValueError('autopep8 failed')
         return output
     finally:
