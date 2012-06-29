@@ -1115,6 +1115,18 @@ class TestOptions(unittest.TestCase):
         verbose_error = p.communicate()[1].decode('utf8')
         self.assertIn("'fix_e901' is not defined", verbose_error)
 
+    @py27_and_above
+    def test_verbose_diff(self):
+        line = 'bad_syntax)'
+        f = open(self.tempfile[1], 'w')
+        f.write(line)
+        f.close()
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                  [self.tempfile[1], '--verbose', '--diff'],
+                  stdout=PIPE, stderr=PIPE)
+        verbose_error = p.communicate()[1].decode('utf8')
+        self.assertIn("'fix_e901' is not defined", verbose_error)
+
     def test_in_place(self):
         line = "'abc'  \n"
         fixed = "'abc'\n"
@@ -1128,6 +1140,34 @@ class TestOptions(unittest.TestCase):
         f = open(self.tempfile[1])
         self.assertEqual(f.read(), fixed)
         f.close()
+
+    def test_recursive(self):
+        import tempfile
+        temp_directory = tempfile.mkdtemp(dir='.')
+        try:
+            with open(os.path.join(temp_directory, 'a.py'), 'w') as output:
+                output.write("'abc'  \n")
+
+            os.mkdir(os.path.join(temp_directory, 'd'))
+            with open(os.path.join(temp_directory, 'd', 'b.py'),
+                      'w') as output:
+                output.write("123  \n")
+
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [temp_directory, '--recursive', '--diff'],
+                      stdout=PIPE)
+            result = p.communicate()[0].decode('utf8')
+
+            self.assertEqual(
+                "-'abc'  \n+'abc'",
+                '\n'.join(result.split('\n')[3:5]))
+
+            self.assertEqual(
+                '-123  \n+123',
+                '\n'.join(result.split('\n')[8:10]))
+        finally:
+            import shutil
+            shutil.rmtree(temp_directory)
 
 
 class TestSpawnPEP8Process(unittest.TestCase):

@@ -1070,6 +1070,9 @@ def parse_args(args):
                       help='do not fix these errors/warnings (e.g. E4,W)')
     parser.add_option('--select', default='',
                       help='select errors/warnings (e.g. E4,W)')
+    parser.add_option('-r', '--recursive', action='store_true',
+                      help='run recursively; must be used with --in-place or '
+                           '--diff')
     opts, args = parser.parse_args(args)
 
     if not len(args):
@@ -1080,20 +1083,29 @@ def parse_args(args):
                      'unless the "--in-place" or "--diff" options are '
                      'used')
 
+    if opts.recursive and not (opts.in_place or opts.diff):
+        parser.error('must be used with --in-place or --diff')
+
     return opts, args
 
 
 def main():
     """Tool main."""
     opts, args = parse_args(sys.argv[1:])
+    filenames = list(set(args))
     try:
         if opts.in_place or opts.diff:
-            for f in set(args):
-                if opts.verbose and len(args) > 1:
-                    sys.stderr.write('[file:%s]\n' % f)
-                fix_file(f, opts)
+            while filenames:
+                name = filenames.pop(0)
+                if opts.recursive and os.path.isdir(name):
+                    for root, _, children in os.walk(name):
+                        filenames += [os.path.join(root, f) for f in children]
+                else:
+                    if opts.verbose:
+                        sys.stderr.write('[file:%s]\n' % name)
+                    fix_file(name, opts)
         else:
-            fix_file(args[0], opts)
+            fix_file(filenames[0], opts)
     except IOError as error:
         sys.stderr.write(str(error) + '\n')
         return 1
