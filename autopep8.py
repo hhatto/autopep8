@@ -1510,24 +1510,26 @@ def parse_args(args):
 def main():
     """Tool main."""
     opts, args = parse_args(sys.argv[1:])
-    filenames = list(set(args))
-    try:
-        if opts.in_place or opts.diff:
-            while filenames:
-                name = filenames.pop(0)
-                if opts.recursive and os.path.isdir(name):
-                    for root, _, children in os.walk(name):
-                        filenames += [os.path.join(root, f) for f in children
-                                      if f.endswith('.py')]
-                else:
-                    if opts.verbose:
-                        sys.stderr.write('[file:%s]\n' % name)
-                    fix_file(name, opts)
+    if opts.in_place or opts.diff:
+        filenames = list(set(args))
+    else:
+        assert len(args) == 1
+        assert not opts.recursive
+        filenames = args[:1]
+
+    while filenames:
+        name = filenames.pop(0)
+        if opts.recursive and os.path.isdir(name):
+            for root, _, children in os.walk(name):
+                filenames += [os.path.join(root, f) for f in children
+                              if f.endswith('.py')]
         else:
-            fix_file(filenames[0], opts)
-    except IOError as error:
-        sys.stderr.write(str(error) + '\n')
-        return 1
+            if opts.verbose:
+                sys.stderr.write('[file:%s]\n' % name)
+            try:
+                fix_file(name, opts)
+            except (UnicodeDecodeError, IOError) as error:
+                sys.stderr.write(str(error) + '\n')
 
 
 if __name__ == '__main__':
