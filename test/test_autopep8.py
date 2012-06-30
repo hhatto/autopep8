@@ -1238,6 +1238,17 @@ class TestOptions(unittest.TestCase):
             import shutil
             shutil.rmtree(temp_directory)
 
+    def test_only_recursive(self):
+        line = "'abc'  \n"
+        fixed = "'abc'\n"
+        f = open(self.tempfile[1], 'w')
+        f.write(line)
+        f.close()
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--recursive'],
+                  stderr=PIPE)
+        result = p.communicate()
+        self.assertTrue('must be used with --in-place or --diff' in result[1])
+
 
 class TestSpawnPEP8Process(unittest.TestCase):
 
