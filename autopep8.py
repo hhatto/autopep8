@@ -197,24 +197,24 @@ class FixPEP8(object):
         last_newline = True
         sio = StringIO("".join(self.source))
         parens = 0
-        for token in tokenize.generate_tokens(sio.readline):
-            if token[0] in [tokenize.COMMENT, tokenize.DEDENT,
-                            tokenize.INDENT, tokenize.NL,
-                            tokenize.ENDMARKER]:
+        for t in tokenize.generate_tokens(sio.readline):
+            if t[0] in [tokenize.COMMENT, tokenize.DEDENT,
+                        tokenize.INDENT, tokenize.NL,
+                        tokenize.ENDMARKER]:
                 continue
-            if not parens and token[0] in [
+            if not parens and t[0] in [
                 tokenize.NEWLINE, tokenize.SEMI
             ]:
                 last_newline = True
-                logical_end.append((token[3][0] - 1, token[2][1]))
+                logical_end.append((t[3][0] - 1, t[2][1]))
                 continue
             if last_newline and not parens:
-                logical_start.append((token[2][0] - 1, token[2][1]))
+                logical_start.append((t[2][0] - 1, t[2][1]))
                 last_newline = False
-            if token[0] == tokenize.OP:
-                if token[1] in '([{':
+            if t[0] == tokenize.OP:
+                if t[1] in '([{':
                     parens += 1
-                elif token[1] in '}])':
+                elif t[1] in '}])':
                     parens -= 1
         self.logical_start = logical_start
         self.logical_end = logical_end
