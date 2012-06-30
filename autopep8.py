@@ -1501,6 +1501,9 @@ def parse_args(args):
     if opts.recursive and not (opts.in_place or opts.diff):
         parser.error('must be used with --in-place or --diff')
 
+    if opts.in_place and opts.diff:
+        parser.error('--in-place and --diff are mutually exclusive')
+
     return opts, args
 
 
