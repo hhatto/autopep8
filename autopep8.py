@@ -1305,7 +1305,7 @@ class Wrapper(object):
                 if add_second_chances:
                     # visual indenters like to line things up.
                     min_indent = vi[0]
-                    for col, what in indent_chances.iteritems():
+                    for col, what in indent_chances.items():
                         if col > min_indent and (
                             what is True or
                             (what == str and token_type == tokenize.STRING) or
