@@ -248,7 +248,7 @@ class FixPEP8(object):
         ls, _, original = logical
         try:
             rewrapper = Wrapper(original)
-        except tokenize.TokenError:
+        except (tokenize.TokenError, IndentationError):
             return []
         valid_indents = rewrapper.pep8_expected()
         if not rewrapper.rel_indent:
