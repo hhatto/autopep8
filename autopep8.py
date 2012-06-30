@@ -1477,6 +1477,9 @@ def parse_args(args):
                       help='print the diff for the fixed source')
     parser.add_option('-i', '--in-place', action='store_true',
                       help='make changes to files in place')
+    parser.add_option('-r', '--recursive', action='store_true',
+                      help='run recursively; must be used with --in-place or '
+                           '--diff')
     parser.add_option('-p', '--pep8-passes',
                       default=PEP8_PASSES_MAX, type='int',
                       help='maximum number of additional pep8 passes'
@@ -1485,9 +1488,6 @@ def parse_args(args):
                       help='do not fix these errors/warnings (e.g. E4,W)')
     parser.add_option('--select', default='',
                       help='select errors/warnings (e.g. E4,W)')
-    parser.add_option('-r', '--recursive', action='store_true',
-                      help='run recursively; must be used with --in-place or '
-                           '--diff')
     opts, args = parser.parse_args(args)
 
     if not len(args):

@@ -172,13 +172,13 @@ options::
       -v, --verbose         print verbose messages
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
+      -r, --recursive       run recursively; must be used with --in-place or
+                            --diff
       -p PEP8_PASSES, --pep8-passes=PEP8_PASSES
                             maximum number of additional pep8 passes (default:
                             100)
       --ignore=IGNORE       do not fix these errors/warnings (e.g. E4,W)
       --select=SELECT       select errors/warnings (e.g. E4,W)
-      -r, --recursive       run recursively; must be used with --in-place or
-                            --diff
 
 
 Links
