@@ -1013,8 +1013,7 @@ def _execute_pep8(pep8_options, source):
 
 class Reindenter(object):
 
-    """Reindents badly-indented code to uniformly use four-space
-    indentation.
+    """Reindents badly-indented code to uniformly use four-space indentation.
 
     Released to the public domain, by Tim Peters, 03 October 2000.
 
