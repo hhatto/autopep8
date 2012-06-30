@@ -40,6 +40,7 @@ before::
 
     import sys, os;;;;
     print(                `'hello'` );
+
     def someone_likes_semicolons(                             foo  = None                          ,
     bar='bar'):
         print( 'A'<>foo)            #<> is a deprecated form of !=
@@ -103,17 +104,17 @@ diff::
 
     --- original
     +++ fixed
-    @@ -1,18 +1,38 @@
+    @@ -1,19 +1,38 @@
     -import sys, os;;;;
     -print(                `'hello'` );
+    +import sys
+    +import os
+    +print(repr('hello'))
+     
     -def someone_likes_semicolons(                             foo  = None                          ,
     -bar='bar'):
     -    print( 'A'<>foo)            #<> is a deprecated form of !=
     -    return 0;;
-    +import sys
-    +import os
-    +print(repr('hello'))
-    +
     +
     +def someone_likes_semicolons(foo=None,
     +                             bar='bar'):
