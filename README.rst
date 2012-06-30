@@ -177,6 +177,8 @@ options::
                             100)
       --ignore=IGNORE       do not fix these errors/warnings (e.g. E4,W)
       --select=SELECT       select errors/warnings (e.g. E4,W)
+      -r, --recursive       run recursively; must be used with --in-place or
+                            --diff
 
 
 Links
