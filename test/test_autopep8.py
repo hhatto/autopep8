@@ -684,6 +684,30 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_do_not_begin_line_with_comma(self):
+        # This fix is incomplete. (The line is still too long.) But it is here
+        # just to confirm that we do not put a comma at the beginning of a
+        # line.
+        line = """
+
+def dummy():
+    if True:
+        if True:
+            if True:
+                object = ModifyAction( [MODIFY70.text, OBJECTBINDING71.text, COLON72.text], MODIFY70.getLine(), MODIFY70.getCharPositionInLine() )
+"""
+        fixed = """
+
+def dummy():
+    if True:
+        if True:
+            if True:
+                object = ModifyAction([MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
+                                      MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e501_do_not_break_if_useless(self):
         line = \
 """

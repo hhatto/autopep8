@@ -916,6 +916,9 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
             # Don't modify if lines are not short enough
             if len(first) > MAX_LINE_WIDTH or len(second) > MAX_LINE_WIDTH:
                 continue
+            # Do not begin a line with a comma
+            if second.lstrip().startswith(','):
+                continue
             if tkn[1] in '+-*/':
                 fixed = first + ' \\' + newline + second
             else:
