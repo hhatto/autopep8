@@ -192,9 +192,6 @@ class FixPEP8(object):
         # make a variable which is the index of all the starts of lines
         if force is False and self.logical_start is not None:
             return
-        def foo(source=self.source):
-            for line in source:
-                yield line
         logical_start = []
         logical_end = []
         last_newline = True
@@ -209,10 +206,10 @@ class FixPEP8(object):
                 tokenize.NEWLINE, tokenize.SEMI
             ]:
                 last_newline = True
-                logical_end.append((token[3][0]-1, token[2][1]))
+                logical_end.append((token[3][0] - 1, token[2][1]))
                 continue
             if last_newline and not parens:
-                logical_start.append((token[2][0]-1, token[2][1]))
+                logical_start.append((token[2][0] - 1, token[2][1]))
                 last_newline = False
             if token[0] == tokenize.OP:
                 if token[1] in '([{':
@@ -238,7 +235,7 @@ class FixPEP8(object):
                 break
         if ls is None:
             return None
-        original = self.source[ls[0]:le[0]+1]
+        original = self.source[ls[0]:le[0] + 1]
         return ls, le, original
 
     def _fix_reindent(self, result, fix_distinct=False):
@@ -830,7 +827,7 @@ def _priority_key(pep8_result):
     priority = ['e101', 'e111', 'w191',  # Global fixes
                 'e701',  # Fix multiline colon-based before semicolon based
                 'e702',  # Break multiline statements early
-                'e225', 'e231', # things that make lines longer
+                'e225', 'e231',  # things that make lines longer
                 'e501',  # before we break lines
                 ]
     key = pep8_result['id'].lower()
@@ -1163,7 +1160,6 @@ class Wrapper(object):
         self.tokens = list()
         self.rel_indent = None
         sio = StringIO("".join(physical_lines))
-        max_seen = -1
         for token in tokenize.generate_tokens(sio.readline):
             if token[0] != tokenize.ENDMARKER:
                 #if token[2][0] > max_seen:
@@ -1300,7 +1296,7 @@ class Wrapper(object):
                     vi.append(indent_level + 4)
                 else:
                     # must be in hanging indent
-                    hang = rel_indent[open_row] + 4;
+                    hang = rel_indent[open_row] + 4
                     vi.append(indent_level + hang)
 
                 # about the best we can do without look-ahead
@@ -1319,9 +1315,9 @@ class Wrapper(object):
                         ):
                             vi.append(col)
                     vi = sorted(vi)
-                
+
                 valid_indents[row] = vi
-                
+
                 # ...returning to original continuation_line_identation func...
                 visual_indent = indent_chances.get(start[1])
                 last_indent = start
@@ -1331,7 +1327,7 @@ class Wrapper(object):
                 if token_type == tokenize.OP and text in ']})':
                     if indent[depth]:
                         if start[1] != indent[depth]:
-                            pass  #E124
+                            pass  # E124
                     elif hang:
                         pass  # E123
                 elif visual_indent is True:
@@ -1340,7 +1336,7 @@ class Wrapper(object):
                 elif visual_indent in (text, str):
                     pass
                 elif indent[depth] and start[1] < indent[depth]:
-                    pass  #E128
+                    pass  # E128
                 elif hang == 4 or (indent_next and rel_indent[row] == 8):
                     pass
                 else:
@@ -1391,7 +1387,7 @@ class Wrapper(object):
             last_token_multiline = (start[0] != end[0])
 
         if indent_next and rel_indent[-1] == 4:
-            pass  #E125
+            pass  # E125
 
         return valid_indents
 
