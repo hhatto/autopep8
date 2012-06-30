@@ -132,7 +132,19 @@ class FixPEP8(object):
 
     def _fix_source(self, results):
         completed_lines = []
+        global_read_fixes = ['e12']
         for result in sorted(results, key=_priority_key):
+            # Some fixes read all lines and thus will break if other fixes
+            # modify the lines.
+            is_global_read_fix = False
+            for prefix in global_read_fixes:
+                if result['id'].lower().startswith(prefix):
+                    is_global_read_fix = True
+
+            # Do not run global fix if any lines have been modified.
+            if is_global_read_fix and completed_lines:
+                continue
+
             if result['line'] in completed_lines:
                 continue
             fixed_methodname = "fix_%s" % result['id'].lower()

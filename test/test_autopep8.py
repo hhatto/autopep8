@@ -251,7 +251,6 @@ def foo():
         self.assertEqual(self.result, fixed)
 
     def test_e12_reindent(self):
-        #import pdb; pdb.set_trace()
         line = """
 
 def foo_bar(baz, frop,
@@ -263,6 +262,23 @@ def foo_bar(baz, frop,
 def foo_bar(baz, frop,
             fizz, bang):
     pass
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e12_reindent_with_multiple_fixes(self):
+        line="""
+
+sql = 'update %s set %s %s' % (from_table,
+                               ','.join(['%s=%s' % (col, col) for col in cols]),
+        where_clause)
+"""
+        fixed = """
+
+sql = 'update %s set %s %s' % (from_table,
+                               ','.join(
+                                   ['%s=%s' % (col, col) for col in cols]),
+                               where_clause)
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
