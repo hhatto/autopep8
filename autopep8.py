@@ -1143,9 +1143,13 @@ class Reindenter(object):
 
 
 class Wrapper(object):
+
     """Class for functions relating to continuation lines and line folding.
+
     Each instance operates on a single logical line.
+
     """
+
     SKIP_TOKENS = frozenset([
         tokenize.COMMENT, tokenize.NL, tokenize.INDENT,
         tokenize.DEDENT, tokenize.NEWLINE, tokenize.ENDMARKER
