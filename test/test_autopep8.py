@@ -1078,7 +1078,7 @@ a.has_key(
 
     def test_w604_skip_multiple_lines(self):
         # We do not support this yet
-        line = "`(1\n)`\n"
+        line = "`(1\n  )`\n"
         fixed = line
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)

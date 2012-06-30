@@ -824,7 +824,10 @@ def _priority_key(pep8_result):
     """
     priority = ['e101', 'e111', 'w191',  # Global fixes
                 'e701',  # Fix multiline colon-based before semicolon based
-                'e702']  # Break multiline statements early
+                'e702',  # Break multiline statements early
+                'e225', 'e231', # things that make lines longer
+                'e501',  # before we break lines
+                ]
     key = pep8_result['id'].lower()
     if key in priority:
         return priority.index(key)
