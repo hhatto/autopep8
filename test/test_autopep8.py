@@ -1199,6 +1199,17 @@ class TestOptions(unittest.TestCase):
         self.assertEqual(f.read(), fixed)
         f.close()
 
+    def test_in_place_and_diff(self):
+        line = "'abc'  \n"
+        fixed = "'abc'\n"
+        f = open(self.tempfile[1], 'w')
+        f.write(line)
+        f.close()
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--in-place', '--diff'],
+                  stderr=PIPE)
+        result = p.communicate()[1].decode('utf8')
+        self.assertTrue('--in-place and --diff are mutually exclusive' in result)
+
     def test_recursive(self):
         import tempfile
         temp_directory = tempfile.mkdtemp(dir='.')
@@ -1226,6 +1237,17 @@ class TestOptions(unittest.TestCase):
         finally:
             import shutil
             shutil.rmtree(temp_directory)
+
+    def test_only_recursive(self):
+        line = "'abc'  \n"
+        fixed = "'abc'\n"
+        f = open(self.tempfile[1], 'w')
+        f.write(line)
+        f.close()
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--recursive'],
+                  stderr=PIPE)
+        result = p.communicate()[1].decode('utf8')
+        self.assertTrue('must be used with --in-place or --diff' in result)
 
 
 class TestSpawnPEP8Process(unittest.TestCase):
