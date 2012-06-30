@@ -113,6 +113,7 @@ class FixPEP8(object):
         self.options = options
         self.indent_word = _get_indentword("".join(self.source))
         self.logical_start = None
+        self.logical_end = None
         # method definition
         self.fix_e111 = self.fix_e101
         self.fix_e202 = self.fix_e201
@@ -244,7 +245,7 @@ class FixPEP8(object):
         logical = self.get_logical(result)
         if not logical:
             return []
-        ls, le, original = logical
+        ls, _, original = logical
         try:
             rewrapper = Wrapper(original)
         except tokenize.TokenError:
@@ -1160,12 +1161,12 @@ class Wrapper(object):
         self.tokens = list()
         self.rel_indent = None
         sio = StringIO("".join(physical_lines))
-        for token in tokenize.generate_tokens(sio.readline):
-            if token[0] != tokenize.ENDMARKER:
-                #if token[2][0] > max_seen:
-                    #max_seen = token[2][0]
-                    #print ">>" + repr(token[4]) + "<<"
-                self.tokens.append(token)
+        for t in tokenize.generate_tokens(sio.readline):
+            if t[0] != tokenize.ENDMARKER:
+                #if t[2][0] > max_seen:
+                    #max_seen = t[2][0]
+                    #print ">>" + repr(t[4]) + "<<"
+                self.tokens.append(t)
         self.logical_line, self.mapping = self.build_tokens_logical(
             self.tokens
         )
@@ -1181,13 +1182,13 @@ class Wrapper(object):
         logical = []
         length = 0
         previous = None
-        for token in tokens:
-            token_type, text = token[0:2]
+        for t in tokens:
+            token_type, text = t[0:2]
             if token_type in self.SKIP_TOKENS:
                 continue
             if previous:
                 end_line, end = previous[3]
-                start_line, start = token[2]
+                start_line, start = t[2]
                 if end_line != start_line:  # different row
                     prev_text = self.lines[end_line - 1][end - 1]
                     if prev_text == ',' or (prev_text not in '{[('
@@ -1198,10 +1199,10 @@ class Wrapper(object):
                     fill = self.lines[end_line - 1][end:start]
                     logical.append(fill)
                     length += len(fill)
-            mapping.append((length, token))
+            mapping.append((length, t))
             logical.append(text)
             length += len(text)
-            previous = token
+            previous = t
         logical_line = ''.join(logical)
         assert logical_line.lstrip() == logical_line
         assert logical_line.rstrip() == logical_line
@@ -1241,8 +1242,9 @@ class Wrapper(object):
         indent = [indent_level]
         indent_chances = {}
         last_indent = (0, 0)
+        last_token_multiline = None
 
-        for token_type, text, start, end, line in self.tokens:
+        for token_type, text, start, end, _ in self.tokens:
             newline = row < start[0] - first_row
             if newline:
                 row = start[0] - first_row
