@@ -237,14 +237,17 @@ class FixPEP8(object):
                 ls = self.logical_start[i]
                 break
         if ls is None:
-            return []
+            return None
         original = self.source[ls[0]:le[0]+1]
         return ls, le, original
 
     def _fix_reindent(self, result, fix_distinct=False):
         """Fix a badly indented line by adding or removing from its initial
         indent only."""
-        ls, le, original = self.get_logical(result)
+        logical = self.get_logical(result)
+        if not logical:
+            return []
+        ls, le, original = logical
         try:
             rewrapper = Wrapper(original)
         except tokenize.TokenError:
