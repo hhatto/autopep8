@@ -253,6 +253,8 @@ class FixPEP8(object):
         except tokenize.TokenError:
             return []
         valid_indents = rewrapper.pep8_expected()
+        if not rewrapper.rel_indent:
+            return []
         if result["line"] > ls[0]:
             # got a valid continuation line number from pep8
             row = result["line"] - ls[0] - 1
@@ -1159,6 +1161,7 @@ class Wrapper(object):
         self.hard_wrap = hard_wrap
         self.soft_wrap = soft_wrap
         self.tokens = list()
+        self.rel_indent = None
         sio = StringIO("".join(physical_lines))
         max_seen = -1
         for token in tokenize.generate_tokens(sio.readline):
