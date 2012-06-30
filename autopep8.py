@@ -233,8 +233,11 @@ class FixPEP8(object):
         self.logical_end = logical_end
 
     def get_logical(self, result):
-        """return the logical line corresponding to the result.  Assumes input
-        is already E702-clean"""
+        """Return the logical line corresponding to the result.
+
+        Assumes input is already E702-clean.
+
+        """
         self.find_logical()
         row = result['line'] - 1
         col = result['column'] - 1
@@ -252,8 +255,11 @@ class FixPEP8(object):
         return ls, le, original
 
     def _fix_reindent(self, result, fix_distinct=False):
-        """Fix a badly indented line by adding or removing from its initial
-        indent only."""
+        """Fix a badly indented line.
+
+        This is done by adding or removing from its initial indent only.
+
+        """
         logical = self.get_logical(result)
         if not logical:
             return []
@@ -298,24 +304,24 @@ class FixPEP8(object):
             return []
 
     def fix_e121(self, result):
-        """The 'peculiar indent' error for hanging indents"""
+        """The 'peculiar indent' error for hanging indents."""
         # fix by adjusting initial indent level
         return self._fix_reindent(result)
 
     def fix_e122(self, result):
-        """The 'absent indent' error for hanging indents"""
+        """The 'absent indent' error for hanging indents."""
         # fix by adding an initial indent
         return self._fix_reindent(result)
 
     def fix_e123(self, result):
         """The 'loose fingernails' indentation level error for hanging
-        indents"""
+        indents."""
         # fix by deleting whitespace to the correct level
         return self._fix_reindent(result)
 
     def fix_e124(self, result):
         """The 'loose fingernails' indentation level error for visual
-        indents"""
+        indents."""
         # fix by inserting whitespace before the closing bracket
         return self._fix_reindent(result)
 
@@ -325,7 +331,7 @@ class FixPEP8(object):
         return self._fix_reindent(result, fix_distinct=True)
 
     def fix_e126(self, result):
-        """The 'spectacular indent' error for hanging indents"""
+        """The 'spectacular indent' error for hanging indents."""
         # fix by deleting whitespace to the left
         return self._fix_reindent(result)
 
@@ -1007,7 +1013,8 @@ def _execute_pep8(pep8_options, source):
 
 class Reindenter(object):
 
-    """Reindents badly-indented code to uniformly use four-space indentation.
+    """Reindents badly-indented code to uniformly use four-space
+    indentation.
 
     Released to the public domain, by Tim Peters, 03 October 2000.
 
@@ -1191,10 +1198,11 @@ class Wrapper(object):
         )
 
     def build_tokens_logical(self, tokens):
-        """
-        Build a logical line from a list of tokens.  Returns the logical line
-        and a list of (offset, token) tuples.  Does not mute strings like the
-        version in pep8.py.
+        """Build a logical line from a list of tokens.
+
+        Returns the logical line and a list of (offset, token) tuples.  Does
+        not mute strings like the version in pep8.py.
+
         """
         # from pep8.py with minor modifications
         mapping = []
@@ -1234,6 +1242,7 @@ class Wrapper(object):
         Returns a list of lists; each list represents valid indent levels for
         the line in question, relative from the initial indent.  However, the
         first entry is the indent level which was expected.
+
         """
 
         # what follows is an adjusted version of
