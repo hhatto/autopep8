@@ -827,10 +827,10 @@ class TestFixPEP8Warning(unittest.TestCase):
     def tearDown(self):
         os.remove(self.tempfile[1])
 
-    def _inner_setup(self, line):
+    def _inner_setup(self, line, options=()):
         with open(self.tempfile[1], 'w') as temp_file:
             temp_file.write(line)
-        opts, _ = autopep8.parse_args([self.tempfile[1]])
+        opts, _ = autopep8.parse_args([self.tempfile[1]] + list(options))
         sio = StringIO()
         autopep8.fix_file(filename=self.tempfile[1],
                           opts=opts,
@@ -852,7 +852,7 @@ class TestFixPEP8Warning(unittest.TestCase):
     def test_w292(self):
         line = "1\n2"
         fixed = "1\n2\n"
-        self._inner_setup(line)
+        self._inner_setup(line, options=['--select=W292'])
         self.assertEqual(self.result, fixed)
 
     def test_w293(self):

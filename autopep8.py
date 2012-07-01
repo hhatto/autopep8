@@ -84,6 +84,7 @@ class FixPEP8(object):
 
     [fixed method list]
         - e111
+        - e121,e122,e123,e124,e125,e126,e127,e128
         - e201,e202,e203
         - e211
         - e221,e222,e223,e224,e225
@@ -571,9 +572,6 @@ class FixPEP8(object):
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()
         self.source[result['line'] - 1] = "%s%s" % (fixed_line, self.newline)
-
-    def fix_w292(self, _):
-        self.source[-1] += self.newline
 
     def fix_w293(self, result):
         assert not self.source[result['line'] - 1].strip()
