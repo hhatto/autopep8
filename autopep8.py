@@ -301,6 +301,7 @@ class FixPEP8(object):
             self.source[line] = (
                 " " * (indent_to) + orig_line.lstrip()
             )
+            return [line + 1]  # Line indexed at 1
         else:
             return []
 
