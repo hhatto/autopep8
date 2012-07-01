@@ -6,6 +6,7 @@ all:
 	@echo "make clean"
 
 PYTHON?=python
+PYTHON2?=python2.7
 COVERAGE?=coverage
 
 TEST_DIR=test
@@ -45,7 +46,7 @@ open_coverage: coverage
 	@python -m webbrowser -n "file://${PWD}/htmlcov/index.html"
 
 readme:
-	python2.7 update_readme.py
+	${PYTHON2} update_readme.py
 
 check:
 	pep8 autopep8.py
