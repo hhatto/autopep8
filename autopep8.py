@@ -204,7 +204,7 @@ class FixPEP8(object):
 
     def find_logical(self, force=False):
         # make a variable which is the index of all the starts of lines
-        if force is False and self.logical_start is not None:
+        if not force and self.logical_start is not None:
             return
         logical_start = []
         logical_end = []
