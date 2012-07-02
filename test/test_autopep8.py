@@ -260,6 +260,29 @@ def foo_bar(baz, frop,
 if True:
     x = {
          }  # E123
+#: E121
+print "E121", (
+  "dent")
+#: E122
+print "E122", (
+"dent")
+#: E124
+print "E124", ("visual",
+               "indent_two"
+              )
+#: E125
+if (row < 0 or self.moduleCount <= row or
+    col < 0 or self.moduleCount <= col):
+    raise Exception("%s,%s - %s" % (row, col, self.moduleCount))
+#: E126
+print "E126", (
+            "dent")
+#: E127
+print "E127", ("over-",
+                  "over-indent")
+#: E128
+print "E128", ("under-",
+              "under-indent")
 """
         fixed = """
 
@@ -270,6 +293,29 @@ def foo_bar(baz, frop,
 if True:
     x = {
     }  # E123
+#: E121
+print "E121", (
+    "dent")
+#: E122
+print "E122", (
+    "dent")
+#: E124
+print "E124", ("visual",
+               "indent_two"
+               )
+#: E125
+if (row < 0 or self.moduleCount <= row or
+        col < 0 or self.moduleCount <= col):
+    raise Exception("%s,%s - %s" % (row, col, self.moduleCount))
+#: E126
+print "E126", (
+    "dent")
+#: E127
+print "E127", ("over-",
+               "over-indent")
+#: E128
+print "E128", ("under-",
+               "under-indent")
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
