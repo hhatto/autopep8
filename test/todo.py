@@ -11,4 +11,5 @@
 
 # W601: Handle complicated cases
 x = {1: 2}
-x.has_key(x.has_key(0) + x.has_key(x.has_key(0) + x.has_key(1)))
+y = {}
+y.has_key(0) + x.has_key(x.has_key(0) + x.has_key(x.has_key(0) + x.has_key(1)))
