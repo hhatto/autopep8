@@ -254,14 +254,22 @@ def foo():
         line = """
 
 def foo_bar(baz, frop,
-    fizz, bang):
+    fizz, bang):  # E128
     pass
+
+if True:
+    x = {
+         }  # E123
 """
         fixed = """
 
 def foo_bar(baz, frop,
-            fizz, bang):
+            fizz, bang):  # E128
     pass
+
+if True:
+    x = {
+    }  # E123
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
