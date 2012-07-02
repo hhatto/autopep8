@@ -8,3 +8,7 @@
  '2323k2323': 24232323,
  '34434343434535535': 3434343434343434,
  '4334343434343': 3434343434}
+
+# W601: Handle complicated cases
+x = {1: 2}
+x.has_key(x.has_key(0) + x.has_key(x.has_key(0) + x.has_key(1)))
