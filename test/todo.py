@@ -15,8 +15,7 @@ y = {}
 y.has_key(0) + x.has_key(x.has_key(0) + x.has_key(x.has_key(0) + x.has_key(1)))
 
 # E702: Indent correctly when breaking at semicolon
-from alnair.exception import (
-    NoSuchDirectoryError,
-    NoSuchFileError,
-    UndefinedPackageError,
-    ); NoSuchDirectoryError; NoSuchFileError; UndefinedPackageError  # pyflakes
+(
+    1,
+    2,
+    3); 4; 5; 5  # pyflakes
