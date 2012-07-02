@@ -1404,7 +1404,7 @@ class Wrapper(object):
                         if ind >= prev_indent:
                             del indent_chances[ind]
                     depth -= 1
-                    if depth:
+                    if depth and indent[depth]:  # modified
                         indent_chances[indent[depth]] = True
                     for idx in range(row, -1, -1):
                         if parens[idx]:

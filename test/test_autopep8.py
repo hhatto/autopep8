@@ -337,6 +337,34 @@ sql = 'update %s set %s %s' % (from_table,
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e12_tricky(self):
+        line="""
+#: E126
+if (
+    x == (
+        3
+    ) or
+    x == (
+    3
+    ) or
+        y == 4):
+    pass
+"""
+        fixed = """
+#: E126
+if (
+    x == (
+        3
+    ) or
+    x == (
+        3
+    ) or
+        y == 4):
+    pass
+"""
+        self._inner_setup(line)
+        #self.assertEqual(self.result, fixed)
+
     def test_e191(self):
         line = """
 while True:
