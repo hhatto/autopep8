@@ -1186,6 +1186,8 @@ class Wrapper(object):
         self.rel_indent = None
         sio = StringIO("".join(physical_lines))
         for t in tokenize.generate_tokens(sio.readline):
+            if not len(self.tokens) and t[0] in self.SKIP_TOKENS:
+                continue
             if t[0] != tokenize.ENDMARKER:
                 #if t[2][0] > max_seen:
                     #max_seen = t[2][0]
@@ -1306,7 +1308,7 @@ class Wrapper(object):
                         vi.append(indent[depth])
                     else:
                         # visual indent
-                        vi.append(rel_indent[open_row])
+                        vi.append(indent_level + rel_indent[open_row])
                 elif depth and indent[depth]:
                     # visual indent was previously confirmed.
                     vi.append(indent[depth])
