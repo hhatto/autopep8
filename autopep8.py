@@ -142,13 +142,19 @@ class FixPEP8(object):
             if hasattr(self, fixed_methodname):
                 fix = getattr(self, fixed_methodname)
 
-                # Do not run logical fix if any lines have been modified.
                 is_logical_fix = len(inspect.getargspec(fix).args) > 2
-                if is_logical_fix and completed_lines:
-                    continue
+                if is_logical_fix:
+                    logical = self._get_logical(result)
+                    line_start = logical[0][0]
+                    line_end = logical[1][0]
+                    # Do not run logical fix if any relevant lines have been
+                    # modified.
+                    if set(completed_lines).intersection(
+                            set(range(line_start, line_end + 1))):
+                        continue
 
                 if is_logical_fix:
-                    modified_lines = fix(result, self._get_logical(result))
+                    modified_lines = fix(result, logical)
                 else:
                     modified_lines = fix(result)
 
