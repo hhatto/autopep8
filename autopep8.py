@@ -153,7 +153,6 @@ class FixPEP8(object):
                             set(range(line_start, line_end + 1))):
                         continue
 
-                if is_logical_fix:
                     modified_lines = fix(result, logical)
                 else:
                     modified_lines = fix(result)
