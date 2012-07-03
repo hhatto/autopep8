@@ -133,17 +133,20 @@ class FixPEP8(object):
 
     def _fix_source(self, results):
         completed_lines = []
-        global_read_fixes = ['e12']
+        logical_fixes = ['e12', 'e702']
         for result in sorted(results, key=_priority_key):
-            # Some fixes read all lines and thus will break if other fixes
-            # modify the lines.
-            is_global_read_fix = False
-            for prefix in global_read_fixes:
+            # Some fixes read lines other than the one they fix. They will
+            # thus break if other fixes modify the lines. These logical line
+            # fixes need to be done separately.
+            # TODO: Somehow label these fixes differently in their functions to
+            #       avoid having to store this information here.
+            is_logical_fix = False
+            for prefix in logical_fixes:
                 if result['id'].lower().startswith(prefix):
-                    is_global_read_fix = True
+                    is_logical_fix = True
 
             # Do not run global fix if any lines have been modified.
-            if is_global_read_fix and completed_lines:
+            if is_logical_fix and completed_lines:
                 continue
 
             if result['line'] in completed_lines:
