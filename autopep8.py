@@ -565,7 +565,10 @@ class FixPEP8(object):
         first = target[:offset].rstrip(';')
         second = target[offset:].lstrip(';')
 
-        f = [_get_indentation(target) + t.strip()
+        logical = self.get_logical(result)
+        if not logical:
+            return []
+        f = [_get_indentation(logical[2][0]) + t.strip()
              for t in [first, second] if t.strip()]
 
         self.source[line_index] = self.newline.join(f) + self.newline

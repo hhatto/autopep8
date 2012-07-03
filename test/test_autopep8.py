@@ -880,6 +880,27 @@ def foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e702_indent_correctly(self):
+        line = """
+
+(
+    1,
+    2,
+    3); 4; 5; 5  # pyflakes
+"""
+        fixed = """
+
+(
+    1,
+    2,
+    3)
+4
+5
+5  # pyflakes
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e702_skip_with_triple_quote(self):
         # We do not support this yet.
         # We would expect '"""\n      hello\n   """\n1\n'.

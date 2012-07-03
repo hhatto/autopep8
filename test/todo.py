@@ -13,9 +13,3 @@
 x = {1: 2}
 y = {}
 y.has_key(0) + x.has_key(x.has_key(0) + x.has_key(x.has_key(0) + x.has_key(1)))
-
-# E702: Indent correctly when breaking at semicolon
-(
-    1,
-    2,
-    3); 4; 5; 5  # pyflakes
