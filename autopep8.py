@@ -7,6 +7,7 @@ import copy
 import os
 import re
 import sys
+import inspect
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -133,28 +134,24 @@ class FixPEP8(object):
 
     def _fix_source(self, results):
         completed_lines = []
-        logical_fixes = ['e12', 'e702']
         for result in sorted(results, key=_priority_key):
-            # Some fixes read lines other than the one they fix. They will
-            # thus break if other fixes modify the lines. These logical line
-            # fixes need to be done separately.
-            # TODO: Somehow label these fixes differently in their functions to
-            #       avoid having to store this information here.
-            is_logical_fix = False
-            for prefix in logical_fixes:
-                if result['id'].lower().startswith(prefix):
-                    is_logical_fix = True
-
-            # Do not run global fix if any lines have been modified.
-            if is_logical_fix and completed_lines:
-                continue
-
             if result['line'] in completed_lines:
                 continue
+
             fixed_methodname = "fix_%s" % result['id'].lower()
             if hasattr(self, fixed_methodname):
                 fix = getattr(self, fixed_methodname)
-                modified_lines = fix(result)
+
+                # Do not run logical fix if any lines have been modified.
+                is_logical_fix = len(inspect.getargspec(fix).args) > 2
+                if is_logical_fix and completed_lines:
+                    continue
+
+                if is_logical_fix:
+                    modified_lines = fix(result, self._get_logical(result))
+                else:
+                    modified_lines = fix(result)
+
                 if modified_lines:
                     completed_lines += modified_lines
                 elif modified_lines == []:  # Empty list means no fix
@@ -236,7 +233,7 @@ class FixPEP8(object):
         self.logical_start = logical_start
         self.logical_end = logical_end
 
-    def get_logical(self, result):
+    def _get_logical(self, result):
         """Return the logical line corresponding to the result.
 
         Assumes input is already E702-clean.
@@ -258,13 +255,12 @@ class FixPEP8(object):
         original = self.source[ls[0]:le[0] + 1]
         return ls, le, original
 
-    def _fix_reindent(self, result, fix_distinct=False):
+    def _fix_reindent(self, result, logical, fix_distinct=False):
         """Fix a badly indented line.
 
         This is done by adding or removing from its initial indent only.
 
         """
-        logical = self.get_logical(result)
         if not logical:
             return []
         ls, _, original = logical
@@ -308,48 +304,48 @@ class FixPEP8(object):
         else:
             return []
 
-    def fix_e121(self, result):
+    def fix_e121(self, result, logical):
         """The 'peculiar indent' error for hanging indents."""
         # fix by adjusting initial indent level
-        return self._fix_reindent(result)
+        return self._fix_reindent(result, logical)
 
-    def fix_e122(self, result):
+    def fix_e122(self, result, logical):
         """The 'absent indent' error for hanging indents."""
         # fix by adding an initial indent
-        return self._fix_reindent(result)
+        return self._fix_reindent(result, logical)
 
-    def fix_e123(self, result):
+    def fix_e123(self, result, logical):
         """The 'loose fingernails' indentation level error for hanging
         indents."""
         # fix by deleting whitespace to the correct level
-        return self._fix_reindent(result)
+        return self._fix_reindent(result, logical)
 
-    def fix_e124(self, result):
+    def fix_e124(self, result, logical):
         """The 'loose fingernails' indentation level error for visual
         indents."""
         # fix by inserting whitespace before the closing bracket
-        return self._fix_reindent(result)
+        return self._fix_reindent(result, logical)
 
-    def fix_e125(self, result):
+    def fix_e125(self, result, logical):
         """The 'often not visually distinct' error."""
         # fix by indenting the line in error to the next stop.
-        return self._fix_reindent(result, fix_distinct=True)
+        return self._fix_reindent(result, logical, fix_distinct=True)
 
-    def fix_e126(self, result):
+    def fix_e126(self, result, logical):
         """The 'spectacular indent' error for hanging indents."""
         # fix by deleting whitespace to the left
-        return self._fix_reindent(result)
+        return self._fix_reindent(result, logical)
 
-    def fix_e127(self, result):
+    def fix_e127(self, result, logical):
         """The 'interpretive dance' indentation error."""
         # fix by deleting whitespace to the correct level
-        return self._fix_reindent(result)
+        return self._fix_reindent(result, logical)
 
-    def fix_e128(self, result):
+    def fix_e128(self, result, logical):
         """The 'I just wrap long lines with a line break in the middle of my
         argument list' indentation error."""
         # fix by deleting whitespace to the correct level
-        return self._fix_reindent(result)
+        return self._fix_reindent(result, logical)
 
     def fix_e201(self, result):
         line_index = result['line'] - 1
@@ -544,7 +540,7 @@ class FixPEP8(object):
                         target[c:].lstrip())
         self.source[result['line'] - 1] = fixed_source
 
-    def fix_e702(self, result):
+    def fix_e702(self, result, logical):
         """Fix multiple statements on one line."""
         line_index = result['line'] - 1
         target = self.source[line_index]
@@ -568,7 +564,6 @@ class FixPEP8(object):
         first = target[:offset].rstrip(';')
         second = target[offset:].lstrip(';')
 
-        logical = self.get_logical(result)
         if not logical:
             return []
         f = [_get_indentation(logical[2][0]) + t.strip()
