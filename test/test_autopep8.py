@@ -33,12 +33,6 @@ else:
                           os.path.join(ROOT_DIR, 'autopep8.py'),)
 
 
-def py27_and_above(func):
-    if sys.version_info[0] == 2 and sys.version_info[1] < 7:
-        func = None
-    return func
-
-
 def only_py2(func):
     if sys.version_info[0] != 2:
         func = None
@@ -1368,13 +1362,11 @@ class TestOptions(unittest.TestCase):
         self._inner_setup(line, ['--ignore=E,W'])
         self.assertEqual(self.result, line)
 
-    @py27_and_above
     def test_help(self):
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['-h'],
                   stdout=PIPE)
         self.assertIn('Usage:', p.communicate()[0].decode('utf8'))
 
-    @py27_and_above
     def test_verbose(self):
         line = 'bad_syntax)'
         f = open(self.tempfile[1], 'w')
@@ -1385,7 +1377,6 @@ class TestOptions(unittest.TestCase):
         verbose_error = p.communicate()[1].decode('utf8')
         self.assertIn("'fix_e901' is not defined", verbose_error)
 
-    @py27_and_above
     def test_verbose_diff(self):
         line = 'bad_syntax)'
         f = open(self.tempfile[1], 'w')
@@ -1413,7 +1404,6 @@ class TestOptions(unittest.TestCase):
 
     def test_in_place_and_diff(self):
         line = "'abc'  \n"
-        fixed = "'abc'\n"
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
@@ -1452,7 +1442,6 @@ class TestOptions(unittest.TestCase):
 
     def test_only_recursive(self):
         line = "'abc'  \n"
-        fixed = "'abc'\n"
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
