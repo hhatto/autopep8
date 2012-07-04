@@ -947,7 +947,8 @@ def shorten_comment(line, newline):
     line = line.rstrip()
 
     MIN_CHARACTER_REPEAT = 5
-    if len(line) - len(line.rstrip(line[-1])) >= MIN_CHARACTER_REPEAT:
+    if (len(line) - len(line.rstrip(line[-1])) >= MIN_CHARACTER_REPEAT and
+            not line[-1].isalnum()):
         # Trim comments that end with things like ---------
         return line[:MAX_LINE_WIDTH] + newline
     else:

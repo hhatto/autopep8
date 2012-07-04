@@ -62,8 +62,8 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(autopep8.CRLF, autopep8.find_newline(source))
 
     def test_shorten_comment(self):
-        self.assertEqual('# ' + 'x' * 77 + '\n',
-                         autopep8.shorten_comment('# ' + 'x' * 100 + '\n',
+        self.assertEqual('# ' + '=' * 77 + '\n',
+                         autopep8.shorten_comment('# ' + '=' * 100 + '\n',
                                                   '\n'))
 
     def test_detect_encoding(self):
