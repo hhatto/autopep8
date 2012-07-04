@@ -5,7 +5,8 @@
 # Check all packages released in the last $LAST_HOURS hours
 LAST_HOURS=500
 
-# Assume we are running from the correct directory
+# Run from the test directory.
+cd "$(dirname "${BASH_SOURCE[0]}")"
 ACID="$PWD/acid.py"
 TMP_DIR="$PWD/pypi_tmp"
 mkdir "$TMP_DIR"
