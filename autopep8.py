@@ -133,7 +133,7 @@ class FixPEP8(object):
         self.fix_w191 = self.fix_e101
 
     def _fix_source(self, results):
-        completed_lines = []
+        completed_lines = set()
         for result in sorted(results, key=_priority_key):
             if result['line'] in completed_lines:
                 continue
@@ -151,7 +151,7 @@ class FixPEP8(object):
                     line_end = logical[1][0]
                     # Do not run logical fix if any relevant lines have been
                     # modified.
-                    if set(completed_lines).intersection(
+                    if completed_lines.intersection(
                             set(range(line_start, line_end + 1))):
                         continue
 
@@ -160,13 +160,13 @@ class FixPEP8(object):
                     modified_lines = fix(result)
 
                 if modified_lines:
-                    completed_lines += modified_lines
+                    completed_lines.update(set(modified_lines))
                 elif modified_lines == []:  # Empty list means no fix
                     if self.options.verbose:
                         sys.stderr.write('Not fixing {f} on line {l}\n'.format(
                             f=result['id'], l=result['line']))
                 else:  # We assume one-line fix when None
-                    completed_lines.append(result['line'])
+                    completed_lines.add(result['line'])
             else:
                 if self.options.verbose:
                     sys.stderr.write("'%s' is not defined.\n" %
