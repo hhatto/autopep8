@@ -20,3 +20,5 @@ if True:
         )
 
 # BUG: cement-1.9.10/tests/core/controller_tests.py
+
+# BUG: launchpadlib-1.10.1/ez_setup.py
