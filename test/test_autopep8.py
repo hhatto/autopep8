@@ -1,9 +1,15 @@
 import os
 import sys
-import unittest
+
+if sys.version_info < (2, 7):
+  import unittest2 as unittest
+else:
+  import unittest
+
 import contextlib
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
+
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -361,6 +367,109 @@ if (
     ) or
         y == 4):
     pass
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    @unittest.skip('The syntax gets broken by the E12 fixer')
+    def test_e12_large(self):
+        self.maxDiff = None
+
+        line="""
+class BogusController(controller.CementBaseController):
+    class Meta:
+        pass
+  
+class BogusController2(controller.CementBaseController):
+    class Meta:
+        pass
+
+class BogusController3(controller.CementBaseController):
+    class Meta:
+        pass
+
+class BogusController4(controller.CementBaseController):
+    class Meta:
+        pass
+          
+class TestBaseController(controller.CementBaseController):
+    class Meta:
+        pass
+     
+class TestBaseController2(controller.CementBaseController):
+    class Meta:
+        pass
+        
+class TestStackedController(controller.CementBaseController):
+    class Meta:
+        arguments = [
+            ]
+
+class TestDuplicateController(controller.CementBaseController):
+    class Meta:
+        
+        config_defaults = dict(
+            foo='bar',
+            )
+
+        arguments = [
+            (['-f2', '--foo2'], dict(action='store'))
+            ]
+    
+    def my_command(self):
+        pass
+"""
+        fixed = """
+
+class BogusController(controller.CementBaseController):
+    class Meta:
+        pass
+
+
+class BogusController2(controller.CementBaseController):
+    class Meta:
+        pass
+
+
+class BogusController3(controller.CementBaseController):
+    class Meta:
+        pass
+
+
+class BogusController4(controller.CementBaseController):
+    class Meta:
+        pass
+
+
+class TestBaseController(controller.CementBaseController):
+    class Meta:
+        pass
+
+
+class TestBaseController2(controller.CementBaseController):
+    class Meta:
+        pass
+
+
+class TestStackedController(controller.CementBaseController):
+    class Meta:
+        arguments = [
+        ]
+
+
+class TestDuplicateController(controller.CementBaseController):
+    class Meta:
+
+        config_defaults = dict(
+            foo='bar',
+        )
+
+        arguments = [
+            (['-f2', '--foo2'], dict(action='store'))
+        ]
+
+    def my_command(self):
+        pass
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
