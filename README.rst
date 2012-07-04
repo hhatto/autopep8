@@ -183,8 +183,8 @@ options::
 
 Testing
 -------
-Test cases are in test/test_autopep8.py. They can be run directly via
-``python test/test_autopep8.py`` or via `tox`_. The latter is useful for
+Test cases are in ``test/test_autopep8.py``. They can be run directly via
+``python test/test_autopep8.py`` or via tox_. The latter is useful for
 testing against multiple Python interpreters.
 
 .. _`tox`: http://pypi.python.org/pypi/tox
@@ -192,7 +192,9 @@ testing against multiple Python interpreters.
 Broad spectrum testing is available via ``test/acid.py``. This script runs
 autopep8 against Python code and checks for correctness and completeness of
 the code fix transformations. ``test/acid_pypi.bash`` makes use of
-``acid.py`` to test against the latest released packages on PyPi.
+``acid.py`` to test against the latest released packages on PyPi_.
+
+.. _`PyPi`: http://pypi.python.org
 
 
 Links
