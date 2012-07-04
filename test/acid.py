@@ -37,9 +37,13 @@ def run(filename, log_file, fast_check=False, passes=2000,
                 log_file.write('autopep8 did not completely fix ' +
                                filename + '\n')
 
-            if _check_syntax(filename) and not _check_syntax(tmp_file.name):
-                log_file.write('autopep8 broke ' + filename + '\n')
-                return False
+            if _check_syntax(filename):
+                try:
+                    _check_syntax(tmp_file.name, raise_error=True)
+                except (SyntaxError, TypeError) as exception:
+                    log_file.write('autopep8 broke ' + filename + '\n' +
+                                   str(exception) + '\n')
+                    return False
 
     return True
 
@@ -73,14 +77,17 @@ def _open_with_encoding(filename, encoding, mode='r'):
         return open(filename, mode=mode)
 
 
-def _check_syntax(filename):
+def _check_syntax(filename, raise_error=False):
     """Return True if syntax is okay."""
     with _open_with_encoding(filename, _detect_encoding(filename)) as f:
         try:
             compile(f.read(), '<string>', 'exec')
             return True
         except (SyntaxError, TypeError):
-            return False
+            if raise_error:
+                raise
+            else:
+                return False
 
 
 def main():
@@ -93,6 +100,10 @@ def main():
     parser.add_option('--ignore',
                       help='comma-separated errors to ignore',
                       default='')
+    parser.add_option('-p', '--pep8-passes',
+                      help='maximum number of additional pep8 passes'
+                           ' (default: %default)',
+                      default=2000)
     opts, args = parser.parse_args()
 
     if opts.log_errors:
@@ -119,7 +130,8 @@ def main():
                 if not run(os.path.join(name),
                         log_file=log_file,
                         fast_check=opts.fast_check,
-                        ignore=opts.ignore):
+                        ignore=opts.ignore,
+                        passes=opts.pep8_passes):
                     if not opts.log_errors:
                         sys.exit(1)
     finally:
