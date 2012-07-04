@@ -102,26 +102,26 @@ def main():
 
     if args:
         dir_paths = args
-        for d in dir_paths:
-            if not os.path.isdir(d):
-                sys.stderr.write(d + ' is not a directory\n')
-                sys.exit(1)
     else:
         dir_paths = sys.path
 
     try:
-        for p in dir_paths:
-            for root, dirnames, filenames in os.walk(p):
-                import fnmatch
-                for f in fnmatch.filter(filenames, '*.py'):
-                    sys.stderr.write('--->  Testing with ' + f + '\n')
+        filenames = dir_paths
+        while filenames:
+            name = filenames.pop(0)
+            if os.path.isdir(name):
+                for root, _, children in os.walk(name):
+                    filenames += [os.path.join(root, f) for f in children
+                                  if f.endswith('.py')]
+            else:
+                sys.stderr.write('--->  Testing with ' + name + '\n')
 
-                    if not run(os.path.join(root, f),
-                            log_file=log_file,
-                            fast_check=opts.fast_check,
-                            ignore=opts.ignore):
-                        if not opts.log_errors:
-                            sys.exit(1)
+                if not run(os.path.join(name),
+                        log_file=log_file,
+                        fast_check=opts.fast_check,
+                        ignore=opts.ignore):
+                    if not opts.log_errors:
+                        sys.exit(1)
     finally:
         # Only close if it is an actual log file
         if opts.log_errors:
