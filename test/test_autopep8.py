@@ -2,9 +2,9 @@ import os
 import sys
 
 if sys.version_info < (2, 7):
-  import unittest2 as unittest
+    import unittest2 as unittest
 else:
-  import unittest
+    import unittest
 
 import contextlib
 from subprocess import Popen, PIPE
@@ -235,7 +235,7 @@ def foo():
          (2 , 1)
     1
     if True:
-           print('hello')  
+           print('hello')\t
     2
 """.lstrip()
         fixed = """
@@ -321,7 +321,7 @@ print "E128", ("under-",
         self.assertEqual(self.result, fixed)
 
     def test_e12_reindent_with_multiple_fixes(self):
-        line="""
+        line = """
 
 sql = 'update %s set %s %s' % (from_table,
                                ','.join(['%s=%s' % (col, col) for col in cols]),
@@ -338,7 +338,7 @@ sql = 'update %s set %s %s' % (from_table,
         self.assertEqual(self.result, fixed)
 
     def test_e12_tricky(self):
-        line="""
+        line = """
 #: E126
 if (
     x == (
@@ -369,11 +369,11 @@ if (
     def test_e12_large(self):
         self.maxDiff = None
 
-        line="""
+        line = """
 class BogusController(controller.CementBaseController):
     class Meta:
         pass
-  
+
 class BogusController2(controller.CementBaseController):
     class Meta:
         pass
@@ -385,15 +385,15 @@ class BogusController3(controller.CementBaseController):
 class BogusController4(controller.CementBaseController):
     class Meta:
         pass
-          
+
 class TestBaseController(controller.CementBaseController):
     class Meta:
         pass
-     
+
 class TestBaseController2(controller.CementBaseController):
     class Meta:
         pass
-        
+
 class TestStackedController(controller.CementBaseController):
     class Meta:
         arguments = [
@@ -401,7 +401,7 @@ class TestStackedController(controller.CementBaseController):
 
 class TestDuplicateController(controller.CementBaseController):
     class Meta:
-        
+
         config_defaults = dict(
             foo='bar',
             )
@@ -409,7 +409,7 @@ class TestDuplicateController(controller.CementBaseController):
         arguments = [
             (['-f2', '--foo2'], dict(action='store'))
             ]
-    
+
     def my_command(self):
         pass
 """
@@ -783,23 +783,27 @@ class Foo(object):
         self.assertEqual(self.result, fixed)
 
     def test_e501_basic(self):
-        line = \
-"""print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
+        line = """
+
+print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
 """
-        fixed = \
-"""print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
+        fixed = """
+
+print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
       333, 333, 333)
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
     def test_e501_with_indent(self):
-        line = \
-"""def d():
+        line = """
+
+def d():
     print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
 """
-        fixed = \
-"""def d():
+        fixed = """
+
+def d():
     print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222,
           222, 333, 333, 333, 333)
 """
@@ -807,12 +811,14 @@ class Foo(object):
         self.assertEqual(self.result, fixed)
 
     def test_e501_arithmetic_operator_with_indent(self):
-        line = \
-"""def d():
+        line = """
+
+def d():
     111 + 111 + 111 + 111 + 111 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 333 + 333 + 333 + 333
 """
-        fixed = \
-"""def d():
+        fixed = """
+
+def d():
     111 + 111 + 111 + 111 + 111 + 222 + 222 + 222 + 222 + 222 + 222 + \\
         222 + 222 + 222 + 333 + 333 + 333 + 333
 """
@@ -820,19 +826,22 @@ class Foo(object):
         self.assertEqual(self.result, fixed)
 
     def test_e501_more_complicated(self):
-        line = \
-"""blahblah = os.environ.get('blahblah') or os.environ.get('blahblahblah') or os.environ.get('blahblahblahblah')
+        line = """
+
+blahblah = os.environ.get('blahblah') or os.environ.get('blahblahblah') or os.environ.get('blahblahblahblah')
 """
-        fixed = \
-"""blahblah = os.environ.get('blahblah') or os.environ.get(
+        fixed = """
+
+blahblah = os.environ.get('blahblah') or os.environ.get(
     'blahblahblah') or os.environ.get('blahblahblahblah')
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
     def test_e501_skip_even_more_complicated(self):
-        line = \
-"""if True:
+        line = """
+
+if True:
     if True:
         if True:
             blah = blah.blah_blah_blah_bla_bl(blahb.blah, blah.blah,
@@ -844,11 +853,13 @@ class Foo(object):
 
     def test_e501_prefer_to_break_at_begnning(self):
         """We prefer not to leave part of the arguments hanging."""
-        line = \
-"""looooooooooooooong = foo(one, two, three, four, five, six, seven, eight, nine, ten)
+        line = """
+
+looooooooooooooong = foo(one, two, three, four, five, six, seven, eight, nine, ten)
 """
-        fixed = \
-"""looooooooooooooong = foo(
+        fixed = """
+
+looooooooooooooong = foo(
     one, two, three, four, five, six, seven, eight, nine, ten)
 """
         self._inner_setup(line)
@@ -857,12 +868,14 @@ class Foo(object):
     def test_e501_do_not_break_on_keyword(self):
         # We don't want to put a newline after equals for keywords as this
         # violates PEP 8.
-        line = \
-"""if True:
+        line = """
+
+if True:
     long_variable_name = tempfile.mkstemp(prefix='abcdefghijklmnopqrstuvwxyz0123456789')
 """
-        fixed = \
-"""if True:
+        fixed = """
+
+if True:
     long_variable_name = tempfile.mkstemp(
         prefix='abcdefghijklmnopqrstuvwxyz0123456789')
 """
@@ -894,8 +907,8 @@ def dummy():
         self.assertEqual(self.result, fixed)
 
     def test_e501_do_not_break_if_useless(self):
-        line = \
-"""
+        line = """
+
 123
 ('bbb', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 """
