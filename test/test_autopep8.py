@@ -365,7 +365,6 @@ if (
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @unittest.skip('The syntax gets broken by the E12 fixer')
     def test_e12_large(self):
         self.maxDiff = None
 

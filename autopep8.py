@@ -147,12 +147,8 @@ class FixPEP8(object):
                     logical = self._get_logical(result)
                     if not logical:
                         continue
-                    line_start = logical[0][0]
-                    line_end = logical[1][0]
-                    # Do not run logical fix if any relevant lines have been
-                    # modified.
-                    if completed_lines.intersection(
-                            range(line_start, line_end + 1)):
+                    # Do not run logical fix if any lines have been modified.
+                    if completed_lines:
                         continue
 
                     modified_lines = fix(result, logical)
