@@ -103,10 +103,10 @@ class TestFixPEP8Error(unittest.TestCase):
     def tearDown(self):
         os.remove(self.tempfile[1])
 
-    def _inner_setup(self, line, options=""):
+    def _inner_setup(self, line, options=()):
         with open(self.tempfile[1], 'w') as temp_file:
             temp_file.write(line)
-        opts, _ = autopep8.parse_args(options.split() + [self.tempfile[1]])
+        opts, _ = autopep8.parse_args(list(options) + [self.tempfile[1]])
         sio = StringIO()
         autopep8.fix_file(filename=self.tempfile[1],
                           opts=opts,
@@ -509,13 +509,13 @@ while True:
     def test_e203_semicolon(self):
         line = "print(a, end=' ') ; nl = 0\n"
         fixed = "print(a, end=' '); nl = 0\n"
-        self._inner_setup(line, options='--select=E203')
+        self._inner_setup(line, options=['--select=E203'])
         self.assertEqual(self.result, fixed)
 
     def test_e203_with_newline(self):
         line = "print(a\n, end=' ')\n"
         fixed = "print(a, end=' ')\n"
-        self._inner_setup(line, options='--select=E203')
+        self._inner_setup(line, options=['--select=E203'])
         self.assertEqual(self.result, fixed)
 
     def test_e211(self):
@@ -559,7 +559,7 @@ class Foo():
 \tdef __init__(self):
 \t\tx = 1 + 3
 """.lstrip()
-        self._inner_setup(line, options='--ignore=W191')
+        self._inner_setup(line, options=['--ignore=W191'])
         self.assertEqual(self.result, fixed)
 
     def test_e224(self):
@@ -585,7 +585,7 @@ class Foo():
 \tdef __init__(self):
 \t\tx = 3
 """.lstrip()
-        self._inner_setup(line, options='--ignore=W191')
+        self._inner_setup(line, options=['--ignore=W191'])
         self.assertEqual(self.result, fixed)
 
     def test_e225(self):
@@ -617,25 +617,25 @@ class Foo(object):
     def test_e241(self):
         line = "l = (1,  2)\n"
         fixed = "l = (1, 2)\n"
-        self._inner_setup(line, "--ignore W")
+        self._inner_setup(line, ['--ignore=W'])
         self.assertEqual(self.result, fixed)
 
     def test_e241_double(self):
         line = "l = (1,   2)\n"
         fixed = "l = (1, 2)\n"
-        self._inner_setup(line, "--ignore W")
+        self._inner_setup(line, ['--ignore=W'])
         self.assertEqual(self.result, fixed)
 
     def test_e242(self):
         line = "l = (1,\t2)\n"
         fixed = "l = (1, 2)\n"
-        self._inner_setup(line, "--ignore W")
+        self._inner_setup(line, ['--ignore=W'])
         self.assertEqual(self.result, fixed)
 
     def test_e242_double(self):
         line = "l = (1,\t\t2)\n"
         fixed = "l = (1, 2)\n"
-        self._inner_setup(line, "--ignore W")
+        self._inner_setup(line, ['--ignore=W'])
         self.assertEqual(self.result, fixed)
 
     def test_e251(self):
@@ -647,7 +647,7 @@ class Foo(object):
     def test_e251_with_escaped_newline(self):
         line = "1\n\n\ndef a(arg=\\\n1):\n    print(arg)\n"
         fixed = "1\n\n\ndef a(arg=1):\n    print(arg)\n"
-        self._inner_setup(line, options='--select=E251')
+        self._inner_setup(line, options=['--select=E251'])
         self.assertEqual(self.result, fixed)
 
     def test_e251_with_calling(self):
@@ -1459,10 +1459,10 @@ class TestSpawnPEP8Process(unittest.TestCase):
     def tearDown(self):
         os.remove(self.tempfile[1])
 
-    def _inner_setup(self, line, options=""):
+    def _inner_setup(self, line, options=()):
         with open(self.tempfile[1], 'w') as temp_file:
             temp_file.write(line)
-        opts, _ = autopep8.parse_args(options.split() + [self.tempfile[1]])
+        opts, _ = autopep8.parse_args(list(options) + [self.tempfile[1]])
         sio = StringIO()
 
         # Monkey patch pep8 to trigger spawning
@@ -1483,6 +1483,15 @@ class TestSpawnPEP8Process(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_verbose(self):
+        line = "print('abc' )    \n1*1\n"
+        fixed = "print('abc')\n1 * 1\n"
+        sio = StringIO()
+        with capture_stderr(sio):
+            self._inner_setup(line, options=['--verbose'])
+        self.assertEqual(self.result, fixed)
+        self.assertIn('compatibility mode', sio.getvalue())
+
 
 class TestCoverage(unittest.TestCase):
 
@@ -1492,7 +1501,7 @@ class TestCoverage(unittest.TestCase):
     def tearDown(self):
         os.remove(self.tempfile[1])
 
-    def _inner_setup(self, line, options=""):
+    def _inner_setup(self, line):
         with open(self.tempfile[1], 'w') as temp_file:
             temp_file.write(line)
 
@@ -1528,6 +1537,16 @@ def disable_stderr():
             yield
         finally:
             sys.stderr = _tmp
+
+
+@contextlib.contextmanager
+def capture_stderr(sio):
+    _tmp = sys.stderr
+    sys.stderr = sio
+    try:
+        yield
+    finally:
+        sys.stderr = _tmp
 
 
 if __name__ == '__main__':
