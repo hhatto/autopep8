@@ -1410,7 +1410,7 @@ class TestOptions(unittest.TestCase):
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--in-place', '--diff'],
                   stderr=PIPE)
         result = p.communicate()[1].decode('utf8')
-        self.assertTrue('--in-place and --diff are mutually exclusive' in result)
+        self.assertIn('--in-place and --diff are mutually exclusive', result)
 
     def test_recursive(self):
         import tempfile
@@ -1448,7 +1448,7 @@ class TestOptions(unittest.TestCase):
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--recursive'],
                   stderr=PIPE)
         result = p.communicate()[1].decode('utf8')
-        self.assertTrue('must be used with --in-place or --diff' in result)
+        self.assertIn('must be used with --in-place or --diff', result)
 
 
 class TestSpawnPEP8Process(unittest.TestCase):
