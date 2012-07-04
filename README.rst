@@ -186,6 +186,7 @@ Testing
 Test cases are in test/test_autopep8.py. They can be run directly via
 ``python test/test_autopep8.py`` or via `tox`_. The latter is useful for
 testing against multiple Python interpreters.
+
 .. _`tox`: http://pypi.python.org/pypi/tox
 
 Broad spectrum testing is available via ``test/acid.py``. This script runs
