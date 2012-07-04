@@ -242,7 +242,11 @@ class FixPEP8(object):
         Assumes input is already E702-clean.
 
         """
-        self.find_logical()
+        try:
+            self.find_logical()
+        except IndentationError:
+            return None
+
         row = result['line'] - 1
         col = result['column'] - 1
         ls = None

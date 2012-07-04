@@ -467,6 +467,23 @@ class TestDuplicateController(controller.CementBaseController):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e12_with_bad_indentation(self):
+        line = r"""
+
+
+def bar():
+    foo() << 'x' \
+      << 'y'
+
+
+def baz():
+     pass
+
+    pass
+"""
+        self._inner_setup(line, options=['--select=E12'])
+        self.assertEqual(self.result, line)
+
     def test_e191(self):
         line = """
 while True:
