@@ -47,6 +47,7 @@ open_coverage: coverage
 
 readme:
 	${PYTHON2} update_readme.py
+	@python setup.py --long-description | rst2html --strict > README.html
 
 check:
 	pep8 autopep8.py
