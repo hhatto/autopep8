@@ -18,7 +18,3 @@ y.has_key(0) + x.has_key(x.has_key(0) + x.has_key(x.has_key(0) + x.has_key(1)))
 if True:
     foo = (
         )
-
-# BUG: cement-1.9.10/tests/core/controller_tests.py
-
-# BUG: launchpadlib-1.10.1/ez_setup.py
