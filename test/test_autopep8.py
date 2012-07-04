@@ -472,8 +472,8 @@ class TestDuplicateController(controller.CementBaseController):
 
 
 def bar():
-    foo() << 'x' \
-      << 'y'
+    foo(1,
+      2)
 
 
 def baz():
