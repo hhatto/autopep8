@@ -152,7 +152,7 @@ class FixPEP8(object):
                     # Do not run logical fix if any relevant lines have been
                     # modified.
                     if completed_lines.intersection(
-                            set(range(line_start, line_end + 1))):
+                            range(line_start, line_end + 1)):
                         continue
 
                     modified_lines = fix(result, logical)
@@ -160,7 +160,7 @@ class FixPEP8(object):
                     modified_lines = fix(result)
 
                 if modified_lines:
-                    completed_lines.update(set(modified_lines))
+                    completed_lines.update(modified_lines)
                 elif modified_lines == []:  # Empty list means no fix
                     if self.options.verbose:
                         sys.stderr.write('Not fixing {f} on line {l}\n'.format(
