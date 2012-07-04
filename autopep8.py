@@ -1257,6 +1257,8 @@ class Wrapper(object):
         # pep8.py:continuation_line_indentation.  All of the comments have been
         # stripped and the 'yield' statements replaced with 'pass'.
         tokens = self.tokens
+        if not tokens:
+            return
 
         first_row = tokens[0][2][0]
         nrows = 1 + tokens[-1][2][0] - first_row
