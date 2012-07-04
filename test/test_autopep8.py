@@ -1530,13 +1530,9 @@ class TestCoverage(unittest.TestCase):
 
 @contextlib.contextmanager
 def disable_stderr():
-    with open('/dev/null', 'w') as fake_stderr:
-        _tmp = sys.stderr
-        sys.stderr = fake_stderr
-        try:
-            yield
-        finally:
-            sys.stderr = _tmp
+    sio = StringIO()
+    with capture_stderr(sio):
+        yield
 
 
 @contextlib.contextmanager
