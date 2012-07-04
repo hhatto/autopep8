@@ -363,7 +363,7 @@ if (
     pass
 """
         self._inner_setup(line)
-        #self.assertEqual(self.result, fixed)
+        self.assertEqual(self.result, fixed)
 
     def test_e191(self):
         line = """
