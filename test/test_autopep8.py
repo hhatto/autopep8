@@ -696,6 +696,12 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e261_with_comma(self):
+        line = "{1: 2 # comment\n , }\n"
+        fixed = "{1: 2  # comment\n , }\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e262_more_space(self):
         line = "print 'a b '  #  comment\n"
         fixed = "print 'a b '  # comment\n"

@@ -359,9 +359,14 @@ class FixPEP8(object):
         target = self.source[line_index]
         offset = result['column'] - 1
 
-        self.source[line_index] = fix_whitespace(target,
-                                                 offset=offset,
-                                                 replacement='')
+        fixed = fix_whitespace(target,
+                               offset=offset,
+                               replacement='')
+
+        if fixed == target:
+            return []
+        else:
+            self.source[line_index] = fixed
 
     def fix_e224(self, result):
         target = self.source[result['line'] - 1]
@@ -439,9 +444,14 @@ class FixPEP8(object):
         target = self.source[line_index]
         offset = result['column'] - 1
 
-        self.source[line_index] = fix_whitespace(target,
-                                                 offset=offset,
-                                                 replacement=' ')
+        fixed = fix_whitespace(target,
+                               offset=offset,
+                               replacement=' ')
+
+        if fixed == target:
+            return []
+        else:
+            self.source[line_index] = fixed
 
     def fix_e301(self, result):
         cr = self.newline
@@ -974,8 +984,12 @@ def shorten_comment(line, newline):
 def fix_whitespace(line, offset, replacement):
     """Replace whitespace at offset and return fixed line."""
     # Replace escaped newlines too
-    return (line[:offset].rstrip('\n\r \t\\') +
-            replacement + line[offset:].lstrip('\n\r \t\\'))
+    left = line[:offset].rstrip('\n\r \t\\')
+    right = line[offset:].lstrip('\n\r \t\\')
+    if right.startswith('#'):
+        return line
+    else:
+        return left + replacement + right
 
 
 def _spawn_pep8(pep8_options):
