@@ -37,13 +37,16 @@ def run(filename, log_file, fast_check=False, passes=2000,
                 log_file.write('autopep8 did not completely fix ' +
                                filename + '\n')
 
-            if _check_syntax(filename):
-                try:
-                    _check_syntax(tmp_file.name, raise_error=True)
-                except (SyntaxError, TypeError) as exception:
-                    log_file.write('autopep8 broke ' + filename + '\n' +
-                                   str(exception) + '\n')
-                    return False
+            try:
+                if _check_syntax(filename):
+                    try:
+                        _check_syntax(tmp_file.name, raise_error=True)
+                    except (SyntaxError, TypeError) as exception:
+                        log_file.write('autopep8 broke ' + filename + '\n' +
+                                       str(exception) + '\n')
+                        return False
+            except IOError as exception:
+                log_file.write(str(exception) + '\n')
 
     return True
 
