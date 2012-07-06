@@ -672,6 +672,12 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e251_with_argument_on_next_line(self):
+        line = 'foo(bar\n=None)\n'
+        fixed = 'foo(bar=None)\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e261(self):
         line = "print 'a b '# comment\n"
         fixed = "print 'a b '  # comment\n"

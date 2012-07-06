@@ -18,3 +18,12 @@ y.has_key(0) + x.has_key(x.has_key(0) + x.has_key(x.has_key(0) + x.has_key(1)))
 if True:
     foo = (
         )
+
+# E127
+for k, v in sys.modules.items():
+    if k in ('setuptools', 'pkg_resources') or (
+        not os.path.exists(os.path.join(v.__path__[0], '__init__.py'))):
+        sys.modules.pop(k)
+parser = OptionParser(usage=usage)
+parser.add_option("-v", "--version", dest="version",
+                          help="use a specific zc.buildout version")
