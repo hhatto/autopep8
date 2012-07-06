@@ -43,6 +43,7 @@ before::
 
     def someone_likes_semicolons(                             foo  = None                          ,
     bar='bar'):
+        """Hello; bye."""; 1; 2;3
         print( 'A'<>foo)            #<> is a deprecated form of !=
         return 0;;
     def func11():
@@ -67,6 +68,10 @@ after::
 
     def someone_likes_semicolons(foo=None,
                                  bar='bar'):
+        """Hello; bye."""
+        1
+        2
+        3
         print('A' != foo)  # <> is a deprecated form of !=
         return 0
 
@@ -104,7 +109,7 @@ diff::
 
     --- original
     +++ fixed
-    @@ -1,19 +1,38 @@
+    @@ -1,20 +1,42 @@
     -import sys, os;;;;
     -print(                `'hello'` );
     +import sys
@@ -113,11 +118,16 @@ diff::
      
     -def someone_likes_semicolons(                             foo  = None                          ,
     -bar='bar'):
+    -    """Hello; bye."""; 1; 2;3
     -    print( 'A'<>foo)            #<> is a deprecated form of !=
     -    return 0;;
     +
     +def someone_likes_semicolons(foo=None,
     +                             bar='bar'):
+    +    """Hello; bye."""
+    +    1
+    +    2
+    +    3
     +    print('A' != foo)  # <> is a deprecated form of !=
     +    return 0
     +
