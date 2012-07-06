@@ -1045,11 +1045,15 @@ def foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    def test_e702_skip_with_triple_quote(self):
-        # We do not support this yet.
-        # We would expect '"""\n      hello\n   """\n1\n'.
+    def test_e702_with_triple_quote(self):
         line = '"""\n      hello\n   """; 1\n'
-        fixed = line
+        fixed = '"""\n      hello\n   """\n1\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e702_with_triple_quote_and_indent(self):
+        line = '    """\n      hello\n   """; 1\n'
+        fixed = '    """\n      hello\n   """\n    1\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 

@@ -565,6 +565,10 @@ class FixPEP8(object):
 
     def fix_e702(self, result, logical):
         """Fix multiple statements on one line."""
+        if not logical:
+            return []
+        logical_lines = logical[2]
+
         line_index = result['line'] - 1
         target = self.source[line_index]
 
@@ -572,27 +576,12 @@ class FixPEP8(object):
             self.source[line_index] = target.rstrip('\n \r\t;') + self.newline
             return
 
-        # We currently do not support things like
-        #     """
-        #         hello
-        #       """; foo()
-        if '"""' in target:
-            return []
-
-        # Make sure we aren't likely in a string
-        if target.strip().startswith('"') or target.strip().startswith("'"):
-            return []
-
         offset = result['column'] - 1
         first = target[:offset].rstrip(';')
-        second = target[offset:].lstrip(';')
+        second = (_get_indentation(logical_lines[0]) +
+                  target[offset:].lstrip(';').lstrip())
 
-        if not logical:
-            return []
-        f = [_get_indentation(logical[2][0]) + t.strip()
-             for t in [first, second] if t.strip()]
-
-        self.source[line_index] = self.newline.join(f) + self.newline
+        self.source[line_index] = first + self.newline + second
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()
