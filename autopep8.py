@@ -394,13 +394,12 @@ class FixPEP8(object):
     def fix_e251(self, result):
         line_index = result['line'] - 1
         target = self.source[line_index]
-        c = result['column'] - 1
 
         # This is necessary since pep8 sometimes reports columns that goes
         # past the end of the physical line. This happens in cases like,
         # foo(bar\n=None)
-        if c >= len(target):
-            c = len(target) - 1
+        c = min(result['column'] - 1,
+                len(target) - 1)
 
         if target[c].strip():
             fixed = target
