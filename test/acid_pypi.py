@@ -48,16 +48,22 @@ def extract_package(path, output_directory):
         os.chdir(output_directory)
         try:
             import tarfile
-            tar = tarfile.open(path)
-            tar.extractall()
-            tar.close()
-            return True
+            try:
+                tar = tarfile.open(path)
+                tar.extractall()
+                tar.close()
+                return True
+            except tarfile.ReadError:
+                return False
         finally:
             os.chdir(original_path)
     elif path.lower().endswith('.zip'):
         import zipfile
-        with zipfile.ZipFile(path) as archive:
-            archive.extractall(path=output_directory)
+        try:
+            with zipfile.ZipFile(path) as archive:
+                archive.extractall(path=output_directory)
+        except zipfile.BadZipfile:
+            return False
         return True
 
     return False
@@ -71,14 +77,20 @@ def main():
 
     opts, args = acid.process_args()
     if args:
-        names = args
+        # Copy
+        names = list(args)
     else:
         names = None
 
     while True:
-        # Continually populate if user did not specify a package explicitly.
-        if not args and not names:
-            names = list(latest_packages())
+        if args:
+            if not names:
+                break
+        else:
+            if not names:
+                # Continually populate if user did not specify a package
+                # explicitly.
+                names = list(latest_packages())
 
         package_name = names.pop(0)
         print(package_name)
