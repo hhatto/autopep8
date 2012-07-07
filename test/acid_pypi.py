@@ -69,9 +69,11 @@ def main():
     except OSError:
         pass
 
-    opts, _ = acid.process_args()
+    opts, names = acid.process_args()
+    if not names:
+        names = latest_packages()
 
-    for package_name in latest_packages():
+    for package_name in names:
         print(package_name)
 
         package_tmp_dir = os.path.join(TMP_DIR, package_name)
