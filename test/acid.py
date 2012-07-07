@@ -111,8 +111,8 @@ def process_args():
     return parser.parse_args()
 
 
-def check(opts, args):
-    if opts.log_errors:
+def check(opts, args, log_file=None):
+    if opts.log_errors and not log_file:
         log_file = open(opts.log_errors, 'w')
     else:
         log_file = sys.stderr

@@ -73,6 +73,11 @@ def main():
     if not names:
         names = latest_packages()
 
+    if opts.log_errors:
+        log_file = open(opts.log_errors, 'w')
+    else:
+        log_file = sys.stderr
+
     for package_name in names:
         print(package_name)
 
@@ -96,7 +101,7 @@ def main():
                 print('ERROR: Could not extract package')
                 continue
 
-            if not acid.check(opts, [package_tmp_dir]):
+            if not acid.check(opts, [package_tmp_dir], log_file=log_file):
                 sys.exit(1)
 
 
