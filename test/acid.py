@@ -93,7 +93,8 @@ def _check_syntax(filename, raise_error=False):
                 return False
 
 
-def main():
+def process_args():
+    """Return processed arguments (options and positional arguments)."""
     import optparse
     parser = optparse.OptionParser()
     parser.add_option('--fast-check', action='store_true',
@@ -107,8 +108,10 @@ def main():
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)',
                       default=2000)
-    opts, args = parser.parse_args()
+    return parser.parse_args()
 
+
+def check(opts, args):
     if opts.log_errors:
         log_file = open(opts.log_errors, 'w')
     else:
@@ -136,12 +139,18 @@ def main():
                         ignore=opts.ignore,
                         passes=opts.pep8_passes):
                     if not opts.log_errors:
-                        sys.exit(1)
+                        return False
     finally:
         # Only close if it is an actual log file
         if opts.log_errors:
             log_file.close()
 
+    return True
+
+
+def main():
+    return 0 if check(*process_args()) else 1
+
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
