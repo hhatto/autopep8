@@ -69,16 +69,19 @@ def main():
     except OSError:
         pass
 
-    opts, names = acid.process_args()
-    if not names:
-        names = latest_packages()
+    opts, args = acid.process_args()
+    if args:
+        names = args
+    else:
+        names = list(latest_packages())
 
     if opts.log_errors:
         log_file = open(opts.log_errors, 'w')
     else:
         log_file = sys.stderr
 
-    for package_name in names:
+    while names:
+        package_name = names.pop(0)
         print(package_name)
 
         package_tmp_dir = os.path.join(TMP_DIR, package_name)
@@ -104,6 +107,9 @@ def main():
             if not acid.check(opts, [package_tmp_dir], log_file=log_file):
                 sys.exit(1)
 
+        # Continually populate if user did not specify a package explicitly.
+        if not args and not names:
+            names += list(latest_packages())
 
 if __name__ == '__main__':
     main()
