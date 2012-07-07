@@ -75,11 +75,6 @@ def main():
     else:
         names = list(latest_packages())
 
-    if opts.log_errors:
-        log_file = open(opts.log_errors, 'w')
-    else:
-        log_file = sys.stderr
-
     while names:
         package_name = names.pop(0)
         print(package_name)
@@ -104,7 +99,7 @@ def main():
                 print('ERROR: Could not extract package')
                 continue
 
-            if not acid.check(opts, [package_tmp_dir], log_file=log_file):
+            if not acid.check(opts, [package_tmp_dir]):
                 sys.exit(1)
 
         # Continually populate if user did not specify a package explicitly.
