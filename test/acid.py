@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-"""
-Test that autopep8 runs without crashing on various Python files.
-"""
+"""Test that autopep8 runs without crashing on various Python files."""
+
 import os
 import sys
 import subprocess
@@ -83,9 +82,10 @@ def _open_with_encoding(filename, encoding, mode='r'):
 
 def _check_syntax(filename, raise_error=False):
     """Return True if syntax is okay."""
-    with _open_with_encoding(filename, _detect_encoding(filename)) as f:
+    with _open_with_encoding(
+            filename, _detect_encoding(filename)) as input_file:
         try:
-            compile(f.read(), '<string>', 'exec')
+            compile(input_file.read(), '<string>', 'exec')
             return True
         except (SyntaxError, TypeError):
             if raise_error:
@@ -111,6 +111,11 @@ def process_args():
 
 
 def check(opts, args):
+    """Run recursively run autopep8 on directory of files.
+
+    Return False if the fix results in broken syntax.
+
+    """
     if args:
         dir_paths = args
     else:
@@ -136,6 +141,7 @@ def check(opts, args):
 
 
 def main():
+    """Run main."""
     return 0 if check(*process_args()) else 1
 
 

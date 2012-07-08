@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-#
-# Run acid test against latest packages on PyPi.
+"""Run acid test against latest packages on PyPi."""
 
 import os
 import subprocess
@@ -70,6 +69,7 @@ def extract_package(path, output_directory):
 
 
 def main():
+    """Run main."""
     try:
         os.mkdir(TMP_DIR)
     except OSError:
