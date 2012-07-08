@@ -6,6 +6,7 @@ import os
 import sys
 import subprocess
 import tempfile
+import tokenize
 
 
 def run(filename, fast_check=False, passes=2000,
@@ -57,12 +58,12 @@ def _detect_encoding(filename):
         # Python 3
         try:
             with open(filename, 'rb') as input_file:
-                import tokenize
                 encoding = tokenize.detect_encoding(input_file.readline)[0]
 
-            # Check for correctness of encoding
-            with open(filename, encoding=encoding) as input_file:
-                input_file.read()
+                # Check for correctness of encoding
+                import io
+                with io.TextIOWrapper(input_file, encoding) as wrapper:
+                    wrapper.read()
 
             return encoding
         except (SyntaxError, LookupError, UnicodeDecodeError):
