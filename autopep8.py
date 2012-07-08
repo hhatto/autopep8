@@ -494,6 +494,9 @@ class FixPEP8(object):
         if not target.lstrip().startswith('import'):
             return []
 
+        # pep8 (1.3.1) reports false positive if there is an import statement
+        # followed by a semicolon and some unrelated statement with commas in
+        # it.
         if ';' in target:
             return []
 
