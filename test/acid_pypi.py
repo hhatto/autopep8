@@ -9,8 +9,8 @@ import sys
 import acid
 
 
-# Check all packages released in the last $LAST_HOURS hours
-LAST_HOURS=500
+# Check all packages released in the last "LAST_HOURS" hours
+LAST_HOURS = 500
 
 TMP_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                        'pypi_tmp')
@@ -116,7 +116,7 @@ def main():
                 continue
 
             if not acid.check(opts, [package_tmp_dir]):
-                sys.exit(1)
+                return 1
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

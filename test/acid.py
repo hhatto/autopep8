@@ -17,7 +17,7 @@ def run(filename, fast_check=False, passes=2000,
     ignore_option = '--ignore=' + ignore
 
     autopep8_path = os.path.split(os.path.abspath(
-            os.path.dirname(__file__)))[0]
+        os.path.dirname(__file__)))[0]
     autoppe8_bin = os.path.join(autopep8_path, 'autopep8.py')
     command = [autoppe8_bin, '--pep8-passes={p}'.format(p=passes),
                ignore_option, filename]
@@ -44,7 +44,7 @@ def run(filename, fast_check=False, passes=2000,
                         _check_syntax(tmp_file.name, raise_error=True)
                     except (SyntaxError, TypeError) as exception:
                         sys.stderr.write('autopep8 broke ' + filename + '\n' +
-                                          str(exception) + '\n')
+                                         str(exception) + '\n')
                         return False
             except IOError as exception:
                 sys.stderr.write(str(exception) + '\n')
