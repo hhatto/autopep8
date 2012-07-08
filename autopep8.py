@@ -494,6 +494,9 @@ class FixPEP8(object):
         if not target.lstrip().startswith('import'):
             return []
 
+        if ';' in target:
+            return []
+
         indentation = target.split("import ")[0]
         modules = target.split("import ")[1].split(",")
         fixed_modulelist = \
