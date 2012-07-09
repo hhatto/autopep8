@@ -1260,8 +1260,7 @@ class Wrapper(object):
         return logical_line, mapping
 
     def pep8_expected(self):
-        """Helper function which replicates logic in pep8.py, to know what
-        level to indent things to.
+        """Replicates logic in pep8.py, to know what level to indent things to.
 
         Returns a list of lists; each list represents valid indent levels for
         the line in question, relative from the initial indent.  However, the
