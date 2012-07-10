@@ -244,7 +244,7 @@ class FixPEP8(object):
         """
         try:
             self.find_logical()
-        except IndentationError:
+        except (IndentationError, tokenize.TokenError):
             return None
 
         row = result['line'] - 1
@@ -571,8 +571,6 @@ class FixPEP8(object):
 
     def fix_e702(self, result, logical):
         """Fix multiple statements on one line."""
-        if not logical:
-            return []
         logical_lines = logical[2]
 
         line_index = result['line'] - 1
