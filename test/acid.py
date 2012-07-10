@@ -122,8 +122,15 @@ def check(opts, args):
         dir_paths = sys.path
 
     filenames = dir_paths
+    completed_filenames = set()
     while filenames:
-        name = filenames.pop(0)
+        name = os.path.realpath(filenames.pop(0))
+        if name in completed_filenames:
+            sys.stderr.write('--->  Skipping previously tested ' + name + '\n')
+            continue
+        else:
+            completed_filenames.update(name)
+
         if os.path.isdir(name):
             for root, _, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
