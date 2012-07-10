@@ -17,8 +17,9 @@ TMP_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),
 
 def latest_packages():
     """Return names of latest released packages on PyPi."""
-    process = subprocess.Popen(['yolk', '-L', str(LAST_HOURS)],
-                               stdout=subprocess.PIPE)
+    process = subprocess.Popen(
+        ['yolk', '--latest-releases={hours}'.format(hours=LAST_HOURS)],
+        stdout=subprocess.PIPE)
 
     for line in process.communicate()[0].decode('utf-8').split('\n'):
         if line:
