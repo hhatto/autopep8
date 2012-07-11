@@ -61,11 +61,6 @@ class TestUtils(unittest.TestCase):
         source = ["print 1\r\n", "print 2\r", "print3\r\n"]
         self.assertEqual(autopep8.CRLF, autopep8.find_newline(source))
 
-    def test_shorten_comment(self):
-        self.assertEqual('# ' + '=' * 77 + '\n',
-                         autopep8.shorten_comment('# ' + '=' * 100 + '\n',
-                                                  '\n'))
-
     def test_detect_encoding(self):
         self.assertEqual(
             'utf-8',
@@ -948,41 +943,16 @@ def dummy():
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
-    def test_e501_with_comment(self):
-        line = """123
-                        # This is a long comment that should be wrapped. I will wrap it using textwrap.
-"""
-        fixed = """123
-                        # This is a long comment that should be wrapped. I will
-                        # wrap it using textwrap.
-"""
-        self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
+    def test_e501_should_not_interfere_with_non_comment(self):
+        """This is why we've disabled comment shortening."""
+        line = '''
 
-    def test_e501_with_more_comments(self):
-        line = """123
-                        # This is a long comment that should be wrapped. I will wrap it using textwrap.
-                        # This is the next line.
 """
-        fixed = """123
-                        # This is a long comment that should be wrapped. I will
-                        # wrap it using textwrap.
-                        # This is the next line.
-"""
+# not actually a comment %d. 12345678901234567890, 12345678901234567890, 12345678901234567890.
+""" % (0,)
+'''
         self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
-
-    def test_e501_should_cut_comment_pattern(self):
-        line = """123
-# -- Randy's datastructure -----------------------------------------------------
-321
-"""
-        fixed = """123
-# -- Randy's datastructure ----------------------------------------------------
-321
-"""
-        self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
+        self.assertEqual(self.result, line)
 
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
@@ -1352,6 +1322,12 @@ a.has_key(
         fixed = 'raise ValueError("info, info2")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
+
+    @only_py2
+    def test_w602_skip_spaces_and_parentheses(self):
+        line = "raise Error, ' '.join([x[0] for x in probs])\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
 
     def test_w603(self):
         line = "if 2 <> 2:\n    print False"

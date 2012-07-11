@@ -510,48 +510,42 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
 
-        if target.lstrip().startswith('#'):
-            # Wrap commented lines
-            self.source[line_index] = shorten_comment(line=target,
-                                                      newline=self.newline)
-            return
-        else:
-            indent = _get_indentation(target)
-            source = target[len(indent):]
-            sio = StringIO(target)
+        indent = _get_indentation(target)
+        source = target[len(indent):]
+        sio = StringIO(target)
 
-            # don't fix when multiline string
-            try:
-                tokens = tokenize.generate_tokens(sio.readline)
-                _tokens = [t for t in tokens]
-            except (tokenize.TokenError, IndentationError):
-                return []
+        # don't fix when multiline string
+        try:
+            tokens = tokenize.generate_tokens(sio.readline)
+            _tokens = [t for t in tokens]
+        except (tokenize.TokenError, IndentationError):
+            return []
 
-            # Prefer
-            # my_long_function_name(
-            #     x, y, z, ...)
-            #
-            # over
-            # my_long_function_name(x, y,
-            #     z, ...)
-            candidate0 = _shorten_line(_tokens, source, target, indent,
-                                       self.indent_word, newline=self.newline,
-                                       reverse=False)
-            candidate1 = _shorten_line(_tokens, source, target, indent,
-                                       self.indent_word, newline=self.newline,
-                                       reverse=True)
-            if candidate0 and candidate1:
-                if candidate0.split(self.newline)[0].endswith('('):
-                    self.source[line_index] = candidate0
-                else:
-                    self.source[line_index] = candidate1
-            elif candidate0:
+        # Prefer
+        # my_long_function_name(
+        #     x, y, z, ...)
+        #
+        # over
+        # my_long_function_name(x, y,
+        #     z, ...)
+        candidate0 = _shorten_line(_tokens, source, target, indent,
+                                   self.indent_word, newline=self.newline,
+                                   reverse=False)
+        candidate1 = _shorten_line(_tokens, source, target, indent,
+                                   self.indent_word, newline=self.newline,
+                                   reverse=True)
+        if candidate0 and candidate1:
+            if candidate0.split(self.newline)[0].endswith('('):
                 self.source[line_index] = candidate0
-            elif candidate1:
-                self.source[line_index] = candidate1
             else:
-                # Otherwise both don't work
-                return []
+                self.source[line_index] = candidate1
+        elif candidate0:
+            self.source[line_index] = candidate0
+        elif candidate1:
+            self.source[line_index] = candidate1
+        else:
+            # Otherwise both don't work
+            return []
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""
@@ -666,6 +660,10 @@ class FixPEP8(object):
 
         split_line = line.split(',')
         if len(split_line) > 1 and split_line[1].strip().startswith('('):
+            # Give up
+            return []
+
+        if '(' in line or ')' in line:
             # Give up
             return []
 
@@ -952,26 +950,6 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
             if ret:
                 return indentation + fixed
     return None
-
-
-def shorten_comment(line, newline):
-    """Return trimmed or split long comment line."""
-    assert len(line) > MAX_LINE_WIDTH
-    line = line.rstrip()
-
-    MIN_CHARACTER_REPEAT = 5
-    if (len(line) - len(line.rstrip(line[-1])) >= MIN_CHARACTER_REPEAT and
-            not line[-1].isalnum()):
-        # Trim comments that end with things like ---------
-        return line[:MAX_LINE_WIDTH] + newline
-    else:
-        indentation = _get_indentation(line) + '# '
-        import textwrap
-        split_lines = textwrap.wrap(line.lstrip(' \t#'),
-                                    initial_indent=indentation,
-                                    subsequent_indent=indentation,
-                                    width=MAX_LINE_WIDTH)
-        return newline.join(split_lines) + newline
 
 
 def fix_whitespace(line, offset, replacement):
