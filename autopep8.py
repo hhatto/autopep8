@@ -663,7 +663,7 @@ class FixPEP8(object):
             # Give up
             return []
 
-        if '(' in line or ')' in line:
+        if '[' in line or ']' in line:
             # Give up
             return []
 

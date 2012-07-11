@@ -1324,8 +1324,8 @@ a.has_key(
         self.assertEqual(self.result, fixed)
 
     @only_py2
-    def test_w602_skip_spaces_and_parentheses(self):
-        line = "raise Error, ' '.join([x[0] for x in probs])\n"
+    def test_w602_with_list_comprehension(self):
+        line = "raise Error, [x[0] for x in probs]\n"
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
