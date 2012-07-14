@@ -1538,7 +1538,7 @@ def main():
                 sys.stderr.write('[file:%s]\n' % name)
             try:
                 fix_file(name, opts)
-            except (UnicodeDecodeError, IOError) as error:
+            except (UnicodeDecodeError, UnicodeEncodeError, IOError) as error:
                 sys.stderr.write(str(error) + '\n')
 
 
