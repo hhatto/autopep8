@@ -83,7 +83,14 @@ def main():
     else:
         names = None
 
+    import time
+    start_time = time.time()
+
+    checked_packages = []
     while True:
+        if opts.timeout > 0 and time.time() - start_time > opts.timeout:
+            break
+
         if args:
             if not names:
                 break
@@ -116,8 +123,13 @@ def main():
                 print('ERROR: Could not extract package')
                 continue
 
-            if not acid.check(opts, [package_tmp_dir]):
+            if acid.check(opts, [package_tmp_dir]):
+                checked_packages.append(package_name)
+            else:
                 return 1
+
+    if checked_packages:
+        print('\nTested packages:\n    ' + '\n    '.join(checked_packages))
 
 if __name__ == '__main__':
     sys.exit(main())
