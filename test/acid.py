@@ -107,6 +107,12 @@ def process_args():
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)',
                       default=2000)
+    parser.add_option(
+        '--timeout',
+        help='stop testing additional files after this amount of time '
+             '(default: %default)',
+        default=-1,
+        type=float)
     return parser.parse_args()
 
 
@@ -123,7 +129,14 @@ def check(opts, args):
 
     filenames = dir_paths
     completed_filenames = set()
+
+    import time
+    start_time = time.time()
+
     while filenames:
+        if opts.timeout > 0 and time.time() - start_time > opts.timeout:
+            break
+
         name = os.path.realpath(filenames.pop(0))
         if name in completed_filenames:
             sys.stderr.write('--->  Skipping previously tested ' + name + '\n')
