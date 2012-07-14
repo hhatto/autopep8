@@ -53,7 +53,7 @@ def extract_package(path, output_directory):
                 tar.extractall()
                 tar.close()
                 return True
-            except tarfile.ReadError:
+            except (tarfile.ReadError, IOError):
                 return False
         finally:
             os.chdir(original_path)
@@ -63,7 +63,7 @@ def extract_package(path, output_directory):
             archive = zipfile.ZipFile(path)
             archive.extractall(path=output_directory)
             archive.close()
-        except zipfile.BadZipfile:
+        except (zipfile.BadZipfile, IOError):
             return False
         return True
 
