@@ -8,17 +8,14 @@ import sys
 import acid
 
 
-# Check all packages released in the last "LAST_HOURS" hours
-LAST_HOURS = 500
-
 TMP_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                        'pypi_tmp')
 
 
-def latest_packages():
+def latest_packages(last_hours):
     """Return names of latest released packages on PyPi."""
     process = subprocess.Popen(
-        ['yolk', '--latest-releases={hours}'.format(hours=LAST_HOURS)],
+        ['yolk', '--latest-releases={hours}'.format(hours=last_hours)],
         stdout=subprocess.PIPE)
 
     for line in process.communicate()[0].decode('utf-8').split('\n'):
@@ -88,6 +85,8 @@ def main():
     start_time = time.time()
 
     checked_packages = []
+    skipped_packages = []
+    last_hours = 1
     while True:
         if opts.timeout > 0 and time.time() - start_time > opts.timeout:
             break
@@ -96,10 +95,15 @@ def main():
             if not names:
                 break
         else:
-            if not names:
+            while not names:
                 # Continually populate if user did not specify a package
                 # explicitly.
-                names = list(latest_packages())
+                names = [p for p in latest_packages(last_hours)
+                         if p not in checked_packages and
+                         p not in skipped_packages]
+
+                if not names:
+                    last_hours *= 2
 
         package_name = names.pop(0)
         print(package_name)
@@ -109,6 +113,7 @@ def main():
             os.mkdir(package_tmp_dir)
         except OSError:
             print('Skipping already checked package')
+            skipped_packages.append(package_name)
             continue
 
         try:
