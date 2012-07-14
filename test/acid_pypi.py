@@ -60,8 +60,9 @@ def extract_package(path, output_directory):
     elif path.lower().endswith('.zip'):
         import zipfile
         try:
-            with zipfile.ZipFile(path) as archive:
-                archive.extractall(path=output_directory)
+            archive = zipfile.ZipFile(path)
+            archive.extractall(path=output_directory)
+            archive.close()
         except zipfile.BadZipfile:
             return False
         return True
