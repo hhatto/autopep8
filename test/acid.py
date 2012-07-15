@@ -41,7 +41,8 @@ def run(filename, fast_check=False, passes=2000,
                 if _check_syntax(filename):
                     try:
                         _check_syntax(tmp_file.name, raise_error=True)
-                    except (SyntaxError, TypeError) as exception:
+                    except (SyntaxError, TypeError,
+                            UnicodeDecodeError) as exception:
                         sys.stderr.write('autopep8 broke ' + filename + '\n' +
                                          str(exception) + '\n')
                         return False
@@ -87,7 +88,7 @@ def _check_syntax(filename, raise_error=False):
         try:
             compile(input_file.read(), '<string>', 'exec')
             return True
-        except (SyntaxError, TypeError):
+        except (SyntaxError, TypeError, UnicodeDecodeError):
             if raise_error:
                 raise
             else:
