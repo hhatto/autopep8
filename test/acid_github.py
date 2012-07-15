@@ -12,7 +12,7 @@ TMP_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                        'github_tmp')
 
 
-def latest_packages(last_hours):
+def latest_packages():
     """Return names of latest released packages on Github."""
     import requests
 
@@ -60,7 +60,6 @@ def main():
 
     checked_packages = []
     skipped_packages = []
-    last_hours = 1
     while True:
         if opts.timeout > 0 and time.time() - start_time > opts.timeout:
             break
@@ -72,12 +71,9 @@ def main():
             while not names:
                 # Continually populate if user did not specify a package
                 # explicitly.
-                names = [p for p in latest_packages(last_hours)
+                names = [p for p in latest_packages()
                          if p not in checked_packages and
                          p not in skipped_packages]
-
-                if not names:
-                    last_hours *= 2
 
         package_name = names.pop(0)
         print(package_name)
