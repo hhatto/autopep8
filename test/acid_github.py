@@ -82,9 +82,17 @@ def main():
         package_name = names.pop(0)
         print(package_name)
 
-        package_tmp_dir = os.path.join(
+        user_tmp_dir = os.path.join(
             TMP_DIR,
             os.path.basename(os.path.split(package_name)[0]))
+        try:
+            os.mkdir(user_tmp_dir)
+        except OSError:
+            pass
+
+        package_tmp_dir = os.path.join(
+            user_tmp_dir,
+            os.path.basename(package_name))
         try:
             os.mkdir(package_tmp_dir)
         except OSError:
