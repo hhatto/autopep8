@@ -1537,10 +1537,13 @@ def main():
     while filenames:
         name = filenames.pop(0)
         if opts.recursive and os.path.isdir(name):
-            for root, _, children in os.walk(name):
+            for root, directories, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
                               if f.endswith('.py') and
                               not f.startswith('.')]
+                for d in directories:
+                    if d.startswith('.'):
+                        directories.remove(d)
         else:
             if opts.verbose:
                 sys.stderr.write('[file:%s]\n' % name)

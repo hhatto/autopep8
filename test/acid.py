@@ -146,10 +146,13 @@ def check(opts, args):
             completed_filenames.update(name)
 
         if os.path.isdir(name):
-            for root, _, children in os.walk(name):
+            for root, directories, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
                               if f.endswith('.py') and
                               not f.startswith('.')]
+                for d in directories:
+                    if d.startswith('.'):
+                        directories.remove(d)
         else:
             sys.stderr.write('--->  Testing with ' + name + '\n')
 
