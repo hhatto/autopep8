@@ -148,7 +148,8 @@ def check(opts, args):
         if os.path.isdir(name):
             for root, _, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
-                              if f.endswith('.py')]
+                              if f.endswith('.py') and
+                              not os.path.basename(f).startswith('.')]
         else:
             sys.stderr.write('--->  Testing with ' + name + '\n')
 
