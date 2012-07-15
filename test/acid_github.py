@@ -75,6 +75,10 @@ def main():
                          if p not in checked_packages and
                          p not in skipped_packages]
 
+                if not names:
+                    import time
+                    time.sleep(1)
+
         package_name = names.pop(0)
         print(package_name)
 
