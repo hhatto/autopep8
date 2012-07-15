@@ -570,6 +570,12 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
 
+        if target.rstrip().endswith('\\'):
+            # Normalize '1; \\\n2' into '1; 2'.
+            self.source[line_index] = target.rstrip('\n \r\t\\')
+            self.source[line_index + 1] = self.source[line_index + 1].lstrip()
+            return [line_index + 1, line_index + 2]
+
         if target.rstrip().endswith(';'):
             self.source[line_index] = target.rstrip('\n \r\t;') + self.newline
             return

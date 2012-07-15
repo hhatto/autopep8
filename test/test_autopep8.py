@@ -972,6 +972,18 @@ def dummy():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e702_with_escaped_newline(self):
+        line = '1; \\\n2\n'
+        fixed = '1\n2\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e702_with_escaped_newline_with_indentation(self):
+        line = '1; \\\n    2\n'
+        fixed = '1\n2\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e702_more_complicated(self):
         line = """\
 def foo():
