@@ -149,7 +149,7 @@ def check(opts, args):
             for root, _, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
                               if f.endswith('.py') and
-                              not os.path.basename(f).startswith('.')]
+                              not f.startswith('.')]
         else:
             sys.stderr.write('--->  Testing with ' + name + '\n')
 

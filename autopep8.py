@@ -1540,7 +1540,7 @@ def main():
             for root, _, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
                               if f.endswith('.py') and
-                              not os.path.basename(f).startswith('.')]
+                              not f.startswith('.')]
         else:
             if opts.verbose:
                 sys.stderr.write('[file:%s]\n' % name)
