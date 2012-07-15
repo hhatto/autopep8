@@ -505,6 +505,19 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e202_skip_multiline(self):
+        """We skip this since pep8 reports the error as being on line 1."""
+        line = """
+
+('''
+a
+b
+c
+''' )
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
     def test_e203_colon(self):
         line = "{4 : 3}\n"
         fixed = "{4: 3}\n"
