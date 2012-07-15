@@ -202,7 +202,9 @@ testing against multiple Python interpreters.
 Broad spectrum testing is available via ``test/acid.py``. This script runs
 autopep8 against Python code and checks for correctness and completeness of
 the code fix transformations. ``test/acid_pypi.py`` makes use of
-``acid.py`` to test against the latest released packages on PyPi.
+``acid.py`` to test against the latest released packages on PyPi. In a similar
+fashion, ``test/acid_github.py`` tests against Python code in Github
+repositories.
 
 
 Links
