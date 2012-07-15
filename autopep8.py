@@ -144,11 +144,12 @@ class FixPEP8(object):
 
                 is_logical_fix = len(inspect.getargspec(fix).args) > 2
                 if is_logical_fix:
-                    logical = self._get_logical(result)
-                    if not logical:
-                        continue
                     # Do not run logical fix if any lines have been modified.
                     if completed_lines:
+                        continue
+
+                    logical = self._get_logical(result)
+                    if not logical:
                         continue
 
                     modified_lines = fix(result, logical)
