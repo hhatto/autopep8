@@ -20,7 +20,7 @@ def latest_packages():
         try:
             repository = result['repository']
             size = repository['size']
-            if 0 < size < 3000 and repository['language'] == 'Python':
+            if 0 < size < 1000 and repository['language'] == 'Python':
                 yield repository['url']
         except KeyError:
             continue
