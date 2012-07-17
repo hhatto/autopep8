@@ -60,56 +60,59 @@ def main():
 
     checked_packages = []
     skipped_packages = []
-    while True:
-        if opts.timeout > 0 and time.time() - start_time > opts.timeout:
-            break
-
-        if args:
-            if not names:
+    try:
+        while True:
+            if opts.timeout > 0 and time.time() - start_time > opts.timeout:
                 break
-        else:
-            while not names:
-                # Continually populate if user did not specify a package
-                # explicitly.
-                names = [p for p in latest_packages()
-                         if p not in checked_packages and
-                         p not in skipped_packages]
 
+            if args:
                 if not names:
-                    import time
-                    time.sleep(1)
+                    break
+            else:
+                while not names:
+                    # Continually populate if user did not specify a package
+                    # explicitly.
+                    names = [p for p in latest_packages()
+                             if p not in checked_packages and
+                             p not in skipped_packages]
 
-        package_name = names.pop(0)
-        print(package_name)
+                    if not names:
+                        import time
+                        time.sleep(1)
 
-        user_tmp_dir = os.path.join(
-            TMP_DIR,
-            os.path.basename(os.path.split(package_name)[0]))
-        try:
-            os.mkdir(user_tmp_dir)
-        except OSError:
-            pass
+            package_name = names.pop(0)
+            print(package_name)
 
-        package_tmp_dir = os.path.join(
-            user_tmp_dir,
-            os.path.basename(package_name))
-        try:
-            os.mkdir(package_tmp_dir)
-        except OSError:
-            print('Skipping already checked package')
-            skipped_packages.append(package_name)
-            continue
+            user_tmp_dir = os.path.join(
+                TMP_DIR,
+                os.path.basename(os.path.split(package_name)[0]))
+            try:
+                os.mkdir(user_tmp_dir)
+            except OSError:
+                pass
 
-        try:
-            download_package(package_name, output_directory=package_tmp_dir)
-        except subprocess.CalledProcessError:
-            print('ERROR: git clone failed')
-            continue
+            package_tmp_dir = os.path.join(
+                user_tmp_dir,
+                os.path.basename(package_name))
+            try:
+                os.mkdir(package_tmp_dir)
+            except OSError:
+                print('Skipping already checked package')
+                skipped_packages.append(package_name)
+                continue
 
-        if acid.check(opts, [package_tmp_dir]):
-            checked_packages.append(package_name)
-        else:
-            return 1
+            try:
+                download_package(package_name, output_directory=package_tmp_dir)
+            except subprocess.CalledProcessError:
+                print('ERROR: git clone failed')
+                continue
+
+            if acid.check(opts, [package_tmp_dir]):
+                checked_packages.append(package_name)
+            else:
+                return 1
+    except KeyboardInterrupt:
+        pass
 
     if checked_packages:
         print('\nTested packages:\n    ' + '\n    '.join(checked_packages))
