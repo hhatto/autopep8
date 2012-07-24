@@ -596,14 +596,6 @@ class FixPEP8(object):
 
     def fix_e711(self, result):
         """Fix comparison."""
-        if self.options.verbose:
-            sys.stderr.write(
-                '%s:%s:%s:%s\n' % (
-                    self.filename,
-                    result['line'],
-                    result['column'],
-                    ' Replacing "==" with "is"'))
-
         line_index = result['line'] - 1
         target = self.source[line_index]
         offset = result['column'] - 1
@@ -614,6 +606,14 @@ class FixPEP8(object):
                 target[:offset].rstrip(),
                 'is',
                 target[offset + 2:]])
+
+            if self.options.verbose:
+                sys.stderr.write(
+                    '%s:%s:%s:%s\n' % (
+                        self.filename,
+                        result['line'],
+                        result['column'],
+                        ' Replacing "==" with "is"'))
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()
