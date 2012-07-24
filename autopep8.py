@@ -594,6 +594,26 @@ class FixPEP8(object):
 
         self.source[line_index] = first + self.newline + second
 
+    def fix_e711(self, result):
+        """Fix comparison."""
+        if self.options.verbose:
+            sys.stderr.write(
+                '%s:%s:%s:%s\n' % (
+                    self.filename,
+                    result['line'],
+                    result['column'],
+                    ' Replacing "==" with "is"'))
+
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+        offset = result['column'] - 1
+
+        if target[offset:].startswith('=='):
+            self.source[line_index] = ' '.join([
+                target[:offset].rstrip(),
+                'is',
+                target[offset + 2:]])
+
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()
         self.source[result['line'] - 1] = "%s%s" % (fixed_line, self.newline)
