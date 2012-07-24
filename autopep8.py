@@ -608,7 +608,8 @@ class FixPEP8(object):
         target = self.source[line_index]
         offset = result['column'] - 1
 
-        if target[offset:].startswith('=='):
+        if (target[offset:].startswith('==') and
+                target[offset + 2:].lstrip().startswith('None')):
             self.source[line_index] = ' '.join([
                 target[:offset].rstrip(),
                 'is',
