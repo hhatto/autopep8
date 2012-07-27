@@ -598,18 +598,25 @@ class FixPEP8(object):
         target = self.source[line_index]
         offset = result['column'] - 1
 
-        if (target[offset:].startswith('==') and
-                target[offset + 2:].lstrip().startswith('None')):
-            self.source[line_index] = ' '.join([
-                target[:offset].rstrip(),
-                'is',
-                target[offset + 2:].lstrip()])
-        elif (target[offset:].startswith('!=') and
-                target[offset + 2:].lstrip().startswith('None')):
-            self.source[line_index] = ' '.join([
-                target[:offset].rstrip(),
-                'is not',
-                target[offset + 2:].lstrip()])
+        right_offset = offset + 2
+        if right_offset >= len(target):
+            return []
+
+        left = target[:offset].rstrip()
+        center = target[offset:right_offset]
+        right = target[right_offset:].lstrip()
+
+        if not right.startswith('None'):
+            return []
+
+        if center.strip() == '==':
+            new_center = 'is'
+        elif center.strip() == '!=':
+            new_center = 'is not'
+        else:
+            return []
+
+        self.source[line_index] = ' '.join([left, new_center, right])
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()
