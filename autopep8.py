@@ -672,8 +672,7 @@ class FixPEP8(object):
                              ignore='with_traceback')
 
     def fix_w603(self, result):
-        target = self.source[result['line'] - 1]
-        self.source[result['line'] - 1] = re.sub('<>', '!=', target, count=1)
+        return self.refactor(result, fixer_name='ne')
 
     def fix_w604(self, result):
         return self.refactor(result, fixer_name='repr')
