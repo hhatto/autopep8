@@ -1341,6 +1341,11 @@ a.has_key(
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w602_with_bad_syntax(self):
+        line = "raise Error, 'abc\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
     def test_w603(self):
         line = "if 2 <> 2:\n    print False"
         fixed = "if 2 != 2:\n    print False\n"
