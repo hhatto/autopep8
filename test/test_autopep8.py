@@ -1358,17 +1358,15 @@ a.has_key(
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    def test_w604_skip_multiple_instances(self):
-        # We do not support this yet
-        line = "``1`` + ``b``\n"
-        fixed = line
+    def test_w604_with_multiple_instances(self):
+        line = '``1`` + ``b``\n'
+        fixed = 'repr(repr(1)) + repr(repr(b))\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    def test_w604_skip_multiple_lines(self):
-        # We do not support this yet
-        line = "`(1\n  )`\n"
-        fixed = line
+    def test_w604_with_multiple_lines(self):
+        line = "`(1\n      )`\n"
+        fixed = "repr((1\n      ))\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 

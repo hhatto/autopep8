@@ -676,20 +676,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = re.sub('<>', '!=', target, count=1)
 
     def fix_w604(self, result):
-        target = self.source[result['line'] - 1]
-
-        # We do not support things like
-        #     ``1`` + ``1``
-        # And we do not support multiple lines like
-        #     `(1
-        #      )`
-        if len(re.findall('`+', target)) != 2:
-            return
-
-        start = target.find('`')
-        end = target[::-1].find('`') * -1
-        self.source[result['line'] - 1] = "%srepr(%s)%s" % (
-            target[:start], target[start + 1:end - 1], target[end:])
+        return self.refactor(result, fixer_name='repr')
 
 
 def find_newline(source):
