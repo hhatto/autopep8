@@ -51,7 +51,7 @@ before::
         b  =[100,200,300  ,9876543210,'This is my very long string that goes on and one and on'  ]
         return (a, b)
     def func2(): total =(324942324324+32434234234234 -23423234243/ 324342342.+324234223432423412191) /12345.
-    def func22(): return {'foo': 2}.has_key('foo') and {}.has_key(0);
+    def func22(): return {True: True}.has_key({'foo': 2}.has_key('foo'));
     class UselessClass(object):
         def __init__    ( self, bar ):
          if bar : bar+=1;  bar=bar* bar   ; return bar
@@ -89,7 +89,7 @@ after::
 
 
     def func22():
-        return 'foo' in {'foo': 2} and 0 in {}
+        return ('foo' in {'foo': 2}) in {True: True}
 
 
     class UselessClass(object):
@@ -140,7 +140,7 @@ diff::
     +         'This is my very long string that goes on and one and on']
          return (a, b)
     -def func2(): total =(324942324324+32434234234234 -23423234243/ 324342342.+324234223432423412191) /12345.
-    -def func22(): return {'foo': 2}.has_key('foo') and {}.has_key(0);
+    -def func22(): return {True: True}.has_key({'foo': 2}.has_key('foo'));
     +
     +
     +def func2():
@@ -149,7 +149,7 @@ diff::
     +
     +
     +def func22():
-    +    return 'foo' in {'foo': 2} and 0 in {}
+    +    return ('foo' in {'foo': 2}) in {True: True}
     +
     +
      class UselessClass(object):
