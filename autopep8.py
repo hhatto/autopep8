@@ -639,9 +639,9 @@ class FixPEP8(object):
         return range(1, 1 + original_length)
 
     def refactor(self, fixer_name, ignore=None):
-        """Return refactored code.
+        """Return refactored code using lib2to3.
 
-        Skip if ignore string is found in refactoring.
+        Skip if ignore string is produced in the refactored code.
 
         """
         from lib2to3 import pgen2
