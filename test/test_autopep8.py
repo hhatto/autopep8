@@ -616,12 +616,12 @@ class Foo():
         line = """
 class Foo(object):
   def bar(self):
-    return self.elephant!=None
+    return self.elephant is not None
 """.lstrip()
         fixed = """
 class Foo(object):
     def bar(self):
-        return self.elephant != None
+        return self.elephant is not None
 """.lstrip()
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
@@ -1078,6 +1078,12 @@ raise IOError('abc '
     def test_e711_in_conditional_with_multiple_instances(self):
         line = 'if foo == None and bar == None:\npass\n'
         fixed = 'if foo is None and bar is None:\npass\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e711_with_not_equals_none(self):
+        line = 'foo != None\n'
+        fixed = 'foo is not None\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 

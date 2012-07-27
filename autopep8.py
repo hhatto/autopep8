@@ -603,15 +603,13 @@ class FixPEP8(object):
             self.source[line_index] = ' '.join([
                 target[:offset].rstrip(),
                 'is',
-                target[offset + 2:]])
-
-            if self.options.verbose:
-                sys.stderr.write(
-                    '%s:%s:%s:%s\n' % (
-                        self.filename,
-                        result['line'],
-                        result['column'],
-                        ' Replacing "==" with "is"'))
+                target[offset + 2:].lstrip()])
+        elif (target[offset:].startswith('!=') and
+                target[offset + 2:].lstrip().startswith('None')):
+            self.source[line_index] = ' '.join([
+                target[:offset].rstrip(),
+                'is not',
+                target[offset + 2:].lstrip()])
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()
