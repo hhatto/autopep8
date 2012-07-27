@@ -1178,6 +1178,12 @@ class TestFixPEP8Warning(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w601_with_more_complexity(self):
+        line = 'y.has_key(0) + x.has_key(x.has_key(0) + x.has_key(x.has_key(0) + x.has_key(1)))\n'
+        fixed = '(0 in y) + ((0 in x) + ((0 in x) + (1 in x) in x) in x)\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_w601_precedence(self):
         line = "if self.a.has_key(1 + 2):\n    print 1\n"
         fixed = "if 1 + 2 in self.a:\n    print 1\n"
