@@ -38,14 +38,14 @@ execute tool::
 
 before::
 
-    import sys, os;;;;
-    print(                `'hello'` );
+    import sys, os;
+    print(                'hello' );
 
     def someone_likes_semicolons(                             foo  = None                          ,\
     bar='bar'):
         """Hello; bye."""; 1; 2;3
         print( 'A'<>foo)            #<> is a deprecated form of !=
-        return 0;;
+        return 0;
     def func11():
         a=(   1,2, 3,"a"  );
         b  =[100,200,300  ,9876543210,'This is my very long string that goes on and one and on'  ]
@@ -57,13 +57,13 @@ before::
          if bar : bar+=1;  bar=bar* bar   ; return bar
          else: raise ValueError, 'I am an error'
         def my_method(self):
-          print(self);;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+          print(self);
 
 after::
 
     import sys
     import os
-    print(repr('hello'))
+    print('hello')
 
 
     def someone_likes_semicolons(foo=None,
@@ -110,17 +110,17 @@ diff::
     --- original
     +++ fixed
     @@ -1,20 +1,42 @@
-    -import sys, os;;;;
-    -print(                `'hello'` );
+    -import sys, os;
+    -print(                'hello' );
     +import sys
     +import os
-    +print(repr('hello'))
+    +print('hello')
      
     -def someone_likes_semicolons(                             foo  = None                          ,\
     -bar='bar'):
     -    """Hello; bye."""; 1; 2;3
     -    print( 'A'<>foo)            #<> is a deprecated form of !=
-    -    return 0;;
+    -    return 0;
     +
     +def someone_likes_semicolons(foo=None,
     +                             bar='bar'):
@@ -165,7 +165,7 @@ diff::
     +            raise ValueError('I am an error')
     +
          def my_method(self):
-    -      print(self);;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    -      print(self);
     +        print(self)
 
 

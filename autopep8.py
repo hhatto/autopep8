@@ -646,8 +646,12 @@ class FixPEP8(object):
         Skip if ignore string is found in refactoring.
 
         """
-        new_text = refactor_with_2to3(self.source,
-                                      fixer_name=fixer_name)
+        from lib2to3 import pgen2
+        try:
+            new_text = refactor_with_2to3(self.source,
+                                          fixer_name=fixer_name)
+        except pgen2.parse.ParseError:
+            return []
 
         if ''.join(self.source).strip() == new_text.strip():
             return []
