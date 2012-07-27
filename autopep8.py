@@ -640,129 +640,32 @@ class FixPEP8(object):
         self.source = source
         return range(1, 1 + original_length)
 
-    def fix_w601(self, result):
+    def refactor(self, result, fixer_name, ignore=None):
+        """Return refactored code.
+
+        Skip if ignore string is found in refactoring.
+
+        """
         new_text = refactor_with_2to3(self.source,
-                                      fixer_name='fix_has_key')
+                                      fixer_name=fixer_name)
 
         if ''.join(self.source).strip() == new_text.strip():
             return []
         else:
+            if ignore:
+                if ignore in new_text and ignore not in ''.join(self.source):
+                    return []
             original_length = len(self.source)
             self.source = [new_text]
             return range(1, 1 + original_length)
 
+    def fix_w601(self, result):
+        return self.refactor(result, fixer_name='has_key')
+
     def fix_w602(self, result):
         """Fix deprecated form of raising exception."""
-        line_index = result['line'] - 1
-        line = self.source[line_index]
-
-        split_line = line.split(',')
-        if len(split_line) > 1 and split_line[1].strip().startswith('('):
-            # Give up
-            return []
-
-        if '[' in line or ']' in line:
-            # Give up
-            return []
-
-        if ' or ' in line or ' and ' in line:
-            # Give up
-            return []
-
-        if (line.endswith('\\\n') or
-                line.endswith('\\\r\n') or
-                line.endswith('\\\r')):
-            self.source[line_index] = line.rstrip('\n\r \t\\')
-            self.source[line_index + 1] = \
-                ' ' + self.source[line_index + 1].lstrip()
-            return [line_index + 1, line_index + 2]  # Line indexed at 1
-
-        modified_lines = [1 + line_index]  # Line indexed at 1
-
-        double = '"""'
-        single = "'''"
-        if double in line or single in line:
-            # Move full multiline string to current line
-            if double in line and single in line:
-                quotes = (double if line.find(double) < line.find(single)
-                          else single)
-            elif double in line:
-                quotes = double
-            else:
-                quotes = single
-            assert quotes in line
-
-            # Find last line of multiline string
-            end_line_index = line_index
-            if line.count(quotes) == 1:
-                for i in range(line_index + 1, len(self.source)):
-                    end_line_index = i
-                    if quotes in self.source[i]:
-                        break
-
-            # We do not handle anything other than plain multiline strings
-            if ('(' in self.source[end_line_index] or
-                    '\\' in self.source[end_line_index]):
-                return []
-
-            for i in range(line_index + 1, end_line_index + 1):
-                line_contents = self.source[i]
-                self.source[line_index] += line_contents
-                self.source[i] = ''
-                modified_lines.append(1 + i)  # Line indexed at 1
-            line = self.source[line_index]
-
-        indent, rest = _split_indentation(line)
-        try:
-            ast_body = ast.parse(rest).body[0]
-        except SyntaxError:
-            # Give up
-            return []
-
-        if len(ast_body._fields) == 3 and ast_body.tback is not None:
-            _id = [indent, ]
-            for node in ast.iter_child_nodes(ast_body):
-                if ast.Str == type(node):
-                    quote_word = line[node.col_offset]
-                    if quote_word * 3 == \
-                            line[node.col_offset:node.col_offset + 3]:
-                        quote_word = quote_word * 3
-                    _id.append(quote_word + node.s + quote_word)
-                    continue
-                if ast.Name == type(node):
-                    _id.append(node.id)
-                    continue
-                try:
-                    _id.append(repr(ast.literal_eval(node)))
-                except ValueError:
-                    # Give up
-                    return []
-
-            # find space and comment
-            sio = StringIO(line)
-            old_tokens = None
-            for tokens in tokenize.generate_tokens(sio.readline):
-                if tokens[0] is tokenize.COMMENT:
-                    comment_offset = old_tokens[3][1]
-                    _id.append(line[comment_offset:])
-                    break
-                elif len(_id) == 4 and tokens[0] is token.NEWLINE:
-                    _id.append(self.newline)
-                    break
-                old_tokens = tokens
-            # Create fixed line and check for correctness
-            candidate = "%sraise %s(%s), None, %s%s" % tuple(_id)
-            pattern = '[)(, ]'
-            if (re.sub(pattern, repl='', string=candidate).replace('None', '')
-                    == re.sub(pattern, repl='', string=line)):
-                self.source[result['line'] - 1] = candidate
-                return modified_lines
-            else:
-                return []
-        else:
-            self.source[line_index] = _fix_basic_raise(line, self.newline)
-
-        return modified_lines
+        return self.refactor(result, fixer_name='raise',
+                             ignore='with_traceback')
 
     def fix_w603(self, result):
         target = self.source[result['line'] - 1]
@@ -867,45 +770,6 @@ def _priority_key(pep8_result):
     else:
         # Lowest priority
         return len(priority)
-
-
-def _fix_basic_raise(line, newline):
-    """Fix W602 basic case."""
-    sio = StringIO(line)
-    is_found_raise = False
-    first_comma_found = False
-    comment = ''
-    args = ''
-    indentation = ''
-    exception_type = None
-    for tokens in tokenize.generate_tokens(sio.readline):
-        if tokens[0] is token.INDENT:
-            assert not indentation
-            indentation = tokens[1]
-        elif tokens[1] == 'raise':
-            is_found_raise = True
-        elif tokens[0] is token.NAME and is_found_raise:
-            if exception_type:
-                args += tokens[1]
-            else:
-                exception_type = tokens[1]
-        elif tokens[0] is token.NEWLINE:
-            break
-        elif tokens[0] is not token.DEDENT:
-            if tokens[1].startswith(',') and not first_comma_found:
-                first_comma_found = True
-            elif tokens[1].startswith('#'):
-                assert not comment
-                comment = tokens[1]
-                break
-            else:
-                args += tokens[1]
-    assert exception_type
-    return ''.join([indentation, 'raise ', exception_type,
-                    '(',
-                    args[1:-1] if args.startswith('(') else args,
-                    ')',
-                    comment, newline])
 
 
 def _shorten_line(tokens, source, target, indentation, indent_word, newline,
@@ -1439,7 +1303,7 @@ def refactor_with_2to3(source_lines, fixer_name):
     tool = refactor.RefactoringTool(
         fixer_names=[
             fix for fix in refactor.get_fixers_from_package('lib2to3.fixes')
-            if fix.endswith('.' + fixer_name)])
+            if fix.endswith('.fix_' + fixer_name)])
     return str(tool.refactor_string(''.join(source_lines), name=''))
 
 

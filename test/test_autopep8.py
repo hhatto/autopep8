@@ -33,12 +33,6 @@ else:
                           os.path.join(ROOT_DIR, 'autopep8.py'),)
 
 
-def only_py2(func):
-    if sys.version_info[0] != 2:
-        func = None
-    return func
-
-
 class TestUtils(unittest.TestCase):
 
     def test_find_newline_only_cr(self):
@@ -1206,116 +1200,100 @@ a.has_key(
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_arg_is_string(self):
         line = "raise ValueError, \"w602 test\"\n"
         fixed = "raise ValueError(\"w602 test\")\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_arg_is_string_with_comment(self):
         line = "raise ValueError, \"w602 test\"  # comment\n"
         fixed = "raise ValueError(\"w602 test\")  # comment\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_skip_ambiguous_case(self):
         line = "raise 'a', 'b', 'c'\n"
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
-    @only_py2
-    def test_w602_skip_logic(self):
+    def test_w602_with_logic(self):
         line = "raise TypeError, e or 'hello'\n"
+        fixed = "raise TypeError(e or 'hello')\n"
         self._inner_setup(line)
-        self.assertEqual(self.result, line)
+        self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_triple_quotes(self):
         line = 'raise ValueError, """hello"""\n1\n'
         fixed = 'raise ValueError("""hello""")\n1\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_multiline(self):
         line = 'raise ValueError, """\nhello"""\n'
         fixed = 'raise ValueError("""\nhello""")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
-    def test_w602_skip_complex_multiline(self):
-        # We do not handle formatted multiline strings
+    def test_w602_with_complex_multiline(self):
         line = 'raise ValueError, """\nhello %s %s""" % (\n    1, 2)\n'
+        fixed = 'raise ValueError("""\nhello %s %s""" % (\n    1, 2))\n'
         self._inner_setup(line)
-        self.assertEqual(self.result, line)
+        self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_multiline_with_trailing_spaces(self):
         line = 'raise ValueError, """\nhello"""    \n'
         fixed = 'raise ValueError("""\nhello""")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_multiline_with_escaped_newline(self):
         line = 'raise ValueError, \\\n"""\nhello"""\n'
         fixed = 'raise ValueError("""\nhello""")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_multiline_with_escaped_newline_and_comment(self):
         line = 'raise ValueError, \\\n"""\nhello"""  # comment\n'
         fixed = 'raise ValueError("""\nhello""")  # comment\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_multiline_with_multiple_escaped_newlines(self):
         line = 'raise ValueError, \\\n\\\n\\\n"""\nhello"""\n'
         fixed = 'raise ValueError("""\nhello""")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_multiline_with_nested_quotes(self):
         line = 'raise ValueError, """hello\'\'\'blah"a"b"c"""\n'
         fixed = 'raise ValueError("""hello\'\'\'blah"a"b"c""")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
-    def test_w602_skip_multiline_with_single_quotes(self):
+    def test_w602_with_multiline_with_single_quotes(self):
         line = "raise ValueError, '''\nhello'''\n"
         fixed = "raise ValueError('''\nhello''')\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_multiline_string_stays_the_same(self):
         line = 'raise """\nhello"""\n'
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
-    @only_py2
     def test_w602_escaped_lf(self):
         line = 'raise ValueError, \\\n"hello"\n'
         fixed = 'raise ValueError("hello")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_escaped_crlf(self):
         line = 'raise ValueError, \\\r\n"hello"\n'
         fixed = 'raise ValueError("hello")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_indentation(self):
         line = 'def foo():\n    raise ValueError, "hello"\n'
         fixed = 'def foo():\n    raise ValueError("hello")\n'
@@ -1329,47 +1307,39 @@ a.has_key(
     #    self._inner_setup(line)
     #    self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_multiple_statements(self):
         line = 'raise ValueError, "hello";print 1\n'
         fixed = 'raise ValueError("hello")\nprint 1\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
-    def test_w602_raise_argument_triple(self):
+    def test_w602_raise_argument_with_indentation(self):
+        line = 'if True:\n    raise ValueError, "error"\n'
+        fixed = 'if True:\n    raise ValueError("error")\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w602_skip_raise_argument_triple(self):
         line = 'raise ValueError, "info", traceback\n'
-        fixed = 'raise ValueError("info"), None, traceback\n'
         self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
+        self.assertEqual(self.result, line)
 
-    @only_py2
-    def test_w602_raise_argument_triple_skip_with_indentation(self):
-        # We do not handle this properly yet.
-        line = 'if True:\n    raise TypeError, "error", tb\n'
-        fixed = line
-        self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
-
-    @only_py2
-    def test_w602_raise_argument_triple_with_comment(self):
+    def test_w602_skip_raise_argument_triple_with_comment(self):
         line = 'raise ValueError, "info", traceback  # comment\n'
-        fixed = 'raise ValueError("info"), None, traceback  # comment\n'
         self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
+        self.assertEqual(self.result, line)
 
-    @only_py2
     def test_w602_raise_argument_triple_fake(self):
         line = 'raise ValueError, "info, info2"\n'
         fixed = 'raise ValueError("info, info2")\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    @only_py2
     def test_w602_with_list_comprehension(self):
         line = "raise Error, [x[0] for x in probs]\n"
+        fixed = "raise Error([x[0] for x in probs])\n"
         self._inner_setup(line)
-        self.assertEqual(self.result, line)
+        self.assertEqual(self.result, fixed)
 
     def test_w603(self):
         line = "if 2 <> 2:\n    print False"
