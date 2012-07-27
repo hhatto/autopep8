@@ -7,9 +7,8 @@ def foo():
 
 print 1 
 print 2 # e261
-d = {# e261
-    1: 2
-}
+d = {1: 2,# e261
+     3: 4}
 print 2  ## e262
 print 2  #### e262
 print 2  #e262

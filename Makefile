@@ -6,7 +6,6 @@ all:
 	@echo "make clean"
 
 PYTHON?=python
-PYTHON2?=python2.7
 COVERAGE?=coverage
 
 TEST_DIR=test
@@ -46,7 +45,7 @@ open_coverage: coverage
 	@python -m webbrowser -n "file://${PWD}/htmlcov/index.html"
 
 readme:
-	${PYTHON2} update_readme.py
+	${PYTHON} update_readme.py
 	@python setup.py --long-description | rst2html --strict > README.html
 	@python -m webbrowser -n "file://${PWD}/README.html"
 
