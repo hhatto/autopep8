@@ -1172,38 +1172,37 @@ class TestFixPEP8Warning(unittest.TestCase):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    def test_w601_skip_multiple(self):
-        # We don't support this case
+    def test_w601_with_multiple(self):
         line = "a.has_key(0) and b.has_key(0)\n"
-        self._inner_setup(line)
-        self.assertEqual(self.result, line)
-
-    def test_w601_skip_multiple_nested(self):
-        # We don't support this case
-        line = "alpha.has_key(nested.has_key(12)) and beta.has_key(1)\n"
-        self._inner_setup(line)
-        self.assertEqual(self.result, line)
-
-    def test_w601_precedence(self):
-        line = "if self.a.has_key(1 + 2):\n    print 1\n"
-        fixed = "if (1 + 2) in self.a:\n    print 1\n"
+        fixed = "0 in a and 0 in b\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    def test_w601_skip_parens(self):
-        # We don't support this case
-        line = "alpha.has_key(foo(12))\n"
+    def test_w601_with_multiple_nested(self):
+        line = "alpha.has_key(nested.has_key(12)) and beta.has_key(1)\n"
+        fixed = "(12 in nested) in alpha and 1 in beta\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w601_precedence(self):
+        line = "if self.a.has_key(1 + 2):\n    print 1\n"
+        fixed = "if 1 + 2 in self.a:\n    print 1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w601_with_parens(self):
+        line = "foo(12) in alpha\n"
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
-    def test_w601_skip_multi_line(self):
-        # We don't support this case
+    def test_w601_with_multi_line(self):
         line = """
+
 a.has_key(
     0
 )
 """.lstrip()
-        fixed = line
+        fixed = '0 in a\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 

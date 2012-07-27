@@ -641,51 +641,15 @@ class FixPEP8(object):
         return range(1, 1 + original_length)
 
     def fix_w601(self, result):
-        target = self.source[result['line'] - 1]
-        _before = ""
-        _after = ""
-        _symbol = ""
+        new_text = refactor_with_2to3(self.source,
+                                      fixer_name='fix_has_key')
 
-        # Skip complicated cases
-        if target.count('(') > 1 or target.count(')') > 1:
+        if ''.join(self.source).strip() == new_text.strip():
             return []
-        if target.count('(') != target.count(')'):
-            return []
-        if target.count(',') > 0:
-            return []
-
-        _tmp = target.split(".has_key", 1)
-
-        # find dict symbol
-        _target = _tmp[0]
-        for offset, t in enumerate(_target[::-1]):
-            if t == " ":
-                _before = _target[::-1][:offset - 1:-1]
-                break
-            else:
-                _symbol = t + _symbol
-
-        # find arg of has_key
-        _target = _tmp[1]
-        _level = 0
-        _arg = ""
-        for offset, t in enumerate(_target):
-            if t == "(":
-                _level += 1
-            elif t == ")":
-                _level -= 1
-                if _level == 0:
-                    _after += _target[offset + 1:]
-                    break
-            else:
-                _arg += t
-
-        # Maintain precedence
-        if ' ' in _arg.strip():
-            _arg = '(' + _arg.strip() + ')'
-
-        self.source[result['line'] - 1] = \
-            "".join([_before, _arg, " in ", _symbol, _after])
+        else:
+            original_length = len(self.source)
+            self.source = [new_text]
+            return range(1, 1 + original_length)
 
     def fix_w602(self, result):
         """Fix deprecated form of raising exception."""
@@ -1463,6 +1427,20 @@ def _leading_space_count(line):
     while i < len(line) and line[i] == ' ':
         i += 1
     return i
+
+
+def refactor_with_2to3(source_lines, fixer_name):
+    """Use lib2to3 to refactor the source.
+
+    Return the refactored source code.
+
+    """
+    from lib2to3 import refactor
+    tool = refactor.RefactoringTool(
+        fixer_names=[
+            fix for fix in refactor.get_fixers_from_package('lib2to3.fixes')
+            if fix.endswith('.' + fixer_name)])
+    return str(tool.refactor_string(''.join(source_lines), name=''))
 
 
 def fix_file(filename, opts, output=sys.stdout):
