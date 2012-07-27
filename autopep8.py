@@ -5,7 +5,6 @@ guide.
 """
 import copy
 import os
-import re
 import sys
 import inspect
 try:
@@ -21,7 +20,6 @@ from optparse import OptionParser
 from subprocess import Popen, PIPE
 from difflib import unified_diff
 import tempfile
-import ast
 
 from distutils.version import StrictVersion
 try:
@@ -640,7 +638,7 @@ class FixPEP8(object):
         self.source = source
         return range(1, 1 + original_length)
 
-    def refactor(self, result, fixer_name, ignore=None):
+    def refactor(self, fixer_name, ignore=None):
         """Return refactored code.
 
         Skip if ignore string is found in refactoring.
@@ -663,19 +661,19 @@ class FixPEP8(object):
             self.source = [new_text]
             return range(1, 1 + original_length)
 
-    def fix_w601(self, result):
-        return self.refactor(result, fixer_name='has_key')
+    def fix_w601(self, _):
+        return self.refactor('has_key')
 
-    def fix_w602(self, result):
+    def fix_w602(self, _):
         """Fix deprecated form of raising exception."""
-        return self.refactor(result, fixer_name='raise',
+        return self.refactor('raise',
                              ignore='with_traceback')
 
-    def fix_w603(self, result):
-        return self.refactor(result, fixer_name='ne')
+    def fix_w603(self, _):
+        return self.refactor('ne')
 
-    def fix_w604(self, result):
-        return self.refactor(result, fixer_name='repr')
+    def fix_w604(self, _):
+        return self.refactor('repr')
 
 
 def find_newline(source):
