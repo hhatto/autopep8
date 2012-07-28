@@ -961,6 +961,15 @@ def dummy():
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+    def test_e501_should_not_break_on_dot(self):
+        line = """
+if True:
+    if True:
+        raise xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx('xxxxxxxxxxxxxxxxx "{d}" xxxxxxxxxxxxxx'.format(d='xxxxxxxxxxxxxxx'))
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"

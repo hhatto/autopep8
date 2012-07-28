@@ -816,6 +816,9 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
             # Do not begin a line with a comma
             if second.lstrip().startswith(','):
                 continue
+            # Do end a line with a dot
+            if first.rstrip().endswith('.'):
+                continue
             if tkn[1] in '+-*/':
                 fixed = first + ' \\' + newline + second
             else:
