@@ -154,7 +154,12 @@ def check(opts, args):
                     if d.startswith('.'):
                         directories.remove(d)
         else:
-            sys.stderr.write('--->  Testing with ' + name + '\n')
+            sys.stderr.write('--->  Testing with ')
+            try:
+                sys.stderr.write(name)
+            except UnicodeEncodeError:
+                sys.stderr.write('...')
+            sys.stderr.write('\n')
 
             if not run(os.path.join(name),
                        fast_check=opts.fast_check,
