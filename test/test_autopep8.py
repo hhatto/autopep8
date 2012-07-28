@@ -1087,6 +1087,13 @@ raise IOError('abc '
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    # TODO: Get this working.
+    #def test_e721(self):
+    #    line = "type('') == type('')\n"
+    #    fixed = "isinstance('', type(''))\n"
+    #    self._inner_setup(line)
+    #    self.assertEqual(self.result, fixed)
+
 
 class TestFixPEP8Warning(unittest.TestCase):
 

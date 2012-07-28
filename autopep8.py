@@ -618,6 +618,10 @@ class FixPEP8(object):
 
         self.source[line_index] = ' '.join([left, new_center, right])
 
+    # TODO: Get this working.
+    #def fix_e721(self, _):
+    #    return self.refactor('idioms')
+
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()
         self.source[result['line'] - 1] = "%s%s" % (fixed_line, self.newline)
