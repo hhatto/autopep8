@@ -790,6 +790,7 @@ def _priority_key(pep8_result):
 def _shorten_line(tokens, source, target, indentation, indent_word, newline,
                   reverse=False):
     """Separate line at OPERATOR."""
+    max_line_width_minus_indentation = MAX_LINE_WIDTH - len(indentation)
     if reverse:
         tokens.reverse()
     for tkn in tokens:
@@ -797,12 +798,12 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
         if token.OP == tkn[0] and tkn[1] != '=':
             offset = tkn[2][1] + 1
             if reverse:
-                if offset > (MAX_LINE_WIDTH - len(indentation) -
+                if offset > (max_line_width_minus_indentation -
                              len(indent_word)):
                     continue
             else:
                 if (len(target.rstrip()) - offset >
-                        (MAX_LINE_WIDTH - len(indentation) -
+                        (max_line_width_minus_indentation -
                          len(indent_word))):
                     continue
             first = source[:offset - len(indentation)]
@@ -811,7 +812,8 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
             if not second.strip():
                 continue
             # Don't modify if lines are not short enough
-            if len(first) > MAX_LINE_WIDTH or len(second) > MAX_LINE_WIDTH:
+            if (len(first) > max_line_width_minus_indentation or
+                    len(second) > max_line_width_minus_indentation):
                 continue
             # Do not begin a line with a comma
             if second.lstrip().startswith(','):

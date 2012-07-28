@@ -319,8 +319,8 @@ sql = 'update %s set %s %s' % (from_table,
         fixed = """
 
 sql = 'update %s set %s %s' % (from_table,
-                               ','.join(
-                                   ['%s=%s' % (col, col) for col in cols]),
+                               ','.join(['%s=%s' % (col, col) for col in cols]
+                                        ),
                                where_clause)
 """
         self._inner_setup(line)
@@ -845,6 +845,21 @@ def d():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_alone_with_indentation(self):
+        line = """
+
+if True:
+    print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
+"""
+        fixed = """
+
+if True:
+    print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222,
+        222, 333, 333, 333, 333)
+"""
+        self._inner_setup(line, options=['--select=E501'])
+        self.assertEqual(self.result, fixed)
+
     def test_e501_arithmetic_operator_with_indent(self):
         line = """
 
@@ -935,8 +950,7 @@ def dummy():
     if True:
         if True:
             if True:
-                object = ModifyAction([MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
-                                      MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
+                object = ModifyAction([MODIFY70.text, OBJECTBINDING71.text, COLON72.text], MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
