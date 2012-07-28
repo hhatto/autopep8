@@ -651,7 +651,7 @@ class FixPEP8(object):
         """
         from lib2to3 import pgen2
         try:
-            new_text = refactor_with_2to3(self.source,
+            new_text = refactor_with_2to3(''.join(self.source),
                                           fixer_name=fixer_name)
         except pgen2.parse.ParseError:
             return []
@@ -1286,7 +1286,7 @@ def _leading_space_count(line):
     return i
 
 
-def refactor_with_2to3(source_lines, fixer_name):
+def refactor_with_2to3(source_text, fixer_name):
     """Use lib2to3 to refactor the source.
 
     Return the refactored source code.
@@ -1297,7 +1297,7 @@ def refactor_with_2to3(source_lines, fixer_name):
         fixer_names=[
             fix for fix in refactor.get_fixers_from_package('lib2to3.fixes')
             if fix.endswith('.fix_' + fixer_name)])
-    return str(tool.refactor_string(''.join(source_lines), name=''))
+    return str(tool.refactor_string(source_text, name=''))
 
 
 def fix_file(filename, opts, output=sys.stdout):
