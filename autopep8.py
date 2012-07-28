@@ -618,9 +618,8 @@ class FixPEP8(object):
 
         self.source[line_index] = ' '.join([left, new_center, right])
 
-    # TODO: Get this working.
-    #def fix_e721(self, _):
-    #    return self.refactor('idioms')
+    def fix_e721(self, _):
+        return self.refactor('idioms')
 
     def fix_w291(self, result):
         fixed_line = self.source[result['line'] - 1].rstrip()
@@ -1297,8 +1296,10 @@ def refactor_with_2to3(source_text, fixer_name):
 
     """
     from lib2to3 import refactor
+    fixers = ['lib2to3.fixes.fix_' + fixer_name]
     tool = refactor.RefactoringTool(
-        fixer_names=['lib2to3.fixes.fix_' + fixer_name])
+        fixer_names=fixers,
+        explicit=fixers)
     return str(tool.refactor_string(source_text, name=''))
 
 
