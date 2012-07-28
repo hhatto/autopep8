@@ -1294,9 +1294,7 @@ def refactor_with_2to3(source_text, fixer_name):
     """
     from lib2to3 import refactor
     tool = refactor.RefactoringTool(
-        fixer_names=[
-            fix for fix in refactor.get_fixers_from_package('lib2to3.fixes')
-            if fix.endswith('.fix_' + fixer_name)])
+        fixer_names=['lib2to3.fixes.fix_' + fixer_name])
     return str(tool.refactor_string(source_text, name=''))
 
 
