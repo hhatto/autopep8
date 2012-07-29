@@ -1413,9 +1413,6 @@ def break_multi_line(source_text, newline, indent_word):
     Return None if a break is not possible.
 
     """
-    if source_text.lstrip().startswith('#'):
-        return None
-
     # Handle special case only.
     if ('(' in source_text and source_text.rstrip().endswith(',')):
         index = 1 + source_text.find('(')
@@ -1427,6 +1424,11 @@ def break_multi_line(source_text, newline, indent_word):
             if quote in source_text:
                 if source_text.find(quote) < index:
                     return None
+
+        # Make sure we are not in a comment.
+        if '#' in source_text:
+            if source_text.find('#') < index:
+                return None
 
         assert index < len(source_text)
         return (
