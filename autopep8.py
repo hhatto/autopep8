@@ -114,6 +114,8 @@ class FixPEP8(object):
         - e401
         - e502
         - e701,e702
+        - e711
+        - e721
         - w291,w293
         - w391
         - w602,w603,w604
@@ -303,7 +305,7 @@ class FixPEP8(object):
             valid = valid_indents[row]
             got = rewrapper.rel_indent[row]
         else:
-            # line number from pep8 isn't a continuation line.  instead,
+            # Line number from pep8 isn't a continuation line. Instead,
             # compare our own function's result, look for the first mismatch,
             # and just hope that we take fewer than 100 iterations to finish.
             for row in range(0, len(original), 1):
@@ -325,7 +327,10 @@ class FixPEP8(object):
             self.source[line] = (
                 " " * (indent_to) + orig_line.lstrip()
             )
-            return [line + 1]  # Line indexed at 1
+            if self.source[line] != orig_line:
+                return [line + 1]  # Line indexed at 1
+            else:
+                return []
         else:
             return []
 
