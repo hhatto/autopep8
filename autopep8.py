@@ -903,11 +903,7 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
                 fixed = first + ' \\' + newline + second
             else:
                 fixed = first + newline + second
-            try:
-                ret = compile(fixed, '<string>', 'exec')
-            except SyntaxError:
-                continue
-            if ret:
+            if check_syntax(fixed):
                 return indentation + fixed
     return None
 
@@ -1433,6 +1429,14 @@ def break_multi_line(source_text, newline, indent_word):
             source_text[index:].lstrip())
     else:
         return None
+
+
+def check_syntax(code):
+    """Return True if syntax is okay."""
+    try:
+        return compile(code, '<string>', 'exec')
+    except (SyntaxError, TypeError, UnicodeDecodeError):
+        return False
 
 
 def fix_file(filename, opts, output=sys.stdout):
