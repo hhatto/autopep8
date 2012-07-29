@@ -386,7 +386,23 @@ class FixPEP8(object):
     def fix_e126(self, result, logical):
         """The 'spectacular indent' error for hanging indents."""
         # fix by deleting whitespace to the left
-        return self._fix_reindent(result, logical)
+        modified_lines = self._fix_reindent(result, logical)
+        if modified_lines:
+            return modified_lines
+        else:
+            # Fallback
+            if not logical:
+                return []
+            logical_lines = logical[2]
+            line_index = result['line'] - 1
+            original = self.source[line_index]
+
+            fixed = (_get_indentation(logical_lines[0]) +
+                     self.indent_word + original.lstrip())
+            if fixed == original:
+                return []
+            else:
+                self.source[line_index] = fixed
 
     def fix_e127(self, result, logical):
         """The 'interpretive dance' indentation error."""

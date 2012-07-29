@@ -524,6 +524,24 @@ for k, v in sys.modules.items():
         self._inner_setup(line, options=['--select=E12'])
         self.assertEqual(self.result, fixed)
 
+    def test_e126(self):
+        line = """
+if True:
+    posted = models.DateField(
+            default=datetime.date.today,
+            help_text="help"
+    )
+"""
+        fixed = """
+if True:
+    posted = models.DateField(
+        default=datetime.date.today,
+        help_text="help"
+    )
+"""
+        self._inner_setup(line, options=['--select=E12'])
+        self.assertEqual(self.result, fixed)
+
     def test_e127(self):
         line = """
 if True:
