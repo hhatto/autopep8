@@ -374,7 +374,14 @@ class FixPEP8(object):
     def fix_e125(self, result, logical):
         """The 'often not visually distinct' error."""
         # fix by indenting the line in error to the next stop.
-        return self._fix_reindent(result, logical, fix_distinct=True)
+        modified_lines = self._fix_reindent(result, logical, fix_distinct=True)
+        if modified_lines:
+            return modified_lines
+        else:
+            # Fallback
+            line_index = result['line'] - 1
+            original_line = self.source[line_index]
+            self.source[line_index] = self.indent_word + original_line
 
     def fix_e126(self, result, logical):
         """The 'spectacular indent' error for hanging indents."""

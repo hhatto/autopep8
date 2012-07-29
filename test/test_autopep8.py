@@ -508,6 +508,22 @@ if True:
         self._inner_setup(line, options=['--select=E12'])
         self.assertEqual(self.result, fixed)
 
+    def test_e125(self):
+        line = """
+for k, v in sys.modules.items():
+    if k in ('setuptools', 'pkg_resources') or (
+        not os.path.exists(os.path.join(v.__path__[0], '__init__.py'))):
+        sys.modules.pop(k)
+"""
+        fixed = """
+for k, v in sys.modules.items():
+    if k in ('setuptools', 'pkg_resources') or (
+            not os.path.exists(os.path.join(v.__path__[0], '__init__.py'))):
+        sys.modules.pop(k)
+"""
+        self._inner_setup(line, options=['--select=E12'])
+        self.assertEqual(self.result, fixed)
+
     def test_e191(self):
         line = """
 while True:
