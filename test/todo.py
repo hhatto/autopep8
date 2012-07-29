@@ -9,11 +9,6 @@
  '34434343434535535': 3434343434343434,
  '4334343434343': 3434343434}
 
-# E123
-if True:
-    foo = (
-        )
-
 # E125
 for k, v in sys.modules.items():
     if k in ('setuptools', 'pkg_resources') or (

@@ -494,6 +494,20 @@ def baz():
         self._inner_setup(line, options=['--select=E12'])
         self.assertEqual(self.result, line)
 
+    def test_e123(self):
+        line = """
+if True:
+    foo = (
+        )
+"""
+        fixed = """
+if True:
+    foo = (
+    )
+"""
+        self._inner_setup(line, options=['--select=E12'])
+        self.assertEqual(self.result, fixed)
+
     def test_e191(self):
         line = """
 while True:
