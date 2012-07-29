@@ -110,7 +110,9 @@ class FixPEP8(object):
 
     The fixer method can return the list of modified lines or None. An empty
     list would mean that no changes were made. None would mean that only the
-    line reported in the pep8 error was modified.
+    line reported in the pep8 error was modified. Note that the modified line
+    numbers that are returned are indexed at 1. This typically would correspond
+    with the line number reported in the pep8 error information.
 
     [fixed method list]
         - e111
