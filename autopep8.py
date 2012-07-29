@@ -514,6 +514,7 @@ class FixPEP8(object):
     def fix_e401(self, result):
         line_index = result['line'] - 1
         target = self.source[line_index]
+        offset = result['column'] - 1
 
         if not target.lstrip().startswith('import'):
             return []
@@ -525,10 +526,9 @@ class FixPEP8(object):
             return []
 
         indentation = target.split("import ")[0]
-        modules = target.split("import ")[1].split(",")
-        fixed_modulelist = \
-            [indentation + "import %s" % m.lstrip() for m in modules]
-        self.source[line_index] = self.newline.join(fixed_modulelist)
+        fixed = (target[:offset].rstrip('\t ,') + self.newline +
+                 indentation + 'import ' + target[offset:].lstrip('\t ,'))
+        self.source[line_index] = fixed
 
     def fix_e501(self, result):
         line_index = result['line'] - 1

@@ -826,6 +826,18 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e401_should_ignore_commented_comma(self):
+        line = "import bdist_egg, egg  # , not a module, neither is this\n"
+        fixed = "import bdist_egg\nimport egg  # , not a module, neither is this\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e401_should_ignore_commented_comma_with_indentation(self):
+        line = "if True:\n    import bdist_egg, egg  # , not a module, neither is this\n"
+        fixed = "if True:\n    import bdist_egg\n    import egg  # , not a module, neither is this\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e401_should_ignore_false_positive(self):
         line = "import bdist_egg; bdist_egg.write_safety_flag(cmd.egg_info, safe)\n"
         self._inner_setup(line, options=['--select=E401'])
