@@ -558,6 +558,20 @@ if True:
         self._inner_setup(line, options=['--select=E12'])
         self.assertEqual(self.result, fixed)
 
+    def test_e12_with_backslash(self):
+        line = r"""
+if True:
+    assert reeval == parsed, \
+            'Repr gives different object:\n  %r !=\n  %r' % (parsed, reeval)
+"""
+        fixed = r"""
+if True:
+    assert reeval == parsed, \
+        'Repr gives different object:\n  %r !=\n  %r' % (parsed, reeval)
+"""
+        self._inner_setup(line, options=['--select=E12'])
+        self.assertEqual(self.result, fixed)
+
     def test_e191(self):
         line = """
 while True:

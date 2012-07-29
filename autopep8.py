@@ -417,14 +417,20 @@ class FixPEP8(object):
             logical_lines = logical[2]
             line_index = result['line'] - 1
             original = self.source[line_index]
+            fixed = original
+
             if '(' in logical_lines[0]:
                 fixed = logical_lines[0].find('(') * ' ' + original.lstrip()
-                if fixed == original:
-                    return []
-                else:
-                    self.source[line_index] = fixed
+            elif logical_lines[0].rstrip().endswith('\\'):
+                fixed = (_get_indentation(logical_lines[0]) +
+                         self.indent_word + original.lstrip())
             else:
                 return []
+
+            if fixed == original:
+                return []
+            else:
+                self.source[line_index] = fixed
 
     def fix_e128(self, result, logical):
         """The 'I just wrap long lines with a line break in the middle of my
