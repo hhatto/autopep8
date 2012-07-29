@@ -391,7 +391,24 @@ class FixPEP8(object):
     def fix_e127(self, result, logical):
         """The 'interpretive dance' indentation error."""
         # fix by deleting whitespace to the correct level
-        return self._fix_reindent(result, logical)
+        modified_lines = self._fix_reindent(result, logical)
+        if modified_lines:
+            return modified_lines
+        else:
+            # Fallback
+            if not logical:
+                return []
+            logical_lines = logical[2]
+            line_index = result['line'] - 1
+            original = self.source[line_index]
+            if '(' in logical_lines[0]:
+                fixed = logical_lines[0].find('(') * ' ' + original.lstrip()
+                if fixed == original:
+                    return []
+                else:
+                    self.source[line_index] = fixed
+            else:
+                return []
 
     def fix_e128(self, result, logical):
         """The 'I just wrap long lines with a line break in the middle of my

@@ -524,6 +524,22 @@ for k, v in sys.modules.items():
         self._inner_setup(line, options=['--select=E12'])
         self.assertEqual(self.result, fixed)
 
+    def test_e127(self):
+        line = """
+if True:
+    if True:
+        chksum = (sum([int(value[i]) for i in xrange(0, 9, 2)]) * 7 -
+                          sum([int(value[i]) for i in xrange(1, 9, 2)])) % 10
+"""
+        fixed = """
+if True:
+    if True:
+        chksum = (sum([int(value[i]) for i in xrange(0, 9, 2)]) * 7 -
+                  sum([int(value[i]) for i in xrange(1, 9, 2)])) % 10
+"""
+        self._inner_setup(line, options=['--select=E12'])
+        self.assertEqual(self.result, fixed)
+
     def test_e191(self):
         line = """
 while True:
