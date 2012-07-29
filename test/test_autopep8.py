@@ -340,8 +340,8 @@ sql = 'update %s set %s %s' % (from_table,
         fixed = """
 
 sql = 'update %s set %s %s' % (from_table,
-                               ','.join(['%s=%s' % (col, col) for col in cols]
-                                        ),
+                               ','.join(
+                                   ['%s=%s' % (col, col) for col in cols]),
                                where_clause)
 """
         self._inner_setup(line)
@@ -888,7 +888,25 @@ if True:
 
 if True:
     print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222,
-        222, 333, 333, 333, 333)
+          222, 333, 333, 333, 333)
+"""
+        self._inner_setup(line, options=['--select=E501'])
+        self.assertEqual(self.result, fixed)
+
+
+    def test_e501_alone_with_tuple(self):
+        line = """
+
+fooooooooooooooooooooooooooooooo000000000000000000000000 = [1,
+                                                            ('TransferTime', 'FLOAT')
+                                                           ]
+"""
+        fixed = """
+
+fooooooooooooooooooooooooooooooo000000000000000000000000 = [1,
+                                                            ('TransferTime',
+                                                             'FLOAT')
+                                                           ]
 """
         self._inner_setup(line, options=['--select=E501'])
         self.assertEqual(self.result, fixed)

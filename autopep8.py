@@ -814,13 +814,24 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
                          len(indent_word))):
                     continue
             first = source[:offset - len(indentation)]
-            second = (indentation + indent_word +
+
+            second_indent = indentation
+            if first.rstrip().endswith('('):
+                second_indent += indent_word
+            elif '(' in first:
+                second_indent += ' ' * (1 + first.find('('))
+            else:
+                second_indent += indent_word
+
+            second = (second_indent +
                       source[offset - len(indentation):].lstrip())
             if not second.strip():
                 continue
+
             # Don't modify if lines are not short enough
-            if (len(first) > max_line_width_minus_indentation or
-                    len(second) > max_line_width_minus_indentation):
+            if len(first) > max_line_width_minus_indentation:
+                continue
+            if len(second) > MAX_LINE_WIDTH:  # Already includes indentation
                 continue
             # Do not begin a line with a comma
             if second.lstrip().startswith(','):
