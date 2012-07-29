@@ -97,6 +97,13 @@ class TestUtils(unittest.TestCase):
                 'foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom(333,\n',
                 newline='\n', indent_word='    '))
 
+    def test_break_multi_line_should_not_modify_comment(self):
+        self.assertEqual(
+            None,
+            autopep8.break_multi_line(
+                '# foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
+                newline='\n', indent_word='    '))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 

@@ -1340,12 +1340,16 @@ def break_multi_line(source_text, newline, indent_word):
     Return None if a break is not possible.
 
     """
+    if source_text.lstrip().startswith('#'):
+        return None
+
     # Handle special case only.
     if ("'" not in source_text and '"' not in source_text and
             '(' in source_text and source_text.rstrip().endswith(',')):
         index = 1 + source_text.find('(')
         if index >= MAX_LINE_WIDTH:
             return None
+
         assert index < len(source_text)
         return (
             source_text[:index].rstrip() + newline +
