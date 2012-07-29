@@ -540,8 +540,7 @@ class FixPEP8(object):
 
         # Check for multiline string.
         try:
-            tokens = tokenize.generate_tokens(sio.readline)
-            _tokens = [t for t in tokens]
+            tokens = list(tokenize.generate_tokens(sio.readline))
         except (tokenize.TokenError, IndentationError):
             multi_line_candidate = break_multi_line(
                 target, newline=self.newline, indent_word=self.indent_word)
@@ -559,10 +558,10 @@ class FixPEP8(object):
         # over
         # my_long_function_name(x, y,
         #     z, ...)
-        candidate0 = _shorten_line(_tokens, source, target, indent,
+        candidate0 = _shorten_line(tokens, source, target, indent,
                                    self.indent_word, newline=self.newline,
                                    reverse=False)
-        candidate1 = _shorten_line(_tokens, source, target, indent,
+        candidate1 = _shorten_line(tokens, source, target, indent,
                                    self.indent_word, newline=self.newline,
                                    reverse=True)
         if candidate0 and candidate1:
