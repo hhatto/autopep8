@@ -347,7 +347,23 @@ class FixPEP8(object):
         """The 'loose fingernails' indentation level error for hanging
         indents."""
         # fix by deleting whitespace to the correct level
-        return self._fix_reindent(result, logical)
+        modified_lines = self._fix_reindent(result, logical)
+        if modified_lines:
+            return modified_lines
+        else:
+            # Fallback
+            if not logical:
+                return []
+            logical_lines = logical[2]
+            line_index = result['line'] - 1
+            original_line = self.source[line_index]
+
+            fixed_line = (_get_indentation(logical_lines[0]) +
+                          original_line.lstrip())
+            if fixed_line == original_line:
+                return []
+            else:
+                self.source[line_index] = fixed_line
 
     def fix_e124(self, result, logical):
         """The 'loose fingernails' indentation level error for visual
@@ -1148,8 +1164,8 @@ class Wrapper(object):
 
         """
 
-        # what follows is an adjusted version of
-        # pep8.py:continuation_line_indentation.  All of the comments have been
+        # What follows is an adjusted version of
+        # pep8.py:continuation_line_indentation. All of the comments have been
         # stripped and the 'yield' statements replaced with 'pass'.
         tokens = self.tokens
         if not tokens:
@@ -1185,11 +1201,11 @@ class Wrapper(object):
                            token_type not in (tokenize.NL, tokenize.NEWLINE))
 
             if newline:
-                # this is where the differences start.  instead of looking at
+                # This is where the differences start. Instead of looking at
                 # the line and determining whether the observed indent matches
                 # our expectations, we decide which type of indentation is in
-                # use at the given indent level, and return the offset.  this
-                # algorithm is succeptable to "carried errors", but should
+                # use at the given indent level, and return the offset. This
+                # algorithm is susceptible to "carried errors", but should
                 # through repeated runs eventually solve indentation for
                 # multi-line expressions less than PEP8_PASSES_MAX lines long.
 
@@ -1200,7 +1216,7 @@ class Wrapper(object):
                 else:
                     open_row = 0
 
-                # that's all we get to work with.  this code attempts to
+                # That's all we get to work with. This code attempts to
                 # "reverse" the below logic, and place into the valid indents
                 # list
                 vi = []
