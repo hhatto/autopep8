@@ -538,12 +538,19 @@ class FixPEP8(object):
         source = target[len(indent):]
         sio = StringIO(target)
 
-        # don't fix when multiline string
+        # Check for multiline string.
         try:
             tokens = tokenize.generate_tokens(sio.readline)
             _tokens = [t for t in tokens]
         except (tokenize.TokenError, IndentationError):
-            return []
+            multi_line_candidate = break_multi_line(
+                target, newline=self.newline, indent_word=self.indent_word)
+
+            if multi_line_candidate:
+                self.source[line_index] = multi_line_candidate
+                return
+            else:
+                return []
 
         # Prefer
         # my_long_function_name(
@@ -1325,6 +1332,27 @@ def refactor_with_2to3(source_text, fixer_name):
         fixer_names=fixers,
         explicit=fixers)
     return str(tool.refactor_string(source_text, name=''))
+
+
+def break_multi_line(source_text, newline, indent_word):
+    """Break first line of multi-line code.
+
+    Return None if a break is not possible.
+
+    """
+    # Handle special case only.
+    if ("'" not in source_text and '"' not in source_text and
+            '(' in source_text and source_text.rstrip().endswith(',')):
+        index = 1 + source_text.find('(')
+        if index >= MAX_LINE_WIDTH:
+            return None
+        assert index < len(source_text)
+        return (
+            source_text[:index].rstrip() + newline +
+            _get_indentation(source_text) + indent_word +
+            source_text[index:].lstrip())
+    else:
+        return None
 
 
 def fix_file(filename, opts, output=sys.stdout):

@@ -83,6 +83,20 @@ class TestUtils(unittest.TestCase):
             'a b',
             autopep8.fix_whitespace('a\t  \t  b', offset=1, replacement=' '))
 
+    def test_break_multi_line(self):
+        self.assertEqual(
+            'foo_bar_zap_bing_bang_boom(\n    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
+            autopep8.break_multi_line(
+                'foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
+                newline='\n', indent_word='    '))
+
+    def test_break_multi_line_should_not_break_too_long_line(self):
+        self.assertEqual(
+            None,
+            autopep8.break_multi_line(
+                'foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom(333,\n',
+                newline='\n', indent_word='    '))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 
@@ -911,6 +925,21 @@ looooooooooooooong = foo(one, two, three, four, five, six, seven, eight, nine, t
 
 looooooooooooooong = foo(
     one, two, three, four, five, six, seven, eight, nine, ten)
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e501_with_multiple_lines(self):
+        line = """
+
+foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,
+                           111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333)
+"""
+        fixed = """
+
+foo_bar_zap_bing_bang_boom(
+    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,
+    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333)
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
