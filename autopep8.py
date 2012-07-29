@@ -784,6 +784,7 @@ def _priority_key(pep8_result):
                 'e701',  # Fix multiline colon-based before semicolon based
                 'e702',  # Break multiline statements early
                 'e225', 'e231',  # things that make lines longer
+                'e201',  # Remove extraneous whitespace before breaking lines
                 'e501',  # before we break lines
                 ]
     key = pep8_result['id'].lower()

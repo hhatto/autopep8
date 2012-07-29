@@ -66,9 +66,8 @@ after::
     print('hello')
 
 
-    def someone_likes_semicolons(
-        foo=None,
-            bar='bar'):
+    def someone_likes_semicolons(foo=None,
+                                 bar='bar'):
         """Hello; bye."""
         1
         2
