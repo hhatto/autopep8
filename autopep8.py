@@ -100,6 +100,18 @@ class FixPEP8(object):
 
     """Fix invalid code.
 
+    Fixer methods are prefixed "fix_". The _fix_source() method looks for these
+    automatically.
+
+    The fixer method can take either one or two arguments (in addition to
+    self). The first argument is "result", which is the error information from
+    pep8. The second argument, "logical", is required only for logical-line
+    fixes.
+
+    The fixer method can return the list of modified lines or None. An empty
+    list would mean that no changes were made. None would mean that only the
+    line reported in the pep8 error was modified.
+
     [fixed method list]
         - e111
         - e121,e122,e123,e124,e125,e126,e127,e128
