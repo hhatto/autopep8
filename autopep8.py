@@ -314,7 +314,6 @@ class FixPEP8(object):
                 if valid != got:
                     break
         line = ls[0] + row
-        orig_line = self.source[line]
         # always pick the expected indent, for now.
         indent_to = valid[0]
         if fix_distinct and indent_to == 4:
@@ -324,13 +323,13 @@ class FixPEP8(object):
                 indent_to = valid[1]
 
         if got != indent_to:
-            self.source[line] = (
-                " " * (indent_to) + orig_line.lstrip()
-            )
-            if self.source[line] != orig_line:
-                return [line + 1]  # Line indexed at 1
-            else:
+            orig_line = self.source[line]
+            new_line = ' ' * (indent_to) + orig_line.lstrip()
+            if new_line == orig_line:
                 return []
+            else:
+                self.source[line] = new_line
+                return [line + 1]  # Line indexed at 1
         else:
             return []
 
