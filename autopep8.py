@@ -1415,11 +1415,16 @@ def break_multi_line(source_text, newline, indent_word):
         return None
 
     # Handle special case only.
-    if ("'" not in source_text and '"' not in source_text and
-            '(' in source_text and source_text.rstrip().endswith(',')):
+    if ('(' in source_text and source_text.rstrip().endswith(',')):
         index = 1 + source_text.find('(')
         if index >= MAX_LINE_WIDTH:
             return None
+
+        # Make sure we are not in a string.
+        for quote in ['"', "'"]:
+            if quote in source_text:
+                if source_text.find(quote) < index:
+                    return None
 
         assert index < len(source_text)
         return (
