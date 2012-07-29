@@ -1161,6 +1161,18 @@ if True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e701_with_escaped_newline(self):
+        line = "if True:\\\nprint True\n"
+        fixed = "if True:\n    print True\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e701_with_escaped_newline_and_spaces(self):
+        line = "if True:    \\   \nprint True\n"
+        fixed = "if True:\n    print True\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e702(self):
         line = "print 1; print 2\n"
         fixed = "print 1\nprint 2\n"

@@ -656,7 +656,7 @@ class FixPEP8(object):
 
         fixed_source = (target[:c] + self.newline +
                         _get_indentation(target) + self.indent_word +
-                        target[c:].lstrip())
+                        target[c:].lstrip('\n\r \t\\'))
         self.source[result['line'] - 1] = fixed_source
 
     def fix_e702(self, result, logical):
