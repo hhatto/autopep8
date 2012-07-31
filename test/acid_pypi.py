@@ -29,13 +29,8 @@ def download_package(name, output_directory):
     Raise CalledProcessError on failure.
 
     """
-    original_path = os.getcwd()
-    os.chdir(output_directory)
-    try:
-        subprocess.check_call(
-            ['yolk', '--fetch-package={name}'.format(name=name)])
-    finally:
-        os.chdir(original_path)
+    subprocess.check_call(['yolk', '--fetch-package={name}'.format(name=name)],
+                          cwd=output_directory)
 
 
 def extract_package(path, output_directory):
