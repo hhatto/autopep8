@@ -36,19 +36,14 @@ def download_package(name, output_directory):
 def extract_package(path, output_directory):
     """Extract package at path."""
     if path.lower().endswith('.tar.gz'):
-        original_path = os.getcwd()
-        os.chdir(output_directory)
+        import tarfile
         try:
-            import tarfile
-            try:
-                tar = tarfile.open(path)
-                tar.extractall()
-                tar.close()
-                return True
-            except (tarfile.ReadError, IOError):
-                return False
-        finally:
-            os.chdir(original_path)
+            tar = tarfile.open(path)
+            tar.extractall(path=output_directory)
+            tar.close()
+            return True
+        except (tarfile.ReadError, IOError):
+            return False
     elif path.lower().endswith('.zip'):
         import zipfile
         try:
