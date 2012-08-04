@@ -43,9 +43,12 @@ def interesting(repository_path):
     process = subprocess.Popen(['git', 'log'],
                                cwd=repository_path,
                                stdout=subprocess.PIPE)
-    return len(re.findall(
-        'pep8',
-        process.communicate()[0].decode('utf-8'))) > 2
+    try:
+        return len(re.findall(
+            'pep8',
+            process.communicate()[0].decode('utf-8'))) > 2
+    except UnicodeDecodeError:
+        return False
 
 
 def main():
