@@ -145,7 +145,12 @@ def check(opts, args):
         else:
             completed_filenames.update(name)
 
-        if os.path.isdir(name):
+        try:
+            is_directory = os.path.isdir(name)
+        except UnicodeEncodeError:
+            continue
+
+        if is_directory:
             for root, directories, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
                               if f.endswith('.py') and
