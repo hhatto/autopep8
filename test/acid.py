@@ -117,6 +117,15 @@ def process_args():
     return parser.parse_args()
 
 
+class TimeoutException(Exception):
+
+    """Timeout exception."""
+
+
+def timeout(_, __):
+    raise TimeoutException()
+
+
 def check(opts, args):
     """Run recursively run autopep8 on directory of files.
 
@@ -131,13 +140,12 @@ def check(opts, args):
     filenames = dir_paths
     completed_filenames = set()
 
-    import time
-    start_time = time.time()
+    import signal
+    if opts.timeout > 0:
+        signal.signal(signal.SIGALRM, timeout)
+        signal.alarm(int(opts.timeout))
 
     while filenames:
-        if opts.timeout > 0 and time.time() - start_time > opts.timeout:
-            break
-
         name = os.path.realpath(filenames.pop(0))
         if name in completed_filenames:
             sys.stderr.write('--->  Skipping previously tested ' + name + '\n')
@@ -181,4 +189,9 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except TimeoutException:
+        sys.stderr.write('Timed out\n')
+    except KeyboardInterrupt:
+        pass
