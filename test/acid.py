@@ -182,6 +182,8 @@ def check(opts, args):
                     return False
 
         return True
+    except TimeoutException:
+        sys.stderr.write('Timed out\n')
     finally:
         if opts.timeout > 0:
             signal.alarm(0)
@@ -195,7 +197,5 @@ def main():
 if __name__ == '__main__':
     try:
         sys.exit(main())
-    except TimeoutException:
-        sys.stderr.write('Timed out\n')
     except KeyboardInterrupt:
         pass
