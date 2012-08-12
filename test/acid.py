@@ -140,47 +140,51 @@ def check(opts, args):
     filenames = dir_paths
     completed_filenames = set()
 
-    import signal
-    if opts.timeout > 0:
-        signal.signal(signal.SIGALRM, timeout)
-        signal.alarm(int(opts.timeout))
+    try:
+        import signal
+        if opts.timeout > 0:
+            signal.signal(signal.SIGALRM, timeout)
+            signal.alarm(int(opts.timeout))
 
-    while filenames:
-        name = os.path.realpath(filenames.pop(0))
-        if name in completed_filenames:
-            sys.stderr.write('--->  Skipping previously tested ' + name + '\n')
-            continue
-        else:
-            completed_filenames.update(name)
+        while filenames:
+            name = os.path.realpath(filenames.pop(0))
+            if name in completed_filenames:
+                sys.stderr.write('--->  Skipping previously tested ' + name + '\n')
+                continue
+            else:
+                completed_filenames.update(name)
 
-        try:
-            is_directory = os.path.isdir(name)
-        except UnicodeEncodeError:
-            continue
-
-        if is_directory:
-            for root, directories, children in os.walk(name):
-                filenames += [os.path.join(root, f) for f in children
-                              if f.endswith('.py') and
-                              not f.startswith('.')]
-                for d in directories:
-                    if d.startswith('.'):
-                        directories.remove(d)
-        else:
-            sys.stderr.write('--->  Testing with ')
             try:
-                sys.stderr.write(name)
+                is_directory = os.path.isdir(name)
             except UnicodeEncodeError:
-                sys.stderr.write('...')
-            sys.stderr.write('\n')
+                continue
 
-            if not run(os.path.join(name),
-                       fast_check=opts.fast_check,
-                       ignore=opts.ignore,
-                       passes=opts.pep8_passes):
-                return False
+            if is_directory:
+                for root, directories, children in os.walk(name):
+                    filenames += [os.path.join(root, f) for f in children
+                                  if f.endswith('.py') and
+                                  not f.startswith('.')]
+                    for d in directories:
+                        if d.startswith('.'):
+                            directories.remove(d)
+            else:
+                sys.stderr.write('--->  Testing with ')
+                try:
+                    sys.stderr.write(name)
+                except UnicodeEncodeError:
+                    sys.stderr.write('...')
+                sys.stderr.write('\n')
 
-    return True
+                if not run(os.path.join(name),
+                           fast_check=opts.fast_check,
+                           ignore=opts.ignore,
+                           passes=opts.pep8_passes):
+                    return False
+
+        return True
+    finally:
+        if opts.timeout > 0:
+            signal.alarm(0)
 
 
 def main():
