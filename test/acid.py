@@ -180,13 +180,13 @@ def check(opts, args):
                            ignore=opts.ignore,
                            passes=opts.pep8_passes):
                     return False
-
-        return True
     except TimeoutException:
         sys.stderr.write('Timed out\n')
     finally:
         if opts.timeout > 0:
             signal.alarm(0)
+
+    return True
 
 
 def main():
