@@ -113,9 +113,13 @@ def main():
             continue
 
         for download_name in os.listdir(package_tmp_dir):
-            if not extract_package(
-                    os.path.join(package_tmp_dir, download_name),
-                    output_directory=package_tmp_dir):
+            try:
+                if not extract_package(
+                        os.path.join(package_tmp_dir, download_name),
+                        output_directory=package_tmp_dir):
+                    print('ERROR: Could not extract package')
+                    continue
+            except UnicodeDecodeError:
                 print('ERROR: Could not extract package')
                 continue
 
