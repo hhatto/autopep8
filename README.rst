@@ -7,9 +7,11 @@ autopep8
 
 About
 -----
-autopep8 automatically formats Python code to conform to the PEP 8 style guide.
-It uses the pep8_ utility to determine what parts of the code needs to be
-formatted.
+autopep8 automatically formats Python code to conform to the `PEP 8`_ style
+guide. It uses the pep8_ utility to determine what parts of the code needs to
+be formatted.
+
+.. _PEP 8: http://www.python.org/dev/peps/pep-0008
 
 
 Installation
