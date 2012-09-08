@@ -830,12 +830,6 @@ def _get_indentation(line):
     return line[:non_whitespace_index]
 
 
-def _split_indentation(line):
-    """Return line split into tuple (indentation, rest)."""
-    non_whitespace_index = len(line) - len(line.lstrip())
-    return (line[:non_whitespace_index], line[non_whitespace_index:])
-
-
 def _analyze_pep8result(result):
     tmp = result.split(':')
     filename = tmp[0]
