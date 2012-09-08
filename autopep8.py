@@ -1518,7 +1518,7 @@ def parse_args(args):
     parser.add_option('--ignore', default='',
                       help='do not fix these errors/warnings (e.g. E4,W)')
     parser.add_option('--select', default='',
-                      help='select errors/warnings (e.g. E4,W)')
+                      help='fix only these errors/warnings (e.g. E4,W)')
     opts, args = parser.parse_args(args)
 
     if not len(args):
