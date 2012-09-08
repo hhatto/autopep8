@@ -227,6 +227,11 @@ class FixPEP8(object):
                                   (['--select=' + self.options.select]
                                    if self.options.select else []) +
                                   [self.filename])
+
+        if self.options.verbose:
+            sys.stderr.write('{n} issues to fix\n'.format(
+                n=len(results)))
+
         self._fix_source(results)
         return ''.join(self.source)
 
