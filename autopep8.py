@@ -198,7 +198,7 @@ class FixPEP8(object):
                 else:  # We assume one-line fix when None
                     completed_lines.add(result['line'])
             else:
-                if self.options.verbose >= 2:
+                if self.options.verbose >= 3:
                     sys.stderr.write("'%s' is not defined.\n" %
                                      fixed_methodname)
                     info = result['info'].strip()
