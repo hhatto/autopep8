@@ -53,7 +53,6 @@ __version__ = '0.8'
 
 
 PEP8_BIN = 'pep8'
-PEP8_PASSES_MAX = 100
 CR = '\r'
 LF = '\n'
 CRLF = '\r\n'
@@ -1512,7 +1511,7 @@ def parse_args(args):
                       help='run recursively; must be used with --in-place or '
                            '--diff')
     parser.add_option('-p', '--pep8-passes',
-                      default=PEP8_PASSES_MAX, type='int',
+                      default=100, type='int',
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)')
     parser.add_option('--ignore', default='',
