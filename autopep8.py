@@ -192,13 +192,13 @@ class FixPEP8(object):
                 if modified_lines:
                     completed_lines.update(modified_lines)
                 elif modified_lines == []:  # Empty list means no fix
-                    if self.options.verbose:
+                    if self.options.verbose >= 2:
                         sys.stderr.write('Not fixing {f} on line {l}\n'.format(
                             f=result['id'], l=result['line']))
                 else:  # We assume one-line fix when None
                     completed_lines.add(result['line'])
             else:
-                if self.options.verbose:
+                if self.options.verbose >= 2:
                     sys.stderr.write("'%s' is not defined.\n" %
                                      fixed_methodname)
                     info = result['info'].strip()
@@ -1501,8 +1501,10 @@ def parse_args(args):
                           version='autopep8: %s' % __version__,
                           description=__doc__,
                           prog='autopep8')
-    parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
-                      help='print verbose messages')
+    parser.add_option('-v', '--verbose', action='count', dest='verbose',
+                      default=0,
+                      help='print verbose messages; '
+                           'multiple -v result in more verbose messages')
     parser.add_option('-d', '--diff', action='store_true', dest='diff',
                       help='print the diff for the fixed source')
     parser.add_option('-i', '--in-place', action='store_true',

@@ -1643,7 +1643,7 @@ class TestOptions(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--verbose'],
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '-vv'],
                   stdout=PIPE, stderr=PIPE)
         verbose_error = p.communicate()[1].decode('utf8')
         self.assertIn("'fix_e901' is not defined", verbose_error)
@@ -1654,7 +1654,7 @@ class TestOptions(unittest.TestCase):
         f.write(line)
         f.close()
         p = Popen(list(AUTOPEP8_CMD_TUPLE) +
-                  [self.tempfile[1], '--verbose', '--diff'],
+                  [self.tempfile[1], '-vv', '--diff'],
                   stdout=PIPE, stderr=PIPE)
         verbose_error = p.communicate()[1].decode('utf8')
         self.assertIn("'fix_e901' is not defined", verbose_error)
