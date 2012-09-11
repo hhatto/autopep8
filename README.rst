@@ -121,7 +121,8 @@ options::
     Options:
       --version             show program's version number and exit
       -h, --help            show this help message and exit
-      -v, --verbose         print verbose messages
+      -v, --verbose         print verbose messages; multiple -v result in more
+                            verbose messages
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
       -r, --recursive       run recursively; must be used with --in-place or
@@ -130,7 +131,7 @@ options::
                             maximum number of additional pep8 passes (default:
                             100)
       --ignore=IGNORE       do not fix these errors/warnings (e.g. E4,W)
-      --select=SELECT       select errors/warnings (e.g. E4,W)
+      --select=SELECT       fix only these errors/warnings (e.g. E4,W)
 
 
 Testing
