@@ -765,7 +765,7 @@ class FixPEP8(object):
 
         try:
             original = unicode(''.join(self.source).strip(), 'utf-8')
-        except NameError:
+        except NameError, TypeError:
             original = ''.join(self.source).strip()
         if original == new_text.strip():
             return []
