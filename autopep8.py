@@ -760,7 +760,8 @@ class FixPEP8(object):
         try:
             new_text = refactor_with_2to3(''.join(self.source),
                                           fixer_name=fixer_name)
-        except (pgen2.parse.ParseError, UnicodeDecodeError, UnicodeEncodeError):
+        except (pgen2.parse.ParseError,
+                UnicodeDecodeError, UnicodeEncodeError):
             return []
 
         try:
