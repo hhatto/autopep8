@@ -1,3 +1,4 @@
+# coding: utf-8
 import os
 import sys
 
@@ -1427,6 +1428,12 @@ a.has_key(
 )
 """.lstrip()
         fixed = '0 in a\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_w601_with_non_ascii(self):
+        line = "correct = dict().has_key('good syntax ?')\n"
+        fixed = "correct = 'good syntax ?' in dict()\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
