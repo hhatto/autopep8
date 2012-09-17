@@ -29,7 +29,7 @@ from easy_install::
 
 Requirements
 ------------
-autopep8 requires pep8_ (>= 1.3). Older versions of pep8 will also work, but
+autopep8 requires pep8_ (>= 1.3.2). Older versions of pep8 will also work, but
 autopep8 will run pep8 in a subprocess in that case (for compatibility
 purposes).
 
