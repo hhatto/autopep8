@@ -27,7 +27,7 @@ import os
 import sys
 import inspect
 try:
-    from cStringIO import StringIO
+    from StringIO import StringIO
 except ImportError:
     try:
         from StringIO import StringIO
@@ -763,7 +763,11 @@ class FixPEP8(object):
         except (pgen2.parse.ParseError, UnicodeDecodeError, UnicodeEncodeError):
             return []
 
-        if ''.join(self.source).strip() == new_text.strip():
+        try:
+            original = unicode(''.join(self.source).strip(), 'utf-8')
+        except (NameError, TypeError):
+            original = ''.join(self.source).strip()
+        if original == new_text.strip():
             return []
         else:
             if ignore:
@@ -841,6 +845,10 @@ def _analyze_pep8result(result):
 
 
 def _get_difftext(old, new, filename):
+    try:
+        old = [unicode(o, detect_encoding(filename)) for o in old]
+    except NameError:
+        pass
     diff = unified_diff(old, new, 'original/' + filename, 'fixed/' + filename)
     return ''.join(diff)
 
@@ -1408,7 +1416,11 @@ def refactor_with_2to3(source_text, fixer_name):
     tool = refactor.RefactoringTool(
         fixer_names=fixers,
         explicit=fixers)
-    return str(tool.refactor_string(source_text, name=''))
+    try:
+        return unicode(tool.refactor_string(
+            source_text.decode('utf-8'), name=''))
+    except NameError:
+        return str(tool.refactor_string(source_text, name=''))
 
 
 def break_multi_line(source_text, newline, indent_word):
@@ -1465,6 +1477,13 @@ def fix_file(filename, opts, output=sys.stdout):
     tmp_filename = filename
     if not pep8 or opts.in_place:
         encoding = detect_encoding(filename)
+
+    # For Python3
+    try:
+        tmp_source = unicode(tmp_source, detect_encoding(filename))
+    except NameError:
+        pass
+
     for _ in range(opts.pep8_passes):
         if fixed_source == tmp_source:
             break
