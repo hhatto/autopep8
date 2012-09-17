@@ -26,6 +26,8 @@ import copy
 import os
 import sys
 import inspect
+import codecs
+import locale
 try:
     from StringIO import StringIO
 except ImportError:
@@ -1569,6 +1571,11 @@ def main():
         assert not opts.recursive
         filenames = args[:1]
 
+    if sys.version_info[0] >= 3:
+        output = sys.stdout
+    else:
+        output = codecs.getwriter(locale.getpreferredencoding())(sys.stdout)
+
     while filenames:
         name = filenames.pop(0)
         if opts.recursive and os.path.isdir(name):
@@ -1583,7 +1590,7 @@ def main():
             if opts.verbose:
                 sys.stderr.write('[file:%s]\n' % name)
             try:
-                fix_file(name, opts)
+                fix_file(name, opts, output)
             except (UnicodeDecodeError, UnicodeEncodeError, IOError) as error:
                 sys.stderr.write(str(error) + '\n')
 
