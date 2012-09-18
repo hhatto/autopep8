@@ -31,10 +31,7 @@ import locale
 try:
     from StringIO import StringIO
 except ImportError:
-    try:
-        from StringIO import StringIO
-    except ImportError:
-        from io import StringIO
+    from io import StringIO
 import token
 import tokenize
 from optparse import OptionParser
