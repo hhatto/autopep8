@@ -1322,7 +1322,10 @@ class TestFixPEP8Warning(unittest.TestCase):
             temp_file.write(line)
         opts, _ = autopep8.parse_args([self.tempfile[1]] + list(options))
         sio = StringIO()
-        output = codecs.getwriter(locale.getpreferredencoding())(sio)
+        if sys.version_info[0] < 3:
+            output = codecs.getwriter(locale.getpreferredencoding())(sio)
+        else:
+            output = sio
         autopep8.fix_file(filename=self.tempfile[1],
                           opts=opts,
                           output=output)
@@ -1435,10 +1438,16 @@ a.has_key(
         self.assertEqual(self.result, fixed)
 
     def test_w601_with_non_ascii(self):
-        line = u"## éはe\ncorrect = dict().has_key('good syntax ?')\n"
-        fixed = u"## éはe\ncorrect = 'good syntax ?' in dict()\n"
-        self._inner_setup(line.encode('utf-8'))
-        self.assertEqual(self.result, fixed.encode('utf-8'))
+        line = "## éはe\ncorrect = dict().has_key('good syntax ?')\n"
+        fixed = "## éはe\ncorrect = 'good syntax ?' in dict()\n"
+        if sys.version_info[0] < 3:
+            line = unicode(line, 'utf-8')
+            fixed = unicode(fixed, 'utf-8')
+            self._inner_setup(line.encode('utf-8'))
+            self.assertEqual(self.result, fixed.encode('utf-8'))
+        else:
+            self._inner_setup(line)
+            self.assertEqual(self.result, fixed)
 
     def test_w602_arg_is_string(self):
         line = "raise ValueError, \"w602 test\"\n"
