@@ -1,6 +1,8 @@
 # coding: utf-8
 import os
 import sys
+import codecs
+import locale
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -1320,10 +1322,11 @@ class TestFixPEP8Warning(unittest.TestCase):
             temp_file.write(line)
         opts, _ = autopep8.parse_args([self.tempfile[1]] + list(options))
         sio = StringIO()
+        output = codecs.getwriter(locale.getpreferredencoding())(sio)
         autopep8.fix_file(filename=self.tempfile[1],
                           opts=opts,
-                          output=sio)
-        self.result = sio.getvalue()
+                          output=output)
+        self.result = output.getvalue()
 
     def test_w291(self):
         line = "print 'a b '\t \n"
@@ -1432,10 +1435,10 @@ a.has_key(
         self.assertEqual(self.result, fixed)
 
     def test_w601_with_non_ascii(self):
-        line = "correct = dict().has_key('good syntax ?')\n"
-        fixed = "correct = 'good syntax ?' in dict()\n"
-        self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
+        line = u"## éはe\ncorrect = dict().has_key('good syntax ?')\n"
+        fixed = u"## éはe\ncorrect = 'good syntax ?' in dict()\n"
+        self._inner_setup(line.encode('utf-8'))
+        self.assertEqual(self.result, fixed.encode('utf-8'))
 
     def test_w602_arg_is_string(self):
         line = "raise ValueError, \"w602 test\"\n"
