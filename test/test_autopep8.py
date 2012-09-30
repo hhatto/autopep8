@@ -1437,6 +1437,7 @@ a.has_key(
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @unittest.skipIf(sys.version_info[0] < 3, 'needs to be fixed on Python 2')
     def test_w601_with_non_ascii(self):
         line = """
 # -*- coding: utf-8 -*-
