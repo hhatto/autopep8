@@ -1438,8 +1438,18 @@ a.has_key(
         self.assertEqual(self.result, fixed)
 
     def test_w601_with_non_ascii(self):
-        line = "## éはe\ncorrect = dict().has_key('good syntax ?')\n"
-        fixed = "## éはe\ncorrect = 'good syntax ?' in dict()\n"
+        line = """
+# -*- coding: utf-8 -*-
+## éはe
+correct = dict().has_key('good syntax ?')
+""".lstrip()
+
+        fixed = """
+# -*- coding: utf-8 -*-
+## éはe
+correct = 'good syntax ?' in dict()
+""".lstrip()
+
         if sys.version_info[0] < 3:
             line = unicode(line, 'utf-8')
             fixed = unicode(fixed, 'utf-8')

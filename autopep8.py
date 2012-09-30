@@ -64,7 +64,8 @@ def open_with_encoding(filename, encoding, mode='r'):
         # Python 3
         return open(filename, mode=mode, encoding=encoding)
     except TypeError:
-        return open(filename, mode=mode)
+        # Python 2
+        return codecs.open(filename, mode=mode, encoding=encoding)
 
 
 def detect_encoding(filename):
@@ -845,10 +846,6 @@ def _analyze_pep8result(result):
 
 
 def _get_difftext(old, new, filename):
-    try:
-        old = [unicode(o, detect_encoding(filename)) for o in old]
-    except NameError:
-        pass
     diff = unified_diff(old, new, 'original/' + filename, 'fixed/' + filename)
     return ''.join(diff)
 
@@ -1478,12 +1475,6 @@ def fix_file(filename, opts, output=sys.stdout):
     if not pep8 or opts.in_place:
         encoding = detect_encoding(filename)
 
-    # For Python3
-    try:
-        tmp_source = unicode(tmp_source, detect_encoding(filename))
-    except NameError:
-        pass
-
     for _ in range(opts.pep8_passes):
         if fixed_source == tmp_source:
             break
@@ -1588,7 +1579,7 @@ def main():
                 sys.stderr.write('[file:%s]\n' % name)
             try:
                 fix_file(name, opts, output)
-            except (UnicodeDecodeError, UnicodeEncodeError, IOError) as error:
+            except IOError as error:
                 sys.stderr.write(str(error) + '\n')
 
 
