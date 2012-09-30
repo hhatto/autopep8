@@ -119,12 +119,16 @@ class TestFixPEP8Error(unittest.TestCase):
     def _inner_setup(self, line, options=()):
         with open(self.tempfile[1], 'w') as temp_file:
             temp_file.write(line)
-        opts, _ = autopep8.parse_args(list(options) + [self.tempfile[1]])
+        opts, _ = autopep8.parse_args([self.tempfile[1]] + list(options))
         sio = StringIO()
+        if sys.version_info[0] < 3:
+            output = codecs.getwriter(locale.getpreferredencoding())(sio)
+        else:
+            output = sio
         autopep8.fix_file(filename=self.tempfile[1],
                           opts=opts,
-                          output=sio)
-        self.result = sio.getvalue()
+                          output=output)
+        self.result = output.getvalue()
 
     def test_e101(self):
         line = """
@@ -1183,20 +1187,17 @@ if True:
         self.assertEqual(self.result, fixed)
 
     def test_e702_with_non_ascii_file(self):
-        filename = os.path.join(ROOT_DIR, 'test', 'french_example.py')
-        opts, _ = autopep8.parse_args([filename])
-        sio = StringIO()
-        if sys.version_info[0] < 3:
-            output = codecs.getwriter(locale.getpreferredencoding())(sio)
-        else:
-            output = sio
-        autopep8.fix_file(
-            filename=filename,
-            opts=opts,
-            output=output)
-        self.assertEqual(
-            output.getvalue(),
-            """
+        line = """
+# -*- coding: utf-8 -*-
+# French comment with accent é
+# Un commentaire en français avec un accent é
+
+import time
+
+time.strftime('%d-%m-%Y');
+""".lstrip()
+
+        fixed = """
 # -*- coding: utf-8 -*-
 # French comment with accent é
 # Un commentaire en français avec un accent é
@@ -1204,7 +1205,16 @@ if True:
 import time
 
 time.strftime('%d-%m-%Y')
-""".lstrip())
+""".lstrip()
+
+        if sys.version_info[0] < 3:
+            line = unicode(line, 'utf-8')
+            fixed = unicode(fixed, 'utf-8')
+            self._inner_setup(line.encode('utf-8'))
+            self.assertEqual(self.result, fixed.encode('utf-8'))
+        else:
+            self._inner_setup(line)
+            self.assertEqual(self.result, fixed)
 
     def test_e702_with_escaped_newline(self):
         line = '1; \\\n2\n'
