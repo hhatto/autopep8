@@ -1164,9 +1164,8 @@ class Wrapper(object):
                 continue
             if t[0] != tokenize.ENDMARKER:
                 self.tokens.append(t)
-        self.logical_line, self.mapping = self.build_tokens_logical(
-            self.tokens
-        )
+
+        self.logical_line = self.build_tokens_logical(self.tokens)
 
     def build_tokens_logical(self, tokens):
         """Build a logical line from a list of tokens.
@@ -1176,7 +1175,6 @@ class Wrapper(object):
 
         """
         # from pep8.py with minor modifications
-        mapping = []
         logical = []
         length = 0
         previous = None
@@ -1197,14 +1195,13 @@ class Wrapper(object):
                     fill = self.lines[end_line - 1][end:start]
                     logical.append(fill)
                     length += len(fill)
-            mapping.append((length, t))
             logical.append(text)
             length += len(text)
             previous = t
         logical_line = ''.join(logical)
         assert logical_line.lstrip() == logical_line
         assert logical_line.rstrip() == logical_line
-        return logical_line, mapping
+        return logical_line
 
     def pep8_expected(self):
         """Replicates logic in pep8.py, to know what level to indent things to.
