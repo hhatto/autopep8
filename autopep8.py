@@ -85,7 +85,16 @@ def detect_encoding(filename):
         except (SyntaxError, LookupError, UnicodeDecodeError):
             return 'latin-1'
     except AttributeError:
-        return 'utf-8'
+        # Python 2
+        encoding = 'utf-8'
+        try:
+            # Check for correctness of encoding
+            with open_with_encoding(filename, encoding) as input_file:
+                input_file.read()
+        except UnicodeDecodeError:
+            encoding = 'latin-1'
+
+        return encoding
 
 
 def read_from_filename(filename, readlines=False):
