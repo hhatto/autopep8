@@ -1185,7 +1185,6 @@ class Wrapper(object):
         """
         # from pep8.py with minor modifications
         logical = []
-        length = 0
         previous = None
         for t in tokens:
             token_type, text = t[0:2]
@@ -1199,13 +1198,10 @@ class Wrapper(object):
                     if prev_text == ',' or (prev_text not in '{[('
                                             and text not in '}])'):
                         logical.append(' ')
-                        length += 1
                 elif end != start:  # different column
                     fill = self.lines[end_line - 1][end:start]
                     logical.append(fill)
-                    length += len(fill)
             logical.append(text)
-            length += len(text)
             previous = t
         logical_line = ''.join(logical)
         assert logical_line.lstrip() == logical_line
