@@ -13,4 +13,4 @@ install:
 
 script:
     - python test/test_autopep8.py
-    - python test/acid.py example.py
+    - python test/acid.py test/example.py
