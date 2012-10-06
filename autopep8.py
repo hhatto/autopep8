@@ -461,6 +461,7 @@ class FixPEP8(object):
             self.source[line_index] = fixed
 
     def fix_e201(self, result):
+        """Remove extraneous whitespace."""
         line_index = result['line'] - 1
         target = self.source[line_index]
         offset = result['column'] - 1
@@ -481,13 +482,14 @@ class FixPEP8(object):
             self.source[line_index] = fixed
 
     def fix_e224(self, result):
+        """Remove extraneous whitespace around operator."""
         target = self.source[result['line'] - 1]
         offset = result['column'] - 1
         fixed = target[:offset] + target[offset:].replace('\t', ' ')
         self.source[result['line'] - 1] = fixed
 
     def fix_e225(self, result):
-        """Fix whitespace around operator."""
+        """Fix missing whitespace around operator."""
         target = self.source[result['line'] - 1]
         offset = result['column'] - 1
         fixed = target[:offset] + ' ' + target[offset:]
@@ -509,6 +511,7 @@ class FixPEP8(object):
         self.source[line_index] = fixed
 
     def fix_e251(self, result):
+        """Remove whitespace around parameter '=' sign."""
         line_index = result['line'] - 1
         target = self.source[line_index]
 
@@ -566,20 +569,18 @@ class FixPEP8(object):
             self.source[line_index] = fixed
 
     def fix_e301(self, result):
+        """Add missing blank line."""
         cr = self.newline
         self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
 
     def fix_e302(self, result):
+        """Add missing 2 blank lines."""
         add_linenum = 2 - int(result['info'].split()[-1])
         cr = self.newline * add_linenum
         self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
 
-    def fix_e304(self, result):
-        line = result['line'] - 2
-        if not self.source[line].strip():
-            self.source[line] = ''
-
     def fix_e303(self, result):
+        """Remove extra blank lines."""
         delete_linenum = int(result['info'].split('(')[1].split(')')[0]) - 2
         delete_linenum = max(1, delete_linenum)
 
@@ -598,6 +599,12 @@ class FixPEP8(object):
             line -= 1
 
         return modified_lines
+
+    def fix_e304(self, result):
+        """Remove blank line following function decorator."""
+        line = result['line'] - 2
+        if not self.source[line].strip():
+            self.source[line] = ''
 
     def fix_e401(self, result):
         line_index = result['line'] - 1
