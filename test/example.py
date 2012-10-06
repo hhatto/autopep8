@@ -5,14 +5,14 @@ def foo():
     import copy; import math, email
 
 
-print 1 
-print 2 # e261
+print(1) 
+print(2) # e261
 d = {1: 2,# e261
      3: 4}
-print 2  ## e262
-print 2  #### e262
-print 2  #e262
-print 2  #     e262
+print(2)  ## e262
+print(2)  #### e262
+print(2)  #e262
+print(2)  #     e262
 1 /1
 1 *2
 1 +1
@@ -21,28 +21,28 @@ print 2  #     e262
 
 
 def dummy1 ( a ):
-    print a 
-    print a
+    print(a) 
+    print(a)
 
 
 def dummy2(a) :
     if 1 in a:
-        print "a"
-        print 1+1   # e225
-        print 1 +1  # e225
-        print 1+ 1  # e225
+        print("a")
+        print(1+1)   # e225
+        print(1 +1)  # e225
+        print(1+ 1)  # e225
 
 
-        print 1  +1  # e221+e225
-        print 1  + 1  # e221
-        print 1  * 1  # e221
-        print 1 +  1  # e222
-        print 1 *    1  # e222
-    print a
+        print(1  +1)  # e221+e225
+        print(1  + 1)  # e221
+        print(1  * 1)  # e221
+        print(1 +  1)  # e222
+        print(1 *    1)  # e222
+    print(a)
 
 
 def func1():
-    print "A"
+    print("A")
     
     return 0
 
@@ -64,10 +64,10 @@ def func22():
     pass;
 
 
-def func_oneline(): print 1
+def func_oneline(): print(1)
 
 def func_last():
-    if True: print 1
+    if True: print(1)
     pass
 
 
@@ -105,7 +105,7 @@ def func_e702():
     4; 1;
 
     4; 1;
-    print 2; print 4;          6;8
+    print(2); print(4);          6;8
     if True:
         1; 2; 3
 0; 1
@@ -120,8 +120,8 @@ def func_w602():
     raise ValueError
     raise ValueError  # comment
 
-    raise ValueError, 'arg'   ; print 1
-    raise ValueError, 'arg'   ; print 2 # my comment
+    raise ValueError, 'arg'   ; print(1)
+    raise ValueError, 'arg'   ; print(2) # my comment
 
     raise ValueError, \
         'arg no comment'
@@ -147,9 +147,9 @@ def func_w602():
 def func_w603():
     if 1 <> 2:
         if 2 <> 2:
-            print True
+            print(True)
         else:
-            print False
+            print(False)
 
 
 def func_w604():
