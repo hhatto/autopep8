@@ -607,6 +607,7 @@ class FixPEP8(object):
             self.source[line] = ''
 
     def fix_e401(self, result):
+        """Put imports on separate lines."""
         line_index = result['line'] - 1
         target = self.source[line_index]
         offset = result['column'] - 1
@@ -626,6 +627,7 @@ class FixPEP8(object):
         self.source[line_index] = fixed
 
     def fix_e501(self, result):
+        """Try to make lines fit within 79 characters."""
         line_index = result['line'] - 1
         target = self.source[line_index]
 
@@ -679,6 +681,7 @@ class FixPEP8(object):
         self.source[line_index] = target.rstrip('\n\r \t\\') + self.newline
 
     def fix_e701(self, result):
+        """Put colon-separated compound statement on separate lines."""
         line_index = result['line'] - 1
         target = self.source[line_index]
         c = result['column']
@@ -689,7 +692,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed_source
 
     def fix_e702(self, result, logical):
-        """Fix multiple statements on one line."""
+        """Put semicolon-separated compound statement on separate lines."""
         logical_lines = logical[2]
 
         line_index = result['line'] - 1
@@ -739,17 +742,21 @@ class FixPEP8(object):
         self.source[line_index] = ' '.join([left, new_center, right])
 
     def fix_e721(self, _):
+        """Switch to use isinstance()."""
         return self.refactor('idioms')
 
     def fix_w291(self, result):
+        """Remove trailing whitespace."""
         fixed_line = self.source[result['line'] - 1].rstrip()
         self.source[result['line'] - 1] = '%s%s' % (fixed_line, self.newline)
 
     def fix_w293(self, result):
+        """Remove trailing whitespace on blank line."""
         assert not self.source[result['line'] - 1].strip()
         self.source[result['line'] - 1] = self.newline
 
     def fix_w391(self, _):
+        """Remove trailing blank lines."""
         source = copy.copy(self.source)
         source.reverse()
         blank_count = 0
@@ -795,6 +802,7 @@ class FixPEP8(object):
             return range(1, 1 + original_length)
 
     def fix_w601(self, _):
+        """Replace the {}.has_key() form with 'in'."""
         return self.refactor('has_key')
 
     def fix_w602(self, _):
@@ -803,9 +811,11 @@ class FixPEP8(object):
                              ignore='with_traceback')
 
     def fix_w603(self, _):
+        """Replace <> with !=."""
         return self.refactor('ne')
 
     def fix_w604(self, _):
+        """Replace backticks with repr()."""
         return self.refactor('repr')
 
 
