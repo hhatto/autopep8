@@ -47,16 +47,16 @@ before::
     import sys, os;
     print(                'hello' );
 
-    def someone_likes_semicolons(                             foo  = None                          ,\
+    def someone_likes_semicolons(                             foo  = None             ,\
     bar='bar'):
         """Hello; bye."""; 1; 2;3
         print( 'A'<>foo)            #<> is a deprecated form of !=
         return 0;
     def func11():
         a=(   1,2, 3,"a"  );
-        b  =[100,200,300  ,9876543210,'This is my very long string that goes on and on and on'  ]
+        b  =[100,200,300  ,9876543210,'This is my very long string that goes on and on'  ]
         return (a, b)
-    def func2(): total =(324942324324+32434234234234 -23423234243/ 324342342.+324234223432423412191) /12345.
+    def func2(): total =(324942324324+32434234234234-23423234243/ 324342342.+32423) /1234.
     def func22(): return {True: True}.has_key({'foo': 2}.has_key('foo'));
     class UselessClass(object):
         def __init__    ( self, bar ):
@@ -85,13 +85,13 @@ after::
     def func11():
         a = (1, 2, 3, "a")
         b = [100, 200, 300, 9876543210,
-             'This is my very long string that goes on and on and on']
+             'This is my very long string that goes on and on']
         return (a, b)
 
 
     def func2():
         total = (324942324324 + 32434234234234 - 23423234243 / 324342342. +
-                 324234223432423412191) / 12345.
+                 32423) / 1234.
 
 
     def func22():
