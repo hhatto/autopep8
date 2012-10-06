@@ -61,7 +61,8 @@ before::
     class UselessClass(object):
         def __init__    ( self, bar ):
          if bar : bar+=1;  bar=bar* bar   ; return bar
-         else: raise ValueError, 'I am an error'
+         else:
+                               raise ValueError, 'I am an error'
         def my_method(self):
                                                   print(self);
 
