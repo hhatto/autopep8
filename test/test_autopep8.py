@@ -1024,7 +1024,6 @@ if True:
         self._inner_setup(line, options=['--select=E501'])
         self.assertEqual(self.result, fixed)
 
-
     def test_e501_alone_with_tuple(self):
         line = """
 
