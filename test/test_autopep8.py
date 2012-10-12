@@ -190,6 +190,24 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e101_should_ignore_multiline_strings_complex(self):
+        line = """
+print(3 <> 4, '''
+while True:
+    if True:
+    \t1
+\t''', 4 <> 5)
+""".lstrip()
+        fixed = """
+print(3 != 4, '''
+while True:
+    if True:
+    \t1
+\t''', 4 != 5)
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e101_with_comments(self):
         line = """
 while True:  # My inline comment
