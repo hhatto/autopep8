@@ -1488,14 +1488,11 @@ def filter_results(source, results):
     """
     e1_blacklisted_lines = multiline_string_lines(source)
 
-    new_results = []
     for r in results:
         if r['id'].lower().startswith('e1') or r['id'].lower() == 'w191':
             if (r['line'] - 1) in e1_blacklisted_lines:
                 continue
-        new_results.append(r)
-
-    return new_results
+        yield r
 
 
 def multiline_string_lines(source):
