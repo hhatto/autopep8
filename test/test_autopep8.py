@@ -107,6 +107,34 @@ class TestUtils(unittest.TestCase):
                 '# foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
                 newline='\n', indent_word='    '))
 
+    def test_multiline_string_lines(self):
+        self.assertEqual(
+            set([2]),
+            autopep8.multiline_string_lines(
+                """
+'''
+'''
+""".lstrip()))
+
+    def test_multiline_string_lines_with_many(self):
+        self.assertEqual(
+            set([2, 7, 10, 11, 12]),
+            autopep8.multiline_string_lines(
+                """
+'''
+'''
+''''''
+''''''
+''''''
+'''
+'''
+
+'''
+
+
+'''
+""".lstrip()))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 

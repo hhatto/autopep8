@@ -1490,13 +1490,17 @@ def filter_results(source, results):
 
     for r in results:
         if r['id'].lower().startswith('e1') or r['id'].lower() == 'w191':
-            if (r['line'] - 1) in e1_blacklisted_lines:
+            if r['line'] in e1_blacklisted_lines:
                 continue
         yield r
 
 
 def multiline_string_lines(source):
-    """Return line numbers for lines that contain multiline strings."""
+    """Return line numbers that are within multiline strings.
+
+    The line numbers are indexed at 1.
+
+    """
     sio = StringIO(source)
     line_numbers = set()
     try:
@@ -1508,7 +1512,9 @@ def multiline_string_lines(source):
 
             if (token_type == tokenize.STRING and
                     starts_with_triple(token_string)):
-                line_numbers |= set(range(start_row, end_row))
+                # We increment by one since we want the contents of the
+                # string.
+                line_numbers |= set(range(1 + start_row, 1 + end_row))
     except (IndentationError, tokenize.TokenError):
         pass
 
