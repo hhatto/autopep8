@@ -240,7 +240,8 @@ class FixPEP8(object):
             sys.stderr.write('{n} issues to fix\n'.format(
                 n=len(results)))
 
-        self._fix_source(results)
+        self._fix_source(filter_results(source=''.join(self.source),
+                                        results=results))
         return ''.join(self.source)
 
     def fix_e101(self, _):
@@ -1477,6 +1478,50 @@ def check_syntax(code):
         return compile(code, '<string>', 'exec')
     except (SyntaxError, TypeError, UnicodeDecodeError):
         return False
+
+
+def filter_results(source, results):
+    """Filter out spurious reports from pep8.
+
+    Currently we filter out errors about indentation in multiline strings.
+
+    """
+    e1_blacklisted_lines = multiline_string_lines(source)
+
+    new_results = []
+    for r in results:
+        if r['id'].lower().startswith('e1') or r['id'].lower() == 'w191':
+            if (r['line'] - 1) in e1_blacklisted_lines:
+                continue
+        new_results.append(r)
+
+    return new_results
+
+
+def multiline_string_lines(source):
+    """Return line numbers for lines that contain multiline strings."""
+    sio = StringIO(source)
+    line_numbers = set()
+    try:
+        for t in tokenize.generate_tokens(sio.readline):
+            token_type = t[0]
+            token_string = t[1]
+            start_row = t[2][0]
+            end_row = t[3][0]
+
+            if (token_type == tokenize.STRING and
+                    starts_with_triple(token_string)):
+                line_numbers |= set(range(start_row, end_row))
+    except (IndentationError, tokenize.TokenError):
+        pass
+
+    return line_numbers
+
+
+def starts_with_triple(string):
+    """Return True if the string starts with triple single/double quotes."""
+    return (string.strip().startswith('"""') or
+            string.strip().startswith("'''"))
 
 
 def fix_file(filename, opts, output=sys.stdout):

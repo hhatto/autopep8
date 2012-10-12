@@ -144,6 +144,24 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e101_should_ignore_multiline_strings(self):
+        line = """
+'''
+while True:
+    if True:
+    \t1
+'''
+""".lstrip()
+        fixed = """
+'''
+while True:
+    if True:
+    \t1
+'''
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e101_with_comments(self):
         line = """
 while True:  # My inline comment
