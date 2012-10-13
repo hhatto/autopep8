@@ -1450,6 +1450,34 @@ if True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_w191_should_ignore_tabs_in_strings(self):
+        line = """
+if True:
+\t'''
+\t\tblah
+\tif True:
+\t1
+\t'''
+if True:
+\t123
+else:
+\t32
+""".lstrip()
+        fixed = """
+if True:
+    '''
+\t\tblah
+\tif True:
+\t1
+\t'''
+if True:
+    123
+else:
+    32
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_w291(self):
         line = "print 'a b '\t \n"
         fixed = "print 'a b '\n"
