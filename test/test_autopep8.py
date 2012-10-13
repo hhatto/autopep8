@@ -331,6 +331,22 @@ def foo():
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e111_should_not_modify_string_contents(self):
+        line = """
+if True:
+ '''
+ 1
+ '''
+""".lstrip()
+        fixed = """
+if True:
+    '''
+ 1
+ '''
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e12_reindent(self):
         line = """
 

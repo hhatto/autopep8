@@ -1026,7 +1026,8 @@ class Reindenter(object):
         self.raw = input_text
         self.after = None
 
-        string_content_line_numbers = multiline_string_lines(''.join(self.raw))
+        self.string_content_line_numbers = multiline_string_lines(
+            ''.join(self.raw))
 
         # File lines, rstripped & tab-expanded.  Dummy at start is so
         # that we can use tokenize's 1-based line numbering easily.
@@ -1036,7 +1037,7 @@ class Reindenter(object):
             stripped = line.rstrip('\n \t')
 
             # Only expand tab if not inside a multi-line string.
-            if line_number not in string_content_line_numbers:
+            if line_number not in self.string_content_line_numbers:
                 stripped = stripped.expandtabs()
 
             stripped += '\n'
@@ -1116,8 +1117,11 @@ class Reindenter(object):
             if diff == 0 or have == 0:
                 after.extend(lines[thisstmt:nextstmt])
             else:
-                for line in lines[thisstmt:nextstmt]:
-                    if diff > 0:
+                for line_number, line in enumerate(lines[thisstmt:nextstmt],
+                                                   start=thisstmt):
+                    if line_number in self.string_content_line_numbers:
+                        after.append(line)
+                    elif diff > 0:
                         if line == '\n':
                             after.append(line)
                         else:
