@@ -1428,6 +1428,28 @@ class TestFixPEP8Warning(unittest.TestCase):
                           output=output)
         self.result = output.getvalue()
 
+    def test_w191_should_ignore_multiline_strings(self):
+        line = """
+print(3 <> 4, '''
+while True:
+    if True:
+    \t1
+\t''', 4 <> 5)
+if True:
+\t123
+""".lstrip()
+        fixed = """
+print(3 != 4, '''
+while True:
+    if True:
+    \t1
+\t''', 4 != 5)
+if True:
+    123
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_w291(self):
         line = "print 'a b '\t \n"
         fixed = "print 'a b '\n"
