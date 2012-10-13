@@ -1242,14 +1242,13 @@ class Wrapper(object):
         return logical_line
 
     def pep8_expected(self):
-        """Replicates logic in pep8.py, to know what level to indent things to.
+        """Replicate logic in pep8.py, to know what level to indent things to.
 
         Returns a list of lists; each list represents valid indent levels for
         the line in question, relative from the initial indent.  However, the
         first entry is the indent level which was expected.
 
         """
-
         # What follows is an adjusted version of
         # pep8.py:continuation_line_indentation. All of the comments have been
         # stripped and the 'yield' statements replaced with 'pass'.
