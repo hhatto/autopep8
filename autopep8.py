@@ -758,20 +758,16 @@ class FixPEP8(object):
 
     def fix_w391(self, _):
         """Remove trailing blank lines."""
-        source = copy.copy(self.source)
-        source.reverse()
         blank_count = 0
-        for line in source:
+        for line in reversed(self.source):
             line = line.rstrip()
             if line:
                 break
             else:
                 blank_count += 1
-        source = source[blank_count:]
-        source.reverse()
 
         original_length = len(self.source)
-        self.source = source
+        self.source = self.source[:original_length - blank_count]
         return range(1, 1 + original_length)
 
     def refactor(self, fixer_name, ignore=None):
