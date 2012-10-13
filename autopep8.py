@@ -966,8 +966,7 @@ def fix_whitespace(line, offset, replacement):
 
 def _spawn_pep8(pep8_options):
     """Execute pep8 via subprocess.Popen."""
-    paths = os.environ['PATH'].split(':')
-    for path in paths:
+    for path in os.environ['PATH'].split(':'):
         if os.path.exists(os.path.join(path, PEP8_BIN)):
             cmd = ([os.path.join(path, PEP8_BIN)] +
                    pep8_options)
