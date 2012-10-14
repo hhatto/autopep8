@@ -1839,7 +1839,7 @@ class TestOptions(unittest.TestCase):
             temp_file.write(line)
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1]] + options,
                   stdout=PIPE)
-        self.result = p.communicate()[0].decode('utf8')
+        self.result = p.communicate()[0].decode('utf-8')
 
     def test_diff(self):
         line = "'abc'  \n"
@@ -1861,7 +1861,7 @@ class TestOptions(unittest.TestCase):
     def test_help(self):
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['-h'],
                   stdout=PIPE)
-        self.assertIn('Usage:', p.communicate()[0].decode('utf8'))
+        self.assertIn('Usage:', p.communicate()[0].decode('utf-8'))
 
     def test_verbose(self):
         line = 'bad_syntax)'
@@ -1870,7 +1870,7 @@ class TestOptions(unittest.TestCase):
         f.close()
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '-vvv'],
                   stdout=PIPE, stderr=PIPE)
-        verbose_error = p.communicate()[1].decode('utf8')
+        verbose_error = p.communicate()[1].decode('utf-8')
         self.assertIn("'fix_e901' is not defined", verbose_error)
 
     def test_verbose_diff(self):
@@ -1881,7 +1881,7 @@ class TestOptions(unittest.TestCase):
         p = Popen(list(AUTOPEP8_CMD_TUPLE) +
                   [self.tempfile[1], '-vvv', '--diff'],
                   stdout=PIPE, stderr=PIPE)
-        verbose_error = p.communicate()[1].decode('utf8')
+        verbose_error = p.communicate()[1].decode('utf-8')
         self.assertIn("'fix_e901' is not defined", verbose_error)
 
     def test_in_place(self):
@@ -1905,7 +1905,7 @@ class TestOptions(unittest.TestCase):
         f.close()
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--in-place', '--diff'],
                   stderr=PIPE)
-        result = p.communicate()[1].decode('utf8')
+        result = p.communicate()[1].decode('utf-8')
         self.assertIn('--in-place and --diff are mutually exclusive', result)
 
     def test_recursive(self):
@@ -1923,7 +1923,7 @@ class TestOptions(unittest.TestCase):
             p = Popen(list(AUTOPEP8_CMD_TUPLE) +
                       [temp_directory, '--recursive', '--diff'],
                       stdout=PIPE)
-            result = p.communicate()[0].decode('utf8')
+            result = p.communicate()[0].decode('utf-8')
 
             self.assertEqual(
                 "-'abc'  \n+'abc'",
@@ -1943,7 +1943,7 @@ class TestOptions(unittest.TestCase):
         f.close()
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--recursive'],
                   stderr=PIPE)
-        result = p.communicate()[1].decode('utf8')
+        result = p.communicate()[1].decode('utf-8')
         self.assertIn('must be used with --in-place or --diff', result)
 
 
