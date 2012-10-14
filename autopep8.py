@@ -247,10 +247,10 @@ class FixPEP8(object):
     def fix_e101(self, _):
         """Reindent all lines."""
         reindenter = Reindenter(self.source)
-        if reindenter.run():
-            original_length = len(self.source)
+        modified_line_numbers = reindenter.run()
+        if modified_line_numbers:
             self.source = reindenter.fixed_lines()
-            return range(1, 1 + original_length)
+            return modified_line_numbers
         else:
             return []
 
@@ -1050,12 +1050,17 @@ class Reindenter(object):
         self.stats = []
 
     def run(self):
+        """Fix indentation and return modified line numbers.
+
+        Line numbers are indexed at 1.
+
+        """
         tokens = tokenize.generate_tokens(self.getline)
         try:
             for t in tokens:
                 self.tokeneater(*t)
         except (tokenize.TokenError, IndentationError):
-            return False
+            return set()
         # Remove trailing empty lines.
         lines = self.lines
         while lines and lines[-1] == '\n':
@@ -1125,7 +1130,7 @@ class Reindenter(object):
                     else:
                         remove = min(_leading_space_count(line), -diff)
                         after.append(line[remove:])
-        return self.raw != self.after
+        return set(range(1, 1 + len(self.raw))) - self.string_content_line_numbers
 
     def fixed_lines(self):
         return self.after
@@ -1208,7 +1213,7 @@ class Wrapper(object):
     def build_tokens_logical(self, tokens):
         """Build a logical line from a list of tokens.
 
-        Returns the logical line and a list of (offset, token) tuples.  Does
+        Return the logical line and a list of (offset, token) tuples. Does
         not mute strings like the version in pep8.py.
 
         """
@@ -1240,7 +1245,7 @@ class Wrapper(object):
     def pep8_expected(self):
         """Replicate logic in pep8.py, to know what level to indent things to.
 
-        Returns a list of lists; each list represents valid indent levels for
+        Return a list of lists; each list represents valid indent levels for
         the line in question, relative from the initial indent.  However, the
         first entry is the indent level which was expected.
 
