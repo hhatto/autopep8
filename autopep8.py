@@ -853,8 +853,11 @@ def _get_indentword(source):
 
 def _get_indentation(line):
     """Return leading whitespace."""
-    non_whitespace_index = len(line) - len(line.lstrip())
-    return line[:non_whitespace_index]
+    if line.strip():
+        non_whitespace_index = len(line) - len(line.lstrip())
+        return line[:non_whitespace_index]
+    else:
+        return ''
 
 
 def _analyze_pep8result(result):
@@ -1034,7 +1037,9 @@ class Reindenter(object):
             if line_number in self.string_content_line_numbers:
                 self.lines.append(line)
             else:
-                self.lines.append(line.rstrip('\n \t').expandtabs() + '\n')
+                # Only expand leading tabs.
+                self.lines.append(_get_indentation(line).expandtabs() +
+                                  line.strip() + '\n')
 
         self.lines.insert(0, None)
         self.index = 1  # index into self.lines of next line

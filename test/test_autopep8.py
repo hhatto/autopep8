@@ -192,6 +192,20 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e101_should_not_expand_non_indentation_tabs(self):
+        line = """
+while True:
+    if True:
+    \t1 == '\t'
+""".lstrip()
+        fixed = """
+while True:
+    if True:
+        1 == '\t'
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e101_should_ignore_multiline_strings(self):
         line = """
 x = '''
