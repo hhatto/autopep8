@@ -1527,6 +1527,7 @@ def multiline_string_lines(source):
     """
     sio = StringIO(source)
     line_numbers = set()
+    previous_token_type = ''
     try:
         for t in tokenize.generate_tokens(sio.readline):
             token_type = t[0]
@@ -1535,10 +1536,13 @@ def multiline_string_lines(source):
             end_row = t[3][0]
 
             if (token_type == tokenize.STRING and
-                    starts_with_triple(token_string)):
+                    starts_with_triple(token_string) and
+                    previous_token_type != tokenize.INDENT):
                 # We increment by one since we want the contents of the
                 # string.
                 line_numbers |= set(range(1 + start_row, 1 + end_row))
+
+            previous_token_type = token_type
     except (IndentationError, tokenize.TokenError):
         pass
 

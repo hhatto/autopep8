@@ -143,6 +143,18 @@ class TestUtils(unittest.TestCase):
 '''abc'''
 """.lstrip()))
 
+    def test_multiline_string_should_not_report_docstrings(self):
+        self.assertEqual(
+            set([5]),
+            autopep8.multiline_string_lines(
+                """
+def foo():
+    '''Foo.
+    Bar.'''
+    hello = '''
+'''
+""".lstrip()))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 
@@ -182,14 +194,14 @@ while True:
 
     def test_e101_should_ignore_multiline_strings(self):
         line = """
-'''
+x = '''
 while True:
     if True:
     \t1
 '''
 """.lstrip()
         fixed = """
-'''
+x = '''
 while True:
     if True:
     \t1
@@ -198,18 +210,36 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e101_should_fix_docstrings(self):
+        line = """
+class Bar(object):
+    def foo():
+        '''
+\tdocstring
+        '''
+""".lstrip()
+        fixed = """
+class Bar(object):
+    def foo():
+        '''
+        docstring
+        '''
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e101_when_pep8_mistakes_first_tab_in_string(self):
         # pep8 will complain about this even if the tab indentation found
         # elsewhere is in a multi-line string.
         line = """
-'''
+x = '''
 \tHello.
 '''
 if True:
     123
 """.lstrip()
         fixed = """
-'''
+x = '''
 \tHello.
 '''
 if True:
@@ -374,13 +404,13 @@ def foo():
     def test_e111_should_not_modify_string_contents(self):
         line = """
 if True:
- '''
+ x = '''
  1
  '''
 """.lstrip()
         fixed = """
 if True:
-    '''
+    x = '''
  1
  '''
 """.lstrip()
@@ -1509,7 +1539,7 @@ if True:
     def test_w191_should_ignore_tabs_in_strings(self):
         line = """
 if True:
-\t'''
+\tx = '''
 \t\tblah
 \tif True:
 \t1
@@ -1521,7 +1551,7 @@ else:
 """.lstrip()
         fixed = """
 if True:
-    '''
+    x = '''
 \t\tblah
 \tif True:
 \t1
