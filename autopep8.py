@@ -1501,11 +1501,13 @@ def filter_results(source, results):
     Currently we filter out errors about indentation in multiline strings.
 
     """
-    e1_blacklisted_lines = multiline_string_lines(source)
+    string_line_numbers = multiline_string_lines(source)
 
     for r in results:
-        if r['id'].lower().startswith('e1') or r['id'].lower() == 'w191':
-            if r['line'] in e1_blacklisted_lines:
+        if r['line'] in string_line_numbers:
+            if r['id'].lower().startswith('e1'):
+                continue
+            elif r['id'].lower() in ['e501', 'w191']:
                 continue
 
         # Filter out incorrect E101 reports when there are no tabs.

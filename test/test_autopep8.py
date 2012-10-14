@@ -135,6 +135,14 @@ class TestUtils(unittest.TestCase):
 '''
 """.lstrip()))
 
+    def test_multiline_string_should_not_report_single_line(self):
+        self.assertEqual(
+            set(),
+            autopep8.multiline_string_lines(
+                """
+'''abc'''
+""".lstrip()))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 
