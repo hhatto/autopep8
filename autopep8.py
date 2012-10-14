@@ -246,7 +246,7 @@ class FixPEP8(object):
 
     def fix_e101(self, _):
         """Reindent all lines."""
-        reindenter = Reindenter(self.source)
+        reindenter = Reindenter(self.source, self.newline)
         modified_line_numbers = reindenter.run()
         if modified_line_numbers:
             self.source = reindenter.fixed_lines()
@@ -1017,7 +1017,9 @@ class Reindenter(object):
 
     """
 
-    def __init__(self, input_text):
+    def __init__(self, input_text, newline):
+        self.newline = newline
+
         self.find_stmt = 1  # next token begins a fresh stmt?
         self.level = 0  # current indent level
 
@@ -1030,7 +1032,7 @@ class Reindenter(object):
 
         # File lines, rstripped & tab-expanded.  Dummy at start is so
         # that we can use tokenize's 1-based line numbering easily.
-        # Note that a line is all-blank iff it's "\n".
+        # Note that a line is all-blank iff it is a newline.
         self.lines = []
         for line_number, line in enumerate(self.raw, start=1):
             # Do not modify if inside a multi-line string.
@@ -1039,7 +1041,7 @@ class Reindenter(object):
             else:
                 # Only expand leading tabs.
                 self.lines.append(_get_indentation(line).expandtabs() +
-                                  line.strip() + '\n')
+                                  line.strip() + newline)
 
         self.lines.insert(0, None)
         self.index = 1  # index into self.lines of next line
@@ -1064,7 +1066,7 @@ class Reindenter(object):
             return set()
         # Remove trailing empty lines.
         lines = self.lines
-        while lines and lines[-1] == '\n':
+        while lines and lines[-1] == self.newline:
             lines.pop()
         # Sentinel.
         stats = self.stats
@@ -1124,7 +1126,7 @@ class Reindenter(object):
                     if line_number in self.string_content_line_numbers:
                         after.append(line)
                     elif diff > 0:
-                        if line == '\n':
+                        if line == self.newline:
                             after.append(line)
                         else:
                             after.append(' ' * diff + line)
