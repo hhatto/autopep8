@@ -271,7 +271,7 @@ try:
                    os.path.join(ROOT_DIR, 'test', 'e101_example.py')],
                   stdout=PIPE, stderr=PIPE)
         error = p.communicate()[1].decode('utf8')
-        self.assertIn("Not fixing E101 on line 139", error)
+        self.assertIn('Not fixing E101 on line', error)
 
     def test_e111_short(self):
         line = "class Dummy:\n  def __init__(self):\n    pass\n"
