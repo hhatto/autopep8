@@ -1030,15 +1030,11 @@ class Reindenter(object):
         # Note that a line is all-blank iff it's "\n".
         self.lines = []
         for line_number, line in enumerate(self.raw, start=1):
-            stripped = line.rstrip('\n \t')
-
-            # Only expand tab if not inside a multi-line string.
-            if line_number not in self.string_content_line_numbers:
-                stripped = stripped.expandtabs()
-
-            stripped += '\n'
-
-            self.lines.append(stripped)
+            # Do not modify if inside a multi-line string.
+            if line_number in self.string_content_line_numbers:
+                self.lines.append(line)
+            else:
+                self.lines.append(line.rstrip('\n \t').expandtabs() + '\n')
 
         self.lines.insert(0, None)
         self.index = 1  # index into self.lines of next line
@@ -1130,7 +1126,11 @@ class Reindenter(object):
                     else:
                         remove = min(_leading_space_count(line), -diff)
                         after.append(line[remove:])
-        return set(range(1, 1 + len(self.raw))) - self.string_content_line_numbers
+
+        if self.raw == self.after:
+            return set()
+        else:
+            return set(range(1, 1 + len(self.raw))) - self.string_content_line_numbers
 
     def fixed_lines(self):
         return self.after
@@ -1507,6 +1507,13 @@ def filter_results(source, results):
         if r['id'].lower().startswith('e1') or r['id'].lower() == 'w191':
             if r['line'] in e1_blacklisted_lines:
                 continue
+
+        # Filter out incorrect E101 reports when there are no tabs.
+        # pep8 will complain about this even if the tab indentation found
+        # elsewhere is in a multi-line string.
+        if r['id'].lower() == 'e101' and '\t' not in source[r['line'] - 1]:
+            continue
+
         yield r
 
 

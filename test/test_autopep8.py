@@ -190,6 +190,26 @@ while True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e101_when_pep8_mistakes_first_tab_in_string(self):
+        # pep8 will complain about this even if the tab indentation found
+        # elsewhere is in a multi-line string.
+        line = """
+'''
+\tHello.
+'''
+if True:
+    123
+""".lstrip()
+        fixed = """
+'''
+\tHello.
+'''
+if True:
+    123
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e101_should_ignore_multiline_strings_complex(self):
         line = """
 print(3 <> 4, '''
