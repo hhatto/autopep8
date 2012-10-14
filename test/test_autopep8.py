@@ -270,8 +270,9 @@ try:
                   ['-vvv', '--select=E101', '--diff',
                    os.path.join(ROOT_DIR, 'test', 'e101_example.py')],
                   stdout=PIPE, stderr=PIPE)
-        error = p.communicate()[1].decode('utf8')
+        output, error = [x.decode('utf-8') for x in p.communicate()]
         self.assertIn('Not fixing E101 on line', error)
+        self.assertEqual('', output)
 
     def test_e111_short(self):
         line = "class Dummy:\n  def __init__(self):\n    pass\n"
