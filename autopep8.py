@@ -1130,7 +1130,8 @@ class Reindenter(object):
         if self.raw == self.after:
             return set()
         else:
-            return set(range(1, 1 + len(self.raw))) - self.string_content_line_numbers
+            return (set(range(1, 1 + len(self.raw))) -
+                    self.string_content_line_numbers)
 
     def fixed_lines(self):
         return self.after
@@ -1523,6 +1524,8 @@ def multiline_string_lines(source):
     """Return line numbers that are within multiline strings.
 
     The line numbers are indexed at 1.
+
+    Docstrings are ignored.
 
     """
     sio = StringIO(source)
