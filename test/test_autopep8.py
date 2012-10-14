@@ -262,6 +262,17 @@ try:
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+    def test_e101_skip_innocuous(self):
+        # pep8 will complain about this even if the tab indentation found
+        # elsewhere is in a multi-line string. If we don't filter the innocuous
+        # report properly, the below command will take a long time.
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                  ['-vvv', '--select=E101', '--diff',
+                   os.path.join(ROOT_DIR, 'test', 'e101_example.py')],
+                  stdout=PIPE, stderr=PIPE)
+        error = p.communicate()[1].decode('utf8')
+        self.assertIn("Not fixing E101 on line 139", error)
+
     def test_e111_short(self):
         line = "class Dummy:\n  def __init__(self):\n    pass\n"
         fixed = "class Dummy:\n    def __init__(self):\n        pass\n"
