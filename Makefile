@@ -54,6 +54,8 @@ check:
 	pylint --reports=no --include-ids=yes --max-module-lines=1500 \
 		--disable=C0111,C0103,F0401,R0902,W0511,R0914,R0912,R0915,R0904,R0911,R0913,W0142,W0212,C0302,E1101 \
 		--rcfile=/dev/null autopep8.py
+	./autopep8.py --diff test/test_autopep8.py
+	./autopep8.py --diff autopep8.py
 
 pypireg:
 	${PYTHON} setup.py register
