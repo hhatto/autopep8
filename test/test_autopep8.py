@@ -1955,8 +1955,10 @@ class TestOptions(unittest.TestCase):
         f = open(self.tempfile[1], 'w')
         f.write(line)
         f.close()
-        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--in-place', '--diff'],
-                  stderr=PIPE)
+        p = Popen(
+            list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1],
+                                        '--in-place', '--diff'],
+            stderr=PIPE)
         result = p.communicate()[1].decode('utf-8')
         self.assertIn('--in-place and --diff are mutually exclusive', result)
 
