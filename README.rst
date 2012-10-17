@@ -45,7 +45,6 @@ execute tool::
 before::
 
     import sys, os;
-    print(                'hello' );
 
     def someone_likes_semicolons(                             foo  = None             ,\
     bar='bar'):
@@ -74,7 +73,6 @@ after::
 
     import sys
     import os
-    print('hello')
 
 
     def someone_likes_semicolons(foo=None,
