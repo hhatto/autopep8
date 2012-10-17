@@ -1569,9 +1569,10 @@ def fix_file(filename, opts, output=sys.stdout):
     tmp_source = read_from_filename(filename)
 
     # Add missing newline (important for diff)
-    tmp_newline = find_newline(tmp_source)
-    if tmp_source == tmp_source.rstrip(tmp_newline):
-        tmp_source += tmp_newline
+    if tmp_source:
+        tmp_newline = find_newline(tmp_source)
+        if tmp_source == tmp_source.rstrip(tmp_newline):
+            tmp_source += tmp_newline
 
     fix = FixPEP8(filename, opts, contents=tmp_source)
     fixed_source = fix.fix()
