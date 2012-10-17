@@ -710,7 +710,7 @@ class FixPEP8(object):
             return
 
         offset = result['column'] - 1
-        first = target[:offset].rstrip(';')
+        first = target[:offset].rstrip(';').rstrip()
         second = (_get_indentation(logical_lines[0]) +
                   target[offset:].lstrip(';').lstrip())
 

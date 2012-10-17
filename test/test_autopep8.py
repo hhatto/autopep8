@@ -1349,6 +1349,12 @@ if True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e702_with_whitespace(self):
+        line = "print 1 ; print 2\n"
+        fixed = "print 1\nprint 2\n"
+        self._inner_setup(line, options=['--select=E702'])
+        self.assertEqual(self.result, fixed)
+
     def test_e702_with_non_ascii_file(self):
         line = """
 # -*- coding: utf-8 -*-
