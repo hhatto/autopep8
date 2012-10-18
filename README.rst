@@ -141,6 +141,60 @@ options::
       --select=SELECT       fix only these errors/warnings (e.g. E4,W)
 
 
+Features
+--------
+autopep8 fixes the following errors reported by pep8_::
+
+    E101 - Reindent all lines.
+    E111 - Reindent all lines.
+    E121 - The 'peculiar indent' error for hanging indents.
+    E122 - The 'absent indent' error for hanging indents.
+    E123 - The 'loose fingernails' indentation level error for hanging indents.
+    E124 - The 'loose fingernails' indentation level error for visual indents.
+    E125 - The 'often not visually distinct' error.
+    E126 - The 'spectacular indent' error for hanging indents.
+    E127 - The 'interpretive dance' indentation error.
+    E128 - The 'interpretive dance' indentation error.
+    E201 - Remove extraneous whitespace.
+    E202 - Remove extraneous whitespace.
+    E203 - Remove extraneous whitespace.
+    E211 - Remove extraneous whitespace.
+    E221 - Fix extraneous whitespace around keywords.
+    E222 - Fix extraneous whitespace around keywords.
+    E223 - Fix extraneous whitespace around keywords.
+    E224 - Remove extraneous whitespace around operator.
+    E225 - Fix missing whitespace around operator.
+    E231 - Add missing whitespace.
+    E241 - Fix extraneous whitespace around keywords.
+    E242 - Remove extraneous whitespace around operator.
+    E251 - Remove whitespace around parameter '=' sign.
+    E261 - Fix spacing after comment hash.
+    E262 - Fix spacing after comment hash.
+    E271 - Fix extraneous whitespace around keywords.
+    E272 - Fix extraneous whitespace around keywords.
+    E273 - Fix extraneous whitespace around keywords.
+    E274 - Fix extraneous whitespace around keywords.
+    E301 - Add missing blank line.
+    E302 - Add missing 2 blank lines.
+    E303 - Remove extra blank lines.
+    E304 - Remove blank line following function decorator.
+    E401 - Put imports on separate lines.
+    E501 - Try to make lines fit within 79 characters.
+    E502 - Remove extraneous escape of newline.
+    E701 - Put colon-separated compound statement on separate lines.
+    E702 - Put semicolon-separated compound statement on separate lines.
+    E711 - Fix comparison.
+    E721 - Switch to use isinstance().
+    W191 - Reindent all lines.
+    W291 - Remove trailing whitespace.
+    W293 - Remove trailing whitespace on blank line.
+    W391 - Remove trailing blank lines.
+    W601 - Replace the {}.has_key() form with 'in'.
+    W602 - Fix deprecated form of raising exception.
+    W603 - Replace <> with !=.
+    W604 - Replace backticks with repr().
+
+
 Testing
 -------
 Test cases are in ``test/test_autopep8.py``. They can be run directly via

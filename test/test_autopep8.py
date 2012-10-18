@@ -155,6 +155,9 @@ def foo():
 '''
 """.lstrip()))
 
+    def test_supported_fixes(self):
+        self.assertIn('E101', [f[0] for f in autopep8.supported_fixes()])
+
 
 class TestFixPEP8Error(unittest.TestCase):
 
@@ -2009,6 +2012,10 @@ class TestOptions(unittest.TestCase):
                   stderr=PIPE)
         result = p.communicate()[1].decode('utf-8')
         self.assertIn('must be used with --in-place or --diff', result)
+
+    def test_list_fixes(self):
+        self._inner_setup('', options=['--list-fixes'])
+        self.assertIn('E101', self.result)
 
 
 class TestSpawnPEP8Process(unittest.TestCase):

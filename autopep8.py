@@ -24,6 +24,7 @@ guide.
 """
 import copy
 import os
+import re
 import sys
 import inspect
 import codecs
@@ -1632,13 +1633,16 @@ def parse_args(args):
                       default=100, type='int',
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)')
+    parser.add_option('--list-fixes', action='store_true',
+                      help='list codes for fixes; '
+                           'used by --ignore and --select')
     parser.add_option('--ignore', default='',
                       help='do not fix these errors/warnings (e.g. E4,W)')
     parser.add_option('--select', default='',
                       help='fix only these errors/warnings (e.g. E4,W)')
     opts, args = parser.parse_args(args)
 
-    if not len(args):
+    if not len(args) and not opts.list_fixes:
         parser.error('incorrect number of arguments')
 
     if len(args) > 1 and not (opts.in_place or opts.diff):
@@ -1655,9 +1659,31 @@ def parse_args(args):
     return opts, args
 
 
+def supported_fixes():
+    """Yield pep8 error codes that autopep8 fixes.
+
+    Each item we yield is a tuple of the code followed by its description.
+
+    """
+    instance = FixPEP8(filename=None, options=None, contents='')
+    for attribute in dir(instance):
+        code = re.match('fix_([ew][0-9][0-9][0-9])', attribute)
+        if code:
+            yield (code.group(1).upper(),
+                   re.sub(r'\s+', ' ',
+                          getattr(instance, attribute).__doc__))
+
+
 def main():
     """Tool main."""
     opts, args = parse_args(sys.argv[1:])
+
+    if opts.list_fixes:
+        for code, description in supported_fixes():
+            print('{code} - {description}'.format(
+                code=code, description=description))
+        return 0
+
     if opts.in_place or opts.diff:
         filenames = list(set(args))
     else:
