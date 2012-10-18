@@ -143,7 +143,7 @@ options::
 
 Features
 --------
-autopep8 fixes the following errors reported by pep8_::
+autopep8 fixes the following issues_ reported by pep8_::
 
     E101 - Reindent all lines.
     E111 - Reindent all lines.
