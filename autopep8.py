@@ -374,7 +374,7 @@ class FixPEP8(object):
         return self._fix_reindent(result, logical)
 
     def fix_e123(self, result, logical):
-        """Align closing bracket to match opening bracket"""
+        """Align closing bracket to match opening bracket."""
         # Fix by deleting whitespace to the correct level.
         if not logical:
             return []
