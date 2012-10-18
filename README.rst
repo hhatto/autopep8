@@ -147,14 +147,14 @@ autopep8 fixes the following issues_ reported by pep8_::
 
     E101 - Reindent all lines.
     E111 - Reindent all lines.
-    E121 - The 'peculiar indent' error for hanging indents.
-    E122 - The 'absent indent' error for hanging indents.
-    E123 - The 'loose fingernails' indentation level error for hanging indents.
-    E124 - The 'loose fingernails' indentation level error for visual indents.
-    E125 - The 'often not visually distinct' error.
-    E126 - The 'spectacular indent' error for hanging indents.
-    E127 - The 'interpretive dance' indentation error.
-    E128 - The 'interpretive dance' indentation error.
+    E121 - Fix indentation to be a multiple of four.
+    E122 - Add absent indentation for hanging indentation.
+    E123 - Align closing bracket to match opening bracket
+    E124 - Align closing bracket to match visual indentation.
+    E125 - Indent to distinguish line from next logical line.
+    E126 - Fix over-indented hanging indentation.
+    E127 - Fix visual indentation.
+    E128 - Fix visual indentation.
     E201 - Remove extraneous whitespace.
     E202 - Remove extraneous whitespace.
     E203 - Remove extraneous whitespace.

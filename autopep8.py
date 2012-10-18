@@ -364,19 +364,18 @@ class FixPEP8(object):
             return []
 
     def fix_e121(self, result, logical):
-        """The 'peculiar indent' error for hanging indents."""
-        # fix by adjusting initial indent level
+        """Fix indentation to be a multiple of four."""
+        # Fix by adjusting initial indent level.
         return self._fix_reindent(result, logical)
 
     def fix_e122(self, result, logical):
-        """The 'absent indent' error for hanging indents."""
-        # fix by adding an initial indent
+        """Add absent indentation for hanging indentation."""
+        # Fix by adding an initial indent.
         return self._fix_reindent(result, logical)
 
     def fix_e123(self, result, logical):
-        """The 'loose fingernails' indentation level error for hanging
-        indents."""
-        # fix by deleting whitespace to the correct level
+        """Align closing bracket to match opening bracket"""
+        # Fix by deleting whitespace to the correct level.
         if not logical:
             return []
         logical_lines = logical[2]
@@ -386,20 +385,19 @@ class FixPEP8(object):
         fixed_line = (_get_indentation(logical_lines[0]) +
                       original_line.lstrip())
         if fixed_line == original_line:
-            # Fallback to slower method.
+            # Fall back to slower method.
             return self._fix_reindent(result, logical)
         else:
             self.source[line_index] = fixed_line
 
     def fix_e124(self, result, logical):
-        """The 'loose fingernails' indentation level error for visual
-        indents."""
-        # fix by inserting whitespace before the closing bracket
+        """Align closing bracket to match visual indentation."""
+        # Fix by inserting whitespace before the closing bracket.
         return self._fix_reindent(result, logical)
 
     def fix_e125(self, result, logical):
-        """The 'often not visually distinct' error."""
-        # fix by indenting the line in error to the next stop.
+        """Indent to distinguish line from next logical line."""
+        # Fix by indenting the line in error to the next stop.
         modified_lines = self._fix_reindent(result, logical, fix_distinct=True)
         if modified_lines:
             return modified_lines
@@ -410,7 +408,7 @@ class FixPEP8(object):
             self.source[line_index] = self.indent_word + original_line
 
     def fix_e126(self, result, logical):
-        """The 'spectacular indent' error for hanging indents."""
+        """Fix over-indented hanging indentation."""
         # fix by deleting whitespace to the left
         if not logical:
             return []
@@ -427,7 +425,7 @@ class FixPEP8(object):
             self.source[line_index] = fixed
 
     def fix_e127(self, result, logical):
-        """The 'interpretive dance' indentation error."""
+        """Fix visual indentation."""
         # Fix by inserting/deleting whitespace to the correct level.
         modified_lines = self._align_visual_indent(result, logical)
         if modified_lines:
