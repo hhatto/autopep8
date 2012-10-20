@@ -22,6 +22,8 @@
 A tool that automatically formats Python code to conform to the PEP 8 style
 guide.
 """
+from __future__ import print_function
+
 import copy
 import os
 import re
@@ -203,19 +205,22 @@ class FixPEP8(object):
                     completed_lines.update(modified_lines)
                 elif modified_lines == []:  # Empty list means no fix
                     if self.options.verbose >= 2:
-                        sys.stderr.write('Not fixing {f} on line {l}\n'.format(
-                            f=result['id'], l=result['line']))
+                        print(
+                            'Not fixing {f} on line {l}'.format(
+                                f=result['id'], l=result['line']),
+                            file=sys.stderr)
                 else:  # We assume one-line fix when None
                     completed_lines.add(result['line'])
             else:
                 if self.options.verbose >= 3:
-                    sys.stderr.write("'%s' is not defined.\n" %
-                                     fixed_methodname)
+                    print("'%s' is not defined." % fixed_methodname,
+                          file=sys.stderr)
                     info = result['info'].strip()
-                    sys.stderr.write('%s:%s:%s:%s\n' % (self.filename,
-                                                        result['line'],
-                                                        result['column'],
-                                                        info))
+                    print('%s:%s:%s:%s' % (self.filename,
+                                           result['line'],
+                                           result['column'],
+                                           info),
+                          file=sys.stderr)
 
     def fix(self):
         """Return a version of the source code with PEP 8 violations fixed."""
@@ -229,8 +234,9 @@ class FixPEP8(object):
             results = _execute_pep8(pep8_options, self.source)
         else:
             if self.options.verbose:
-                sys.stderr.write('Running in compatibility mode. Consider '
-                                 'upgrading to the latest pep8.\n')
+                print('Running in compatibility mode. Consider '
+                      'upgrading to the latest pep8.',
+                      file=sys.stderr)
             results = _spawn_pep8((['--ignore=' + self.options.ignore]
                                    if self.options.ignore else []) +
                                   (['--select=' + self.options.select]
@@ -238,8 +244,8 @@ class FixPEP8(object):
                                   [self.filename])
 
         if self.options.verbose:
-            sys.stderr.write('{n} issues to fix\n'.format(
-                n=len(results)))
+            print('{n} issues to fix'.format(
+                n=len(results)), file=sys.stderr)
 
         self._fix_source(filter_results(source=''.join(self.source),
                                         results=results))
@@ -1706,11 +1712,11 @@ def main():
                         directories.remove(d)
         else:
             if opts.verbose:
-                sys.stderr.write('[file:%s]\n' % name)
+                print('[file:%s]' % name, file=sys.stderr)
             try:
                 fix_file(name, opts, output)
             except IOError as error:
-                sys.stderr.write(str(error) + '\n')
+                print(str(error), file=sys.stderr)
 
 
 if __name__ == '__main__':
