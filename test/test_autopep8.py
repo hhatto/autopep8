@@ -732,6 +732,22 @@ if True:
         self._inner_setup(line, options=['--select=E12'])
         self.assertEqual(self.result, fixed)
 
+    def test_e127_align_visual_indent(self):
+        line = """
+def draw(self):
+    color = [([0.2, 0.1, 0.3], [0.2, 0.1, 0.3], [0.2, 0.1, 0.3]),
+               ([0.9, 0.3, 0.5], [0.5, 1.0, 0.5], [0.3, 0.3, 0.9])  ][self._p._colored ]
+    self.draw_background(color)
+""".lstrip()
+        fixed = """
+def draw(self):
+    color = [([0.2, 0.1, 0.3], [0.2, 0.1, 0.3], [0.2, 0.1, 0.3]),
+             ([0.9, 0.3, 0.5], [0.5, 1.0, 0.5], [0.3, 0.3, 0.9])][self._p._colored]
+    self.draw_background(color)
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e12_with_backslash(self):
         line = r"""
 if True:

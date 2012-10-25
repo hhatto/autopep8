@@ -434,7 +434,7 @@ class FixPEP8(object):
         """Fix visual indentation."""
         # Fix by inserting/deleting whitespace to the correct level.
         modified_lines = self._align_visual_indent(result, logical)
-        if modified_lines:
+        if modified_lines != []:
             return modified_lines
         else:
             # Fallback to slower method.
