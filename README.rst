@@ -208,7 +208,7 @@ messages::
     $ autopep8 -v <filename>
 
 Large files may also take many more iterations to completely fix. Thus, you may
-need to increase the maximum number of passes.
+need to increase the maximum number of passes::
 
     $ autopep8 -p 1000 <filename>
 
