@@ -62,13 +62,13 @@ def indent(text):
 
 def main():
     README_PATH = 'README.rst'
-    BEFORE_KEY = 'before::'
-    AFTER_KEY = 'after::'
+    BEFORE_KEY = 'Before::'
+    AFTER_KEY = 'After::'
 
     (top, before, bottom) = split_readme(README_PATH,
                                          before_key=BEFORE_KEY,
                                          after_key=AFTER_KEY,
-                                         end_key='options::')
+                                         end_key='Options::')
 
     import textwrap
     new_readme = '\n\n'.join([

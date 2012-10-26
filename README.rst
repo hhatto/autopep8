@@ -38,11 +38,11 @@ purposes).
 
 Usage
 -----
-execute tool::
+To modify a file in place::
 
-    $ autopep8 TARGET.py
+    $ autopep8 -i <filename>
 
-before::
+Before::
 
     import sys, os;
 
@@ -69,7 +69,7 @@ before::
         def my_method(self):
                                                   print(self);
 
-after::
+After::
 
     import sys
     import os
@@ -118,7 +118,7 @@ after::
             print(self)
 
 
-options::
+Options::
 
     Usage: autopep8 [options] [filename [filename ...]]
 
@@ -193,6 +193,24 @@ autopep8 fixes the following issues_ reported by pep8_::
     W602 - Fix deprecated form of raising exception.
     W603 - Replace <> with !=.
     W604 - Replace backticks with repr().
+
+
+More advanced usage
+-------------------
+To enable only a subset of the fixes, use the `--select` option. For example,
+to fix various types of indentation issues::
+
+    $ autopep8 --select=E1,W1 <filename>
+
+If the file being fixed is large, you may want to enable verbose progress
+messages::
+
+    $ autopep8 -v <filename>
+
+Large files may also take many more iterations to completely fix. Thus, you may
+need to increase the maximum number of passes.
+
+    $ autopep8 -p 1000 <filename>
 
 
 Testing
