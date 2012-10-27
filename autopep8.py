@@ -39,7 +39,7 @@ import token
 import tokenize
 from optparse import OptionParser
 from subprocess import Popen, PIPE
-from difflib import unified_diff
+import difflib
 import tempfile
 
 from distutils.version import StrictVersion
@@ -877,7 +877,10 @@ def _analyze_pep8result(result):
 
 
 def _get_difftext(old, new, filename):
-    diff = unified_diff(old, new, 'original/' + filename, 'fixed/' + filename)
+    diff = difflib.unified_diff(
+        old, new,
+        'original/' + filename,
+        'fixed/' + filename)
     return ''.join(diff)
 
 
