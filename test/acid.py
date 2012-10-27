@@ -18,7 +18,7 @@ def run(filename, fast_check=False, passes=2000,
     autopep8_path = os.path.split(os.path.abspath(
         os.path.dirname(__file__)))[0]
     autoppe8_bin = os.path.join(autopep8_path, 'autopep8.py')
-    command = [autoppe8_bin, '--pep8-passes={p}'.format(p=passes),
+    command = [autoppe8_bin, '--verbose', '--pep8-passes={p}'.format(p=passes),
                ignore_option, filename]
 
     if fast_check:
