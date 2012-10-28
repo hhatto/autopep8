@@ -1589,19 +1589,25 @@ def fix_file(filename, opts, output=sys.stdout):
     if not pep8 or opts.in_place:
         encoding = detect_encoding(filename)
 
-    for _ in range(opts.pep8_passes):
-        if fixed_source == tmp_source:
-            break
-        tmp_source = copy.copy(fixed_source)
-        if not pep8:
-            tmp_filename = tempfile.mkstemp()[1]
-            fp = open_with_encoding(tmp_filename, encoding=encoding, mode='w')
-            fp.write(fixed_source)
-            fp.close()
-        fix = FixPEP8(tmp_filename, opts, contents=tmp_source)
-        fixed_source = fix.fix()
-        if not pep8:
-            os.remove(tmp_filename)
+    interruption = None
+    try:
+        for _ in range(opts.pep8_passes):
+            if fixed_source == tmp_source:
+                break
+            tmp_source = copy.copy(fixed_source)
+            if not pep8:
+                tmp_filename = tempfile.mkstemp()[1]
+                fp = open_with_encoding(tmp_filename,
+                                        encoding=encoding, mode='w')
+                fp.write(fixed_source)
+                fp.close()
+            fix = FixPEP8(tmp_filename, opts, contents=tmp_source)
+            fixed_source = fix.fix()
+            if not pep8:
+                os.remove(tmp_filename)
+    except KeyboardInterrupt as exception:
+        # Allow stopping early.
+        interruption = exception
     del tmp_filename
     del tmp_source
 
@@ -1616,6 +1622,9 @@ def fix_file(filename, opts, output=sys.stdout):
         fp.close()
     else:
         output.write(fixed_source)
+
+    if interruption:
+        raise interruption
 
 
 def parse_args(args):
