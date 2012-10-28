@@ -244,8 +244,11 @@ class FixPEP8(object):
                                   [self.filename])
 
         if self.options.verbose:
-            print('{n} issues to fix'.format(
-                n=len(results)), file=sys.stderr)
+            progress = {r['id']: set() for r in results}
+            for r in results:
+                progress[r['id']].add(r['line'])
+            print('{n} issues to fix {progress}'.format(
+                n=len(results), progress=progress), file=sys.stderr)
 
         self._fix_source(filter_results(source=''.join(self.source),
                                         results=results))
