@@ -249,7 +249,7 @@ class FixPEP8(object):
                 if r['id'] not in progress:
                     progress[r['id']] = set()
                 progress[r['id']].add(r['line'])
-            print('--->  {n} issues to fix {progress}'.format(
+            print('--->  {n} issue(s) to fix {progress}'.format(
                 n=len(results), progress=progress), file=sys.stderr)
 
         self._fix_source(filter_results(source=''.join(self.source),
