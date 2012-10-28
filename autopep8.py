@@ -1596,10 +1596,18 @@ def fix_file(filename, opts, output=sys.stdout):
 
     interruption = None
     try:
+        # Keep a history to break out of cycles.
+        old_tmp_source = None
+
         for _ in range(opts.pep8_passes):
             if fixed_source == tmp_source:
                 break
+            if fixed_source == old_tmp_source:
+                break
+
+            old_tmp_source = tmp_source
             tmp_source = copy.copy(fixed_source)
+
             if not pep8:
                 tmp_filename = tempfile.mkstemp()[1]
                 fp = open_with_encoding(tmp_filename,
