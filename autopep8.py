@@ -206,20 +206,20 @@ class FixPEP8(object):
                 elif modified_lines == []:  # Empty list means no fix
                     if self.options.verbose >= 2:
                         print(
-                            'Not fixing {f} on line {l}'.format(
+                            '--->  Not fixing {f} on line {l}'.format(
                                 f=result['id'], l=result['line']),
                             file=sys.stderr)
                 else:  # We assume one-line fix when None
                     completed_lines.add(result['line'])
             else:
                 if self.options.verbose >= 3:
-                    print("'%s' is not defined." % fixed_methodname,
+                    print("--->  '%s' is not defined." % fixed_methodname,
                           file=sys.stderr)
                     info = result['info'].strip()
-                    print('%s:%s:%s:%s' % (self.filename,
-                                           result['line'],
-                                           result['column'],
-                                           info),
+                    print('--->  %s:%s:%s:%s' % (self.filename,
+                                                 result['line'],
+                                                 result['column'],
+                                                 info),
                           file=sys.stderr)
 
     def fix(self):
@@ -246,11 +246,10 @@ class FixPEP8(object):
         if self.options.verbose:
             progress = {}
             for r in results:
-                try:
-                    progress[r['id']].add(r['line'])
-                except KeyError:
+                if r['id'] not in progress:
                     progress[r['id']] = set()
-            print('{n} issues to fix {progress}'.format(
+                progress[r['id']].add(r['line'])
+            print('--->  {n} issues to fix {progress}'.format(
                 n=len(results), progress=progress), file=sys.stderr)
 
         self._fix_source(filter_results(source=''.join(self.source),
