@@ -244,9 +244,12 @@ class FixPEP8(object):
                                   [self.filename])
 
         if self.options.verbose:
-            progress = {r['id']: set() for r in results}
+            progress = {}
             for r in results:
-                progress[r['id']].add(r['line'])
+                try:
+                    progress[r['id']].add(r['line'])
+                except KeyError:
+                    progress[r['id']] = set()
             print('{n} issues to fix {progress}'.format(
                 n=len(results), progress=progress), file=sys.stderr)
 
