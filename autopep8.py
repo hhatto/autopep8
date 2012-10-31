@@ -58,7 +58,6 @@ PEP8_BIN = 'pep8'
 CR = '\r'
 LF = '\n'
 CRLF = '\r\n'
-MAX_LINE_WIDTH = 79
 
 
 def open_with_encoding(filename, encoding, mode='r'):
@@ -230,6 +229,8 @@ class FixPEP8(object):
                 self.options.ignore and self.options.ignore.split(','),
                 'select':
                 self.options.select and self.options.select.split(','),
+                'max_line_length':
+                self.options.max_line_length,
             }
             results = _execute_pep8(pep8_options, self.source)
         else:
@@ -333,7 +334,9 @@ class FixPEP8(object):
             return []
         ls, _, original = logical
         try:
-            rewrapper = Wrapper(original, hard_wrap=MAX_LINE_WIDTH)
+            rewrapper = Wrapper(
+                original, hard_wrap=self.options.max_line_length,
+                soft_wrap=self.options.max_line_length-7)
         except (tokenize.TokenError, IndentationError):
             return []
         valid_indents = rewrapper.pep8_expected()
@@ -638,7 +641,7 @@ class FixPEP8(object):
         self.source[line_index] = fixed
 
     def fix_e501(self, result):
-        """Try to make lines fit within 79 characters."""
+        """Try to make lines fit within 79 (or --max-line-length) characters."""
         line_index = result['line'] - 1
         target = self.source[line_index]
 
@@ -651,7 +654,8 @@ class FixPEP8(object):
             tokens = list(tokenize.generate_tokens(sio.readline))
         except (tokenize.TokenError, IndentationError):
             multi_line_candidate = break_multi_line(
-                target, newline=self.newline, indent_word=self.indent_word)
+                self.options, target, newline=self.newline,
+                indent_word=self.indent_word)
 
             if multi_line_candidate:
                 self.source[line_index] = multi_line_candidate
@@ -666,10 +670,10 @@ class FixPEP8(object):
         # over
         # my_long_function_name(x, y,
         #     z, ...)
-        candidate0 = _shorten_line(tokens, source, target, indent,
+        candidate0 = _shorten_line(self.options, tokens, source, target, indent,
                                    self.indent_word, newline=self.newline,
                                    reverse=False)
-        candidate1 = _shorten_line(tokens, source, target, indent,
+        candidate1 = _shorten_line(self.options, tokens, source, target, indent,
                                    self.indent_word, newline=self.newline,
                                    reverse=True)
         if candidate0 and candidate1:
@@ -911,10 +915,10 @@ def _priority_key(pep8_result):
         return len(priority)
 
 
-def _shorten_line(tokens, source, target, indentation, indent_word, newline,
+def _shorten_line(options, tokens, source, target, indentation, indent_word, newline,
                   reverse=False):
     """Separate line at OPERATOR."""
-    max_line_width_minus_indentation = MAX_LINE_WIDTH - len(indentation)
+    max_line_length_minus_indentation = options.max_line_length - len(indentation)
     if reverse:
         tokens.reverse()
     for tkn in tokens:
@@ -922,12 +926,12 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
         if token.OP == tkn[0] and tkn[1] != '=':
             offset = tkn[2][1] + 1
             if reverse:
-                if offset > (max_line_width_minus_indentation -
+                if offset > (max_line_length_minus_indentation -
                              len(indent_word)):
                     continue
             else:
                 if (len(target.rstrip()) - offset >
-                        (max_line_width_minus_indentation -
+                        (max_line_length_minus_indentation -
                          len(indent_word))):
                     continue
             first = source[:offset - len(indentation)]
@@ -946,9 +950,9 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
                 continue
 
             # Don't modify if lines are not short enough
-            if len(first) > max_line_width_minus_indentation:
+            if len(first) > max_line_length_minus_indentation:
                 continue
-            if len(second) > MAX_LINE_WIDTH:  # Already includes indentation
+            if len(second) > options.max_line_length:  # Already includes indentation
                 continue
             # Do not begin a line with a comma
             if second.lstrip().startswith(','):
@@ -1476,7 +1480,7 @@ def refactor_with_2to3(source_text, fixer_name):
         return str(tool.refactor_string(source_text, name=''))
 
 
-def break_multi_line(source_text, newline, indent_word):
+def break_multi_line(options, source_text, newline, indent_word):
     """Break first line of multi-line code.
 
     Return None if a break is not possible.
@@ -1485,7 +1489,7 @@ def break_multi_line(source_text, newline, indent_word):
     # Handle special case only.
     if ('(' in source_text and source_text.rstrip().endswith(',')):
         index = 1 + source_text.find('(')
-        if index >= MAX_LINE_WIDTH:
+        if index >= options.max_line_length:
             return None
 
         # Make sure we are not in a string.
@@ -1669,6 +1673,8 @@ def parse_args(args):
                       help='do not fix these errors/warnings (e.g. E4,W)')
     parser.add_option('--select', default='',
                       help='fix only these errors/warnings (e.g. E4,W)')
+    parser.add_option('--max-line-length', default=79,
+                      help='set maximum allowed line length (default: 79)')
     opts, args = parser.parse_args(args)
 
     if not len(args) and not opts.list_fixes:
@@ -1684,6 +1690,9 @@ def parse_args(args):
 
     if opts.in_place and opts.diff:
         parser.error('--in-place and --diff are mutually exclusive')
+
+    if opts.max_line_length < 8:
+        parser.error('--max-line-length must greater than 8')
 
     return opts, args
 
