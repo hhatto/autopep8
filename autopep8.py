@@ -1682,7 +1682,8 @@ def parse_args(args):
     parser.add_option('--select', default='',
                       help='fix only these errors/warnings (e.g. E4,W)')
     parser.add_option('--max-line-length', default=79, type=int,
-                      help='set maximum allowed line length (default: 79)')
+                      help='set maximum allowed line length '
+                           '(default: %default)')
     opts, args = parser.parse_args(args)
 
     if not len(args) and not opts.list_fixes:
