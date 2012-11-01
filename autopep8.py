@@ -654,8 +654,9 @@ class FixPEP8(object):
             tokens = list(tokenize.generate_tokens(sio.readline))
         except (tokenize.TokenError, IndentationError):
             multi_line_candidate = break_multi_line(
-                self.options, target, newline=self.newline,
-                indent_word=self.indent_word)
+                target, newline=self.newline,
+                indent_word=self.indent_word,
+                max_line_length=self.options.max_line_length)
 
             if multi_line_candidate:
                 self.source[line_index] = multi_line_candidate
@@ -1480,7 +1481,7 @@ def refactor_with_2to3(source_text, fixer_name):
         return str(tool.refactor_string(source_text, name=''))
 
 
-def break_multi_line(options, source_text, newline, indent_word):
+def break_multi_line(source_text, newline, indent_word, max_line_length):
     """Break first line of multi-line code.
 
     Return None if a break is not possible.
@@ -1489,7 +1490,7 @@ def break_multi_line(options, source_text, newline, indent_word):
     # Handle special case only.
     if ('(' in source_text and source_text.rstrip().endswith(',')):
         index = 1 + source_text.find('(')
-        if index >= options.max_line_length:
+        if index >= max_line_length:
             return None
 
         # Make sure we are not in a string.

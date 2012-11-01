@@ -91,21 +91,24 @@ class TestUtils(unittest.TestCase):
             'foo_bar_zap_bing_bang_boom(\n    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
             autopep8.break_multi_line(
                 'foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
-                newline='\n', indent_word='    '))
+                newline='\n', indent_word='    ',
+                max_line_length=79))
 
     def test_break_multi_line_should_not_break_too_long_line(self):
         self.assertEqual(
             None,
             autopep8.break_multi_line(
                 'foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom(333,\n',
-                newline='\n', indent_word='    '))
+                newline='\n', indent_word='    ',
+                max_line_length=79))
 
     def test_break_multi_line_should_not_modify_comment(self):
         self.assertEqual(
             None,
             autopep8.break_multi_line(
                 '# foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
-                newline='\n', indent_word='    '))
+                newline='\n', indent_word='    ',
+                max_line_length=79))
 
     def test_multiline_string_lines(self):
         self.assertEqual(
