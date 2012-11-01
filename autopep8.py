@@ -242,6 +242,9 @@ class FixPEP8(object):
                                    if self.options.ignore else []) +
                                   (['--select=' + self.options.select]
                                    if self.options.select else []) +
+                                  (['--max-line-length={length}'.format(
+                                      length=self.options.max_line_length)]
+                                   if self.options.max_line_length else []) +
                                   [self.filename])
 
         if self.options.verbose:
@@ -1664,7 +1667,7 @@ def parse_args(args):
                       help='run recursively; must be used with --in-place or '
                            '--diff')
     parser.add_option('-p', '--pep8-passes',
-                      default=100, type='int',
+                      default=100, type=int,
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)')
     parser.add_option('--list-fixes', action='store_true',
@@ -1674,7 +1677,7 @@ def parse_args(args):
                       help='do not fix these errors/warnings (e.g. E4,W)')
     parser.add_option('--select', default='',
                       help='fix only these errors/warnings (e.g. E4,W)')
-    parser.add_option('--max-line-length', default=79,
+    parser.add_option('--max-line-length', default=79, type=int,
                       help='set maximum allowed line length (default: 79)')
     opts, args = parser.parse_args(args)
 

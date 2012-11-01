@@ -1134,6 +1134,12 @@ print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_with_shorter_length(self):
+        line = "foooooooooooooooooo('abcdefghijklmnopqrstuvwxyz')\n"
+        fixed = "foooooooooooooooooo(\n    'abcdefghijklmnopqrstuvwxyz')\n"
+        self._inner_setup(line, options=['--max-line-length=40'])
+        self.assertEqual(self.result, fixed)
+
     def test_e501_with_indent(self):
         line = """
 
@@ -2077,6 +2083,12 @@ class TestSpawnPEP8Process(unittest.TestCase):
             self._inner_setup(line, options=['--verbose'])
         self.assertEqual(self.result, fixed)
         self.assertIn('compatibility mode', sio.getvalue())
+
+    def test_max_line_length(self):
+        line = "foooooooooooooooooo('abcdefghijklmnopqrstuvwxyz')\n"
+        fixed = "foooooooooooooooooo(\n    'abcdefghijklmnopqrstuvwxyz')\n"
+        self._inner_setup(line, options=['--max-line-length=40'])
+        self.assertEqual(self.result, fixed)
 
 
 class TestCoverage(unittest.TestCase):
