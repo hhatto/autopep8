@@ -9,7 +9,7 @@ import tokenize
 
 
 def run(filename, fast_check=False, passes=2000,
-        ignore=''):
+        ignore='', verbose=False):
     """Run autopep8 on file at filename.
     Return True on success.
     """
@@ -18,8 +18,9 @@ def run(filename, fast_check=False, passes=2000,
     autopep8_path = os.path.split(os.path.abspath(
         os.path.dirname(__file__)))[0]
     autoppe8_bin = os.path.join(autopep8_path, 'autopep8.py')
-    command = [autoppe8_bin, '--verbose', '--pep8-passes={p}'.format(p=passes),
-               ignore_option, filename]
+    command = ([autoppe8_bin] + (['--verbose'] if verbose else []) +
+               ['--pep8-passes={p}'.format(p=passes),
+                ignore_option, filename])
 
     if fast_check:
         if 0 != subprocess.call(command + ['--diff']):
@@ -108,12 +109,17 @@ def process_args():
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)',
                       default=2000)
+
     parser.add_option(
         '--timeout',
         help='stop testing additional files after this amount of time '
              '(default: %default)',
         default=-1,
         type=float)
+
+    parser.add_option('-v', '--verbose', action='store_true',
+                      help='print verbose messages')
+
     return parser.parse_args()
 
 
@@ -149,7 +155,8 @@ def check(opts, args):
         while filenames:
             name = os.path.realpath(filenames.pop(0))
             if name in completed_filenames:
-                sys.stderr.write('--->  Skipping previously tested ' + name + '\n')
+                sys.stderr.write(
+                    '--->  Skipping previously tested ' + name + '\n')
                 continue
             else:
                 completed_filenames.update(name)
@@ -177,8 +184,9 @@ def check(opts, args):
 
                 if not run(os.path.join(name),
                            fast_check=opts.fast_check,
+                           passes=opts.pep8_passes,
                            ignore=opts.ignore,
-                           passes=opts.pep8_passes):
+                           verbose=opts.verbose):
                     return False
     except TimeoutException:
         sys.stderr.write('Timed out\n')
