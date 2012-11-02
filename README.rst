@@ -46,27 +46,27 @@ Before::
 
     import sys, os;
 
-    def someone_likes_semicolons(                             foo  = None             ,\
+    def someone_likes_semicolons(                             foo  = None            ,\
     bar='bar'):
         """Hello; bye."""; 1; 2;3
         print( 'A'<>foo)            #<> is a deprecated form of !=
         return 0;
     def func11():
         a=(   1,2, 3,"a"  );
-        ####This is a long comment. It really should be wrapped to fit within 72 characters.
-        b  =[100,200,300  ,9876543210,'This is my very long string that goes on and on'  ]
+        ####This is a long comment. It should be wrapped to fit within 72 characters.
+        b  =[100,200,300  ,9876543210,'This is a long string that goes on and on.']
         return (a, b)
-    def func2(): total =(324942324324+32434234234234-23423234243/ 324342342.+32423) /1234.
+    def func2(): total =(324942324324+32434234234234-23423234243/324342342.+32423)/123.
     def func22(): return {True: True}.has_key({'foo': 2}.has_key('foo'));
     class UselessClass(object):
         def __init__    ( self, bar ):
          if bar : bar+=1;  bar=bar* bar   ; return bar
          else:
-                               indentation_in_strings_should_not_be_touched = """
+                        indentation_in_strings_should_not_be_touched = """
     		hello
     world
     """
-                               raise ValueError, indentation_in_strings_should_not_be_touched
+                        raise ValueError, indentation_in_strings_should_not_be_touched
         def my_method(self):
                                                   print(self);
 
@@ -88,16 +88,16 @@ After::
 
     def func11():
         a = (1, 2, 3, "a")
-        # This is a long comment. It really should be wrapped to fit within
-        # 72 characters.
+        # This is a long comment. It should be wrapped to fit within 72
+        # characters.
         b = [100, 200, 300, 9876543210,
-             'This is my very long string that goes on and on']
+             'This is a long string that goes on and on.']
         return (a, b)
 
 
     def func2():
         total = (324942324324 + 32434234234234 - 23423234243 / 324342342. +
-                 32423) / 1234.
+                 32423) / 123.
 
 
     def func22():
