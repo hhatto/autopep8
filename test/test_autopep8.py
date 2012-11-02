@@ -160,26 +160,27 @@ def foo():
 
     def test_supported_fixes(self):
         self.assertIn('E101', [f[0] for f in autopep8.supported_fixes()])
- 
+
     def test_shorten_comment(self):
         self.assertEqual('# ' + '=' * 77 + '\n',
                          autopep8.shorten_comment('# ' + '=' * 100 + '\n',
                                                   '\n',
                                                   max_line_length=79))
- 
+
     def test_shorten_comment_should_not_split_numbers(self):
         line = '# ' + '0' * 100 + '\n'
         self.assertEqual(line,
                          autopep8.shorten_comment(line,
                                                   newline='\n',
                                                   max_line_length=79))
- 
+
     def test_shorten_comment_should_not_split_words(self):
         line = '# ' + 'a' * 100 + '\n'
         self.assertEqual(line,
                          autopep8.shorten_comment(line,
                                                   newline='\n',
                                                   max_line_length=79))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 
@@ -1388,7 +1389,6 @@ if True:
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
-
 
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"

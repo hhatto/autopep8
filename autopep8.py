@@ -1596,8 +1596,8 @@ def starts_with_triple(string):
     """Return True if the string starts with triple single/double quotes."""
     return (string.strip().startswith('"""') or
             string.strip().startswith("'''"))
- 
- 
+
+
 def shorten_comment(line, newline, max_line_length):
     """Return trimmed or split long comment line."""
     assert len(line) > max_line_length
