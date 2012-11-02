@@ -1482,8 +1482,7 @@ def refactor_with_2to3(source_text, fixer_name):
         fixer_names=fixers,
         explicit=fixers)
     try:
-        return unicode(tool.refactor_string(
-            source_text.decode('utf-8'), name=''))
+        return unicode(tool.refactor_string(source_text, name=''))
     except NameError:
         return str(tool.refactor_string(source_text, name=''))
 
