@@ -160,7 +160,12 @@ def foo():
 
     def test_supported_fixes(self):
         self.assertIn('E101', [f[0] for f in autopep8.supported_fixes()])
-
+ 
+    def test_shorten_comment(self):
+        self.assertEqual('# ' + '=' * 77 + '\n',
+                         autopep8.shorten_comment('# ' + '=' * 100 + '\n',
+                                                  '\n',
+                                                  max_line_length=79))
 
 class TestFixPEP8Error(unittest.TestCase):
 
@@ -1327,8 +1332,28 @@ def dummy():
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+    def test_e501_should_not_break_on_dot(self):
+        line = """
+if True:
+    if True:
+        raise xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx('xxxxxxxxxxxxxxxxx "{d}" xxxxxxxxxxxxxx'.format(d='xxxxxxxxxxxxxxx'))
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
+    def test_e501_with_comment(self):
+        line = """123
+                        # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
+"""
+        fixed = """123
+                        # This is a long comment that should be wrapped.
+                        # I will wrap it using textwrap to be within 72
+                        # characters.
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e501_should_not_interfere_with_non_comment(self):
-        """This is why we've disabled comment shortening."""
         line = '''
 
 """
@@ -1338,14 +1363,18 @@ def dummy():
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
-    def test_e501_should_not_break_on_dot(self):
-        line = """
-if True:
-    if True:
-        raise xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx('xxxxxxxxxxxxxxxxx "{d}" xxxxxxxxxxxxxx'.format(d='xxxxxxxxxxxxxxx'))
-""".lstrip()
+    def test_e501_should_cut_comment_pattern(self):
+        line = """123
+# -- Useless lines ----------------------------------------------------------------------
+321
+"""
+        fixed = """123
+# -- Useless lines -----------------------------------------------------
+321
+"""
         self._inner_setup(line)
-        self.assertEqual(self.result, line)
+        self.assertEqual(self.result, fixed)
+
 
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"

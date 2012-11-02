@@ -648,6 +648,15 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
 
+        # Shorten comment if single line only.
+        if target.lstrip().startswith('#'):
+            # Wrap commented lines. PEP 8 recommends 72 characters.
+            self.source[line_index] = shorten_comment(
+                line=target,
+                newline=self.newline,
+                max_line_length=self.options.max_line_length - 7)
+            return
+
         indent = _get_indentation(target)
         source = target[len(indent):]
         sio = StringIO(target)
@@ -1587,6 +1596,26 @@ def starts_with_triple(string):
     """Return True if the string starts with triple single/double quotes."""
     return (string.strip().startswith('"""') or
             string.strip().startswith("'''"))
+ 
+ 
+def shorten_comment(line, newline, max_line_length):
+    """Return trimmed or split long comment line."""
+    assert len(line) > max_line_length
+    line = line.rstrip()
+
+    MIN_CHARACTER_REPEAT = 5
+    if (len(line) - len(line.rstrip(line[-1])) >= MIN_CHARACTER_REPEAT and
+            not line[-1].isalnum()):
+        # Trim comments that end with things like ---------
+        return line[:max_line_length] + newline
+    else:
+        indentation = _get_indentation(line) + '# '
+        import textwrap
+        split_lines = textwrap.wrap(line.lstrip(' \t#'),
+                                    initial_indent=indentation,
+                                    subsequent_indent=indentation,
+                                    width=max_line_length)
+        return newline.join(split_lines) + newline
 
 
 def fix_file(filename, opts, output=sys.stdout):
