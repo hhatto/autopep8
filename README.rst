@@ -63,7 +63,7 @@ Before::
          if bar : bar+=1;  bar=bar* bar   ; return bar
          else:
                         indentation_in_strings_should_not_be_touched = """
-    		hello (there are tabs and sapces in the beginning of this long line)
+    		hello (there are tabs and spaces in the beginning of this line)
     world
     """
                         raise ValueError, indentation_in_strings_should_not_be_touched
@@ -112,7 +112,7 @@ After::
                 return bar
             else:
                 indentation_in_strings_should_not_be_touched = """
-    		hello (there are tabs and sapces in the beginning of this long line)
+    		hello (there are tabs and spaces in the beginning of this line)
     world
     """
                 raise ValueError(indentation_in_strings_should_not_be_touched)
