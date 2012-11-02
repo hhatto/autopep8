@@ -1614,7 +1614,8 @@ def shorten_comment(line, newline, max_line_length):
         split_lines = textwrap.wrap(line.lstrip(' \t#'),
                                     initial_indent=indentation,
                                     subsequent_indent=indentation,
-                                    width=max_line_length)
+                                    width=max_line_length,
+                                    break_long_words=False)
         return newline.join(split_lines) + newline
 
 

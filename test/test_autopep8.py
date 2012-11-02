@@ -166,6 +166,20 @@ def foo():
                          autopep8.shorten_comment('# ' + '=' * 100 + '\n',
                                                   '\n',
                                                   max_line_length=79))
+ 
+    def test_shorten_comment_should_not_split_numbers(self):
+        line = '# ' + '0' * 100 + '\n'
+        self.assertEqual(line,
+                         autopep8.shorten_comment(line,
+                                                  newline='\n',
+                                                  max_line_length=79))
+ 
+    def test_shorten_comment_should_not_split_words(self):
+        line = '# ' + 'a' * 100 + '\n'
+        self.assertEqual(line,
+                         autopep8.shorten_comment(line,
+                                                  newline='\n',
+                                                  max_line_length=79))
 
 class TestFixPEP8Error(unittest.TestCase):
 
