@@ -337,9 +337,7 @@ class FixPEP8(object):
             return []
         ls, _, original = logical
         try:
-            rewrapper = Wrapper(
-                original, hard_wrap=self.options.max_line_length,
-                soft_wrap=self.options.max_line_length - 7)
+            rewrapper = Wrapper(original)
         except (tokenize.TokenError, IndentationError):
             return []
         valid_indents = rewrapper.pep8_expected()
@@ -1245,13 +1243,11 @@ class Wrapper(object):
         tokenize.DEDENT, tokenize.NEWLINE, tokenize.ENDMARKER
     ])
 
-    def __init__(self, physical_lines, hard_wrap=79, soft_wrap=72):
+    def __init__(self, physical_lines):
         if type(physical_lines) != list:
             physical_lines = physical_lines.splitlines(keepends=True)
         self.lines = physical_lines
         self.index = 0
-        self.hard_wrap = hard_wrap
-        self.soft_wrap = soft_wrap
         self.tokens = list()
         self.rel_indent = None
         sio = StringIO(''.join(physical_lines))
