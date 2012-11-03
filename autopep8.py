@@ -468,7 +468,8 @@ class FixPEP8(object):
         else:
             for symbol in ['(', '[', '{']:
                 if symbol in logical_lines[0]:
-                    fixed = logical_lines[0].find(symbol) * ' ' + original.lstrip()
+                    fixed = logical_lines[0].find(
+                        symbol) * ' ' + original.lstrip()
                     break
 
         if fixed == original:
