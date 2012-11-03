@@ -10,17 +10,17 @@ import tokenize
 
 
 @contextlib.contextmanager
-def bold(file_object):
-    """Bold context."""
+def red(file_object):
+    """Red context."""
     if file_object.isatty():
-        BOLD = '\033[1m'
+        RED = '\033[91m'
         END = '\033[0m'
     else:
-        BOLD = ''
+        RED = ''
         END = ''
 
     try:
-        file_object.write(BOLD)
+        file_object.write(RED)
         file_object.flush()
         yield
     finally:
@@ -54,7 +54,7 @@ def run(filename, fast_check=False, passes=2000,
                 sys.stderr.write('autopep8 crashed on ' + filename + '\n')
                 return False
 
-            with bold(sys.stdout):
+            with red(sys.stdout):
                 if 0 != subprocess.call(['pep8', ignore_option,
                                          '--show-source', tmp_file.name]):
                     sys.stderr.write('autopep8 did not completely fix ' +
