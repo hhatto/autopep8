@@ -464,6 +464,8 @@ class FixPEP8(object):
 
         if '(' in logical_lines[0]:
             fixed = logical_lines[0].find('(') * ' ' + original.lstrip()
+        elif '[' in logical_lines[0]:
+            fixed = logical_lines[0].find('[') * ' ' + original.lstrip()
         elif logical_lines[0].rstrip().endswith('\\'):
             fixed = (_get_indentation(logical_lines[0]) +
                      self.indent_word + original.lstrip())
