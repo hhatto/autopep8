@@ -648,8 +648,16 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
 
-        # Shorten comment if single line only.
         if target.lstrip().startswith('#'):
+            # Shorten comment if single line only.
+            try:
+                for offset in [-1, 1]:
+                    if self.source[
+                            line_index + offset].lstrip().startswith('#'):
+                        return []
+            except IndexError:
+                pass
+
             # Wrap commented lines. PEP 8 recommends 72 characters.
             self.source[line_index] = shorten_comment(
                 line=target,
