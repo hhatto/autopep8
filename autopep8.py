@@ -989,7 +989,10 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
                 fixed = first + ' \\' + newline + second
             else:
                 fixed = first + newline + second
-            if check_syntax(fixed):
+
+            # Only fix if syntax is okay. We return leading "return" since it
+            # will always be considered bad syntax on its own.
+            if check_syntax(re.sub(r'\breturn\b\s*', '', fixed)):
                 return indentation + fixed
     return None
 

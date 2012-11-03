@@ -1154,6 +1154,20 @@ print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_with_return(self):
+        line = """
+def foo():
+    return (111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
+"""
+        fixed = """
+
+def foo():
+    return (111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222,
+            222, 333, 333, 333, 333)
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e501_with_shorter_length(self):
         line = "foooooooooooooooooo('abcdefghijklmnopqrstuvwxyz')\n"
         fixed = "foooooooooooooooooo(\n    'abcdefghijklmnopqrstuvwxyz')\n"

@@ -54,8 +54,7 @@ Before::
     def func11():
         a=(   1,2, 3,"a"  );
         ####This is a long comment. It should be wrapped to fit within 72 characters.
-        b  =[100,200,300  ,9876543210,'This is a long string that goes on and on.']
-        return (a, b)
+        return [a,[100,200,300,9876543210,'This is a long string that goes on and on']]
     def func2(): total =(324942324324+32434234234234-23423234243/324342342.+32423)/123.
     def func22(): return {True: True}.has_key({'foo': 2}.has_key('foo'));
     class UselessClass(object):
@@ -90,9 +89,8 @@ After::
         a = (1, 2, 3, "a")
         # This is a long comment. It should be wrapped to fit within 72
         # characters.
-        b = [100, 200, 300, 9876543210,
-             'This is a long string that goes on and on.']
-        return (a, b)
+        return [a, [100, 200, 300, 9876543210,
+                    'This is a long string that goes on and on']]
 
 
     def func2():
