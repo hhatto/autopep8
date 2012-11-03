@@ -1382,15 +1382,23 @@ if True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    def test_e501_should_not_modify_multiline_comments(self):
+    def test_e501_should_only_modify_last_comment(self):
         line = """123
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 1. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 2. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 3. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
 """
+        fixed = """123
+                        # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
+                        # 1. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
+                        # 2. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
+                        # 3. This is a long comment that should be
+                        # wrapped. I will wrap it using textwrap to be
+                        # within 72 characters.
+"""
         self._inner_setup(line)
-        self.assertEqual(self.result, line)
+        self.assertEqual(self.result, fixed)
 
     def test_e501_should_not_interfere_with_non_comment(self):
         line = '''

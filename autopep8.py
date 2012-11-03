@@ -647,12 +647,10 @@ class FixPEP8(object):
         target = self.source[line_index]
 
         if target.lstrip().startswith('#'):
-            # Shorten comment if single line only.
+            # Shorten comment if it is the last comment line.
             try:
-                for offset in [-1, 1]:
-                    if self.source[
-                            line_index + offset].lstrip().startswith('#'):
-                        return []
+                if self.source[line_index + 1].lstrip().startswith('#'):
+                    return []
             except IndexError:
                 pass
 
