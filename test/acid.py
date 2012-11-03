@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Test that autopep8 runs without crashing on various Python files."""
 
+import contextlib
 import os
 import sys
 import subprocess
@@ -8,10 +9,31 @@ import tempfile
 import tokenize
 
 
+@contextlib.contextmanager
+def bold(file_object):
+    """Bold context."""
+    if file_object.isatty():
+        BOLD = '\033[1m'
+        END = '\033[0m'
+    else:
+        BOLD = ''
+        END = ''
+
+    try:
+        file_object.write(BOLD)
+        file_object.flush()
+        yield
+    finally:
+        file_object.write(END)
+        file_object.flush()
+
+
 def run(filename, fast_check=False, passes=2000,
         ignore='', verbose=False):
     """Run autopep8 on file at filename.
+
     Return True on success.
+
     """
     ignore_option = '--ignore=' + ignore
 
@@ -32,11 +54,11 @@ def run(filename, fast_check=False, passes=2000,
                 sys.stderr.write('autopep8 crashed on ' + filename + '\n')
                 return False
 
-            if 0 != subprocess.call(['pep8', ignore_option,
-                                     '--show-source', tmp_file.name],
-                                    stderr=tmp_file):
-                sys.stderr.write('autopep8 did not completely fix ' +
-                                 filename + '\n')
+            with bold(sys.stdout):
+                if 0 != subprocess.call(['pep8', ignore_option,
+                                         '--show-source', tmp_file.name]):
+                    sys.stderr.write('autopep8 did not completely fix ' +
+                                     filename + '\n')
 
             try:
                 if _check_syntax(filename):
