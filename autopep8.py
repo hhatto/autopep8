@@ -660,7 +660,7 @@ class FixPEP8(object):
             self.source[line_index] = shorten_comment(
                 line=target,
                 newline=self.newline,
-                max_line_length=self.options.max_line_length - 7)
+                max_line_length=72)
             return
 
         indent = _get_indentation(target)
