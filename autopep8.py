@@ -655,11 +655,15 @@ class FixPEP8(object):
                 pass
 
             # Wrap commented lines.
-            self.source[line_index] = shorten_comment(
+            fixed = shorten_comment(
                 line=target,
                 newline=self.newline,
                 max_line_length=self.options.max_line_length)
-            return
+            if fixed == self.source[line_index]:
+                return []
+            else:
+                self.source[line_index] = fixed
+                return
 
         indent = _get_indentation(target)
         source = target[len(indent):]
