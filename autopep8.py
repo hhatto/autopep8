@@ -462,17 +462,14 @@ class FixPEP8(object):
         original = self.source[line_index]
         fixed = original
 
-        for symbol in ['(', '[', '{']:
-            if symbol in logical_lines[0]:
-                fixed = logical_lines[0].find(symbol) * ' ' + original.lstrip()
-
-        if fixed != original:
-            pass
-        elif logical_lines[0].rstrip().endswith('\\'):
+        if logical_lines[0].rstrip().endswith('\\'):
             fixed = (_get_indentation(logical_lines[0]) +
                      self.indent_word + original.lstrip())
         else:
-            return []
+            for symbol in ['(', '[', '{']:
+                if symbol in logical_lines[0]:
+                    fixed = logical_lines[0].find(symbol) * ' ' + original.lstrip()
+                    break
 
         if fixed == original:
             return []

@@ -771,6 +771,24 @@ def draw(self):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e127_with_backslash(self):
+        line = r"""
+if True:
+    if True:
+        self.date = meta.session.query(schedule.Appointment)\
+            .filter(schedule.Appointment.id ==
+                                      appointment_id).one().agenda.endtime
+""".lstrip()
+        fixed = r"""
+if True:
+    if True:
+        self.date = meta.session.query(schedule.Appointment)\
+            .filter(schedule.Appointment.id ==
+                    appointment_id).one().agenda.endtime
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e12_with_backslash(self):
         line = r"""
 if True:
