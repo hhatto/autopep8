@@ -162,7 +162,7 @@ def foo():
         self.assertIn('E101', [f[0] for f in autopep8.supported_fixes()])
 
     def test_shorten_comment(self):
-        self.assertEqual('# ' + '=' * 77 + '\n',
+        self.assertEqual('# ' + '=' * 72 + '\n',
                          autopep8.shorten_comment('# ' + '=' * 100 + '\n',
                                                   '\n',
                                                   max_line_length=79))
@@ -1375,9 +1375,8 @@ if True:
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
 """
         fixed = """123
-                        # This is a long comment that should be wrapped.
-                        # I will wrap it using textwrap to be within 72
-                        # characters.
+                        # This is a long comment that should be wrapped. I will
+                        # wrap it using textwrap to be within 72 characters.
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
@@ -1393,9 +1392,9 @@ if True:
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 1. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 2. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
-                        # 3. This is a long comment that should be
-                        # wrapped. I will wrap it using textwrap to be
-                        # within 72 characters.
+                        # 3. This is a long comment that should be wrapped. I
+                        # will wrap it using textwrap to be within 72
+                        # characters.
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
@@ -1416,7 +1415,7 @@ if True:
 321
 """
         fixed = """123
-# -- Useless lines -----------------------------------------------------
+# -- Useless lines -------------------------------------------------------
 321
 """
         self._inner_setup(line)

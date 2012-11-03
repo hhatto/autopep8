@@ -654,11 +654,11 @@ class FixPEP8(object):
             except IndexError:
                 pass
 
-            # Wrap commented lines. PEP 8 recommends 72 characters.
+            # Wrap commented lines.
             self.source[line_index] = shorten_comment(
                 line=target,
                 newline=self.newline,
-                max_line_length=72)
+                max_line_length=self.options.max_line_length)
             return
 
         indent = _get_indentation(target)
@@ -1608,13 +1608,17 @@ def shorten_comment(line, newline, max_line_length):
     assert len(line) > max_line_length
     line = line.rstrip()
 
+    # PEP 8 recommends 72 characters for comment text.
+    indentation = _get_indentation(line) + '# '
+    max_line_length = min(max_line_length,
+                          len(indentation) + 72)
+
     MIN_CHARACTER_REPEAT = 5
     if (len(line) - len(line.rstrip(line[-1])) >= MIN_CHARACTER_REPEAT and
             not line[-1].isalnum()):
         # Trim comments that end with things like ---------
         return line[:max_line_length] + newline
     else:
-        indentation = _get_indentation(line) + '# '
         import textwrap
         split_lines = textwrap.wrap(line.lstrip(' \t#'),
                                     initial_indent=indentation,
