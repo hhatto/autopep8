@@ -20,10 +20,12 @@ def red(file_object):
         END = ''
 
     try:
+        file_object.flush()
         file_object.write(RED)
         file_object.flush()
         yield
     finally:
+        file_object.flush()
         file_object.write(END)
         file_object.flush()
 
@@ -56,7 +58,8 @@ def run(filename, fast_check=False, passes=2000,
 
             with red(sys.stdout):
                 if 0 != subprocess.call(['pep8', ignore_option,
-                                         '--show-source', tmp_file.name]):
+                                         '--show-source', tmp_file.name],
+                                        stdout=sys.stdout):
                     sys.stderr.write('autopep8 did not completely fix ' +
                                      filename + '\n')
 
