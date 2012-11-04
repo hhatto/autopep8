@@ -1670,6 +1670,8 @@ def fix_file(filename, opts, output=sys.stdout):
     if not pep8 or opts.in_place:
         encoding = detect_encoding(filename)
 
+    fixed_source = format_block_comments(fixed_source)
+
     interruption = None
     try:
         # Keep a history to break out of cycles.
@@ -1698,8 +1700,6 @@ def fix_file(filename, opts, output=sys.stdout):
         interruption = exception
     del tmp_filename
     del tmp_source
-
-    fixed_source = format_block_comments(fixed_source)
 
     if opts.diff:
         new = StringIO(fixed_source)
