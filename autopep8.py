@@ -1699,7 +1699,7 @@ def fix_file(filename, opts, output=sys.stdout):
         fixed_source = format_block_comments(fixed_source)
 
     if opts.diff:
-        new = StringIO(''.join(fix.source))
+        new = StringIO(fixed_source)
         new = new.readlines()
         output.write(_get_difftext(original_source, new, filename))
     elif opts.in_place:
