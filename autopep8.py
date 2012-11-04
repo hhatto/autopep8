@@ -1653,15 +1653,14 @@ def fix_file(filename, opts, output=sys.stdout):
     interruption = None
     try:
         # Keep a history to break out of cycles.
-        old_tmp_source = None
+        previous_hashes = set()
 
         for _ in range(opts.pep8_passes):
-            if fixed_source == tmp_source:
+            if hash(fixed_source) in previous_hashes:
                 break
-            if fixed_source == old_tmp_source:
-                break
+            else:
+                previous_hashes.add(hash(fixed_source))
 
-            old_tmp_source = tmp_source
             tmp_source = copy.copy(fixed_source)
 
             if not pep8:
