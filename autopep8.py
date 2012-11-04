@@ -18,10 +18,9 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
-A tool that automatically formats Python code to conform to the PEP 8 style
-guide.
-"""
+
+"""Automatically formats Python code to conform to the PEP 8 style guide."""
+
 from __future__ import print_function
 
 import copy
@@ -1077,7 +1076,7 @@ class Reindenter(object):
         self.string_content_line_numbers = multiline_string_lines(
             ''.join(self.raw))
 
-        # File lines, rstripped & tab-expanded.  Dummy at start is so
+        # File lines, rstripped & tab-expanded. Dummy at start is so
         # that we can use tokenize's 1-based line numbering easily.
         # Note that a line is all-blank iff it is a newline.
         self.lines = []
@@ -1094,7 +1093,7 @@ class Reindenter(object):
         self.index = 1  # index into self.lines of next line
 
         # List of (lineno, indentlevel) pairs, one for each stmt and
-        # comment line.  indentlevel is -1 for comment lines, as a
+        # comment line. indentlevel is -1 for comment lines, as a
         # signal that tokenize doesn't know what to do about them;
         # indeed, they're our headache!
         self.stats = []
@@ -1134,7 +1133,7 @@ class Reindenter(object):
             if want < 0:
                 # A comment line.
                 if have:
-                    # An indented comment line.  If we saw the same
+                    # An indented comment line. If we saw the same
                     # indentation before, reuse what it most recently
                     # mapped to.
                     want = have2want.get(have, - 1)
@@ -1299,7 +1298,7 @@ class Wrapper(object):
         """Replicate logic in pep8.py, to know what level to indent things to.
 
         Return a list of lists; each list represents valid indent levels for
-        the line in question, relative from the initial indent.  However, the
+        the line in question, relative from the initial indent. However, the
         first entry is the indent level which was expected.
 
         """
