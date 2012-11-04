@@ -1635,6 +1635,10 @@ def shorten_comment(line, newline, max_line_length):
 
 def format_block_comments(source):
     """Format block comments."""
+    if '#' not in source:
+        # Optimization.
+        return source
+
     string_line_numbers = multiline_string_lines(source)
     fixed_lines = []
     for (line_number, line) in enumerate(source.splitlines(True),
@@ -1695,8 +1699,7 @@ def fix_file(filename, opts, output=sys.stdout):
     del tmp_filename
     del tmp_source
 
-    if '#' in fixed_source:
-        fixed_source = format_block_comments(fixed_source)
+    fixed_source = format_block_comments(fixed_source)
 
     if opts.diff:
         new = StringIO(fixed_source)
