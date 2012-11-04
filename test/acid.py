@@ -31,7 +31,7 @@ def red(file_object):
 
 
 def run(filename, fast_check=False, passes=2000,
-        ignore='', verbose=False):
+        ignore='', check_ignore='', verbose=False):
     """Run autopep8 on file at filename.
 
     Return True on success.
@@ -57,7 +57,7 @@ def run(filename, fast_check=False, passes=2000,
                 return False
 
             with red(sys.stdout):
-                if 0 != subprocess.call(['pep8', ignore_option,
+                if 0 != subprocess.call(['pep8', ignore_option + check_ignore,
                                          '--show-source', tmp_file.name],
                                         stdout=sys.stdout):
                     sys.stderr.write('autopep8 did not completely fix ' +
@@ -129,6 +129,10 @@ def process_args():
                       help='ignore incomplete PEP8 fixes and broken files')
     parser.add_option('--ignore',
                       help='comma-separated errors to ignore',
+                      default='')
+    parser.add_option('--check-ignore',
+                      help='comma-separated errors to ignore when checking '
+                           'for completeness',
                       default='')
     parser.add_option('-p', '--pep8-passes',
                       help='maximum number of additional pep8 passes'
@@ -211,6 +215,7 @@ def check(opts, args):
                            fast_check=opts.fast_check,
                            passes=opts.pep8_passes,
                            ignore=opts.ignore,
+                           check_ignore=opts.check_ignore,
                            verbose=opts.verbose):
                     return False
     except TimeoutException:
