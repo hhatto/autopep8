@@ -196,12 +196,20 @@ def foo():
 # abc
   # blah blah
     # four space indentation
+''' #do not modify strings
+#do not modify strings
+#do not modify strings
+'''
 #
 """.lstrip(),
             autopep8.format_block_comments("""
 # abc
   #blah blah
     #four space indentation
+''' #do not modify strings
+#do not modify strings
+#do not modify strings
+'''
 #
 """.lstrip()))
 
