@@ -2205,6 +2205,28 @@ class TestSpawnPEP8Process(unittest.TestCase):
         self._inner_setup(line, options=['--max-line-length=40'])
         self.assertEqual(self.result, fixed)
 
+    def test_format_block_comments(self):
+        line = """
+foo(  )
+# abc
+bar()#bizz
+  #blah blah
+    #four space indentation
+if True:
+    1
+""".lstrip()
+        fixed = """
+foo()
+# abc
+bar()  # bizz
+  # blah blah
+    # four space indentation
+if True:
+    1
+""".lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
 
 class TestCoverage(unittest.TestCase):
 
