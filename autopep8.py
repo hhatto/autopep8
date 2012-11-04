@@ -1653,7 +1653,7 @@ def fix_file(filename, opts, output=sys.stdout):
     interruption = None
     try:
         # Keep a history to break out of cycles.
-        previous_hashes = set()
+        previous_hashes = set([hash(tmp_source)])
 
         for _ in range(opts.pep8_passes):
             if hash(fixed_source) in previous_hashes:
