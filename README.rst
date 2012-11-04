@@ -198,7 +198,7 @@ autopep8 fixes the following issues_ reported by pep8_::
     W604 - Replace backticks with repr().
 
 autopep8 also fixes some issues not found by pep8_. This inclues formatting of
-block comments and fixing of some non-idiomatic Python issues.
+block comments and correcting of some non-idiomatic Python code.
 
 
 More advanced usage
