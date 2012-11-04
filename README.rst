@@ -197,6 +197,9 @@ autopep8 fixes the following issues_ reported by pep8_::
     W603 - Replace <> with !=.
     W604 - Replace backticks with repr().
 
+autopep8 also fixes some issues not found by pep8_. This inclues formatting of
+block comments and some non-idiomatic Python issues.
+
 
 More advanced usage
 -------------------
