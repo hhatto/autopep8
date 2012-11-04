@@ -181,6 +181,13 @@ def foo():
                                                   newline='\n',
                                                   max_line_length=79))
 
+    def test_shorten_comment_should_not_modify_special_comments(self):
+        line = '#!/bin/blah ' + ' x' * 90 + '\n'
+        self.assertEqual(line,
+                         autopep8.shorten_comment(line,
+                                                  newline='\n',
+                                                  max_line_length=79))
+
     def test_format_block_comments(self):
         self.assertEqual(
             '# abc',

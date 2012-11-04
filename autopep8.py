@@ -1623,7 +1623,7 @@ def shorten_comment(line, newline, max_line_length):
             not line[-1].isalnum()):
         # Trim comments that end with things like ---------
         return line[:max_line_length] + newline
-    else:
+    elif re.match(r'\s*#+\s*\w+', line):
         import textwrap
         split_lines = textwrap.wrap(line.lstrip(' \t#'),
                                     initial_indent=indentation,
@@ -1631,6 +1631,8 @@ def shorten_comment(line, newline, max_line_length):
                                     width=max_line_length,
                                     break_long_words=False)
         return newline.join(split_lines) + newline
+    else:
+        return line + newline
 
 
 def format_block_comments(source):
