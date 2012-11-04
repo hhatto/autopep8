@@ -199,7 +199,7 @@ def foo():
 ''' #do not modify strings
 #do not modify strings
 #do not modify strings
-'''
+#do not modify strings'''
 #
 """.lstrip(),
             autopep8.format_block_comments("""
@@ -209,7 +209,7 @@ def foo():
 ''' #do not modify strings
 #do not modify strings
 #do not modify strings
-'''
+#do not modify strings'''
 #
 """.lstrip()))
 
