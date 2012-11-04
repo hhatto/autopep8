@@ -1248,7 +1248,7 @@ class Wrapper(object):
 
     def __init__(self, physical_lines):
         if type(physical_lines) != list:
-            physical_lines = physical_lines.splitlines(keepends=True)
+            physical_lines = physical_lines.splitlines(True)
         self.lines = physical_lines
         self.index = 0
         self.tokens = list()
@@ -1633,6 +1633,23 @@ def shorten_comment(line, newline, max_line_length):
         return newline.join(split_lines) + newline
 
 
+def format_block_comments(source):
+    """Format block comments."""
+    string_line_numbers = multiline_string_lines(source)
+    fixed_lines = []
+    for (line_number, line) in enumerate(source.splitlines(True),
+                                         start=1):
+        if (re.match(r'\s*#+\w+', line) and
+                line_number not in string_line_numbers):
+            fixed_lines.append(_get_indentation(line) +
+                               '# ' +
+                               line.lstrip().lstrip('#'))
+        else:
+            fixed_lines.append(line)
+
+    return ''.join(fixed_lines)
+
+
 def fix_file(filename, opts, output=sys.stdout):
     tmp_source = read_from_filename(filename)
 
@@ -1677,6 +1694,9 @@ def fix_file(filename, opts, output=sys.stdout):
         interruption = exception
     del tmp_filename
     del tmp_source
+
+    if '#' in fixed_source:
+        fixed_source = format_block_comments(fixed_source)
 
     if opts.diff:
         new = StringIO(''.join(fix.source))

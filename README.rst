@@ -59,6 +59,7 @@ Before::
     def func22(): return {True: True}.has_key({'foo': 2}.has_key('foo'));
     class UselessClass(object):
         def __init__    ( self, bar ):
+         #Comments should have a space after the hash.
          if bar : bar+=1;  bar=bar* bar   ; return bar
          else:
                         indentation_in_strings_should_not_be_touched = """
@@ -104,6 +105,7 @@ After::
 
     class UselessClass(object):
         def __init__(self, bar):
+            # Comments should have a space after the hash.
             if bar:
                 bar += 1
                 bar = bar * bar

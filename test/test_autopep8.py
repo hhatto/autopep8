@@ -181,6 +181,28 @@ def foo():
                                                   newline='\n',
                                                   max_line_length=79))
 
+    def test_format_block_comments(self):
+        self.assertEqual(
+            '# abc',
+            autopep8.format_block_comments('#abc'))
+
+        self.assertEqual(
+            '# abc',
+            autopep8.format_block_comments('####abc'))
+
+    def test_format_block_comments_with_multiple_lines(self):
+        self.assertEqual(
+            """
+# abc
+  # blah blah
+    # four space indentation
+""".lstrip(),
+            autopep8.format_block_comments("""
+# abc
+  #blah blah
+    #four space indentation
+""".lstrip()))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 
@@ -1125,8 +1147,8 @@ class Foo(object):
         self.assertEqual(self.result, fixed)
 
     def test_e304_with_comment(self):
-        line = "@contextmanager\n#comment\n\ndef f():\n    print 1\n"
-        fixed = "@contextmanager\n#comment\ndef f():\n    print 1\n"
+        line = "@contextmanager\n# comment\n\ndef f():\n    print 1\n"
+        fixed = "@contextmanager\n# comment\ndef f():\n    print 1\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
