@@ -196,11 +196,13 @@ def foo():
 # abc
   # blah blah
     # four space indentation
+#
 """.lstrip(),
             autopep8.format_block_comments("""
 # abc
   #blah blah
     #four space indentation
+#
 """.lstrip()))
 
     def test_format_block_comments_should_not_corrupt_special_comments(self):
