@@ -1513,29 +1513,30 @@ def break_multi_line(source_text, newline, indent_word, max_line_length):
 
     """
     # Handle special case only.
-    if ('(' in source_text and source_text.rstrip().endswith(',')):
-        index = 1 + source_text.find('(')
-        if index >= max_line_length:
-            return None
-
-        # Make sure we are not in a string.
-        for quote in ['"', "'"]:
-            if quote in source_text:
-                if source_text.find(quote) < index:
-                    return None
-
-        # Make sure we are not in a comment.
-        if '#' in source_text:
-            if source_text.find('#') < index:
+    for symbol in '([{':
+        if (symbol in source_text and source_text.rstrip().endswith(',')):
+            index = 1 + source_text.find(symbol)
+            if index >= max_line_length:
                 return None
 
-        assert index < len(source_text)
-        return (
-            source_text[:index].rstrip() + newline +
-            _get_indentation(source_text) + indent_word +
-            source_text[index:].lstrip())
-    else:
-        return None
+            # Make sure we are not in a string.
+            for quote in ['"', "'"]:
+                if quote in source_text:
+                    if source_text.find(quote) < index:
+                        return None
+
+            # Make sure we are not in a comment.
+            if '#' in source_text:
+                if source_text.find('#') < index:
+                    return None
+
+            assert index < len(source_text)
+            return (
+                source_text[:index].rstrip() + newline +
+                _get_indentation(source_text) + indent_word +
+                source_text[index:].lstrip())
+
+    return None
 
 
 def check_syntax(code):
