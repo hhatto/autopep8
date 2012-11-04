@@ -128,7 +128,7 @@ class LoginHandler(LoginBaseHandler):
                 self.add_message(message, 'error')
                 return self.redirect_to('home')
 
-            #check twitter association in session
+            # check twitter association in session
             twitter_helper = twitter.TwitterAuth(self)
             twitter_association_data = twitter_helper.get_association_data()
             if twitter_association_data is not None:
@@ -771,7 +771,7 @@ class EditPasswordHandler(BaseHandler):
                     'sender' : config.contact_sender,
                     })
 
-                #Login User
+                # Login User
                 self.auth.get_user_by_password(user.auth_ids[0], password)
                 self.add_message(_('Password changed successfully'), 'success')
                 return self.redirect_to('edit-profile')
@@ -943,7 +943,7 @@ class PasswordResetHandler(LoginBaseHandler):
             _message = _('Wrong image verification code. Please try again.')
             self.add_message(_message, 'error')
             return self.redirect_to('password-reset')
-            #check if we got an email or username
+            # check if we got an email or username
         email_or_username = str(self.request.POST.get('email_or_username')).lower().strip()
         if utils.is_email_valid(email_or_username):
             user = models.User.get_by_email(email_or_username)
