@@ -63,7 +63,8 @@ def open_with_encoding(filename, encoding, mode='r'):
     """Return opened file with a specific encoding."""
     try:
         # Python 3
-        return open(filename, mode=mode, encoding=encoding)
+        return open(filename, mode=mode, encoding=encoding,
+                    newline='')  # Preserve line endings
     except TypeError:
         # Python 2
         return codecs.open(filename, mode=mode, encoding=encoding)
@@ -1662,7 +1663,7 @@ def fix_file(filename, opts, output=sys.stdout):
 
     # Add missing newline (important for diff)
     if tmp_source:
-        tmp_newline = find_newline(tmp_source)
+        tmp_newline = find_newline(tmp_source.splitlines(True))
         if tmp_source == tmp_source.rstrip(tmp_newline):
             tmp_source += tmp_newline
 
