@@ -1997,12 +1997,11 @@ correct = 'good syntax ?' in dict()
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    # Doesn't work because pep8 doesn't seem to work with CR line endings
-    #def test_w602_escaped_cr(self):
-    #    line = 'raise ValueError, \\\r"hello"\n'
-    #    fixed = 'raise ValueError("hello")\n'
-    #    self._inner_setup(line)
-    #    self.assertEqual(self.result, fixed)
+    def test_w602_escaped_cr(self):
+        line = 'raise ValueError, \\\r"hello"\n'
+        fixed = 'raise ValueError("hello")\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
 
     def test_w602_multiple_statements(self):
         line = 'raise ValueError, "hello";print 1\n'
