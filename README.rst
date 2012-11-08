@@ -88,8 +88,7 @@ After::
 
     def func11():
         a = (1, 2, 3, "a")
-        # This is a long comment. It should be wrapped to fit within 72
-        # characters.
+        # This is a long comment. It should be wrapped to fit within 72 characters.
         return [a, [100, 200, 300, 9876543210,
                     'This is a long string that goes on and on']]
 
@@ -197,8 +196,11 @@ autopep8 fixes the following issues_ reported by pep8_::
     W603 - Replace <> with !=.
     W604 - Replace backticks with repr().
 
-autopep8 also fixes some issues not found by pep8_. This inclues formatting of
-block comments and correcting of some non-idiomatic Python code.
+autopep8 also fixes some issues not found by pep8_.
+
+- Format block comments.
+- Correct some non-idiomatic Python code.
+- Normalize files with mixed line endings.
 
 
 More advanced usage
