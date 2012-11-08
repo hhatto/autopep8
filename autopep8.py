@@ -861,11 +861,11 @@ def find_newline(source):
     """Return type of newline used in source."""
     cr, lf, crlf = 0, 0, 0
     for s in source:
-        if CRLF in s:
+        if s.endswith(CRLF):
             crlf += 1
-        elif CR in s:
+        elif s.endswith(CR):
             cr += 1
-        elif LF in s:
+        elif s.endswith(LF):
             lf += 1
     _max = max(cr, crlf, lf)
     if _max == lf:
@@ -1658,11 +1658,23 @@ def format_block_comments(source):
     return ''.join(fixed_lines)
 
 
+def normalize_line_endings(text):
+    """Return fixed line endings.
+
+    All lines will be modified to use the most common line ending.
+
+    """
+    split_lines = text.splitlines(True)
+    return find_newline(split_lines).join(
+        [line.rstrip('\n\r') for line in split_lines] +
+        [''])
+
+
 def fix_file(filename, opts=None, output=sys.stdout):
     if not opts:
         opts = parse_args([filename])[0]
 
-    tmp_source = read_from_filename(filename)
+    tmp_source = normalize_line_endings(read_from_filename(filename))
 
     # Add missing newline (important for diff)
     if tmp_source:

@@ -232,6 +232,18 @@ def foo():
             output=sio)
         self.assertIn('import ', sio.getvalue())
 
+    def test_normalize_line_endings(self):
+        self.assertEqual(
+            'abc\ndef\n123\nhello\nworld\n',
+            autopep8.normalize_line_endings(
+                'abc\ndef\n123\rhello\r\nworld\r'))
+
+    def test_normalize_line_endings_with_crlf(self):
+        self.assertEqual(
+            'abc\r\ndef\r\n123\r\nhello\r\nworld\r\n',
+            autopep8.normalize_line_endings(
+                'abc\ndef\r\n123\r\nhello\r\nworld\r'))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 
