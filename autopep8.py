@@ -1658,7 +1658,10 @@ def format_block_comments(source):
     return ''.join(fixed_lines)
 
 
-def fix_file(filename, opts, output=sys.stdout):
+def fix_file(filename, opts=None, output=sys.stdout):
+    if not opts:
+        opts = parse_args([filename])[0]
+
     tmp_source = read_from_filename(filename)
 
     # Add missing newline (important for diff)

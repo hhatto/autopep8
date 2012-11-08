@@ -225,6 +225,13 @@ def foo():
             '#: abc',
             autopep8.format_block_comments('#: abc'))
 
+    def test_fix_file(self):
+        sio = StringIO()
+        autopep8.fix_file(
+            filename=os.path.join(ROOT_DIR, 'test', 'example.py'),
+            output=sio)
+        self.assertIn('import ', sio.getvalue())
+
 
 class TestFixPEP8Error(unittest.TestCase):
 
