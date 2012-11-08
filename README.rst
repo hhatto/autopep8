@@ -157,25 +157,15 @@ autopep8 fixes the following issues_ reported by pep8_::
     E126 - Fix over-indented hanging indentation.
     E127 - Fix visual indentation.
     E128 - Fix visual indentation.
-    E201 - Remove extraneous whitespace.
-    E202 - Remove extraneous whitespace.
-    E203 - Remove extraneous whitespace.
+    E20  - Remove extraneous whitespace.
     E211 - Remove extraneous whitespace.
-    E221 - Fix extraneous whitespace around keywords.
-    E222 - Fix extraneous whitespace around keywords.
-    E223 - Fix extraneous whitespace around keywords.
-    E224 - Remove extraneous whitespace around operator.
-    E225 - Fix missing whitespace around operator.
+    E22  - Fix extraneous whitespace around keywords.
     E231 - Add missing whitespace.
     E241 - Fix extraneous whitespace around keywords.
     E242 - Remove extraneous whitespace around operator.
     E251 - Remove whitespace around parameter '=' sign.
-    E261 - Fix spacing after comment hash.
-    E262 - Fix spacing after comment hash.
-    E271 - Fix extraneous whitespace around keywords.
-    E272 - Fix extraneous whitespace around keywords.
-    E273 - Fix extraneous whitespace around keywords.
-    E274 - Fix extraneous whitespace around keywords.
+    E26  - Fix spacing after comment hash.
+    E27  - Fix extraneous whitespace around keywords.
     E301 - Add missing blank line.
     E302 - Add missing 2 blank lines.
     E303 - Remove extra blank lines.
