@@ -1840,10 +1840,9 @@ def main():
         assert not opts.recursive
         filenames = args[:1]
 
-    if sys.version_info[0] >= 3:
-        output = sys.stdout
-    else:
-        output = codecs.getwriter('utf-8')(sys.stdout)
+    output = codecs.getwriter('utf-8')(sys.stdout.buffer
+                                       if sys.version_info[0] >= 3
+                                       else sys.stdout)
 
     output = LineEndingWrapper(output)
 
