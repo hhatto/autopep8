@@ -1806,7 +1806,7 @@ def supported_fixes():
 
 class LineEndingWrapper(object):
 
-    """Replace line endings to work with sys.stdout.
+    r"""Replace line endings to work with sys.stdout.
 
     It seems that sys.stdout expects only '\n' as the line ending, no matter
     the platform. Otherwise, we get repeated line endings.
