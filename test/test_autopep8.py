@@ -223,11 +223,10 @@ def foo():
             autopep8.format_block_comments('#: abc'))
 
     def test_fix_file(self):
-        sio = StringIO()
-        autopep8.fix_file(
-            filename=os.path.join(ROOT_DIR, 'test', 'example.py'),
-            output=sio)
-        self.assertIn('import ', sio.getvalue())
+        self.assertIn(
+            'import ',
+            autopep8.fix_file(
+                filename=os.path.join(ROOT_DIR, 'test', 'example.py')))
 
     def test_normalize_line_endings(self):
         self.assertEqual(
@@ -256,8 +255,7 @@ class TestFixPEP8Error(unittest.TestCase):
         opts, _ = autopep8.parse_args([self.tempfile[1]] + list(options))
         self.result = autopep8.fix_file(
             filename=self.tempfile[1],
-            opts=opts,
-            output=None)
+            opts=opts)
 
     def test_e101(self):
         line = """
@@ -1702,8 +1700,7 @@ class TestFixPEP8Warning(unittest.TestCase):
 
         self.result = autopep8.fix_file(
             filename=self.tempfile[1],
-            opts=opts,
-            output=None)
+            opts=opts)
 
     def test_w191_should_ignore_multiline_strings(self):
         line = """
@@ -2205,8 +2202,7 @@ class TestSpawnPEP8Process(unittest.TestCase):
             autopep8.pep8 = None
             self.result = autopep8.fix_file(
                 filename=self.tempfile[1],
-                opts=opts,
-                output=None)
+                opts=opts)
         finally:
             autopep8.pep8 = original_pep8
 

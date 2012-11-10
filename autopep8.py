@@ -1668,7 +1668,7 @@ def normalize_line_endings(text):
         [''])
 
 
-def fix_file(filename, opts=None, output=sys.stdout):
+def fix_file(filename, opts=None, output=None):
     if not opts:
         opts = parse_args([filename])[0]
 
