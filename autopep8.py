@@ -150,8 +150,7 @@ class FixPEP8(object):
         if contents is None:
             self.source = read_from_filename(filename, readlines=True)
         else:
-            sio = StringIO(contents)
-            self.source = sio.readlines()
+            self.source = contents.splitlines(True)
         self.original_source = copy.copy(self.source)
         self.newline = find_newline(self.source)
         self.options = options
