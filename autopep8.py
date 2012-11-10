@@ -1721,14 +1721,21 @@ def fix_file(filename, opts=None, output=sys.stdout):
     if opts.diff:
         new = StringIO(fixed_source)
         new = new.readlines()
-        output.write(_get_difftext(original_source, new, filename))
+        diff = _get_difftext(original_source, new, filename)
+        if output:
+            output.write(diff)
+        else:
+            return output
     elif opts.in_place:
         fp = open_with_encoding(filename, encoding=encoding,
                                 mode='w')
         fp.write(fixed_source)
         fp.close()
     else:
-        output.write(fixed_source)
+        if output:
+            output.write(fixed_source)
+        else:
+            return fixed_source
 
     if interruption:
         raise interruption

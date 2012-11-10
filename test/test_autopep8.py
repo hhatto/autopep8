@@ -14,12 +14,9 @@ from subprocess import Popen, PIPE
 from tempfile import mkstemp
 
 try:
-    from cStringIO import StringIO
+    from StringIO import StringIO
 except ImportError:
-    try:
-        from StringIO import StringIO
-    except ImportError:
-        from io import StringIO
+    from io import StringIO
 
 ROOT_DIR = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
 
@@ -257,15 +254,10 @@ class TestFixPEP8Error(unittest.TestCase):
         with open(self.tempfile[1], 'w') as temp_file:
             temp_file.write(line)
         opts, _ = autopep8.parse_args([self.tempfile[1]] + list(options))
-        sio = StringIO()
-        if sys.version_info[0] < 3:
-            output = codecs.getwriter(locale.getpreferredencoding())(sio)
-        else:
-            output = sio
-        autopep8.fix_file(filename=self.tempfile[1],
-                          opts=opts,
-                          output=output)
-        self.result = output.getvalue()
+        self.result = autopep8.fix_file(
+            filename=self.tempfile[1],
+            opts=opts,
+            output=None)
 
     def test_e101(self):
         line = """
@@ -1563,7 +1555,7 @@ time.strftime('%d-%m-%Y')
             line = unicode(line, 'utf-8')
             fixed = unicode(fixed, 'utf-8')
             self._inner_setup(line.encode('utf-8'))
-            self.assertEqual(self.result, fixed.encode('utf-8'))
+            self.assertEqual(self.result, fixed)
         else:
             self._inner_setup(line)
             self.assertEqual(self.result, fixed)
@@ -1707,15 +1699,11 @@ class TestFixPEP8Warning(unittest.TestCase):
         with open(self.tempfile[1], 'w') as temp_file:
             temp_file.write(line)
         opts, _ = autopep8.parse_args([self.tempfile[1]] + list(options))
-        sio = StringIO()
-        if sys.version_info[0] < 3:
-            output = codecs.getwriter(locale.getpreferredencoding())(sio)
-        else:
-            output = sio
-        autopep8.fix_file(filename=self.tempfile[1],
-                          opts=opts,
-                          output=output)
-        self.result = output.getvalue()
+
+        self.result = autopep8.fix_file(
+            filename=self.tempfile[1],
+            opts=opts,
+            output=None)
 
     def test_w191_should_ignore_multiline_strings(self):
         line = """
@@ -1892,7 +1880,7 @@ correct = 'good syntax ?' in dict()
             line = unicode(line, 'utf-8')
             fixed = unicode(fixed, 'utf-8')
             self._inner_setup(line.encode('utf-8'))
-            self.assertEqual(self.result, fixed.encode('utf-8'))
+            self.assertEqual(self.result, fixed)
         else:
             self._inner_setup(line)
             self.assertEqual(self.result, fixed)
@@ -2210,19 +2198,17 @@ class TestSpawnPEP8Process(unittest.TestCase):
         with open(self.tempfile[1], 'w') as temp_file:
             temp_file.write(line)
         opts, _ = autopep8.parse_args(list(options) + [self.tempfile[1]])
-        sio = StringIO()
 
         # Monkey patch pep8 to trigger spawning
         original_pep8 = autopep8.pep8
         try:
             autopep8.pep8 = None
-            autopep8.fix_file(filename=self.tempfile[1],
-                              opts=opts,
-                              output=sio)
+            self.result = autopep8.fix_file(
+                filename=self.tempfile[1],
+                opts=opts,
+                output=None)
         finally:
             autopep8.pep8 = original_pep8
-
-        self.result = sio.getvalue()
 
     def test_basic(self):
         line = "print('abc' )    \n1*1\n"
