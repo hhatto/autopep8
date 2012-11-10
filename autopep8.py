@@ -1825,7 +1825,7 @@ def main():
     if sys.version_info[0] >= 3:
         output = sys.stdout
     else:
-        output = codecs.getwriter(locale.getpreferredencoding())(sys.stdout)
+        output = codecs.getwriter('utf-8')(sys.stdout)
 
     while filenames:
         name = filenames.pop(0)
