@@ -29,7 +29,6 @@ import re
 import sys
 import inspect
 import codecs
-import locale
 try:
     from StringIO import StringIO
 except ImportError:
@@ -1805,6 +1804,25 @@ def supported_fixes():
                           getattr(instance, attribute).__doc__))
 
 
+class LineEndingWrapper(object):
+
+    """Replace line endings to work with sys.stdout.
+
+    It seems that sys.stdout expects only '\n' as the line ending, no matter
+    the platform. Otherwise, we get repeated line endings.
+
+    """
+
+    def __init__(self, output):
+        self.__output = output
+
+    def write(self, s):
+        self.__output.write(s.replace('\r\n', '\n'))
+
+    def __getattr__(self, key):
+        return getattr(self.__output, key)
+
+
 def main():
     """Tool main."""
     opts, args = parse_args(sys.argv[1:])
@@ -1826,6 +1844,8 @@ def main():
         output = sys.stdout
     else:
         output = codecs.getwriter('utf-8')(sys.stdout)
+
+    output = LineEndingWrapper(output)
 
     while filenames:
         name = filenames.pop(0)
