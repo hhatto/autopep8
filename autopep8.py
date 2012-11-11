@@ -549,8 +549,7 @@ class FixPEP8(object):
                 fixed.endswith('=\\\r\n') or
                 fixed.endswith('=\\\r')):
             self.source[line_index] = fixed.rstrip('\n\r \t\\')
-            self.source[line_index + 1] = \
-                self.source[line_index + 1].lstrip()
+            self.source[line_index + 1] = self.source[line_index + 1].lstrip()
             return [line_index + 1, line_index + 2]  # Line indexed at 1
 
         self.source[result['line'] - 1] = fixed
@@ -1388,8 +1387,8 @@ class Wrapper(object):
                     vi.append(indent_level + hang)
 
                 # about the best we can do without look-ahead
-                if indent_next and vi[0] == indent_level + 4 and \
-                        nrows == row + 1:
+                if (indent_next and vi[0] == indent_level + 4 and
+                        nrows == row + 1):
                     vi[0] += 4
 
                 if add_second_chances:
