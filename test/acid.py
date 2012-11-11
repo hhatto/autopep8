@@ -13,7 +13,7 @@ import tokenize
 def red(file_object):
     """Red context."""
     if file_object.isatty():
-        RED = '\033[91m'
+        RED = '\033[31m'
         END = '\033[0m'
     else:
         RED = ''
