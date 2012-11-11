@@ -240,6 +240,15 @@ def foo():
             autopep8.normalize_line_endings(
                 'abc\ndef\r\n123\r\nhello\r\nworld\r'))
 
+    def test_normalize_for_syntax_check(self):
+        self.assertEqual(
+            '3',
+            autopep8.normalize_for_syntax_check('return 3'))
+
+        self.assertEqual(
+            'foo(a, b, c)',
+            autopep8.normalize_for_syntax_check('def foo(a, b, c):'))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 

@@ -991,9 +991,18 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
 
             # Only fix if syntax is okay. We return leading "return" since it
             # will always be considered bad syntax on its own.
-            if check_syntax(re.sub(r'\breturn\b\s*', '', fixed)):
+            if check_syntax(normalize_for_syntax_check(fixed)):
                 return indentation + fixed
     return None
+
+
+def normalize_for_syntax_check(line):
+    """Return normalized code for syntax check."""
+    for remove in [r'\breturn\b\s*',
+                   r'\bdef\b\s*',
+                   r':\s*$']:
+        line = re.sub(remove, '', line)
+    return line
 
 
 def fix_whitespace(line, offset, replacement):
