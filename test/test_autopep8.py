@@ -2259,22 +2259,21 @@ if True:
         self.assertEqual(self.result, fixed)
 
 
+@contextlib.contextmanager
+def temporary_file_context(text):
+    tempfile = mkstemp()
+    with open(tempfile[1], 'w') as temp_file:
+        temp_file.write(text)
+    yield tempfile[1]
+    os.remove(tempfile[1])
+
+
 class TestCoverage(unittest.TestCase):
-
-    def setUp(self):
-        self.tempfile = mkstemp()
-
-    def tearDown(self):
-        os.remove(self.tempfile[1])
-
-    def _inner_setup(self, line):
-        with open(self.tempfile[1], 'w') as temp_file:
-            temp_file.write(line)
 
     def test_fixpep8_class_constructor(self):
         line = "print 1\nprint 2\n"
-        self._inner_setup(line)
-        pep8obj = autopep8.FixPEP8(self.tempfile[1], None)
+        with temporary_file_context(line) as temp_file:
+            pep8obj = autopep8.FixPEP8(temp_file, None)
         self.assertEqual("".join(pep8obj.source), line)
 
     def test_no_argument(self):
