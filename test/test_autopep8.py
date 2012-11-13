@@ -2272,8 +2272,8 @@ class TestCoverage(unittest.TestCase):
 
     def test_fixpep8_class_constructor(self):
         line = "print 1\nprint 2\n"
-        with temporary_file_context(line) as temp_file:
-            pep8obj = autopep8.FixPEP8(temp_file, None)
+        with temporary_file_context(line) as filename:
+            pep8obj = autopep8.FixPEP8(filename, None)
         self.assertEqual("".join(pep8obj.source), line)
 
     def test_no_argument(self):
@@ -2291,6 +2291,26 @@ class TestCoverage(unittest.TestCase):
                 self.assertEqual("not work", "test has failed!!")
             except SystemExit as e:
                 self.assertEqual(e.code, 2)
+
+    def test_standard_out_should_use_native_line_ending(self):
+        line = '1\r\n2\r\n3\r\n'
+        with temporary_file_context(line) as filename:
+            process = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                            [filename],
+                            stdout=PIPE)
+            self.assertEqual(
+                os.linesep.join(['1', '2', '3', '']),
+                process.communicate()[0].decode('utf-8'))
+
+    def test_standard_out_should_use_native_line_ending_with_cr_input(self):
+        line = '1\r2\r3\r'
+        with temporary_file_context(line) as filename:
+            process = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                            [filename],
+                            stdout=PIPE)
+            self.assertEqual(
+                os.linesep.join(['1', '2', '3', '']),
+                process.communicate()[0].decode('utf-8'))
 
 
 @contextlib.contextmanager
