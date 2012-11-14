@@ -245,10 +245,6 @@ def foo():
             '3',
             autopep8.normalize_for_syntax_check('return 3'))
 
-        self.assertEqual(
-            'foo(a, b, c)',
-            autopep8.normalize_for_syntax_check('def foo(a, b, c):'))
-
 
 class TestFixPEP8Error(unittest.TestCase):
 
@@ -1500,6 +1496,20 @@ if True:
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
+
+    def test_e501_with_function_should_not_break_on_colon(self):
+        line = r"""
+class Useless(object):
+    def _table_field_is_plain_widget(self, widget):
+        if widget.__class__ == Widget or\
+                (widget.__class__ == WidgetMeta and Widget in widget.__bases__):
+            return True
+
+        return False
+""".lstrip()
+
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
 
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"

@@ -998,11 +998,7 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
 
 def normalize_for_syntax_check(line):
     """Return normalized code for syntax check."""
-    for remove in [r'\breturn\b\s*',
-                   r'\bdef\b\s*',
-                   r':\s*$']:
-        line = re.sub(remove, '', line)
-    return line
+    return re.sub(r'\breturn\b\s*', '', line)
 
 
 def fix_whitespace(line, offset, replacement):
