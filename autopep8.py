@@ -989,16 +989,10 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
             else:
                 fixed = first + newline + second
 
-            # Only fix if syntax is okay. We return leading "return" since it
-            # will always be considered bad syntax on its own.
-            if check_syntax(normalize_for_syntax_check(fixed)):
+            # Only fix if syntax is okay.
+            if check_syntax(fixed):
                 return indentation + fixed
     return None
-
-
-def normalize_for_syntax_check(line):
-    """Return normalized code for syntax check."""
-    return re.sub(r'\breturn\b\s*', '', line)
 
 
 def fix_whitespace(line, offset, replacement):

@@ -240,11 +240,6 @@ def foo():
             autopep8.normalize_line_endings(
                 'abc\ndef\r\n123\r\nhello\r\nworld\r'))
 
-    def test_normalize_for_syntax_check(self):
-        self.assertEqual(
-            '3',
-            autopep8.normalize_for_syntax_check('return 3'))
-
 
 class TestFixPEP8Error(unittest.TestCase):
 
@@ -1226,20 +1221,6 @@ print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,
 
 print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
       333, 333, 333)
-"""
-        self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
-
-    def test_e501_with_return(self):
-        line = """
-def foo():
-    return (111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
-"""
-        fixed = """
-
-def foo():
-    return (111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222,
-            222, 333, 333, 333, 333)
 """
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
