@@ -190,7 +190,7 @@ autopep8 fixes the following issues_ reported by pep8_::
 autopep8 also fixes some issues not found by pep8_.
 
 - Format block comments.
-- Correct some non-idiomatic Python code.
+- Correct some non-idiomatic Python code (via `2to3 -f idioms`).
 - Normalize files with mixed line endings.
 
 
