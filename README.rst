@@ -125,8 +125,7 @@ Options::
 
     Usage: autopep8 [options] [filename [filename ...]]
 
-     A tool that automatically formats Python code to conform to the PEP 8 style
-    guide.
+    Automatically formats Python code to conform to the PEP 8 style guide.
 
     Options:
       --version             show program's version number and exit
@@ -140,8 +139,12 @@ Options::
       -p PEP8_PASSES, --pep8-passes=PEP8_PASSES
                             maximum number of additional pep8 passes (default:
                             100)
+      --list-fixes          list codes for fixes; used by --ignore and --select
       --ignore=IGNORE       do not fix these errors/warnings (e.g. E4,W)
       --select=SELECT       fix only these errors/warnings (e.g. E4,W)
+      --max-line-length=MAX_LINE_LENGTH
+                            set maximum allowed line length (default: 79)
+      --aggressive          enable possibly unsafe changes (E711)
 
 
 Features
