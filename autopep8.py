@@ -1550,13 +1550,20 @@ def filter_results(source, results):
     Currently we filter out errors about indentation in multiline strings.
 
     """
-    string_line_numbers = multiline_string_lines(source)
+    non_docstring_string_line_numbers = multiline_string_lines(
+        source, include_docstrings=False)
+    all_string_line_numbers = multiline_string_lines(
+        source, include_docstrings=True)
 
     for r in results:
-        if r['line'] in string_line_numbers:
+        if r['line'] in non_docstring_string_line_numbers:
             if r['id'].lower().startswith('e1'):
                 continue
             elif r['id'].lower() in ['e501', 'w191']:
+                continue
+
+        if r['line'] in all_string_line_numbers:
+            if r['id'].lower() in ['e501']:
                 continue
 
         # Filter out incorrect E101 reports when there are no tabs.
@@ -1568,7 +1575,7 @@ def filter_results(source, results):
         yield r
 
 
-def multiline_string_lines(source):
+def multiline_string_lines(source, include_docstrings=False):
     """Return line numbers that are within multiline strings.
 
     The line numbers are indexed at 1.
@@ -1587,11 +1594,12 @@ def multiline_string_lines(source):
             end_row = t[3][0]
 
             if (token_type == tokenize.STRING and
-                    starts_with_triple(token_string) and
-                    previous_token_type != tokenize.INDENT):
-                # We increment by one since we want the contents of the
-                # string.
-                line_numbers |= set(range(1 + start_row, 1 + end_row))
+                    starts_with_triple(token_string)):
+                if (include_docstrings or
+                        previous_token_type != tokenize.INDENT):
+                    # We increment by one since we want the contents of the
+                    # string.
+                    line_numbers |= set(range(1 + start_row, 1 + end_row))
 
             previous_token_type = token_type
     except (IndentationError, tokenize.TokenError):
