@@ -1555,21 +1555,30 @@ def filter_results(source, results):
     all_string_line_numbers = multiline_string_lines(
         source, include_docstrings=True)
 
+    split_source = [None] + source.splitlines()
+
     for r in results:
+        issue_id = r['id'].lower()
+
         if r['line'] in non_docstring_string_line_numbers:
-            if r['id'].lower().startswith('e1'):
+            if issue_id.startswith('e1'):
                 continue
-            elif r['id'].lower() in ['e501', 'w191']:
+            elif issue_id in ['e501', 'w191']:
                 continue
 
         if r['line'] in all_string_line_numbers:
-            if r['id'].lower() in ['e501']:
+            if issue_id in ['e501']:
                 continue
 
         # Filter out incorrect E101 reports when there are no tabs.
         # pep8 will complain about this even if the tab indentation found
         # elsewhere is in a multi-line string.
-        if r['id'].lower() == 'e101' and '\t' not in source[r['line'] - 1]:
+        if issue_id == 'e101' and '\t' not in split_source[r['line']]:
+            continue
+
+        # pep8 should not complain about SQLAlchemy queries. SQLAlchemy
+        # overrides the equality operators.
+        if issue_id == 'e711' and 'filter' in split_source[r['line']]:
             continue
 
         yield r

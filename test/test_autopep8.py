@@ -401,8 +401,7 @@ try:
                   ['-vvv', '--select=E101', '--diff',
                    os.path.join(ROOT_DIR, 'test', 'e101_example.py')],
                   stdout=PIPE, stderr=PIPE)
-        output, error = [x.decode('utf-8') for x in p.communicate()]
-        self.assertIn('Not fixing E101 on line', error)
+        output = [x.decode('utf-8') for x in p.communicate()][0]
         self.assertEqual('', output)
 
     def test_e111_short(self):
@@ -1675,6 +1674,16 @@ raise IOError('abc '
         fixed = 'foo is not None\n'
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
+
+    def test_e711_should_not_modify_sql_alchemy_query(self):
+        line = 'filter(User.name == None)\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
+    def test_e711_should_not_modify_sql_alchemy_query_with_not_equals(self):
+        line = 'filter(User.name != None)\n'
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
 
     def test_e721(self):
         line = "type('') == type('')\n"
