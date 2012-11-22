@@ -47,14 +47,12 @@ def run(filename, fast_check=False, passes=2000,
     Return True on success.
 
     """
-    ignore_option = '--ignore=' + ignore
-
     autopep8_path = os.path.split(os.path.abspath(
         os.path.dirname(__file__)))[0]
     autoppe8_bin = os.path.join(autopep8_path, 'autopep8.py')
     command = ([autoppe8_bin] + (['--verbose'] if verbose else []) +
                ['--pep8-passes={p}'.format(p=passes),
-                ignore_option, filename] +
+                '--ignore=' + ignore, filename] +
                (['--aggressive'] if aggressive else []))
 
     if fast_check:
@@ -68,9 +66,12 @@ def run(filename, fast_check=False, passes=2000,
                 return False
 
             with yellow(sys.stdout):
-                if 0 != subprocess.call(['pep8', ignore_option + check_ignore,
-                                         '--show-source', tmp_file.name],
-                                        stdout=sys.stdout):
+                if 0 != subprocess.call(
+                    ['pep8',
+                     '--ignore=' + ','.join(ignore.split(',') +
+                                            check_ignore.split(',')),
+                     '--show-source', tmp_file.name],
+                        stdout=sys.stdout):
                     sys.stderr.write('autopep8 did not completely fix ' +
                                      filename + '\n')
 
