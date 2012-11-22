@@ -3,6 +3,7 @@
 
 import contextlib
 import difflib
+import dis
 import os
 import re
 import sys
@@ -171,7 +172,6 @@ def _disassemble(code):
     """Disassemble a code object."""
     sio = StringIO()
 
-    import dis
     findlinestarts = dis.findlinestarts
     dis.findlinestarts = lambda _: {}
     sys.stdout, sio = sio, sys.stdout
