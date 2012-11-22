@@ -146,14 +146,17 @@ def disassemble(filename):
     with open_with_encoding(filename, _detect_encoding(filename)) as f:
         code = compile(f.read(), '<string>', 'exec')
 
-    import dis
-    dis.findlinestarts = lambda _: {}
     sio = StringIO()
+
+    import dis
+    findlinestarts = dis.findlinestarts
+    dis.findlinestarts = lambda _: {}
     sys.stdout, sio = sio, sys.stdout
     try:
         dis.dis(code)
     finally:
         sys.stdout, sio = sio, sys.stdout
+        dis.findlinestarts = findlinestarts
 
     return re.sub('<code object .* line [0-9]+>',
                   '<code object>',  sio.getvalue())
