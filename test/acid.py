@@ -2,11 +2,18 @@
 """Test that autopep8 runs without crashing on various Python files."""
 
 import contextlib
+import difflib
 import os
+import re
 import sys
 import subprocess
 import tempfile
 import tokenize
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 
 @contextlib.contextmanager
@@ -31,7 +38,8 @@ def red(file_object):
 
 
 def run(filename, fast_check=False, passes=2000,
-        ignore='', check_ignore='', verbose=False):
+        ignore='', check_ignore='', verbose=False,
+        compare_bytecode=False):
     """Run autopep8 on file at filename.
 
     Return True on success.
@@ -64,14 +72,26 @@ def run(filename, fast_check=False, passes=2000,
                                      filename + '\n')
 
             try:
-                if _check_syntax(filename):
+                if check_syntax(filename):
                     try:
-                        _check_syntax(tmp_file.name, raise_error=True)
+                        check_syntax(tmp_file.name, raise_error=True)
                     except (SyntaxError, TypeError,
                             UnicodeDecodeError) as exception:
                         sys.stderr.write('autopep8 broke ' + filename + '\n' +
                                          str(exception) + '\n')
                         return False
+
+                    if compare_bytecode:
+                        before_bytecode = disassemble(filename)
+                        after_bytecode = disassemble(tmp_file.name)
+                        if before_bytecode != after_bytecode:
+                            sys.stderr.write(
+                                'New bytecode does not match original ' +
+                                filename + '\n' +
+                                ''.join(difflib.unified_diff(
+                                    before_bytecode.splitlines(True),
+                                    after_bytecode.splitlines(True))))
+                            return False
             except IOError as exception:
                 sys.stderr.write(str(exception) + '\n')
 
@@ -98,7 +118,7 @@ def _detect_encoding(filename):
         return 'utf-8'
 
 
-def _open_with_encoding(filename, encoding, mode='r'):
+def open_with_encoding(filename, encoding, mode='r'):
     """Open file with a specific encoding."""
     try:
         # Python 3
@@ -107,9 +127,9 @@ def _open_with_encoding(filename, encoding, mode='r'):
         return open(filename, mode=mode)
 
 
-def _check_syntax(filename, raise_error=False):
+def check_syntax(filename, raise_error=False):
     """Return True if syntax is okay."""
-    with _open_with_encoding(
+    with open_with_encoding(
             filename, _detect_encoding(filename)) as input_file:
         try:
             compile(input_file.read(), '<string>', 'exec')
@@ -119,6 +139,24 @@ def _check_syntax(filename, raise_error=False):
                 raise
             else:
                 return False
+
+
+def disassemble(filename):
+    """dis, but without line numbers."""
+    with open_with_encoding(filename, _detect_encoding(filename)) as f:
+        code = compile(f.read(), '<string>', 'exec')
+
+    import dis
+    dis.findlinestarts = lambda _: {}
+    sio = StringIO()
+    sys.stdout, sio = sio, sys.stdout
+    try:
+        dis.dis(code)
+    finally:
+        sys.stdout, sio = sio, sys.stdout
+
+    return re.sub('<code object .* line [0-9]+>',
+                  '<code object>',  sio.getvalue())
 
 
 def process_args():
@@ -138,6 +176,8 @@ def process_args():
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)',
                       default=2000)
+    parser.add_option('--compare-bytecode', action='store_true',
+                      help='compare bytecode before and after fixes')
 
     parser.add_option(
         '--timeout',
@@ -216,7 +256,8 @@ def check(opts, args):
                            passes=opts.pep8_passes,
                            ignore=opts.ignore,
                            check_ignore=opts.check_ignore,
-                           verbose=opts.verbose):
+                           verbose=opts.verbose,
+                           compare_bytecode=opts.compare_bytecode):
                     return False
     except TimeoutException:
         sys.stderr.write('Timed out\n')
