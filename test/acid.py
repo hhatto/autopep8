@@ -155,7 +155,9 @@ def filter_disassembly(text):
     # trailing whitespace.
     lines = text.splitlines()
     for index, current_line in enumerate(lines):
-        if current_line.split() == ['19', 'STORE_NAME', '3', '(__doc__)']:
+        tokens = current_line.split()
+        if (len(tokens) > 3 and
+                tokens[1] == 'STORE_NAME' and tokens[3] == '(__doc__)'):
             fixed = re.sub(r'\s', '', lines[index - 1])
             lines[index - 1] = fixed.replace(
                 r'\n', '').replace(r'\r', '').replace(r'\t', '')
