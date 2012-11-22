@@ -39,7 +39,8 @@ def red(file_object):
 
 def run(filename, fast_check=False, passes=2000,
         ignore='', check_ignore='', verbose=False,
-        compare_bytecode=False):
+        compare_bytecode=False,
+        aggressive=False):
     """Run autopep8 on file at filename.
 
     Return True on success.
@@ -52,7 +53,8 @@ def run(filename, fast_check=False, passes=2000,
     autoppe8_bin = os.path.join(autopep8_path, 'autopep8.py')
     command = ([autoppe8_bin] + (['--verbose'] if verbose else []) +
                ['--pep8-passes={p}'.format(p=passes),
-                ignore_option, filename])
+                ignore_option, filename] +
+               (['--aggressive'] if aggressive else []))
 
     if fast_check:
         if 0 != subprocess.call(command + ['--diff']):
@@ -211,6 +213,8 @@ def process_args():
                       help='compare bytecode before and after fixes; '
                            'should be used with '
                            '--ignore=E711,E721,W601,W602,W604')
+    parser.add_option('--aggressive', action='store_true',
+                      help='run autopep8 in aggressive mode')
 
     parser.add_option(
         '--timeout',
@@ -290,7 +294,8 @@ def check(opts, args):
                            ignore=opts.ignore,
                            check_ignore=opts.check_ignore,
                            verbose=opts.verbose,
-                           compare_bytecode=opts.compare_bytecode):
+                           compare_bytecode=opts.compare_bytecode,
+                           aggressive=opts.aggressive):
                     return False
     except TimeoutException:
         sys.stderr.write('Timed out\n')
