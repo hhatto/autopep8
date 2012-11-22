@@ -156,7 +156,9 @@ def filter_disassembly(text):
     lines = text.splitlines()
     for index, current_line in enumerate(lines):
         if current_line.split() == ['19', 'STORE_NAME', '3', '(__doc__)']:
-            lines[index - 1] = ''
+            fixed = re.sub(r'\s', '', lines[index - 1])
+            lines[index - 1] = fixed.replace(
+                r'\n', '').replace(r'\r', '').replace(r'\t', '')
 
     return '\n'.join(lines)
 
