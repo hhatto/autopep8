@@ -255,7 +255,8 @@ class FixPEP8(object):
                 n=len(results), progress=progress), file=sys.stderr)
 
         self._fix_source(filter_results(source=''.join(self.source),
-                                        results=results))
+                                        results=results,
+                                        aggressive=self.options.aggressive))
         return ''.join(self.source)
 
     def fix_e101(self, _):
@@ -1544,10 +1545,10 @@ def check_syntax(code):
         return False
 
 
-def filter_results(source, results):
+def filter_results(source, results, aggressive=False):
     """Filter out spurious reports from pep8.
 
-    Currently we filter out errors about indentation in multiline strings.
+    If aggressive is True, we allow possibly unsafe fixes like E711.
 
     """
     non_docstring_string_line_numbers = multiline_string_lines(
@@ -1574,6 +1575,9 @@ def filter_results(source, results):
         # pep8 will complain about this even if the tab indentation found
         # elsewhere is in a multi-line string.
         if issue_id == 'e101' and '\t' not in split_source[r['line']]:
+            continue
+
+        if issue_id == 'e711' and not aggressive:
             continue
 
         # pep8 should not complain about SQLAlchemy queries. SQLAlchemy
@@ -1788,6 +1792,8 @@ def parse_args(args):
     parser.add_option('--max-line-length', default=79, type=int,
                       help='set maximum allowed line length '
                            '(default: %default)')
+    parser.add_option('--aggressive', action='store_true',
+                      help='enable possibly unsafe changes (E711)')
     opts, args = parser.parse_args(args)
 
     if not len(args) and not opts.list_fixes:
