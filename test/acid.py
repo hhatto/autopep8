@@ -181,7 +181,8 @@ def process_args():
                       default=2000)
     parser.add_option('--compare-bytecode', action='store_true',
                       help='compare bytecode before and after fixes; '
-                           'should be used with --ignore=E711,E721,W291,W601')
+                           'should be used with '
+                           '--ignore=E711,E721,W291,W601,W602')
 
     parser.add_option(
         '--timeout',
