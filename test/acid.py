@@ -146,6 +146,11 @@ def disassemble(filename):
     with open_with_encoding(filename, _detect_encoding(filename)) as f:
         code = compile(f.read(), '<string>', 'exec')
 
+    return '\n'.join(_disassemble(code))
+
+
+def _disassemble(code):
+    """Disassemble a code object."""
     sio = StringIO()
 
     import dis
@@ -158,8 +163,15 @@ def disassemble(filename):
         sys.stdout, sio = sio, sys.stdout
         dis.findlinestarts = findlinestarts
 
-    return re.sub('<code object .* line [0-9]+>',
-                  '<code object>',  sio.getvalue())
+    disassembled_code = [
+        re.sub('<code object .* line [0-9]+>',
+               '<code object>',  sio.getvalue())]
+
+    for c in code.co_consts:
+        if hasattr(c, 'co_code'):
+            disassembled_code += _disassemble(c)
+
+    return disassembled_code
 
 
 def process_args():
@@ -182,7 +194,7 @@ def process_args():
     parser.add_option('--compare-bytecode', action='store_true',
                       help='compare bytecode before and after fixes; '
                            'should be used with '
-                           '--ignore=E711,E721,W29,W601,W602')
+                           '--ignore=E711,E721,W29,W601,W602,W604')
 
     parser.add_option(
         '--timeout',
