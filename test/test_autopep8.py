@@ -1438,6 +1438,16 @@ if True:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e501_with_comment_should_not_modify_docstring(self):
+        line = '''
+def foo():
+    """
+                        # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
+    """
+'''.lstrip()
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
     def test_e501_should_only_modify_last_comment(self):
         line = """123
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
