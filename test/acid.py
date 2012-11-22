@@ -146,7 +146,19 @@ def disassemble(filename):
     with open_with_encoding(filename, _detect_encoding(filename)) as f:
         code = compile(f.read(), '<string>', 'exec')
 
-    return '\n'.join(_disassemble(code))
+    return filter_disassembly('\n'.join(_disassemble(code)))
+
+
+def filter_disassembly(text):
+    """Filter out innocuous differences."""
+    # Ignore formatting of docstrings. We modify docstrings for indentation and
+    # trailing whitespace.
+    lines = text.splitlines()
+    for index, current_line in enumerate(lines):
+        if current_line.split() == ['19', 'STORE_NAME', '3', '(__doc__)']:
+            lines[index - 1] = ''
+
+    return '\n'.join(lines)
 
 
 def _disassemble(code):
@@ -194,7 +206,7 @@ def process_args():
     parser.add_option('--compare-bytecode', action='store_true',
                       help='compare bytecode before and after fixes; '
                            'should be used with '
-                           '--ignore=E711,E721,W29,W601,W602,W604')
+                           '--ignore=E711,E721,W601,W602,W604')
 
     parser.add_option(
         '--timeout',
