@@ -160,11 +160,19 @@ def filter_disassembly(text):
     lines = text.splitlines()
     for index, current_line in enumerate(lines):
         tokens = current_line.split()
-        if (len(tokens) > 3 and
-                tokens[1] == 'STORE_NAME' and tokens[3] == '(__doc__)'):
+        if len(tokens) <= 3:
+            continue
+
+        if tokens[1] == 'STORE_NAME' and tokens[3] == '(__doc__)':
             fixed = re.sub(r'\s', '', lines[index - 1])
             lines[index - 1] = fixed.replace(
                 r'\n', '').replace(r'\r', '').replace(r'\t', '')
+
+        # BUILD_TUPLE and LOAD_CONST () are equivalent.
+        if tokens[1] == 'LOAD_CONST' and tokens[3] == '(())':
+            lines[index] = lines[index].replace(
+                'LOAD_CONST               8 (())',
+                'BUILD_TUPLE              0')
 
     return '\n'.join(lines)
 
