@@ -17,18 +17,18 @@ except ImportError:
 
 
 @contextlib.contextmanager
-def red(file_object):
+def yellow(file_object):
     """Red context."""
     if file_object.isatty():
-        RED = '\033[31m'
+        YELLOW = '\033[33m'
         END = '\033[0m'
     else:
-        RED = ''
+        YELLOW = ''
         END = ''
 
     try:
         file_object.flush()
-        file_object.write(RED)
+        file_object.write(YELLOW)
         file_object.flush()
         yield
     finally:
@@ -66,7 +66,7 @@ def run(filename, fast_check=False, passes=2000,
                 sys.stderr.write('autopep8 crashed on ' + filename + '\n')
                 return False
 
-            with red(sys.stdout):
+            with yellow(sys.stdout):
                 if 0 != subprocess.call(['pep8', ignore_option + check_ignore,
                                          '--show-source', tmp_file.name],
                                         stdout=sys.stdout):
