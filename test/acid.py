@@ -170,7 +170,7 @@ def filter_disassembly(text):
                 tokens[3].startswith("('") or tokens[3].startswith("(u'")):
             # Note that we are not matching actual newlines, but escaped
             # newlines within a string.
-            lines[index] = re.sub(r'\\n\s+', r'\\n', lines[index])
+            lines[index] = re.sub(r'\s+\\n', r'\\n', lines[index])
 
         # LOAD_NAME and LOAD_CONST are sometimes used interchangeably.
         if tokens[1] == 'LOAD_NAME':
