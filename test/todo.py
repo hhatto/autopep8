@@ -6,4 +6,5 @@ one_two_three_four_five_six = {'one two three four five': 12345, 'asdfsdflsdkfjl
                                1: 1}
 
 
-# Code with vertical tabs.
+# Code with vertical tabs
+# (https://github.com/MartinMelo/SistemasOperativos/blob/master/Model/Recursos/CPU/CPU.py).
