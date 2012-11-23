@@ -85,7 +85,7 @@ def run(filename, fast_check=False, passes=2000,
                                 filename + '\n' +
                                 ''.join(difflib.unified_diff(
                                     before_bytecode.splitlines(True),
-                                    after_bytecode.splitlines(True))))
+                                    after_bytecode.splitlines(True))) + '\n')
                             return False
             except IOError as exception:
                 sys.stderr.write(str(exception) + '\n')
