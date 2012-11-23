@@ -17,25 +17,17 @@ except ImportError:
     from io import StringIO
 
 
-@contextlib.contextmanager
-def yellow(file_object):
-    """Red context."""
-    if file_object.isatty():
-        YELLOW = '\033[33m'
-        END = '\033[0m'
-    else:
-        YELLOW = ''
-        END = ''
+if sys.stdout.isatty():
+    YELLOW = '\033[33m'
+    END = '\033[0m'
+else:
+    YELLOW = ''
+    END = ''
 
-    try:
-        file_object.flush()
-        file_object.write(YELLOW)
-        file_object.flush()
-        yield
-    finally:
-        file_object.flush()
-        file_object.write(END)
-        file_object.flush()
+
+def colored(text, color):
+    """Return color coded text."""
+    return color + text + END
 
 
 def run(filename, fast_check=False, passes=2000,
@@ -65,15 +57,14 @@ def run(filename, fast_check=False, passes=2000,
                 sys.stderr.write('autopep8 crashed on ' + filename + '\n')
                 return False
 
-            with yellow(sys.stdout):
-                if 0 != subprocess.call(
-                    ['pep8',
-                     '--ignore=' + ','.join([x for x in ignore.split(',') +
-                                             check_ignore.split(',') if x]),
-                     '--show-source', tmp_file.name],
-                        stdout=sys.stdout):
-                    sys.stderr.write('autopep8 did not completely fix ' +
-                                     filename + '\n')
+            if 0 != subprocess.call(
+                ['pep8',
+                 '--ignore=' + ','.join([x for x in ignore.split(',') +
+                                         check_ignore.split(',') if x]),
+                 '--show-source', tmp_file.name],
+                    stdout=sys.stdout):
+                sys.stderr.write('autopep8 did not completely fix ' +
+                                 filename + '\n')
 
             try:
                 if check_syntax(filename):
@@ -271,7 +262,8 @@ def check(opts, args):
             name = os.path.realpath(filenames.pop(0))
             if name in completed_filenames:
                 sys.stderr.write(
-                    '--->  Skipping previously tested ' + name + '\n')
+                    colored('--->  Skipping previously tested ' + name + '\n',
+                            YELLOW))
                 continue
             else:
                 completed_filenames.update(name)
@@ -290,12 +282,12 @@ def check(opts, args):
                         if d.startswith('.'):
                             directories.remove(d)
             else:
-                sys.stderr.write('--->  Testing with ')
+                verbose_message = '--->  Testing with '
                 try:
-                    sys.stderr.write(name)
+                    verbose_message += name
                 except UnicodeEncodeError:
-                    sys.stderr.write('...')
-                sys.stderr.write('\n')
+                    verbose_message += '...'
+                sys.stderr.write(colored(verbose_message + '\n', YELLOW))
 
                 if not run(os.path.join(name),
                            fast_check=opts.fast_check,
