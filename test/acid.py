@@ -159,7 +159,7 @@ def filter_disassembly(text):
             lines[index - 1] = fixed.replace(
                 r'\n', '').replace(r'\r', '').replace(r'\t', '')
 
-        # BUILD_TUPLE and LOAD_CONST () are equivalent.
+        # BUILD_TUPLE and LOAD_CONST are sometimes used interchangeably.
         if tokens[1] == 'LOAD_CONST' and tokens[3] == '(())':
             lines[index] = lines[index].replace(
                 'LOAD_CONST               8 (())',
@@ -170,6 +170,17 @@ def filter_disassembly(text):
             # Note that we are not matching actual newlines, but escaped
             # newlines within a string.
             lines[index] = re.sub(r'\\n\s+', r'\\n', lines[index])
+
+        # LOAD_NAME and LOAD_CONST are sometimes used interchangeably.
+        if tokens[1] == 'LOAD_NAME':
+            if tokens[3] == '(False)':
+                lines[index] = lines[index].replace(
+                    'LOAD_NAME               21 (False)',
+                    'LOAD_CONST              12 (False)')
+            elif tokens[3] == '(None)':
+                lines[index] = lines[index].replace(
+                    'LOAD_NAME               14 (None)',
+                    'LOAD_CONST               5 (None)')
 
     return '\n'.join(lines)
 
