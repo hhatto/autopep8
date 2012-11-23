@@ -144,6 +144,21 @@ def disassemble(filename):
     return filter_disassembly('\n'.join(_disassemble(code)))
 
 
+def is_bytecode_string(text):
+    """Return True if this is a bytecode string."""
+    assert text.startswith('(')
+    text = text[1:]
+    for prefix in ['u', 'ur', 'b', 'br']:
+        if text.startswith(prefix):
+            text = text[len(prefix):]
+            break
+
+    for symbol in ['"', "'"]:
+        if text.startswith(symbol):
+            return True
+    return False
+
+
 def filter_disassembly(text):
     """Filter out innocuous differences."""
     # Ignore formatting of docstrings. We modify docstrings for indentation and
@@ -166,8 +181,7 @@ def filter_disassembly(text):
                 'BUILD_TUPLE              0')
 
         # Ignore trailing whitespace in multi-line strings.
-        if tokens[1] == 'LOAD_CONST' and (
-                tokens[3].startswith("('") or tokens[3].startswith("(u'")):
+        if tokens[1] == 'LOAD_CONST' and is_bytecode_string(tokens[3]):
             # Note that we are not matching actual newlines, but escaped
             # newlines within a string.
             lines[index] = re.sub(r'\s+\\n', r'\\n', lines[index])
