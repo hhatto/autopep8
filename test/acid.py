@@ -166,7 +166,8 @@ def filter_disassembly(text):
                 'BUILD_TUPLE              0')
 
         # Ignore trailing whitespace in multi-line strings.
-        if tokens[1] == 'LOAD_CONST' and tokens[3].startswith("('"):
+        if tokens[1] == 'LOAD_CONST' and (
+                tokens[3].startswith("('") or tokens[3].startswith("(u'")):
             # Note that we are not matching actual newlines, but escaped
             # newlines within a string.
             lines[index] = re.sub(r'\\n\s+', r'\\n', lines[index])
