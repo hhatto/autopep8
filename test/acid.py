@@ -68,8 +68,8 @@ def run(filename, fast_check=False, passes=2000,
             with yellow(sys.stdout):
                 if 0 != subprocess.call(
                     ['pep8',
-                     '--ignore=' + ','.join(ignore.split(',') +
-                                            check_ignore.split(',')),
+                     '--ignore=' + ','.join([x for x in ignore.split(',') +
+                                             check_ignore.split(',') if x]),
                      '--show-source', tmp_file.name],
                         stdout=sys.stdout):
                     sys.stderr.write('autopep8 did not completely fix ' +
