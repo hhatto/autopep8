@@ -559,7 +559,7 @@ class ResendActivationEmailHandler(BaseHandler):
                 return self.redirect_to('home')
 
         except (KeyError, AttributeError), e:
-            message = _('Sorry') + ". " + _('Some error occured') + "."
+            message = _('Sorry') + ". " + _('Some error occurred') + "."
             self.add_message(message, "error")
             return self.redirect_to('home')
 

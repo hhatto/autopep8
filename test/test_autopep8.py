@@ -2180,7 +2180,7 @@ class TestOptions(unittest.TestCase):
         self._inner_setup(line, ['--diff'])
         self.assertEqual('\n'.join(self.result.split('\n')[3:]), fixed)
 
-    def test_diff_wtih_empty_file(self):
+    def test_diff_with_empty_file(self):
         self._inner_setup('', ['--diff'])
         self.assertEqual('\n'.join(self.result.split('\n')[3:]), '')
 
