@@ -894,6 +894,16 @@ c
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+    def test_e202_skip_multiline_with_escaped_newline(self):
+        """We skip this since pep8 reports the error as being on line 1."""
+        line = r"""
+
+('c\
+' )
+"""
+        self._inner_setup(line)
+        self.assertEqual(self.result, line)
+
     def test_e203_colon(self):
         line = "{4 : 3}\n"
         fixed = "{4: 3}\n"
