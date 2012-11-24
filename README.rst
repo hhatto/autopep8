@@ -217,8 +217,8 @@ need to increase the maximum number of passes::
 
 By default autopep8 makes only safe changes. Thus, by default, it does not fix
 ``E711`` and ``E712``. (Changing ``x == None`` to ``x is None`` may change the
-meaning of the program if ``x`` has its ``__eq__`` method overridden.) The
-these sort of aggressive fixes use the ``--aggressive`` option::
+meaning of the program if ``x`` has its ``__eq__`` method overridden.) To
+enable these sort of aggressive fixes use the ``--aggressive`` option::
 
     $ autopep8 --aggressive <filename>
 
