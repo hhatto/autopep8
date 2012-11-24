@@ -239,7 +239,7 @@ def process_args():
     parser.add_option('--compare-bytecode', action='store_true',
                       help='compare bytecode before and after fixes; '
                            'should be used with '
-                           '--ignore=E711,E721,W601,W602,W604')
+                           '--ignore=E71,E721,W601,W602,W604')
     parser.add_option('--aggressive', action='store_true',
                       help='run autopep8 in aggressive mode')
 

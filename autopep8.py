@@ -755,7 +755,7 @@ class FixPEP8(object):
         self.source[line_index] = first + self.newline + second
 
     def fix_e711(self, result):
-        """Fix comparison."""
+        """Fix comparison with None."""
         line_index = result['line'] - 1
         target = self.source[line_index]
         offset = result['column'] - 1
@@ -779,6 +779,34 @@ class FixPEP8(object):
             return []
 
         self.source[line_index] = ' '.join([left, new_center, right])
+
+    def fix_e712(self, result):
+        """Fix comparison with boolean."""
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+        offset = result['column'] - 1
+
+        right_offset = offset + 2
+        if right_offset >= len(target):
+            return []
+
+        left = target[:offset].rstrip()
+        center = target[offset:right_offset]
+        right = target[right_offset:].lstrip()
+
+        # Handle simple cases only.
+        new = None
+        if center.strip() == '==':
+            if right.startswith('True'):
+                new = left
+        elif center.strip() == '!=':
+            if right.startswith('False'):
+                new = left
+
+        if not new:
+            return []
+
+        self.source[line_index] = new.rstrip() + self.newline
 
     def fix_e721(self, _):
         """Switch to use isinstance()."""
@@ -1547,7 +1575,7 @@ def check_syntax(code):
 def filter_results(source, results, aggressive=False):
     """Filter out spurious reports from pep8.
 
-    If aggressive is True, we allow possibly unsafe fixes like E711.
+    If aggressive is True, we allow possibly unsafe fixes (E711, E712).
 
     """
     non_docstring_string_line_numbers = multiline_string_lines(
@@ -1576,7 +1604,7 @@ def filter_results(source, results, aggressive=False):
         if issue_id == 'e101' and '\t' not in split_source[r['line']]:
             continue
 
-        if issue_id == 'e711' and not aggressive:
+        if issue_id in ['e711', 'e712'] and not aggressive:
             continue
 
         # pep8 should not complain about SQLAlchemy queries. SQLAlchemy
@@ -1786,7 +1814,7 @@ def parse_args(args):
                       help='set maximum allowed line length '
                            '(default: %default)')
     parser.add_option('--aggressive', action='store_true',
-                      help='enable possibly unsafe changes (E711)')
+                      help='enable possibly unsafe changes (E711, E712)')
     opts, args = parser.parse_args(args)
 
     if not len(args) and not opts.list_fixes:

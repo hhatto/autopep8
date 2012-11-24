@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # coding: utf-8
+
 import os
 import sys
 import codecs
@@ -1711,6 +1713,23 @@ raise IOError('abc '
     def test_e711_should_not_modify_sql_alchemy_query_with_not_equals(self):
         line = 'filter(User.name != None)\n'
         self._inner_setup(line, options=['--aggressive'])
+        self.assertEqual(self.result, line)
+
+    def test_e712(self):
+        line = 'foo == True\n'
+        fixed = 'foo\n'
+        self._inner_setup(line, options=['--aggressive'])
+        self.assertEqual(self.result, fixed)
+
+    def test_e712_with_false(self):
+        line = 'foo != False\n'
+        fixed = 'foo\n'
+        self._inner_setup(line, options=['--aggressive'])
+        self.assertEqual(self.result, fixed)
+
+    def test_e712_only_if_aggressive(self):
+        line = 'foo == True\n'
+        self._inner_setup(line)
         self.assertEqual(self.result, line)
 
     def test_e721(self):
