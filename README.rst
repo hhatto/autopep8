@@ -144,7 +144,7 @@ Options::
       --select=SELECT       fix only these errors/warnings (e.g. E4,W)
       --max-line-length=MAX_LINE_LENGTH
                             set maximum allowed line length (default: 79)
-      --aggressive          enable possibly unsafe changes (E711)
+      --aggressive          enable possibly unsafe changes (E711, E712)
 
 
 Features
@@ -175,11 +175,12 @@ autopep8 fixes the following issues_ reported by pep8_::
     E303 - Remove extra blank lines.
     E304 - Remove blank line following function decorator.
     E401 - Put imports on separate lines.
-    E501 - Try to make lines fit within 79 characters.
+    E501 - Try to make lines fit within --max-line-length characters.
     E502 - Remove extraneous escape of newline.
     E701 - Put colon-separated compound statement on separate lines.
     E702 - Put semicolon-separated compound statement on separate lines.
-    E711 - Fix comparison.
+    E711 - Fix comparison with None.
+    E712 - Fix comparison with boolean.
     E721 - Switch to use isinstance().
     W191 - Reindent all lines.
     W291 - Remove trailing whitespace.
