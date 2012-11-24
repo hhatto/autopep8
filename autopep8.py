@@ -1694,12 +1694,13 @@ def format_block_comments(source):
 def normalize_line_endings(text):
     """Return fixed line endings.
 
-    All lines will be modified to use the most common line ending.
+    All lines will be modified to use the most common line ending. Form feeds
+    will be removed.
 
     """
     split_lines = text.splitlines(True)
     return find_newline(split_lines).join(
-        [line.rstrip('\n\r') for line in split_lines] +
+        [line.rstrip('\n\r\f') for line in split_lines] +
         [''])
 
 
