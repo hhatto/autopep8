@@ -1541,6 +1541,18 @@ class Useless(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e702_with_semicolon_at_end(self):
+        line = "print 1;\n"
+        fixed = "print 1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
+    def test_e702_with_semicolon_and_space_at_end(self):
+        line = "print 1; \n"
+        fixed = "print 1\n"
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
     def test_e702_with_whitespace(self):
         line = "print 1 ; print 2\n"
         fixed = "print 1\nprint 2\n"
