@@ -194,13 +194,13 @@ autopep8 fixes the following issues_ reported by pep8_::
 autopep8 also fixes some issues not found by pep8_.
 
 - Format block comments.
-- Correct some non-idiomatic Python code (via `2to3 -f idioms`).
+- Correct some non-idiomatic Python code (via ``2to3 -f idioms``).
 - Normalize files with mixed line endings.
 
 
 More advanced usage
 -------------------
-To enable only a subset of the fixes, use the `--select` option. For example,
+To enable only a subset of the fixes, use the ``--select`` option. For example,
 to fix various types of indentation issues::
 
     $ autopep8 --select=E1,W1 <filename>
@@ -216,9 +216,9 @@ need to increase the maximum number of passes::
     $ autopep8 -p 1000 <filename>
 
 By default autopep8 makes only safe changes. Thus, by default, it does not fix
-`E711` and `E712`. (Changing `x == None` to `x is None` may change the meaning
-of the program if `x` has its `__eq__` method overridden.) The these sort of
-aggressive fixes use the `--aggressive` option::
+``E711`` and ``E712``. (Changing ``x == None`` to ``x is None`` may change the
+meaning of the program if ``x`` has its ``__eq__`` method overridden.) The
+these sort of aggressive fixes use the ``--aggressive`` option::
 
     $ autopep8 --aggressive <filename>
 
