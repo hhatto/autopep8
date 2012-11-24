@@ -565,6 +565,14 @@ class FixPEP8(object):
         target = self.source[line_index]
         offset = result['column'] - 1
 
+        # When multiline strings are involved, pep8 reports the error as
+        # being at the start of the multiline string, which doesn't work
+        # for us.
+        if ('"""' in target or
+            "'''" in target or
+                target.rstrip().endswith('\\')):
+            return []
+
         fixed = fix_whitespace(target,
                                offset=offset,
                                replacement=' ')
