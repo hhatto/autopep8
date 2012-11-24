@@ -1602,12 +1602,12 @@ def multiline_string_lines(source, include_docstrings=False):
     try:
         for t in tokenize.generate_tokens(sio.readline):
             token_type = t[0]
-            token_string = t[1]
+            start_row = t[2][0]
+            end_row = t[3][0]
             start_row = t[2][0]
             end_row = t[3][0]
 
-            if (token_type == tokenize.STRING and
-                    starts_with_triple(token_string)):
+            if (token_type == tokenize.STRING and start_row != end_row):
                 if (include_docstrings or
                         previous_token_type != tokenize.INDENT):
                     # We increment by one since we want the contents of the
@@ -1619,19 +1619,6 @@ def multiline_string_lines(source, include_docstrings=False):
         pass
 
     return line_numbers
-
-
-def starts_with_triple(text):
-    """Return True if the string starts with triple single/double quotes."""
-    text = text.strip()
-
-    for prefix in ['ur', 'br', 'u', 'b', 'r']:  # Longer one first.
-        if text.startswith(prefix):
-            text = text[len(prefix):]
-            break
-
-    return (text.startswith('"""') or
-            text.startswith("'''"))
 
 
 def shorten_comment(line, newline, max_line_length):
