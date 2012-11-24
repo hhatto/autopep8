@@ -210,9 +210,13 @@ def filter_disassembly(text):
                     'LOAD_NAME               21 (False)',
                     'LOAD_CONST              12 (False)')
             elif tokens[3] == '(None)':
+                # TODO: Strip number and just leave human-readable name?
                 lines[index] = lines[index].replace(
                     'LOAD_NAME               14 (None)',
                     'LOAD_CONST               5 (None)')
+                lines[index] = lines[index].replace(
+                    'LOAD_NAME               17 (None)',
+                    'LOAD_CONST               2 (None)')
 
     return '\n'.join(lines)
 
