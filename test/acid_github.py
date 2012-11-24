@@ -51,6 +51,15 @@ def interesting(repository_path):
         return False
 
 
+def complete(repository):
+    """Fill in missing paths of URL."""
+    if ':' in repository:
+        return repository
+    else:
+        assert '/' in repository
+        return 'https://github.com/' + repository.strip()
+
+
 def main():
     """Run main."""
     try:
@@ -60,8 +69,7 @@ def main():
 
     opts, args = acid.process_args()
     if args:
-        # Copy
-        names = list(args)
+        names = [complete(a) for a in args]
     else:
         names = None
 
