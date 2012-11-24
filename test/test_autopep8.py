@@ -1718,13 +1718,19 @@ raise IOError('abc '
     def test_e712(self):
         line = 'foo == True\n'
         fixed = 'foo\n'
-        self._inner_setup(line, options=['--aggressive'])
+        self._inner_setup(line, options=['--aggressive', '--select=E712'])
+        self.assertEqual(self.result, fixed)
+
+    def test_e712_in_conditional_with_multiple_instances(self):
+        line = 'if foo == True and bar == True:\npass\n'
+        fixed = 'if foo and bar:\npass\n'
+        self._inner_setup(line, options=['--aggressive', '--select=E712'])
         self.assertEqual(self.result, fixed)
 
     def test_e712_with_false(self):
         line = 'foo != False\n'
         fixed = 'foo\n'
-        self._inner_setup(line, options=['--aggressive'])
+        self._inner_setup(line, options=['--aggressive', '--select=E712'])
         self.assertEqual(self.result, fixed)
 
     def test_e712_only_if_aggressive(self):

@@ -795,18 +795,21 @@ class FixPEP8(object):
         right = target[right_offset:].lstrip()
 
         # Handle simple cases only.
-        new = None
+        new_right = None
         if center.strip() == '==':
-            if right.startswith('True'):
-                new = left
+            if re.match(r'\bTrue\b', right):
+                new_right = re.sub(r'\bTrue\b *', '', right, count=1)
         elif center.strip() == '!=':
-            if right.startswith('False'):
-                new = left
+            if re.match(r'\bFalse\b', right):
+                new_right = re.sub(r'\bFalse\b *', '', right, count=1)
 
-        if not new:
+        if new_right is None:
             return []
 
-        self.source[line_index] = new.rstrip() + self.newline
+        if new_right[0].isalnum():
+            new_right = ' ' + new_right
+
+        self.source[line_index] = left + new_right
 
     def fix_e721(self, _):
         """Switch to use isinstance()."""
