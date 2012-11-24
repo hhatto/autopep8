@@ -1738,6 +1738,12 @@ raise IOError('abc '
         self._inner_setup(line)
         self.assertEqual(self.result, line)
 
+    def test_e711_and_e712(self):
+        line = 'if (foo == None and bar == True) or (foo != False and bar != None):\npass\n'
+        fixed = 'if (foo is None and bar) or (foo and bar is not None):\npass\n'
+        self._inner_setup(line, options=['--aggressive'])
+        self.assertEqual(self.result, fixed)
+
     def test_e721(self):
         line = "type('') == type('')\n"
         fixed = "isinstance('', type(''))\n"
