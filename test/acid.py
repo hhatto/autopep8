@@ -9,12 +9,18 @@ import re
 import sys
 import subprocess
 import tempfile
-import tokenize
 
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
+
+
+ROOT_PATH = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+
+# Override system-installed version of autopep8.
+sys.path = [ROOT_PATH] + sys.path
+import autopep8
 
 
 if sys.stdout.isatty():
@@ -39,9 +45,7 @@ def run(filename, fast_check=False, passes=2000,
     Return True on success.
 
     """
-    autopep8_path = os.path.split(os.path.abspath(
-        os.path.dirname(__file__)))[0]
-    autoppe8_bin = os.path.join(autopep8_path, 'autopep8.py')
+    autoppe8_bin = os.path.join(ROOT_PATH, 'autopep8.py')
     command = ([autoppe8_bin] + (['--verbose'] if verbose else []) +
                ['--pep8-passes={p}'.format(p=passes),
                 '--ignore=' + ignore, filename] +
@@ -85,39 +89,9 @@ def run(filename, fast_check=False, passes=2000,
     return True
 
 
-def _detect_encoding(filename):
-    """Return file encoding."""
-    try:
-        # Python 3
-        try:
-            with open(filename, 'rb') as input_file:
-                encoding = tokenize.detect_encoding(input_file.readline)[0]
-
-                # Check for correctness of encoding
-                import io
-                with io.TextIOWrapper(input_file, encoding) as wrapper:
-                    wrapper.read()
-
-            return encoding
-        except (SyntaxError, LookupError, UnicodeDecodeError):
-            return 'latin-1'
-    except AttributeError:
-        return 'utf-8'
-
-
-def open_with_encoding(filename, encoding, mode='r'):
-    """Open file with a specific encoding."""
-    try:
-        # Python 3
-        return open(filename, mode=mode, encoding=encoding)
-    except TypeError:
-        return open(filename, mode=mode)
-
-
 def check_syntax(filename, raise_error=False):
     """Return True if syntax is okay."""
-    with open_with_encoding(
-            filename, _detect_encoding(filename)) as input_file:
+    with autopep8.open_with_encoding(filename) as input_file:
         try:
             compile(input_file.read(), '<string>', 'exec')
             return True
@@ -134,7 +108,7 @@ def compare_ast(old_filename, new_filename):
 
 
 def ast_dump(filename):
-    with open(filename) as f:
+    with autopep8.open_with_encoding(filename) as f:
         return ast.dump(ast.parse(f.read(), '<string>', 'exec'))
 
 
@@ -155,7 +129,7 @@ def compare_bytecode(old_filename, new_filename):
 
 def disassemble(filename):
     """dis, but without line numbers."""
-    with open_with_encoding(filename, _detect_encoding(filename)) as f:
+    with autopep8.open_with_encoding(filename) as f:
         code = compile(f.read(), '<string>', 'exec')
 
     return filter_disassembly('\n'.join(_disassemble(code)))

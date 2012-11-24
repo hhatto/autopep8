@@ -58,8 +58,11 @@ LF = '\n'
 CRLF = '\r\n'
 
 
-def open_with_encoding(filename, encoding, mode='r'):
+def open_with_encoding(filename, encoding=None, mode='r'):
     """Return opened file with a specific encoding."""
+    if not encoding:
+        encoding = detect_encoding(filename)
+
     try:
         # Python 3
         return open(filename, mode=mode, encoding=encoding,
