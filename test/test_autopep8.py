@@ -61,6 +61,12 @@ class TestUtils(unittest.TestCase):
             autopep8.detect_encoding(
                 os.path.join(ROOT_DIR, 'setup.py')))
 
+    def test_detect_encoding_with_cookie(self):
+        self.assertEqual(
+            'iso-8859-1',
+            autopep8.detect_encoding(
+                os.path.join(ROOT_DIR, 'test', 'iso_8859_1.py')))
+
     def test_read_from_filename_with_bad_encoding(self):
         """Bad encoding should not cause an exception."""
         self.assertEqual(
