@@ -80,15 +80,8 @@ def detect_encoding(filename):
             encoding = lib2to3_tokenize.detect_encoding(input_file.readline)[0]
 
             # Check for correctness of encoding
-            try:
-                import io
-                with io.TextIOWrapper(input_file, encoding) as wrapper:
-                    wrapper.read()
-            except AttributeError:
-                # The above doesn't work on Python 2. Fall back to inefficient
-                # version.
-                with open_with_encoding(filename, encoding) as input_file:
-                    input_file.read()
+            with open_with_encoding(filename, encoding) as input_file:
+                input_file.read()
 
         return encoding
     except (SyntaxError, LookupError, UnicodeDecodeError):
@@ -97,8 +90,7 @@ def detect_encoding(filename):
 
 def read_from_filename(filename, readlines=False):
     """Return contents of file."""
-    with open_with_encoding(filename,
-                            encoding=detect_encoding(filename)) as input_file:
+    with open_with_encoding(filename) as input_file:
         return input_file.readlines() if readlines else input_file.read()
 
 
