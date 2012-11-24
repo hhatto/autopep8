@@ -14,3 +14,11 @@ install:
 script:
     - python test/test_autopep8.py
     - python test/acid.py test/example.py
+
+    - python setup.py sdist -d .tmp
+    - cd .tmp
+    - tar xf *.tar.gz
+    - cd *
+    - python setup.py test
+    - cd ../..
+    - rm -r .tmp
