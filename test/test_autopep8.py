@@ -240,6 +240,20 @@ def foo():
             autopep8.normalize_line_endings(
                 'abc\ndef\r\n123\r\nhello\r\nworld\r'))
 
+    def test_starts_with_triple(self):
+        self.assertTrue(autopep8.starts_with_triple('"""abc"""'))
+        self.assertTrue(autopep8.starts_with_triple('b"""abc"""'))
+        self.assertTrue(autopep8.starts_with_triple('r"""abc"""'))
+        self.assertTrue(autopep8.starts_with_triple('u"""abc"""'))
+        self.assertTrue(autopep8.starts_with_triple('ur"""abc"""'))
+        self.assertTrue(autopep8.starts_with_triple('br"""abc"""'))
+        self.assertTrue(autopep8.starts_with_triple("'''abc'''"))
+        self.assertTrue(autopep8.starts_with_triple("b'''abc'''"))
+        self.assertTrue(autopep8.starts_with_triple("r'''abc'''"))
+        self.assertTrue(autopep8.starts_with_triple("u'''abc'''"))
+        self.assertTrue(autopep8.starts_with_triple("ur'''abc'''"))
+        self.assertTrue(autopep8.starts_with_triple('br"""abc"""'))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 

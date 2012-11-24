@@ -171,7 +171,7 @@ def is_bytecode_string(text):
     """Return True if this is a bytecode string."""
     assert text.startswith('(')
     text = text[1:]
-    for prefix in ['u', 'ur', 'b', 'br']:
+    for prefix in ['ur', 'br', 'u', 'b', 'r']:  # Longer one first.
         if text.startswith(prefix):
             text = text[len(prefix):]
             break

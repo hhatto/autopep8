@@ -1621,10 +1621,17 @@ def multiline_string_lines(source, include_docstrings=False):
     return line_numbers
 
 
-def starts_with_triple(string):
+def starts_with_triple(text):
     """Return True if the string starts with triple single/double quotes."""
-    return (string.strip().startswith('"""') or
-            string.strip().startswith("'''"))
+    text = text.strip()
+
+    for prefix in ['ur', 'br', 'u', 'b', 'r']:  # Longer one first.
+        if text.startswith(prefix):
+            text = text[len(prefix):]
+            break
+
+    return (text.startswith('"""') or
+            text.startswith("'''"))
 
 
 def shorten_comment(line, newline, max_line_length):
