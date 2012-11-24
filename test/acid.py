@@ -2,7 +2,6 @@
 """Test that autopep8 runs without crashing on various Python files."""
 
 import ast
-import contextlib
 import difflib
 import dis
 import os
