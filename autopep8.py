@@ -80,11 +80,11 @@ def detect_encoding(filename):
             encoding = lib2to3_tokenize.detect_encoding(input_file.readline)[0]
 
             # Check for correctness of encoding
-            if sys.version_info[0] >= 3:
+            try:
                 import io
                 with io.TextIOWrapper(input_file, encoding) as wrapper:
                     wrapper.read()
-            else:
+            except AttributeError:
                 # The above doesn't work on Python 2. Fall back to inefficient
                 # version.
                 with open_with_encoding(filename, encoding) as input_file:
