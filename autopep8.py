@@ -80,8 +80,8 @@ def detect_encoding(filename):
             encoding = lib2to3_tokenize.detect_encoding(input_file.readline)[0]
 
             # Check for correctness of encoding
-            with open_with_encoding(filename, encoding) as input_file:
-                input_file.read()
+            with open_with_encoding(filename, encoding) as test_file:
+                test_file.read()
 
         return encoding
     except (SyntaxError, LookupError, UnicodeDecodeError):
