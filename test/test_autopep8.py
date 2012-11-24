@@ -3,8 +3,6 @@
 
 import os
 import sys
-import codecs
-import locale
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -78,8 +76,11 @@ class TestUtils(unittest.TestCase):
 
     def test_read_from_filename_with_bad_encoding2(self):
         """Bad encoding should not cause an exception."""
-        self.assertTrue(autopep8.read_from_filename(
-            os.path.join(ROOT_DIR, 'test', 'bad_encoding2.py')))
+        # This causes a warning on Python 3.
+        import warnings
+        with warnings.catch_warnings(record=True):
+            self.assertTrue(autopep8.read_from_filename(
+                os.path.join(ROOT_DIR, 'test', 'bad_encoding2.py')))
 
     def test_fix_whitespace(self):
         self.assertEqual(
