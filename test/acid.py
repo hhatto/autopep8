@@ -131,12 +131,7 @@ def check_syntax(filename, raise_error=False):
 
 def compare_ast(old_filename, new_filename):
     """Return True if AST of the two files are equivalent."""
-    if ast_dump(old_filename) != ast_dump(new_filename):
-        sys.stderr.write(
-            'New AST does not match original ' +
-            old_filename + '\n')
-        return False
-    return True
+    return ast_dump(old_filename) == ast_dump(new_filename)
 
 
 def ast_dump(filename):
@@ -268,10 +263,6 @@ def process_args():
                       help='compare bytecode before and after fixes; '
                            'should be used with '
                            '--ignore=E711,E721,W601,W602,W604')
-    parser.add_option('--compare-ast', action='store_true',
-                      help='compare AST before and after fixes; '
-                           'should be used with '
-                           '--ignore=E711,E721,W601,W602,W604')
     parser.add_option('--aggressive', action='store_true',
                       help='run autopep8 in aggressive mode')
 
@@ -311,13 +302,9 @@ def check(opts, args):
     filenames = dir_paths
     completed_filenames = set()
 
-    if opts.compare_bytecode and opts.compare_ast:
+    if opts.compare_bytecode:
         comparison_function = lambda x, y: (compare_ast(x, y) or
                                             compare_bytecode(x, y))
-    elif opts.compare_bytecode:
-        comparison_function = compare_bytecode
-    elif opts.compare_ast:
-        comparison_function = compare_ast
     else:
         comparison_function = None
 
