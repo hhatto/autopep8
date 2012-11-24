@@ -311,7 +311,10 @@ def check(opts, args):
     filenames = dir_paths
     completed_filenames = set()
 
-    if opts.compare_bytecode:
+    if opts.compare_bytecode and opts.compare_ast:
+        comparison_function = lambda x, y: (compare_ast(x, y) or
+                                            compare_bytecode(x, y))
+    elif opts.compare_bytecode:
         comparison_function = compare_bytecode
     elif opts.compare_ast:
         comparison_function = compare_ast
