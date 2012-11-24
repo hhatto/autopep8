@@ -72,30 +72,24 @@ def open_with_encoding(filename, encoding, mode='r'):
 def detect_encoding(filename):
     """Return file encoding."""
     try:
-        # Python 3
-        try:
-            with open(filename, 'rb') as input_file:
-                encoding = tokenize.detect_encoding(input_file.readline)[0]
+        with open(filename, 'rb') as input_file:
+            from lib2to3.pgen2 import tokenize
+            encoding = tokenize.detect_encoding(input_file.readline)[0]
 
-                # Check for correctness of encoding
+            # Check for correctness of encoding
+            if sys.version_info[0] >= 3:
                 import io
                 with io.TextIOWrapper(input_file, encoding) as wrapper:
                     wrapper.read()
-
-            return encoding
-        except (SyntaxError, LookupError, UnicodeDecodeError):
-            return 'latin-1'
-    except AttributeError:
-        # Python 2
-        encoding = 'utf-8'
-        try:
-            # Check for correctness of encoding
-            with open_with_encoding(filename, encoding) as input_file:
-                input_file.read()
-        except UnicodeDecodeError:
-            encoding = 'latin-1'
+            else:
+                # The above doesn't work on Python 2. Fall back to inefficient
+                # version.
+                with open_with_encoding(filename, encoding) as input_file:
+                    input_file.read()
 
         return encoding
+    except (SyntaxError, LookupError, UnicodeDecodeError):
+        return 'latin-1'
 
 
 def read_from_filename(filename, readlines=False):
