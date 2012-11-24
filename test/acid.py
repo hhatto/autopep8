@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Test that autopep8 runs without crashing on various Python files."""
 
+import ast
 import contextlib
 import difflib
 import dis
@@ -128,8 +129,23 @@ def check_syntax(filename, raise_error=False):
                 return False
 
 
+def compare_ast(old_filename, new_filename):
+    """Return True if AST of the two files are equivalent."""
+    if ast_dump(old_filename) != ast_dump(new_filename):
+        sys.stderr.write(
+            'New AST does not match original ' +
+            old_filename + '\n')
+        return False
+    return True
+
+
+def ast_dump(filename):
+    with open(filename) as f:
+        return ast.dump(ast.parse(f.read(), '<string>', 'exec'))
+
+
 def compare_bytecode(old_filename, new_filename):
-    """Return True if bytecode is equivalent."""
+    """Return True if bytecode of the two files are equivalent."""
     before_bytecode = disassemble(old_filename)
     after_bytecode = disassemble(new_filename)
     if before_bytecode != after_bytecode:
@@ -140,6 +156,7 @@ def compare_bytecode(old_filename, new_filename):
                 before_bytecode.splitlines(True),
                 after_bytecode.splitlines(True))) + '\n')
         return False
+    return True
 
 
 def disassemble(filename):
@@ -296,6 +313,8 @@ def check(opts, args):
 
     if opts.compare_bytecode:
         comparison_function = compare_bytecode
+    elif opts.compare_ast:
+        comparison_function = compare_ast
     else:
         comparison_function = None
 
