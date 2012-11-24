@@ -79,9 +79,9 @@ def detect_encoding(filename):
             from lib2to3.pgen2 import tokenize as lib2to3_tokenize
             encoding = lib2to3_tokenize.detect_encoding(input_file.readline)[0]
 
-            # Check for correctness of encoding
-            with open_with_encoding(filename, encoding) as test_file:
-                test_file.read()
+        # Check for correctness of encoding
+        with open_with_encoding(filename, encoding) as test_file:
+            test_file.read()
 
         return encoding
     except (SyntaxError, LookupError, UnicodeDecodeError):
