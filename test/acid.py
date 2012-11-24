@@ -32,7 +32,7 @@ def colored(text, color):
 
 def run(filename, fast_check=False, passes=2000,
         ignore='', check_ignore='', verbose=False,
-        compare_bytecode=False,
+        comparison_function=None,
         aggressive=False):
     """Run autopep8 on file at filename.
 
@@ -76,16 +76,8 @@ def run(filename, fast_check=False, passes=2000,
                                          str(exception) + '\n')
                         return False
 
-                    if compare_bytecode:
-                        before_bytecode = disassemble(filename)
-                        after_bytecode = disassemble(tmp_file.name)
-                        if before_bytecode != after_bytecode:
-                            sys.stderr.write(
-                                'New bytecode does not match original ' +
-                                filename + '\n' +
-                                ''.join(difflib.unified_diff(
-                                    before_bytecode.splitlines(True),
-                                    after_bytecode.splitlines(True))) + '\n')
+                    if comparison_function:
+                        if not comparison_function(filename, tmp_file.name):
                             return False
             except IOError as exception:
                 sys.stderr.write(str(exception) + '\n')
@@ -134,6 +126,20 @@ def check_syntax(filename, raise_error=False):
                 raise
             else:
                 return False
+
+
+def compare_bytecode(old_filename, new_filename):
+    """Return True if bytecode is equivalent."""
+    before_bytecode = disassemble(old_filename)
+    after_bytecode = disassemble(new_filename)
+    if before_bytecode != after_bytecode:
+        sys.stderr.write(
+            'New bytecode does not match original ' +
+            old_filename + '\n' +
+            ''.join(difflib.unified_diff(
+                before_bytecode.splitlines(True),
+                after_bytecode.splitlines(True))) + '\n')
+        return False
 
 
 def disassemble(filename):
@@ -245,6 +251,10 @@ def process_args():
                       help='compare bytecode before and after fixes; '
                            'should be used with '
                            '--ignore=E711,E721,W601,W602,W604')
+    parser.add_option('--compare-ast', action='store_true',
+                      help='compare AST before and after fixes; '
+                           'should be used with '
+                           '--ignore=E711,E721,W601,W602,W604')
     parser.add_option('--aggressive', action='store_true',
                       help='run autopep8 in aggressive mode')
 
@@ -283,6 +293,11 @@ def check(opts, args):
 
     filenames = dir_paths
     completed_filenames = set()
+
+    if opts.compare_bytecode:
+        comparison_function = compare_bytecode
+    else:
+        comparison_function = None
 
     try:
         import signal
@@ -327,7 +342,7 @@ def check(opts, args):
                            ignore=opts.ignore,
                            check_ignore=opts.check_ignore,
                            verbose=opts.verbose,
-                           compare_bytecode=opts.compare_bytecode,
+                           comparison_function=comparison_function,
                            aggressive=opts.aggressive):
                     return False
     except TimeoutException:
