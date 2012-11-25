@@ -221,6 +221,8 @@ def _disassemble(code):
 
 def process_args():
     """Return processed arguments (options and positional arguments)."""
+    compare_bytecode_ignore = 'E71,E721,W601,W602,W604'
+
     import optparse
     parser = optparse.OptionParser()
     parser.add_option('--fast-check', action='store_true',
@@ -230,16 +232,15 @@ def process_args():
                       default='')
     parser.add_option('--check-ignore',
                       help='comma-separated errors to ignore when checking '
-                           'for completeness',
-                      default='')
+                           'for completeness (default: %default)',
+                      default='E501')
     parser.add_option('-p', '--pep8-passes',
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)',
                       default=2000)
     parser.add_option('--compare-bytecode', action='store_true',
                       help='compare bytecode before and after fixes; '
-                           'should be used with '
-                           '--ignore=E71,E721,W601,W602,W604')
+                           'sets default --ignore=' + compare_bytecode_ignore)
     parser.add_option('--aggressive', action='store_true',
                       help='run autopep8 in aggressive mode')
 
@@ -253,7 +254,12 @@ def process_args():
     parser.add_option('-v', '--verbose', action='store_true',
                       help='print verbose messages')
 
-    return parser.parse_args()
+    (opts, args) = parser.parse_args()
+
+    if opts.compare_bytecode and not opts.ignore:
+        opts.ignore = compare_bytecode_ignore
+
+    return (opts, args)
 
 
 class TimeoutException(Exception):
