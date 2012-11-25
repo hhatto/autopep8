@@ -1701,12 +1701,11 @@ def format_block_comments(source):
 def normalize_line_endings(lines):
     """Return fixed line endings.
 
-    All lines will be modified to use the most common line ending. Form feeds
-    will be removed.
+    All lines will be modified to use the most common line ending.
 
     """
     newline = find_newline(lines)
-    return [line.rstrip('\n\r').replace('\f', '') + newline for line in lines]
+    return [line.rstrip('\n\r') + newline for line in lines]
 
 
 def fix_file(filename, opts=None, output=None):
