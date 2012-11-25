@@ -1434,7 +1434,8 @@ class Wrapper(object):
 
                 valid_indents[row] = vi
 
-                # ...returning to original continuation_line_identation func...
+                # Returning to original continuation_line_indentation() from
+                # pep8.
                 visual_indent = indent_chances.get(start[1])
                 last_indent = start
                 rel_indent[row] = start[1] - indent_level
