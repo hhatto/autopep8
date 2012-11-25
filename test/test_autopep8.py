@@ -1785,6 +1785,17 @@ raise IOError('abc '
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_should_preserve_vertical_tab(self):
+        line = """
+#Memory Bu\vffer Register:
+""".lstrip()
+        fixed = """
+# Memory Bu\vffer Register:
+""".lstrip()
+
+        self._inner_setup(line)
+        self.assertEqual(self.result, fixed)
+
 
 class TestFixPEP8Warning(unittest.TestCase):
 
