@@ -1275,8 +1275,6 @@ class Wrapper(object):
     ])
 
     def __init__(self, physical_lines):
-        if type(physical_lines) != list:
-            physical_lines = physical_lines.splitlines(True)
         self.lines = physical_lines
         self.index = 0
         self.tokens = list()
