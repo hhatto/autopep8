@@ -1785,6 +1785,8 @@ raise IOError('abc '
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    @unittest.skipIf(sys.version_info[0] < 3,
+                     'On Python 2 the vertical tab gets turned into a line feed')
     def test_should_preserve_vertical_tab(self):
         line = """
 #Memory Bu\vffer Register:
