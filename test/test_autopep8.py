@@ -1865,12 +1865,6 @@ else:
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
-    def test_w291_with_form_feed(self):
-        line = "print 'a b '\f \n"
-        fixed = "print 'a b '\n"
-        self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
-
     def test_w292(self):
         line = "1\n2"
         fixed = "1\n2\n"
