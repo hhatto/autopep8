@@ -239,15 +239,15 @@ def foo():
 
     def test_normalize_line_endings(self):
         self.assertEqual(
-            'abc\ndef\n123\nhello\nworld\n',
+            ['abc\n', 'def\n', '123\n', 'hello\n', 'world\n'],
             autopep8.normalize_line_endings(
-                'abc\ndef\n123\rhello\r\nworld\r'))
+                ['abc\n', 'def\n', '123\r', 'hello\r\n', 'world\r']))
 
     def test_normalize_line_endings_with_crlf(self):
         self.assertEqual(
-            'abc\r\ndef\r\n123\r\nhello\r\nworld\r\n',
+            ['abc\r\n', 'def\r\n', '123\r\n', 'hello\r\n', 'world\r\n'],
             autopep8.normalize_line_endings(
-                'abc\ndef\r\n123\r\nhello\r\nworld\r'))
+                ['abc\n', 'def\r\n', '123\r\n', 'hello\r\n', 'world\r']))
 
 
 class TestFixPEP8Error(unittest.TestCase):

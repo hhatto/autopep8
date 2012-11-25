@@ -1699,34 +1699,27 @@ def format_block_comments(source):
     return ''.join(fixed_lines)
 
 
-def normalize_line_endings(text):
+def normalize_line_endings(lines):
     """Return fixed line endings.
 
     All lines will be modified to use the most common line ending. Form feeds
     will be removed.
 
     """
-    split_lines = text.splitlines(True)
-    return find_newline(split_lines).join(
-        [line.rstrip('\n\r\f') for line in split_lines] +
-        [''])
+    newline = find_newline(lines)
+    return [line.rstrip('\n\r').replace('\f', '') + newline for line in lines]
 
 
 def fix_file(filename, opts=None, output=None):
     if not opts:
         opts = parse_args([filename])[0]
 
-    tmp_source = normalize_line_endings(read_from_filename(filename))
+    original_source = read_from_filename(filename, readlines=True)
 
-    # Add missing newline (important for diff)
-    if tmp_source:
-        tmp_newline = find_newline(tmp_source.splitlines(True))
-        if tmp_source == tmp_source.rstrip(tmp_newline):
-            tmp_source += tmp_newline
+    tmp_source = ''.join(normalize_line_endings(original_source))
 
     fix = FixPEP8(filename, opts, contents=tmp_source)
     fixed_source = fix.fix()
-    original_source = copy.copy(fix.original_source)
     tmp_filename = filename
     if not pep8 or opts.in_place:
         encoding = detect_encoding(filename)
