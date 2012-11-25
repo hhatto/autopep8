@@ -1685,8 +1685,8 @@ def format_block_comments(source):
 
     string_line_numbers = multiline_string_lines(source)
     fixed_lines = []
-    for (line_number, line) in enumerate(source.splitlines(True),
-                                         start=1):
+    sio = StringIO(source)
+    for (line_number, line) in enumerate(sio.readlines(), start=1):
         if (re.match(r'\s*#+\w+', line) and
                 line_number not in string_line_numbers):
             fixed_lines.append(_get_indentation(line) +
