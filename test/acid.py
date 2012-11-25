@@ -201,12 +201,18 @@ def _disassemble(code):
 
     findlinestarts = dis.findlinestarts
     dis.findlinestarts = lambda _: {}
+
+    findlabels = dis.findlabels
+    dis.findlabels = lambda _: {}
+
     sys.stdout, sio = sio, sys.stdout
+
     try:
         dis.dis(code)
     finally:
         sys.stdout, sio = sio, sys.stdout
         dis.findlinestarts = findlinestarts
+        dis.findlabels = findlabels
 
     disassembled_code = [
         re.sub('<code object .* line [0-9]+>',
