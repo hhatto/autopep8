@@ -1684,7 +1684,8 @@ def format_block_comments(source):
         # Optimization.
         return source
 
-    string_line_numbers = multiline_string_lines(source)
+    string_line_numbers = multiline_string_lines(source,
+                                                 include_docstrings=True)
     fixed_lines = []
     sio = StringIO(source)
     for (line_number, line) in enumerate(sio.readlines(), start=1):
