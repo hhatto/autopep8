@@ -1724,7 +1724,8 @@ def fix_file(filename, opts=None, output=None):
     if not pep8 or opts.in_place:
         encoding = detect_encoding(filename)
 
-    fixed_source = format_block_comments(fixed_source)
+    if not opts.minimal:
+        fixed_source = format_block_comments(fixed_source)
 
     interruption = None
     try:
@@ -1812,6 +1813,9 @@ def parse_args(args):
                            '(default: %default)')
     parser.add_option('--aggressive', action='store_true',
                       help='enable possibly unsafe changes (E711, E712)')
+    parser.add_option('--minimal', action='store_true',
+                      help='only fix issues reported by the pep8 utility; '
+                           'do not fix block comments')
     opts, args = parser.parse_args(args)
 
     if not len(args) and not opts.list_fixes:
