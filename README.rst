@@ -145,6 +145,8 @@ Options::
       --max-line-length=MAX_LINE_LENGTH
                             set maximum allowed line length (default: 79)
       --aggressive          enable possibly unsafe changes (E711, E712)
+      --minimal             only fix issues reported by the pep8 utility (do not
+                            fix block comments); implied by --select
 
 
 Features
