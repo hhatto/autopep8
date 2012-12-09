@@ -1759,7 +1759,8 @@ def fix_file(filename, opts=None, output=None):
             tmp_source = copy.copy(fixed_source)
 
             if not pep8:
-                tmp_filename = tempfile.mkstemp()[1]
+                (_tmp_open_file, tmp_filename) = tempfile.mkstemp()
+                os.close(_tmp_open_file)
                 fp = open_with_encoding(tmp_filename,
                                         encoding=encoding, mode='w')
                 fp.write(fixed_source)

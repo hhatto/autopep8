@@ -262,6 +262,7 @@ class TestFixPEP8Error(unittest.TestCase):
 
     def setUp(self):
         self.tempfile = mkstemp()
+        os.close(self.tempfile[0])
 
     def tearDown(self):
         os.remove(self.tempfile[1])
@@ -1811,6 +1812,7 @@ class TestFixPEP8Warning(unittest.TestCase):
 
     def setUp(self):
         self.tempfile = mkstemp()
+        os.close(self.tempfile[0])
 
     def tearDown(self):
         os.remove(self.tempfile[1])
@@ -2178,6 +2180,7 @@ class TestOptions(unittest.TestCase):
 
     def setUp(self):
         self.tempfile = mkstemp()
+        os.close(self.tempfile[0])
 
     def tearDown(self):
         os.remove(self.tempfile[1])
@@ -2309,6 +2312,7 @@ class TestSpawnPEP8Process(unittest.TestCase):
 
     def setUp(self):
         self.tempfile = mkstemp()
+        os.close(self.tempfile[0])
 
     def tearDown(self):
         os.remove(self.tempfile[1])
@@ -2375,6 +2379,7 @@ if True:
 @contextlib.contextmanager
 def temporary_file_context(text):
     tempfile = mkstemp()
+    os.close(tempfile[0])
     with open(tempfile[1], 'w') as temp_file:
         temp_file.write(text)
     yield tempfile[1]
