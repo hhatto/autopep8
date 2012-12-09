@@ -249,6 +249,13 @@ def foo():
             autopep8.normalize_line_endings(
                 ['abc\n', 'def\r\n', '123\r\n', 'hello\r\n', 'world\r']))
 
+    def test_code_match(self):
+        self.assertTrue(autopep8.code_match('E2', select='E2,E3', ignore=''))
+        self.assertTrue(autopep8.code_match('E26', select='E2,E3', ignore=''))
+
+        self.assertFalse(autopep8.code_match('E26', select='', ignore='E'))
+        self.assertFalse(autopep8.code_match('E2', select='E2,E3', ignore='E2'))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 

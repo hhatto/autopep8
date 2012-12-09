@@ -1710,6 +1710,24 @@ def normalize_line_endings(lines):
     return [line.rstrip('\n\r') + newline for line in lines]
 
 
+def mutual_startswith(a, b):
+    return b.startswith(a) or a.startswith(b)
+
+
+def code_match(code, select, ignore):
+    if ignore:
+        for ignored_code in [c.strip() for c in ignore.split(',')]:
+            if mutual_startswith(code.lower(), ignored_code.lower()):
+                return False
+
+    if select:
+        for selected_code in [c.strip() for c in select.split(',')]:
+            if mutual_startswith(code.lower(), selected_code.lower()):
+                return True
+
+    return True
+
+
 def fix_file(filename, opts=None, output=None):
     if not opts:
         opts = parse_args([filename])[0]
@@ -1724,7 +1742,7 @@ def fix_file(filename, opts=None, output=None):
     if not pep8 or opts.in_place:
         encoding = detect_encoding(filename)
 
-    if not opts.select:
+    if code_match('e26', select=opts.select, ignore=opts.ignore):
         fixed_source = format_block_comments(fixed_source)
 
     interruption = None
