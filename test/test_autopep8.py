@@ -2380,6 +2380,11 @@ if True:
         self._inner_setup(line, options=['--ignore=E,W'])
         self.assertEqual(self.result, line)
 
+    def test_pep8_select(self):
+        line = "'abc'  \n"
+        self._inner_setup(line, options=['--select=E101'])
+        self.assertEqual(self.result, line)
+
 
 @contextlib.contextmanager
 def temporary_file_context(text):
