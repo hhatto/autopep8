@@ -1095,9 +1095,6 @@ class Reindenter(object):
     def __init__(self, input_text, newline):
         self.newline = newline
 
-        self.find_stmt = 1  # next token begins a fresh stmt?
-        self.level = 0  # current indent level
-
         # Raw file lines.
         self.raw = input_text
         self.after = None
@@ -1121,12 +1118,6 @@ class Reindenter(object):
         self.lines.insert(0, None)
         self.index = 1  # index into self.lines of next line
 
-        # List of (lineno, indentlevel) pairs, one for each stmt and
-        # comment line. indentlevel is -1 for comment lines, as a
-        # signal that tokenize doesn't know what to do about them;
-        # indeed, they're our headache!
-        self.stats = []
-
     def run(self):
         """Fix indentation and return modified line numbers.
 
@@ -1134,8 +1125,7 @@ class Reindenter(object):
 
         """
         try:
-            for t in tokenize.generate_tokens(self.getline):
-                self.tokeneater(*t)
+            stats = reindent_stats(tokenize.generate_tokens(self.getline))
         except (tokenize.TokenError, IndentationError):
             return set()
         # Remove trailing empty lines.
@@ -1143,7 +1133,6 @@ class Reindenter(object):
         while lines and lines[-1] == self.newline:
             lines.pop()
         # Sentinel.
-        stats = self.stats
         stats.append((len(lines), 0))
         # Map count of leading spaces to # we want.
         have2want = {}
@@ -1226,39 +1215,56 @@ class Reindenter(object):
             self.index += 1
         return line
 
-    def tokeneater(self, token_type, _, start, __, line):
-        """Line-eater for tokenize."""
-        sline = start[0]
+
+def reindent_stats(tokens):
+    """Return list  of (lineno, indentlevel) pairs.
+
+    One for each stmt and comment line. indentlevel is -1 for comment lines, as
+    a signal that tokenize doesn't know what to do about them; indeed, they're
+    our headache!
+
+    """
+    find_stmt = 1  # next token begins a fresh stmt?
+    level = 0  # current indent level
+    stats = []
+
+    for t in tokens:
+        token_type = t[0]
+        sline = t[2][0]
+        line = t[4]
+
         if token_type == tokenize.NEWLINE:
             # A program statement, or ENDMARKER, will eventually follow,
             # after some (possibly empty) run of tokens of the form
             #     (NL | COMMENT)* (INDENT | DEDENT+)?
-            self.find_stmt = 1
+            find_stmt = 1
 
         elif token_type == tokenize.INDENT:
-            self.find_stmt = 1
-            self.level += 1
+            find_stmt = 1
+            level += 1
 
         elif token_type == tokenize.DEDENT:
-            self.find_stmt = 1
-            self.level -= 1
+            find_stmt = 1
+            level -= 1
 
         elif token_type == tokenize.COMMENT:
-            if self.find_stmt:
-                self.stats.append((sline, -1))
+            if find_stmt:
+                stats.append((sline, -1))
                 # but we're still looking for a new stmt, so leave
                 # find_stmt alone
 
         elif token_type == tokenize.NL:
             pass
 
-        elif self.find_stmt:
+        elif find_stmt:
             # This is the first "real token" following a NEWLINE, so it
             # must be the first token of the next program statement, or an
             # ENDMARKER.
-            self.find_stmt = 0
+            find_stmt = 0
             if line:   # not endmarker
-                self.stats.append((sline, self.level))
+                stats.append((sline, level))
+
+    return stats
 
 
 class Wrapper(object):
