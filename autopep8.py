@@ -1133,9 +1133,8 @@ class Reindenter(object):
         Line numbers are indexed at 1.
 
         """
-        tokens = tokenize.generate_tokens(self.getline)
         try:
-            for t in tokens:
+            for t in tokenize.generate_tokens(self.getline):
                 self.tokeneater(*t)
         except (tokenize.TokenError, IndentationError):
             return set()
