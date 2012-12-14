@@ -47,6 +47,8 @@ open_coverage: coverage
 readme:
 	${PYTHON} update_readme.py
 	@python setup.py --long-description | rst2html --strict > README.html
+
+open_readme: readme
 	@python -m webbrowser -n "file://${PWD}/README.html"
 
 check:
