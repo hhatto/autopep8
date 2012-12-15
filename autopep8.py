@@ -1446,29 +1446,10 @@ class Wrapper(object):
                 hang = rel_indent[row] - rel_indent[open_row]
 
                 if token_type == tokenize.OP and text in ']})':
-                    if indent[depth]:
-                        if start[1] != indent[depth]:
-                            pass  # E124
-                    elif hang:
-                        pass  # E123
+                    pass
                 elif visual_indent is True:
                     if not indent[depth]:
                         indent[depth] = start[1]
-                elif visual_indent in (text, str):
-                    pass
-                elif indent[depth] and start[1] < indent[depth]:
-                    pass  # E128
-                elif hang == 4 or (indent_next and rel_indent[row] == 8):
-                    pass
-                else:
-                    if hang <= 0:
-                        pass  # E122
-                    elif indent[depth]:
-                        pass  # E127
-                    elif hang % 4:
-                        pass  # E121
-                    else:
-                        pass  # E126
 
             # line altered: comments shouldn't define a visual indent
             if parens[row] and not indent[depth] and token_type not in (
@@ -1506,9 +1487,6 @@ class Wrapper(object):
                     indent_chances[start[1]] = text
 
             last_token_multiline = (start[0] != end[0])
-
-        if indent_next and rel_indent[-1] == 4:
-            pass  # E125
 
         return valid_indents
 
