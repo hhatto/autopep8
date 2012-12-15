@@ -141,7 +141,6 @@ class FixPEP8(object):
         else:
             sio = StringIO(contents)
             self.source = sio.readlines()
-        self.original_source = copy.copy(self.source)
         self.newline = find_newline(self.source)
         self.options = options
         self.indent_word = _get_indentword(''.join(self.source))
@@ -1209,7 +1208,7 @@ class Reindenter(object):
     def getline(self):
         """Line-getter for tokenize."""
         if self.index >= len(self.lines):
-            line = ""
+            line = ''
         else:
             line = self.lines[self.index]
             self.index += 1
@@ -1282,8 +1281,7 @@ class Wrapper(object):
 
     def __init__(self, physical_lines):
         self.lines = physical_lines
-        self.index = 0
-        self.tokens = list()
+        self.tokens = []
         self.rel_indent = None
         sio = StringIO(''.join(physical_lines))
         for t in tokenize.generate_tokens(sio.readline):
