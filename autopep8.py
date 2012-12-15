@@ -931,13 +931,12 @@ def _get_indentation(line):
 
 def _analyze_pep8result(result):
     tmp = result.split(':')
-    filename = tmp[0]
-    line = int(tmp[1])
-    column = int(tmp[2])
     info = ' '.join(result.split()[1:])
-    pep8id = info.lstrip().split()[0]
-    return dict(id=pep8id, filename=filename, line=line,
-                column=column, info=info)
+    return {'id': info.lstrip().split()[0],
+            'filename': tmp[0],
+            'line': int(tmp[1]),
+            'column': int(tmp[2]),
+            'info': info}
 
 
 def _get_difftext(old, new, filename):
@@ -1065,8 +1064,10 @@ def _execute_pep8(pep8_options, source):
             code = super(QuietReport, self).error(line_number, offset, text, _)
             if code:
                 self.__full_error_results.append(
-                    dict(id=code, line=line_number,
-                         column=offset + 1, info=text))
+                    {'id': code,
+                     'line': line_number,
+                     'column': offset + 1,
+                     'info': text})
 
         def full_error_results(self):
             """Return error results in detail.
