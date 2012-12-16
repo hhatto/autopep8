@@ -63,13 +63,9 @@ def open_with_encoding(filename, encoding=None, mode='r'):
     if not encoding:
         encoding = detect_encoding(filename)
 
-    try:
-        # Python 3
-        return open(filename, mode=mode, encoding=encoding,
-                    newline='')  # Preserve line endings
-    except TypeError:
-        # Python 2
-        return codecs.open(filename, mode=mode, encoding=encoding)
+    import io
+    return io.open(filename, mode=mode, encoding=encoding,
+                   newline='')  # Preserve line endings
 
 
 def detect_encoding(filename):
