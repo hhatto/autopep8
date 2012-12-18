@@ -2251,6 +2251,20 @@ class TestOptions(unittest.TestCase):
         self.assertEqual(f.read(), fixed)
         f.close()
 
+    def test_in_place_with_empty_file(self):
+        line = ''
+
+        f = open(self.tempfile[1], 'w')
+        f.write(line)
+        f.close()
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--in-place'])
+        p.wait()
+        self.assertEqual(0, p.returncode)
+
+        f = open(self.tempfile[1])
+        self.assertEqual(f.read(), line)
+        f.close()
+
     def test_in_place_and_diff(self):
         line = "'abc'  \n"
         f = open(self.tempfile[1], 'w')
