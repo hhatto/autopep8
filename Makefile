@@ -54,7 +54,7 @@ open_readme: readme
 check:
 	pep8 autopep8.py
 	pylint --reports=no --include-ids=yes --max-module-lines=2500 \
-		--disable=C0111,C0103,F0401,R0902,R0903,W0404,R0914,R0912,R0915,R0904,R0911,R0913,W0142,E1101,E0702 \
+		--disable=C0111,C0103,F0401,R0902,R0903,W0404,W0622,R0914,R0912,R0915,R0904,R0911,R0913,W0142,E1101,E0702 \
 		--rcfile=/dev/null autopep8.py
 	./autopep8.py --diff test/test_autopep8.py
 	./autopep8.py --diff autopep8.py

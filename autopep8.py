@@ -58,10 +58,9 @@ LF = '\n'
 CRLF = '\r\n'
 
 try:
-    # For Python 2.
-    EMPTY_STRING = unicode()
+    unicode
 except NameError:
-    EMPTY_STRING = ''
+    unicode = str
 
 
 def open_with_encoding(filename, encoding=None, mode='r'):
@@ -145,7 +144,7 @@ class FixPEP8(object):
             self.source = sio.readlines()
         self.newline = find_newline(self.source)
         self.options = options
-        self.indent_word = _get_indentword(EMPTY_STRING.join(self.source))
+        self.indent_word = _get_indentword(unicode().join(self.source))
         self.logical_start = None
         self.logical_end = None
         # method definition
@@ -245,10 +244,10 @@ class FixPEP8(object):
             print('--->  {n} issue(s) to fix {progress}'.format(
                 n=len(results), progress=progress), file=sys.stderr)
 
-        self._fix_source(filter_results(source=EMPTY_STRING.join(self.source),
+        self._fix_source(filter_results(source=unicode().join(self.source),
                                         results=results,
                                         aggressive=self.options.aggressive))
-        return EMPTY_STRING.join(self.source)
+        return unicode().join(self.source)
 
     def fix_e101(self, _):
         """Reindent all lines."""
@@ -855,10 +854,7 @@ class FixPEP8(object):
                 UnicodeDecodeError, UnicodeEncodeError):
             return []
 
-        try:
-            original = unicode(''.join(self.source).strip(), 'utf-8')
-        except (NameError, TypeError):
-            original = ''.join(self.source).strip()
+        original = unicode().join(self.source).strip()
         if original == new_text.strip():
             return []
         else:
@@ -1512,10 +1508,7 @@ def refactor_with_2to3(source_text, fixer_name):
     tool = refactor.RefactoringTool(
         fixer_names=fixers,
         explicit=fixers)
-    try:
-        return unicode(tool.refactor_string(source_text, name=''))
-    except NameError:
-        return str(tool.refactor_string(source_text, name=''))
+    return unicode(tool.refactor_string(source_text, name=''))
 
 
 def break_multi_line(source_text, newline, indent_word, max_line_length):
@@ -1718,7 +1711,7 @@ def fix_file(filename, opts=None, output=None):
 
     original_source = read_from_filename(filename, readlines=True)
 
-    tmp_source = EMPTY_STRING.join(normalize_line_endings(original_source))
+    tmp_source = unicode().join(normalize_line_endings(original_source))
 
     fix = FixPEP8(filename, opts, contents=tmp_source)
     fixed_source = fix.fix()
