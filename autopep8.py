@@ -57,6 +57,12 @@ CR = '\r'
 LF = '\n'
 CRLF = '\r\n'
 
+try:
+    # For Python 2.
+    EMPTY_STRING = unicode()
+except NameError:
+    EMPTY_STRING = ''
+
 
 def open_with_encoding(filename, encoding=None, mode='r'):
     """Return opened file with a specific encoding."""
@@ -139,7 +145,7 @@ class FixPEP8(object):
             self.source = sio.readlines()
         self.newline = find_newline(self.source)
         self.options = options
-        self.indent_word = _get_indentword(''.join(self.source))
+        self.indent_word = _get_indentword(EMPTY_STRING.join(self.source))
         self.logical_start = None
         self.logical_end = None
         # method definition
@@ -239,10 +245,10 @@ class FixPEP8(object):
             print('--->  {n} issue(s) to fix {progress}'.format(
                 n=len(results), progress=progress), file=sys.stderr)
 
-        self._fix_source(filter_results(source=''.join(self.source),
+        self._fix_source(filter_results(source=EMPTY_STRING.join(self.source),
                                         results=results,
                                         aggressive=self.options.aggressive))
-        return ''.join(self.source)
+        return EMPTY_STRING.join(self.source)
 
     def fix_e101(self, _):
         """Reindent all lines."""
@@ -1712,7 +1718,7 @@ def fix_file(filename, opts=None, output=None):
 
     original_source = read_from_filename(filename, readlines=True)
 
-    tmp_source = ''.join(normalize_line_endings(original_source))
+    tmp_source = EMPTY_STRING.join(normalize_line_endings(original_source))
 
     fix = FixPEP8(filename, opts, contents=tmp_source)
     fixed_source = fix.fix()

@@ -17,7 +17,7 @@ def latest_repositories():
     """Return names of latest released repositories on Github."""
     import requests
 
-    for result in requests.get('https://github.com/timeline.json').json:
+    for result in requests.get('https://github.com/timeline.json').json():
         try:
             repository = result['repository']
             size = repository['size']
