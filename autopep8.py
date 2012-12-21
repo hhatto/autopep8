@@ -43,8 +43,12 @@ import tempfile
 from distutils.version import StrictVersion
 try:
     import pep8
-    if StrictVersion(pep8.__version__) < StrictVersion('1.3a2'):
-        pep8 = None
+    try:
+        if StrictVersion(pep8.__version__) < StrictVersion('1.3a2'):
+            pep8 = None
+    except ValueError:
+        # Ignore non-standard version tags.
+        pass
 except ImportError:
     pep8 = None
 
