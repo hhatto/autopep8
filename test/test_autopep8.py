@@ -2307,7 +2307,6 @@ def autopep8_with_spawned_pep8(line, options=None):
             autopep8.pep8 = original_pep8
 
 
-
 class TestSpawnPEP8Process(unittest.TestCase):
 
     def test_basic(self):
