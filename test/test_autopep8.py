@@ -1624,8 +1624,8 @@ time.strftime('%d-%m-%Y')
         if sys.version_info[0] < 3:
             line = unicode(line, 'utf-8')
             fixed = unicode(fixed, 'utf-8')
-            self._inner_setup(line.encode('utf-8'))
-            self.assertEqual(self.result, fixed)
+            with autopep8_context(line.encode('utf-8')) as result:
+                self.assertEqual(result, fixed)
         else:
             with autopep8_context(line) as result:
                 self.assertEqual(result, fixed)
