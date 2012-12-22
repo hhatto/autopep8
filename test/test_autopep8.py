@@ -2345,13 +2345,13 @@ class TestSpawnPEP8Process(unittest.TestCase):
             autopep8.pep8 = original_pep8
 
     def test_basic(self):
-        line = "print('abc' )    \n1*1\n"
+        line = "print('abc' )    \n1 * 1\n"
         fixed = "print('abc')\n1 * 1\n"
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
     def test_verbose(self):
-        line = "print('abc' )    \n1*1\n"
+        line = "print('abc' )    \n1 * 1\n"
         fixed = "print('abc')\n1 * 1\n"
         sio = StringIO()
         with capture_stderr(sio):
