@@ -2159,42 +2159,39 @@ correct = 'good syntax ?' in dict()
             self.assertEqual(result, fixed)
 
 
-class TestOptions(unittest.TestCase):
+@contextlib.contextmanager
+def autopep8_subprocess(line, options=None):
+    if not options:
+        options = []
 
-    def setUp(self):
-        self.tempfile = mkstemp()
-        os.close(self.tempfile[0])
-
-    def tearDown(self):
-        os.remove(self.tempfile[1])
-
-    def _inner_setup(self, line, options):
-        with open(self.tempfile[1], 'w') as temp_file:
-            temp_file.write(line)
-        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1]] + options,
+    with temporary_file_context(line) as filename:
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename] + options,
                   stdout=PIPE)
-        self.result = p.communicate()[0].decode('utf-8')
+        yield p.communicate()[0].decode('utf-8')
+
+
+class TestOptions(unittest.TestCase):
 
     def test_diff(self):
         line = "'abc'  \n"
         fixed = "-'abc'  \n+'abc'\n"
-        self._inner_setup(line, ['--diff'])
-        self.assertEqual('\n'.join(self.result.split('\n')[3:]), fixed)
+        with autopep8_subprocess(line, ['--diff']) as result:
+            self.assertEqual('\n'.join(result.split('\n')[3:]), fixed)
 
     def test_diff_with_empty_file(self):
-        self._inner_setup('', ['--diff'])
-        self.assertEqual('\n'.join(self.result.split('\n')[3:]), '')
+        with autopep8_subprocess('', ['--diff']) as result:
+            self.assertEqual('\n'.join(result.split('\n')[3:]), '')
 
     def test_pep8_passes(self):
         line = "'abc'  \n"
         fixed = "'abc'\n"
-        self._inner_setup(line, ['--pep8-passes', '0'])
-        self.assertEqual(self.result, fixed)
+        with autopep8_subprocess(line, ['--pep8-passes', '0']) as result:
+            self.assertEqual(result, fixed)
 
     def test_pep8_ignore(self):
         line = "'abc'  \n"
-        self._inner_setup(line, ['--ignore=E,W'])
-        self.assertEqual(self.result, line)
+        with autopep8_subprocess(line, ['--ignore=E,W']) as result:
+            self.assertEqual(result, line)
 
     def test_help(self):
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['-h'],
@@ -2203,63 +2200,53 @@ class TestOptions(unittest.TestCase):
 
     def test_verbose(self):
         line = 'bad_syntax)'
-        f = open(self.tempfile[1], 'w')
-        f.write(line)
-        f.close()
-        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '-vvv'],
-                  stdout=PIPE, stderr=PIPE)
-        verbose_error = p.communicate()[1].decode('utf-8')
+        with temporary_file_context(line) as filename:
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename, '-vvv'],
+                      stdout=PIPE, stderr=PIPE)
+            verbose_error = p.communicate()[1].decode('utf-8')
         self.assertIn("'fix_e901' is not defined", verbose_error)
 
     def test_verbose_diff(self):
         line = 'bad_syntax)'
-        f = open(self.tempfile[1], 'w')
-        f.write(line)
-        f.close()
-        p = Popen(list(AUTOPEP8_CMD_TUPLE) +
-                  [self.tempfile[1], '-vvv', '--diff'],
-                  stdout=PIPE, stderr=PIPE)
-        verbose_error = p.communicate()[1].decode('utf-8')
+        with temporary_file_context(line) as filename:
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [filename, '-vvv', '--diff'],
+                      stdout=PIPE, stderr=PIPE)
+            verbose_error = p.communicate()[1].decode('utf-8')
         self.assertIn("'fix_e901' is not defined", verbose_error)
 
     def test_in_place(self):
         line = "'abc'  \n"
         fixed = "'abc'\n"
 
-        f = open(self.tempfile[1], 'w')
-        f.write(line)
-        f.close()
-        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--in-place'])
-        p.wait()
+        with temporary_file_context(line) as filename:
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename, '--in-place'])
+            p.wait()
 
-        f = open(self.tempfile[1])
-        self.assertEqual(f.read(), fixed)
-        f.close()
+            f = open(filename)
+            self.assertEqual(f.read(), fixed)
+            f.close()
 
     def test_in_place_with_empty_file(self):
         line = ''
 
-        f = open(self.tempfile[1], 'w')
-        f.write(line)
-        f.close()
-        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--in-place'])
-        p.wait()
-        self.assertEqual(0, p.returncode)
+        with temporary_file_context(line) as filename:
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename, '--in-place'])
+            p.wait()
+            self.assertEqual(0, p.returncode)
 
-        f = open(self.tempfile[1])
-        self.assertEqual(f.read(), line)
-        f.close()
+            f = open(filename)
+            self.assertEqual(f.read(), line)
+            f.close()
 
     def test_in_place_and_diff(self):
         line = "'abc'  \n"
-        f = open(self.tempfile[1], 'w')
-        f.write(line)
-        f.close()
-        p = Popen(
-            list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1],
-                                        '--in-place', '--diff'],
-            stderr=PIPE)
-        result = p.communicate()[1].decode('utf-8')
+        with temporary_file_context(line) as filename:
+            p = Popen(
+                list(AUTOPEP8_CMD_TUPLE) + [filename,
+                                            '--in-place', '--diff'],
+                stderr=PIPE)
+            result = p.communicate()[1].decode('utf-8')
         self.assertIn('--in-place and --diff are mutually exclusive', result)
 
     def test_recursive(self):
@@ -2292,17 +2279,15 @@ class TestOptions(unittest.TestCase):
 
     def test_only_recursive(self):
         line = "'abc'  \n"
-        f = open(self.tempfile[1], 'w')
-        f.write(line)
-        f.close()
-        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [self.tempfile[1], '--recursive'],
-                  stderr=PIPE)
-        result = p.communicate()[1].decode('utf-8')
+        with temporary_file_context(line) as filename:
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename, '--recursive'],
+                      stderr=PIPE)
+            result = p.communicate()[1].decode('utf-8')
         self.assertIn('must be used with --in-place or --diff', result)
 
     def test_list_fixes(self):
-        self._inner_setup('', options=['--list-fixes'])
-        self.assertIn('E101', self.result)
+        with autopep8_subprocess('', options=['--list-fixes']) as result:
+            self.assertIn('E101', result)
 
 
 class TestSpawnPEP8Process(unittest.TestCase):
