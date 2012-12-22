@@ -1058,6 +1058,12 @@ class Foo(object):
         self._inner_setup(line)
         self.assertEqual(self.result, fixed)
 
+    def test_e226(self):
+        line = "1*1\n2*2\n3*3\n"
+        fixed = "1 * 1\n2 * 2\n3 * 3\n"
+        self._inner_setup(line, options=['--select=E22'])
+        self.assertEqual(self.result, fixed)
+
     def test_e231(self):
         line = "[1,2,3]\n"
         fixed = "[1, 2, 3]\n"
