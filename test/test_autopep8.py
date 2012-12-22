@@ -2290,50 +2290,48 @@ class TestOptions(unittest.TestCase):
             self.assertIn('E101', result)
 
 
-class TestSpawnPEP8Process(unittest.TestCase):
+@contextlib.contextmanager
+def autopep8_with_spawned_pep8(line, options=None):
+    if not options:
+        options = []
 
-    def setUp(self):
-        self.tempfile = mkstemp()
-        os.close(self.tempfile[0])
-
-    def tearDown(self):
-        os.remove(self.tempfile[1])
-
-    def _inner_setup(self, line, options=()):
-        with open(self.tempfile[1], 'w') as temp_file:
-            temp_file.write(line)
-        opts, _ = autopep8.parse_args(list(options) + [self.tempfile[1]])
+    with temporary_file_context(line) as filename:
+        opts, _ = autopep8.parse_args(list(options) + [filename])
 
         # Monkey patch pep8 to trigger spawning
         original_pep8 = autopep8.pep8
         try:
             autopep8.pep8 = None
-            self.result = autopep8.fix_file(
-                filename=self.tempfile[1],
-                opts=opts)
+            yield autopep8.fix_file(filename=filename, opts=opts)
         finally:
             autopep8.pep8 = original_pep8
+
+
+
+class TestSpawnPEP8Process(unittest.TestCase):
 
     def test_basic(self):
         line = "print('abc' )    \n1 * 1\n"
         fixed = "print('abc')\n1 * 1\n"
-        self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
+        with autopep8_with_spawned_pep8(line) as result:
+            self.assertEqual(result, fixed)
 
     def test_verbose(self):
         line = "print('abc' )    \n1 * 1\n"
         fixed = "print('abc')\n1 * 1\n"
         sio = StringIO()
         with capture_stderr(sio):
-            self._inner_setup(line, options=['--verbose'])
-        self.assertEqual(self.result, fixed)
+            with autopep8_with_spawned_pep8(
+                    line, options=['--verbose']) as result:
+                self.assertEqual(result, fixed)
         self.assertIn('compatibility mode', sio.getvalue())
 
     def test_max_line_length(self):
         line = "foooooooooooooooooo('abcdefghijklmnopqrstuvwxyz')\n"
         fixed = "foooooooooooooooooo(\n    'abcdefghijklmnopqrstuvwxyz')\n"
-        self._inner_setup(line, options=['--max-line-length=40'])
-        self.assertEqual(self.result, fixed)
+        with autopep8_with_spawned_pep8(
+                line, options=['--max-line-length=40']) as result:
+            self.assertEqual(result, fixed)
 
     def test_format_block_comments(self):
         line = """
@@ -2354,18 +2352,20 @@ bar()  # bizz
 if True:
     1
 """.lstrip()
-        self._inner_setup(line)
-        self.assertEqual(self.result, fixed)
+        with autopep8_with_spawned_pep8(line) as result:
+            self.assertEqual(result, fixed)
 
     def test_pep8_ignore(self):
         line = "'abc'  \n"
-        self._inner_setup(line, options=['--ignore=E,W'])
-        self.assertEqual(self.result, line)
+        with autopep8_with_spawned_pep8(
+                line, options=['--ignore=E,W']) as result:
+            self.assertEqual(result, line)
 
     def test_pep8_select(self):
         line = "'abc'  \n"
-        self._inner_setup(line, options=['--select=E101'])
-        self.assertEqual(self.result, line)
+        with autopep8_with_spawned_pep8(
+                line, options=['--select=E101']) as result:
+            self.assertEqual(result, line)
 
 
 @contextlib.contextmanager
