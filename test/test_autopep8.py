@@ -258,16 +258,6 @@ def foo():
             autopep8.code_match('E2', select='E2,E3', ignore='E2'))
 
 
-@contextlib.contextmanager
-def autopep8_context(line, options=None):
-    if not options:
-        options = []
-
-    with temporary_file_context(line) as filename:
-        opts, _ = autopep8.parse_args([filename] + list(options))
-        yield autopep8.fix_file(filename=filename, opts=opts)
-
-
 class TestFixPEP8Error(unittest.TestCase):
 
     def test_e101(self):
@@ -2159,17 +2149,6 @@ correct = 'good syntax ?' in dict()
             self.assertEqual(result, fixed)
 
 
-@contextlib.contextmanager
-def autopep8_subprocess(line, options=None):
-    if not options:
-        options = []
-
-    with temporary_file_context(line) as filename:
-        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename] + options,
-                  stdout=PIPE)
-        yield p.communicate()[0].decode('utf-8')
-
-
 class TestOptions(unittest.TestCase):
 
     def test_diff(self):
@@ -2290,23 +2269,6 @@ class TestOptions(unittest.TestCase):
             self.assertIn('E101', result)
 
 
-@contextlib.contextmanager
-def autopep8_with_spawned_pep8(line, options=None):
-    if not options:
-        options = []
-
-    with temporary_file_context(line) as filename:
-        opts, _ = autopep8.parse_args(list(options) + [filename])
-
-        # Monkey patch pep8 to trigger spawning
-        original_pep8 = autopep8.pep8
-        try:
-            autopep8.pep8 = None
-            yield autopep8.fix_file(filename=filename, opts=opts)
-        finally:
-            autopep8.pep8 = original_pep8
-
-
 class TestSpawnPEP8Process(unittest.TestCase):
 
     def test_basic(self):
@@ -2367,16 +2329,6 @@ if True:
             self.assertEqual(result, line)
 
 
-@contextlib.contextmanager
-def temporary_file_context(text):
-    tempfile = mkstemp()
-    os.close(tempfile[0])
-    with open(tempfile[1], 'w') as temp_file:
-        temp_file.write(text)
-    yield tempfile[1]
-    os.remove(tempfile[1])
-
-
 class TestCoverage(unittest.TestCase):
 
     def test_fixpep8_class_constructor(self):
@@ -2420,6 +2372,54 @@ class TestCoverage(unittest.TestCase):
             self.assertEqual(
                 os.linesep.join(['1', '2', '3', '']),
                 process.communicate()[0].decode('utf-8'))
+
+
+@contextlib.contextmanager
+def autopep8_context(line, options=None):
+    if not options:
+        options = []
+
+    with temporary_file_context(line) as filename:
+        opts, _ = autopep8.parse_args([filename] + list(options))
+        yield autopep8.fix_file(filename=filename, opts=opts)
+
+
+@contextlib.contextmanager
+def autopep8_subprocess(line, options=None):
+    if not options:
+        options = []
+
+    with temporary_file_context(line) as filename:
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename] + options,
+                  stdout=PIPE)
+        yield p.communicate()[0].decode('utf-8')
+
+
+@contextlib.contextmanager
+def autopep8_with_spawned_pep8(line, options=None):
+    if not options:
+        options = []
+
+    with temporary_file_context(line) as filename:
+        opts, _ = autopep8.parse_args(list(options) + [filename])
+
+        # Monkey patch pep8 to trigger spawning
+        original_pep8 = autopep8.pep8
+        try:
+            autopep8.pep8 = None
+            yield autopep8.fix_file(filename=filename, opts=opts)
+        finally:
+            autopep8.pep8 = original_pep8
+
+
+@contextlib.contextmanager
+def temporary_file_context(text):
+    tempfile = mkstemp()
+    os.close(tempfile[0])
+    with open(tempfile[1], 'w') as temp_file:
+        temp_file.write(text)
+    yield tempfile[1]
+    os.remove(tempfile[1])
 
 
 @contextlib.contextmanager
