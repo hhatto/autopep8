@@ -1524,7 +1524,10 @@ def break_multi_line(source_text, newline, indent_word, max_line_length):
     """
     # Handle special case only.
     for symbol in '([{':
-        if (symbol in source_text and source_text.rstrip().endswith(',')):
+        # Only valid if symbol is not on a line by itself.
+        if (symbol in source_text
+                and source_text.rstrip().endswith(',')
+                and not source_text.lstrip().startswith(symbol)):
             index = 1 + source_text.find(symbol)
             if index >= max_line_length:
                 return None
