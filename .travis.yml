@@ -15,7 +15,7 @@ script:
     - python test/test_autopep8.py
     - python test/acid.py test/example.py
 
-    # Check that testing from source distribution works.
+    # Check that running tests in source distribution works.
     - python setup.py sdist -d .tmp
     - cd .tmp
     - tar xf *.tar.gz
