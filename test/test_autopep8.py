@@ -116,6 +116,14 @@ class TestUtils(unittest.TestCase):
                 newline='\n', indent_word='    ',
                 max_line_length=79))
 
+    def test_break_multi_line_should_not_modify_lonely_brace(self):
+        self.assertEqual(
+            None,
+            autopep8.break_multi_line(
+                '(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 222, 222, 222, 222, 333,\n',
+                newline='\n', indent_word='    ',
+                max_line_length=79))
+
     def test_multiline_string_lines(self):
         self.assertEqual(
             set([2]),
