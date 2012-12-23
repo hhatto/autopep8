@@ -21,5 +21,3 @@ script:
     - tar xf *.tar.gz
     - cd *
     - python setup.py test
-    - cd ../..
-    - rm -r .tmp
