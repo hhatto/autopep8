@@ -1,14 +1,6 @@
 #!/usr/bin/env python
 """Update example in readme."""
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    try:
-        from StringIO import StringIO
-    except ImportError:
-        from io import StringIO
-
 
 def split_readme(readme_path, before_key, after_key, end_key):
     """Return split readme."""
@@ -34,7 +26,8 @@ def run_autopep8(source, options=()):
     try:
         import autopep8
         opts, _ = autopep8.parse_args(list(options) + [temp[1]])
-        sio = StringIO()
+        import io
+        sio = io.StringIO()
         autopep8.fix_file(filename=temp[1],
                           opts=opts,
                           output=sio)
