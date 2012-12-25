@@ -20,11 +20,11 @@ Installation
 ------------
 from pip::
 
-    pip install --upgrade autopep8
+    $ pip install --upgrade autopep8
 
 from easy_install::
 
-    easy_install -ZU autopep8
+    $ easy_install -ZU autopep8
 
 
 Requirements
@@ -42,7 +42,9 @@ To modify a file in place::
 
     $ autopep8 -i <filename>
 
-Before::
+Before running autopep8.
+
+.. code-block:: python
 
     import sys, os;
 
@@ -70,7 +72,9 @@ Before::
         def my_method(self):
                                                   print(self);
 
-After::
+After running autopep8.
+
+.. code-block:: python
 
     import sys
     import os
