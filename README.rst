@@ -50,8 +50,7 @@ Before running autopep8.
 
     def someone_likes_semicolons(                             foo  = None            ,\
     bar='bar'):
-        """Hello; bye."""; 1; 2;3
-        print( 'A'<>foo)            #<> is a deprecated form of !=
+        """Hello; bye."""; print( 'A'<>foo)            #<> is a deprecated form of !=
         return 0;
     def func11():
         a=(   1,2, 3,"a"  );
@@ -82,9 +81,6 @@ After running autopep8.
     def someone_likes_semicolons(foo=None,
                                  bar='bar'):
         """Hello; bye."""
-        1
-        2
-        3
         print('A' != foo)  # <> is a deprecated form of !=
         return 0
 
