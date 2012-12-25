@@ -55,8 +55,8 @@ def indent(text):
 
 def main():
     README_PATH = 'README.rst'
-    BEFORE_KEY = 'Before::'
-    AFTER_KEY = 'After::'
+    BEFORE_KEY = 'Before running autopep8.\n\n.. code-block:: python'
+    AFTER_KEY = 'After running autopep8.\n\n.. code-block:: python'
 
     (top, before, bottom) = split_readme(README_PATH,
                                          before_key=BEFORE_KEY,
