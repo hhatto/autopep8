@@ -1596,11 +1596,6 @@ def filter_results(source, results, aggressive=False):
         if issue_id in ['e711', 'e712'] and not aggressive:
             continue
 
-        # pep8 should not complain about SQLAlchemy queries. SQLAlchemy
-        # overrides the equality operators.
-        if issue_id == 'e711' and 'filter' in split_source[r['line']]:
-            continue
-
         yield r
 
 
