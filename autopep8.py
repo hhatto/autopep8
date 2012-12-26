@@ -167,6 +167,7 @@ class FixPEP8(object):
         self.fix_e272 = self.fix_e271
         self.fix_e273 = self.fix_e271
         self.fix_e274 = self.fix_e271
+        self.fix_e703 = self.fix_e702
         self.fix_w191 = self.fix_e101
 
     def _fix_source(self, results):
