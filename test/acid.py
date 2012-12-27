@@ -286,7 +286,8 @@ def check(opts, args):
     if args:
         dir_paths = args
     else:
-        dir_paths = sys.path
+        dir_paths = [path for path in sys.path
+                     if os.path.isdir(path)]
 
     filenames = dir_paths
     completed_filenames = set()
