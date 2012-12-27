@@ -45,8 +45,8 @@ def run(filename, fast_check=False, passes=2000,
     Return True on success.
 
     """
-    autoppe8_bin = os.path.join(ROOT_PATH, 'autopep8.py')
-    command = ([autoppe8_bin] + (['--verbose'] if verbose else []) +
+    autopep8_bin = os.path.join(ROOT_PATH, 'autopep8.py')
+    command = ([autopep8_bin] + (['--verbose'] if verbose else []) +
                ['--pep8-passes={p}'.format(p=passes),
                 '--ignore=' + ignore, filename] +
                (['--aggressive'] if aggressive else []))
