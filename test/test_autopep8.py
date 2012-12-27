@@ -1736,16 +1736,6 @@ raise IOError('abc '
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(result, fixed)
 
-    def test_e711_should_not_modify_sql_alchemy_query(self):
-        line = 'filter(User.name == None)\n'
-        with autopep8_context(line, options=['--aggressive']) as result:
-            self.assertEqual(result, line)
-
-    def test_e711_should_not_modify_sql_alchemy_query_with_not_equals(self):
-        line = 'filter(User.name != None)\n'
-        with autopep8_context(line, options=['--aggressive']) as result:
-            self.assertEqual(result, line)
-
     def test_e712(self):
         line = 'foo == True\n'
         fixed = 'foo\n'
