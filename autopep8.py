@@ -1042,15 +1042,9 @@ def fix_whitespace(line, offset, replacement):
 
 def _spawn_pep8(pep8_options):
     """Execute pep8 via subprocess.Popen."""
-    for path in os.environ['PATH'].split(':'):
-        if os.path.exists(os.path.join(path, PEP8_BIN)):
-            cmd = ([os.path.join(path, PEP8_BIN)] +
-                   pep8_options)
-            p = Popen(cmd, stdout=PIPE)
-            output = p.communicate()[0].decode('utf-8')
-            return [_analyze_pep8result(l)
-                    for l in output.splitlines()]
-    raise Exception("'%s' is not found." % PEP8_BIN)
+    p = Popen([PEP8_BIN] + pep8_options, stdout=PIPE)
+    output = p.communicate()[0].decode('utf-8')
+    return [_analyze_pep8result(l) for l in output.splitlines()]
 
 
 def _execute_pep8(pep8_options, source):
