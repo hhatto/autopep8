@@ -978,8 +978,6 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
                  max_line_length, reverse=False):
     """Separate line at OPERATOR."""
     actual_length = len(indentation) + len(source)
-    if actual_length <= max_line_length:
-        return indentation + source
 
     delta = (actual_length - max_line_length) // 3
     assert delta >= 0
@@ -987,7 +985,6 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
     if not delta:
         delta = 1
 
-    assert delta > 0
     for length in range(max_line_length, actual_length, delta):
         shortened = _shorten_line(
             tokens=tokens,
@@ -1001,6 +998,8 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
 
         if shortened is not None:
             return shortened
+
+    return None
 
 
 def _shorten_line(tokens, source, target, indentation, indent_word, newline,
