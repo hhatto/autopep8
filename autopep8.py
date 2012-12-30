@@ -22,6 +22,7 @@
 """Automatically formats Python code to conform to the PEP 8 style guide."""
 
 from __future__ import print_function
+from __future__ import division
 
 import copy
 import os
@@ -697,12 +698,12 @@ class FixPEP8(object):
         # over
         # my_long_function_name(x, y,
         #     z, ...)
-        candidate0 = _shorten_line(
+        candidate0 = shorten_line(
             tokens, source, target, indent,
             self.indent_word, newline=self.newline,
             max_line_length=self.options.max_line_length,
             reverse=False)
-        candidate1 = _shorten_line(
+        candidate1 = shorten_line(
             tokens, source, target, indent,
             self.indent_word, newline=self.newline,
             max_line_length=self.options.max_line_length,
@@ -971,6 +972,35 @@ def _priority_key(pep8_result):
     else:
         # Lowest priority
         return len(priority)
+
+
+def shorten_line(tokens, source, target, indentation, indent_word, newline,
+                 max_line_length, reverse=False):
+    """Separate line at OPERATOR."""
+    actual_length = len(indentation) + len(source)
+    if actual_length <= max_line_length:
+        return indentation + source
+
+    delta = (actual_length - max_line_length) // 3
+    assert delta >= 0
+
+    if not delta:
+        delta = 1
+
+    assert delta > 0
+    for length in range(max_line_length, actual_length, delta):
+        shortened = _shorten_line(
+            tokens=tokens,
+            source=source,
+            target=target,
+            indentation=indentation,
+            indent_word=indent_word,
+            newline=newline,
+            max_line_length=length,
+            reverse=reverse)
+
+        if shortened is not None:
+            return shortened
 
 
 def _shorten_line(tokens, source, target, indentation, indent_word, newline,

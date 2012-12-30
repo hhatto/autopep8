@@ -1273,6 +1273,23 @@ print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
         with autopep8_context(line) as result:
             self.assertEqual(result, fixed)
 
+    def test_e501_with_very_long_line(self):
+        """For now, we only shorten partially.
+
+        The result is still longer than 79.
+
+        """
+
+        line = """\
+x = [3244234243234, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243]
+"""
+        fixed = """\
+x = [3244234243234, 234234234324, 234234324, 23424234, 234234234,
+     234234, 234243, 234243, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243]
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(result, fixed)
+
     def test_e501_with_shorter_length(self):
         line = "foooooooooooooooooo('abcdefghijklmnopqrstuvwxyz')\n"
         fixed = "foooooooooooooooooo(\n    'abcdefghijklmnopqrstuvwxyz')\n"
@@ -1452,19 +1469,12 @@ def dummy():
     if True:
         if True:
             if True:
-                object = ModifyAction([MODIFY70.text, OBJECTBINDING71.text, COLON72.text], MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
+                object = ModifyAction(
+                    [MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
+                    MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
 """
         with autopep8_context(line) as result:
             self.assertEqual(result, fixed)
-
-    def test_e501_do_not_break_if_useless(self):
-        line = """
-
-123
-('bbb', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-"""
-        with autopep8_context(line) as result:
-            self.assertEqual(result, line)
 
     def test_e501_should_not_break_on_dot(self):
         line = """
@@ -1472,8 +1482,16 @@ if True:
     if True:
         raise xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx('xxxxxxxxxxxxxxxxx "{d}" xxxxxxxxxxxxxx'.format(d='xxxxxxxxxxxxxxx'))
 """.lstrip()
+
+        fixed = """
+if True:
+    if True:
+        raise xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(
+            'xxxxxxxxxxxxxxxxx "{d}" xxxxxxxxxxxxxx'.format(d='xxxxxxxxxxxxxxx'))
+""".lstrip()
+
         with autopep8_context(line) as result:
-            self.assertEqual(result, line)
+            self.assertEqual(result, fixed)
 
     def test_e501_with_comment(self):
         line = """123
