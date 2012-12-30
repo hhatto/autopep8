@@ -643,7 +643,8 @@ class FixPEP8(object):
         if ';' in target:
             return []
 
-        indentation = target.split('import ')[0]
+        indentation = re.split(pattern=r'\bimport\b',
+                               string=target, maxsplit=1)[0]
         fixed = (target[:offset].rstrip('\t ,') + self.newline +
                  indentation + 'import ' + target[offset:].lstrip('\t ,'))
         self.source[line_index] = fixed
