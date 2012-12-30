@@ -13,7 +13,7 @@ be formatted. autopep8 is capable of fixing most of the formatting issues_ that
 can be reported by pep8.
 
 .. _PEP 8: http://www.python.org/dev/peps/pep-0008
-.. _issues: https://github.com/jcrocholl/pep8/wiki/ErrorCodes
+.. _issues: http://pep8.readthedocs.org/en/latest/intro.html#error-codes
 
 
 Installation
