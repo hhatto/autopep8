@@ -699,25 +699,24 @@ class FixPEP8(object):
         # over
         # my_long_function_name(x, y,
         #     z, ...)
-        candidate0 = shorten_line(
-            tokens, source, target, indent,
-            self.indent_word, newline=self.newline,
-            max_line_length=self.options.max_line_length,
-            reverse=False)
-        candidate1 = shorten_line(
-            tokens, source, target, indent,
-            self.indent_word, newline=self.newline,
-            max_line_length=self.options.max_line_length,
-            reverse=True)
-        if candidate0 and candidate1:
-            if candidate0.split(self.newline)[0].endswith('('):
-                self.source[line_index] = candidate0
+        candidates = [None, None]
+        for candidate_index, reverse in enumerate([False, True]):
+            candidates[candidate_index] = shorten_line(
+                tokens, source, target, indent,
+                self.indent_word, newline=self.newline,
+                max_line_length=self.options.max_line_length,
+                reverse=reverse,
+                aggressive=self.options.aggressive)
+
+        if candidates[0] and candidates[1]:
+            if candidates[0].split(self.newline)[0].endswith('('):
+                self.source[line_index] = candidates[0]
             else:
-                self.source[line_index] = candidate1
-        elif candidate0:
-            self.source[line_index] = candidate0
-        elif candidate1:
-            self.source[line_index] = candidate1
+                self.source[line_index] = candidates[1]
+        elif candidates[0]:
+            self.source[line_index] = candidates[0]
+        elif candidates[1]:
+            self.source[line_index] = candidates[1]
         else:
             # Otherwise both don't work
             return []
@@ -976,7 +975,7 @@ def _priority_key(pep8_result):
 
 
 def shorten_line(tokens, source, target, indentation, indent_word, newline,
-                 max_line_length, reverse=False):
+                 max_line_length, reverse=False, aggressive=False):
     """Separate line at OPERATOR."""
     actual_length = len(indentation) + len(source)
 
@@ -995,7 +994,8 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
             indent_word=indent_word,
             newline=newline,
             max_line_length=length,
-            reverse=reverse)
+            reverse=reverse,
+            aggressive=aggressive)
 
         if shortened is not None:
             return shortened
@@ -1004,7 +1004,7 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
 
 
 def _shorten_line(tokens, source, target, indentation, indent_word, newline,
-                  max_line_length, reverse=False):
+                  max_line_length, reverse=False, aggressive=False):
     """Separate line at OPERATOR."""
     max_line_length_minus_indentation = max_line_length - len(indentation)
     if reverse:
@@ -1054,9 +1054,24 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
                 fixed = first + newline + second
 
             # Only fix if syntax is okay.
-            if check_syntax(fixed):
+            if check_syntax(normalize_multiline(fixed)
+                            if aggressive else fixed):
                 return indentation + fixed
     return None
+
+
+def normalize_multiline(line):
+    """Remove multiline-related code that will cause syntax error.
+
+    This is for purposes of checking syntax.
+
+    """
+    for quote in '\'"':
+        pattern = '^{q}[^{q}]*{q}\s*:\s*'.format(q=quote)
+        if re.match(pattern, line):
+            return re.sub(pattern, '', line)
+
+    return line
 
 
 def fix_whitespace(line, offset, replacement):
