@@ -306,6 +306,10 @@ def check(opts, args):
 
         while filenames:
             name = os.path.realpath(filenames.pop(0))
+            if not os.path.exists(name):
+                # Invalid symlink.
+                continue
+
             if name in completed_filenames:
                 sys.stderr.write(
                     colored('--->  Skipping previously tested ' + name + '\n',
