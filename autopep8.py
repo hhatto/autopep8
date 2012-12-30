@@ -1729,6 +1729,7 @@ def code_match(code, select, ignore):
         for selected_code in [c.strip() for c in select.split(',')]:
             if mutual_startswith(code.lower(), selected_code.lower()):
                 return True
+        return False
 
     return True
 
