@@ -241,10 +241,10 @@ Links
 -----
 * PyPI_
 * GitHub_
-* `Travis-CI`_
+* `Travis CI`_
 * Jenkins_
 
 .. _PyPI: http://pypi.python.org/pypi/autopep8/
 .. _GitHub: https://github.com/hhatto/autopep8
-.. _`Travis-CI`: https://secure.travis-ci.org/hhatto/autopep8
+.. _`Travis CI`: https://secure.travis-ci.org/hhatto/autopep8
 .. _Jenkins: http://jenkins.hexacosa.net/job/autopep8/
