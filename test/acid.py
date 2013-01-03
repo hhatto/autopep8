@@ -173,12 +173,12 @@ def filter_disassembly(text):
 
         # Ignore trailing whitespace in multi-line strings.
         if tokens[1] == 'LOAD_CONST' and is_bytecode_string(tokens[3]):
-            # Note that we are not matching actual newlines, but escaped
-            # newlines within a string.
-            lines[index] = re.sub(r'\s+\\n', r'\\n', lines[index])
-            pattern = r'\\t\\n'
-            while pattern in lines[index]:
-                lines[index] = re.sub(r'\s*\\t\s*\\n', r'\\n', lines[index])
+            # Doing basic substitution doesn't work on Python 2.7 on Travis CI
+            # for some reason. So we use literal_eval() instead.
+            import ast
+            lines[index] = ' '.join(
+                [tokens[1] +
+                 re.sub(r'\s+\n', '\n', ast.literal_eval(tokens[3]))])
 
         # LOAD_NAME and LOAD_CONST are sometimes used interchangeably.
         if tokens[1] == 'LOAD_NAME':
