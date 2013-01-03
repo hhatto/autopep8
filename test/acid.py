@@ -161,12 +161,16 @@ def filter_disassembly(text):
             continue
 
 
-        if ((tokens[1] == 'LOAD_CONST' and is_bytecode_string(tokens[3]))
-            or (tokens[1] == 'STORE_NAME' and tokens[3] == '(__doc__)')):
-            # We do this for LOAD_CONST too due to false positives on Travis
-            # CI.
+        if tokens[1] == 'STORE_NAME' and tokens[3] == '(__doc__)':
             fixed = re.sub(r'\s', '', lines[index - 1])
             lines[index - 1] = fixed.replace(
+                r'\n', '').replace(r'\r', '').replace(r'\t', '')
+
+        if tokens[1] == 'LOAD_CONST' and is_bytecode_string(tokens[3]):
+            # We do this for LOAD_CONST too due to false positives on Travis
+            # CI.
+            fixed = re.sub(r'\s', '', lines[index])
+            lines[index] = fixed.replace(
                 r'\n', '').replace(r'\r', '').replace(r'\t', '')
 
         # BUILD_TUPLE and LOAD_CONST are sometimes used interchangeably.
