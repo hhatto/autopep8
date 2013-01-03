@@ -176,6 +176,9 @@ def filter_disassembly(text):
             # Note that we are not matching actual newlines, but escaped
             # newlines within a string.
             lines[index] = re.sub(r'\s+\\n', r'\\n', lines[index])
+            pattern = r'\\t\\n'
+            while pattern in lines[index]:
+                lines[index] = re.sub(r'\s*\\t\s*\\n', r'\\n', lines[index])
 
         # LOAD_NAME and LOAD_CONST are sometimes used interchangeably.
         if tokens[1] == 'LOAD_NAME':
