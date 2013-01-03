@@ -168,7 +168,8 @@ def filter_disassembly(text):
 
         if tokens[1] == 'LOAD_CONST' and is_bytecode_string(tokens[3]):
             # We do this for LOAD_CONST too due to false positives on Travis
-            # CI.
+            # CI. It somehow isn't enough to just remove the trailing
+            # whitespace.
             fixed = re.sub(r'\s', '', lines[index])
             lines[index] = fixed.replace(
                 r'\n', '').replace(r'\r', '').replace(r'\t', '')
