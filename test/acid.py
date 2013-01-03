@@ -160,7 +160,11 @@ def filter_disassembly(text):
         if len(tokens) <= 3:
             continue
 
-        if tokens[1] == 'STORE_NAME' and tokens[3] == '(__doc__)':
+
+        if ((tokens[1] == 'LOAD_CONST' and is_bytecode_string(tokens[3]))
+            or (tokens[1] == 'STORE_NAME' and tokens[3] == '(__doc__)')):
+            # We do this for LOAD_CONST too due to false positives on Travis
+            # CI.
             fixed = re.sub(r'\s', '', lines[index - 1])
             lines[index - 1] = fixed.replace(
                 r'\n', '').replace(r'\r', '').replace(r'\t', '')
@@ -170,15 +174,6 @@ def filter_disassembly(text):
             lines[index] = lines[index].replace(
                 'LOAD_CONST               8 (())',
                 'BUILD_TUPLE              0')
-
-        # Ignore trailing whitespace in multi-line strings.
-        if tokens[1] == 'LOAD_CONST' and is_bytecode_string(tokens[3]):
-            # Doing basic substitution doesn't work on Python 2.7 on Travis CI
-            # for some reason. So we use literal_eval() instead.
-            import ast
-            lines[index] = ' '.join(
-                [tokens[1] +
-                 re.sub(r'\s+\n', '\n', ast.literal_eval(tokens[3]))])
 
         # LOAD_NAME and LOAD_CONST are sometimes used interchangeably.
         if tokens[1] == 'LOAD_NAME':
