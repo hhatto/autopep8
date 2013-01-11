@@ -1570,6 +1570,51 @@ class Useless(object):
         with autopep8_context(line) as result:
             self.assertEqual(result, line)
 
+    def test_e501_with_aggressive(self):
+        line = """\
+models = {
+    'auth.group': {
+        'Meta': {'object_name': 'Group'},
+        'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+        'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
+        'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
+    },
+    'auth.permission': {
+        'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
+        'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+        'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
+        'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+        'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+    },
+}
+"""
+        fixed = """\
+models = {
+    'auth.group': {
+        'Meta': {'object_name': 'Group'},
+        'id': (
+            'django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+        'name': ('django.db.models.fields.CharField', [], {
+                 'unique': 'True', 'max_length': '80'}),
+        'permissions': ('django.db.models.fields.related.ManyToManyField',
+                        [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
+    },
+    'auth.permission': {
+        'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together':
+                 "(('content_type', 'codename'),)", 'object_name': 'Permission'},
+        'codename': ('django.db.models.fields.CharField', [], {
+                     'max_length': '100'}),
+        'content_type': ('django.db.models.fields.related.ForeignKey',
+                         [], {'to': "orm['contenttypes.ContentType']"}),
+        'id': (
+            'django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+        'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+    },
+}
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(result, fixed)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
