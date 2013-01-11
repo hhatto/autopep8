@@ -1067,7 +1067,7 @@ def normalize_multiline(line):
 
     """
     for quote in '\'"':
-        pattern = '^{q}[^{q}]*{q}\s*:\s*'.format(q=quote)
+        pattern = r'^{q}[^{q}]*{q}\s*:\s*'.format(q=quote)
         if re.match(pattern, line):
             return re.sub(pattern, '', line)
 
