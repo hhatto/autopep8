@@ -1143,12 +1143,6 @@ class Foo(object):
         with autopep8_context(line) as result:
             self.assertEqual(result, fixed)
 
-    def test_e262_with_no_comment(self):
-        line = "1  #\n123\n"
-        fixed = "1\n123\n"
-        with autopep8_context(line) as result:
-            self.assertEqual(result, fixed)
-
     def test_e262_none_space(self):
         line = "print 'a b '  #comment\n"
         fixed = "print 'a b '  # comment\n"
@@ -1164,12 +1158,6 @@ class Foo(object):
     def test_e262_hash_in_string_and_multiple_hashes(self):
         line = "print 'a b  #string'  #comment #comment\n"
         fixed = "print 'a b  #string'  # comment #comment\n"
-        with autopep8_context(line) as result:
-            self.assertEqual(result, fixed)
-
-    def test_e262_empty_comment(self):
-        line = "print 'a b'  #\n"
-        fixed = "print 'a b'\n"
         with autopep8_context(line) as result:
             self.assertEqual(result, fixed)
 
