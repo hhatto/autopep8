@@ -2208,7 +2208,7 @@ class TestOptions(unittest.TestCase):
         line = "'abc'  \n"
         fixed = "-'abc'  \n+'abc'\n"
         with autopep8_subprocess(line, ['--diff']) as result:
-            self.assertEqual('\n'.join(result.split('\n')[3:]), fixed)
+            self.assertEqual(fixed, '\n'.join(result.split('\n')[3:]))
 
     def test_diff_with_empty_file(self):
         with autopep8_subprocess('', ['--diff']) as result:
@@ -2256,7 +2256,7 @@ class TestOptions(unittest.TestCase):
             p.wait()
 
             f = open(filename)
-            self.assertEqual(f.read(), fixed)
+            self.assertEqual(fixed, f.read())
             f.close()
 
     def test_in_place_with_empty_file(self):
