@@ -2255,9 +2255,8 @@ class TestOptions(unittest.TestCase):
             p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename, '--in-place'])
             p.wait()
 
-            f = open(filename)
-            self.assertEqual(fixed, f.read())
-            f.close()
+            with open(filename) as f:
+                self.assertEqual(fixed, f.read())
 
     def test_in_place_with_empty_file(self):
         line = ''
@@ -2267,9 +2266,8 @@ class TestOptions(unittest.TestCase):
             p.wait()
             self.assertEqual(0, p.returncode)
 
-            f = open(filename)
-            self.assertEqual(f.read(), line)
-            f.close()
+            with open(filename) as f:
+                self.assertEqual(f.read(), line)
 
     def test_in_place_and_diff(self):
         line = "'abc'  \n"
