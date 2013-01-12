@@ -1008,7 +1008,7 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
     """Separate line at OPERATOR."""
     max_line_length_minus_indentation = max_line_length - len(indentation)
     if reverse:
-        tokens.reverse()
+        tokens = reversed(tokens)
     for tkn in tokens:
         # Don't break on '=' after keyword as this violates PEP 8.
         if token.OP == tkn[0] and tkn[1] != '=':
