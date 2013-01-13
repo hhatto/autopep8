@@ -219,6 +219,8 @@ enable these sort of aggressive fixes, use the ``--aggressive`` option::
 
     $ autopep8 --aggressive <filename>
 
+``--aggressive`` will also shorten lines more aggressively.
+
 
 Testing
 -------
