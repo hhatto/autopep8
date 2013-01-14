@@ -986,6 +986,7 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
         delta = 1
 
     shortened = None
+    length = None
     for length in range(max_line_length, actual_length, delta):
         shortened = _shorten_line(
             tokens=tokens,
@@ -1001,13 +1002,11 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
         if shortened is not None:
             break
 
-    if length > max_line_length:
+    if length is None or length > max_line_length:
         commas_shortened = _shorten_line_at_commas(
             tokens=tokens,
             source=source,
-            target=target,
             indentation=indentation,
-            indent_word=indent_word,
             newline=newline)
 
         if commas_shortened is not None and commas_shortened != source:
@@ -1073,8 +1072,7 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
     return None
 
 
-def _shorten_line_at_commas(tokens, source, target, indentation, indent_word,
-                            newline):
+def _shorten_line_at_commas(tokens, source, indentation, newline):
     """Separate line by breaking at commas."""
     if ',' not in source:
         return None
@@ -1084,7 +1082,7 @@ def _shorten_line_at_commas(tokens, source, target, indentation, indent_word,
     for tkn in tokens:
         token_type = tkn[0]
         token_string = tkn[1]
-        start_row, start_column = tkn[2]
+        _, start_column = tkn[2]
         _, end_column = tkn[3]
 
         fixed += token_string
