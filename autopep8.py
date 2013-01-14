@@ -985,6 +985,7 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
     if not delta:
         delta = 1
 
+    shortened = None
     for length in range(max_line_length, actual_length, delta):
         shortened = _shorten_line(
             tokens=tokens,
@@ -998,9 +999,21 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
             aggressive=aggressive)
 
         if shortened is not None:
-            return shortened
+            break
 
-    return None
+    if length > max_line_length:
+        commas_shortened = _shorten_line_at_commas(
+            tokens=tokens,
+            source=source,
+            target=target,
+            indentation=indentation,
+            indent_word=indent_word,
+            newline=newline)
+
+        if commas_shortened is not None and commas_shortened != source:
+            shortened = commas_shortened
+
+    return shortened
 
 
 def _shorten_line(tokens, source, target, indentation, indent_word, newline,
@@ -1058,6 +1071,37 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
                             if aggressive else fixed):
                 return indentation + fixed
     return None
+
+
+def _shorten_line_at_commas(tokens, source, target, indentation, indent_word,
+                            newline):
+    """Separate line by breaking at commas."""
+    if ',' not in source:
+        return None
+
+    fixed = ''
+    last_column = -1
+    for tkn in tokens:
+        token_type = tkn[0]
+        token_string = tkn[1]
+        start_row, start_column = tkn[2]
+        _, end_column = tkn[3]
+
+        fixed += token_string
+
+        if token_type == token.OP and token_string == ',':
+            fixed += newline
+        else:
+            # Preserve spacing
+            if start_column > last_column:
+                fixed += source[last_column:start_column]
+
+        last_column = end_column
+
+    if check_syntax(fixed):
+        return indentation + fixed
+    else:
+        return None
 
 
 def normalize_multiline(line):
