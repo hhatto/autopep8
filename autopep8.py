@@ -1864,7 +1864,8 @@ def fix_file(filename, opts=None, output=None):
 def parse_args(args):
     """Parse command-line options."""
     parser = OptionParser(usage='Usage: autopep8 [options] '
-                                '[filename [filename ...]]',
+                                '[filename [filename ...]]'
+                                '\nUse filename \'-\'  for stdin.',
                           version='autopep8: %s' % __version__,
                           description=__doc__,
                           prog='autopep8')
@@ -1876,8 +1877,6 @@ def parse_args(args):
                       help='print the diff for the fixed source')
     parser.add_option('-i', '--in-place', action='store_true',
                       help='make changes to files in place')
-    parser.add_option('-s', '--stdin', action='store_true',
-                      help='read from stdin')
     parser.add_option('-r', '--recursive', action='store_true',
                       help='run recursively; must be used with --in-place or '
                            '--diff')
@@ -1899,8 +1898,11 @@ def parse_args(args):
                       help='enable possibly unsafe changes (E711, E712)')
     opts, args = parser.parse_args(args)
 
-    if not len(args) and (not opts.list_fixes and not opts.stdin):
+    if not len(args) and not opts.list_fixes:
         parser.error('incorrect number of arguments')
+
+    if '-' in args and len(args) > 1:
+        parser.error('cannot mix stdin and regular files')
 
     if len(args) > 1 and not (opts.in_place or opts.diff):
         parser.error('autopep8 only takes one filename as argument '
@@ -1916,11 +1918,9 @@ def parse_args(args):
     if opts.max_line_length < 8:
         parser.error('--max-line-length must greater than 8')
 
-    if opts.stdin and (opts.in_place or opts.recursive):
-        parser.error('--stdin cannot be used with --in-place or --recursive')
-
-    if opts.stdin and len(args) != 0:
-        parser.error('You cannot specify a filename when using --stdin')
+    if args == ['-'] and (opts.in_place or opts.recursive):
+        parser.error('--in-place or --recursive cannot be used with '
+                     'standard input')
 
     return opts, args
 
@@ -1938,12 +1938,6 @@ def supported_fixes():
             yield (code.group(1).upper(),
                    re.sub(r'\s+', ' ',
                           getattr(instance, attribute).__doc__))
-
-def tmp_file_from_stdin():
-    temp = tempfile.NamedTemporaryFile()
-    temp.write(sys.stdin.read())
-    temp.flush()
-    return temp
 
 class LineEndingWrapper(object):
 
@@ -1976,16 +1970,17 @@ def main():
 
     if opts.in_place or opts.diff:
         filenames = list(set(args))
-    elif opts.stdin:
-        assert len(args) == 0
-        assert not opts.in_place
-        assert not opts.recursive
-        temp = tmp_file_from_stdin()
-        filenames = [temp.name]
     else:
         assert len(args) == 1
         assert not opts.recursive
-        filenames = args[:1]
+        if args == ['-']:
+            assert not opts.in_place
+            temp = tempfile.NamedTemporaryFile()
+            temp.write(sys.stdin.read())
+            temp.flush()
+            filenames = [temp.name]
+        else:
+            filenames = args[:1]
 
     output = codecs.getwriter('utf-8')(sys.stdout.buffer
                                        if sys.version_info[0] >= 3
