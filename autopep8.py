@@ -1876,6 +1876,8 @@ def parse_args(args):
                       help='print the diff for the fixed source')
     parser.add_option('-i', '--in-place', action='store_true',
                       help='make changes to files in place')
+    parser.add_option('-s', '--stdin', action='store_true',
+                      help='read from stdin')
     parser.add_option('-r', '--recursive', action='store_true',
                       help='run recursively; must be used with --in-place or '
                            '--diff')
@@ -1897,7 +1899,7 @@ def parse_args(args):
                       help='enable possibly unsafe changes (E711, E712)')
     opts, args = parser.parse_args(args)
 
-    if not len(args) and not opts.list_fixes:
+    if not len(args) and (not opts.list_fixes and not opts.stdin):
         parser.error('incorrect number of arguments')
 
     if len(args) > 1 and not (opts.in_place or opts.diff):
@@ -1913,6 +1915,9 @@ def parse_args(args):
 
     if opts.max_line_length < 8:
         parser.error('--max-line-length must greater than 8')
+
+    if opts.stdin and (opts.in_place or opts.recursive):
+        parser.error('--stdin cannot be used with --in-place or --recursive')
 
     return opts, args
 
@@ -1931,6 +1936,11 @@ def supported_fixes():
                    re.sub(r'\s+', ' ',
                           getattr(instance, attribute).__doc__))
 
+def tmp_file_from_stdin():
+    temp = tempfile.NamedTemporaryFile()
+    temp.write(sys.stdin.read())
+    temp.flush()
+    return temp
 
 class LineEndingWrapper(object):
 
@@ -1963,6 +1973,12 @@ def main():
 
     if opts.in_place or opts.diff:
         filenames = list(set(args))
+    elif opts.stdin:
+        assert len(args) == 0
+        assert not opts.in_place
+        assert not opts.recursive
+        temp = tmp_file_from_stdin()
+        filenames = [temp.name]
     else:
         assert len(args) == 1
         assert not opts.recursive
