@@ -1919,6 +1919,9 @@ def parse_args(args):
     if opts.stdin and (opts.in_place or opts.recursive):
         parser.error('--stdin cannot be used with --in-place or --recursive')
 
+    if opts.stdin and len(args) != 0:
+        parser.error('You cannot specify a filename when using --stdin')
+
     return opts, args
 
 
