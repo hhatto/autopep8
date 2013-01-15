@@ -2437,10 +2437,9 @@ class TestCoverage(unittest.TestCase):
                         ['-'],
                         stdout=PIPE,
                         stdin=PIPE)
-        process.stdin.write(line.encode('utf-8'))
         self.assertEqual(
             fixed,
-            process.communicate()[0].decode('utf-8'))
+            process.communicate(line.encode('utf-8'))[0].decode('utf-8'))
 
 
 @contextlib.contextmanager
