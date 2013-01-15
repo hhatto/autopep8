@@ -1864,7 +1864,8 @@ def fix_file(filename, opts=None, output=None):
 def parse_args(args):
     """Parse command-line options."""
     parser = OptionParser(usage='Usage: autopep8 [options] '
-                                '[filename [filename ...]]',
+                                '[filename [filename ...]]'
+                                '\nUse filename \'-\'  for stdin.',
                           version='autopep8: %s' % __version__,
                           description=__doc__,
                           prog='autopep8')
@@ -1900,6 +1901,9 @@ def parse_args(args):
     if not len(args) and not opts.list_fixes:
         parser.error('incorrect number of arguments')
 
+    if '-' in args and len(args) > 1:
+        parser.error('cannot mix stdin and regular files')
+
     if len(args) > 1 and not (opts.in_place or opts.diff):
         parser.error('autopep8 only takes one filename as argument '
                      'unless the "--in-place" or "--diff" options are '
@@ -1913,6 +1917,10 @@ def parse_args(args):
 
     if opts.max_line_length < 8:
         parser.error('--max-line-length must greater than 8')
+
+    if args == ['-'] and (opts.in_place or opts.recursive):
+        parser.error('--in-place or --recursive cannot be used with '
+                     'standard input')
 
     return opts, args
 
@@ -1930,7 +1938,6 @@ def supported_fixes():
             yield (code.group(1).upper(),
                    re.sub(r'\s+', ' ',
                           getattr(instance, attribute).__doc__))
-
 
 class LineEndingWrapper(object):
 
@@ -1966,7 +1973,14 @@ def main():
     else:
         assert len(args) == 1
         assert not opts.recursive
-        filenames = args[:1]
+        if args == ['-']:
+            assert not opts.in_place
+            temp = tempfile.NamedTemporaryFile()
+            temp.write(sys.stdin.read())
+            temp.flush()
+            filenames = [temp.name]
+        else:
+            filenames = args[:1]
 
     output = codecs.getwriter('utf-8')(sys.stdout.buffer
                                        if sys.version_info[0] >= 3
