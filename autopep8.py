@@ -1939,6 +1939,7 @@ def supported_fixes():
                    re.sub(r'\s+', ' ',
                           getattr(instance, attribute).__doc__))
 
+
 class LineEndingWrapper(object):
 
     r"""Replace line endings to work with sys.stdout.
