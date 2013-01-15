@@ -1959,6 +1959,14 @@ class LineEndingWrapper(object):
         return getattr(self.__output, key)
 
 
+def temporary_file():
+    """Return temporary file."""
+    try:
+        return tempfile.NamedTemporaryFile(mode='w', encoding='utf-8')
+    except TypeError:
+        return tempfile.NamedTemporaryFile(mode='w')
+
+
 def main():
     """Tool main."""
     opts, args = parse_args(sys.argv[1:])
@@ -1976,7 +1984,7 @@ def main():
         assert not opts.recursive
         if args == ['-']:
             assert not opts.in_place
-            temp = tempfile.NamedTemporaryFile()
+            temp = temporary_file()
             temp.write(sys.stdin.read())
             temp.flush()
             filenames = [temp.name]
