@@ -2430,6 +2430,18 @@ class TestCoverage(unittest.TestCase):
                 os.linesep.join(['1', '2', '3', '']),
                 process.communicate()[0].decode('utf-8'))
 
+    def test_standard_in(self):
+        line = 'print( 1 )\n'
+        fixed = 'print(1)\n'
+        process = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                        ['-'],
+                        stdout=PIPE,
+                        stdin=PIPE)
+        process.stdin.write(line.encode('utf-8'))
+        self.assertEqual(
+            fixed,
+            process.communicate()[0].decode('utf-8'))
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
