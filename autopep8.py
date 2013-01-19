@@ -1109,9 +1109,11 @@ def normalize_multiline(line):
 
     """
     for quote in '\'"':
-        pattern = r'^{q}[^{q}]*{q}\s*:\s*'.format(q=quote)
-        if re.match(pattern, line):
-            return re.sub(pattern, '', line)
+        dict_pattern = r'^{q}[^{q}]*{q}\s*:\s*'.format(q=quote)
+        if re.match(dict_pattern, line):
+            if not line.strip().endswith('}'):
+                line += '}'
+            return '{' + line
 
     return line
 
