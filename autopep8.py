@@ -1077,6 +1077,12 @@ def _shorten_line_at_commas(tokens, source, indentation, newline):
     if ',' not in source:
         return None
 
+    # FIXME: This currently only works for simple things like dictionaries and
+    # lists. Indentation and spacing between tokens needs to be handled
+    # correctly.
+    if '.' in source:
+        return None
+
     fixed = ''
     for tkn in tokens:
         token_type = tkn[0]

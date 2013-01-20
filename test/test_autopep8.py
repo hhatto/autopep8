@@ -1289,6 +1289,20 @@ x = [3244234243234,
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_shorten_at_commas_skip(self):
+        line = """\
+parser.add_argument('source_corpus', help='corpus name/path relative to an nltk_data directory')
+parser.add_argument('target_corpus', help='corpus name/path relative to an nltk_data directory')
+"""
+        fixed = """\
+parser.add_argument(
+    'source_corpus', help='corpus name/path relative to an nltk_data directory')
+parser.add_argument(
+    'target_corpus', help='corpus name/path relative to an nltk_data directory')
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_shorter_length(self):
         line = "foooooooooooooooooo('abcdefghijklmnopqrstuvwxyz')\n"
         fixed = "foooooooooooooooooo(\n    'abcdefghijklmnopqrstuvwxyz')\n"
