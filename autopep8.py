@@ -1007,6 +1007,7 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
             tokens=tokens,
             source=source,
             indentation=indentation,
+            indent_word=indent_word,
             newline=newline)
 
         if commas_shortened is not None and commas_shortened != source:
@@ -1072,15 +1073,9 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
     return None
 
 
-def _shorten_line_at_commas(tokens, source, indentation, newline):
+def _shorten_line_at_commas(tokens, source, indentation, indent_word, newline):
     """Separate line by breaking at commas."""
     if ',' not in source:
-        return None
-
-    # FIXME: This currently only works for simple things like dictionaries and
-    # lists. Indentation and spacing between tokens needs to be handled
-    # correctly.
-    if '.' in source:
         return None
 
     fixed = ''
@@ -1088,12 +1083,16 @@ def _shorten_line_at_commas(tokens, source, indentation, newline):
         token_type = tkn[0]
         token_string = tkn[1]
 
+        if token_string == '.':
+            fixed = fixed.rstrip()
+
         fixed += token_string
 
         if token_type == token.OP and token_string == ',':
-            fixed += newline
-        else:
-            fixed += ' '
+            fixed += newline + indent_word
+        elif token_type not in (token.NEWLINE, token.ENDMARKER):
+            if token_string != '.':
+                fixed += ' '
 
     if check_syntax(fixed):
         return indentation + fixed

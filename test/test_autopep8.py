@@ -1263,8 +1263,6 @@ print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    @unittest.skipIf(sys.version_info < (2, 7),
-                     'not sure why this fails on 2.6')
     def test_e501_with_very_long_line(self):
         line = """\
 x = [3244234243234, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243]
@@ -1295,10 +1293,10 @@ parser.add_argument('source_corpus', help='corpus name/path relative to an nltk_
 parser.add_argument('target_corpus', help='corpus name/path relative to an nltk_data directory')
 """
         fixed = """\
-parser.add_argument(
-    'source_corpus', help='corpus name/path relative to an nltk_data directory')
-parser.add_argument(
-    'target_corpus', help='corpus name/path relative to an nltk_data directory')
+parser.add_argument('source_corpus',
+                    help='corpus name/path relative to an nltk_data directory')
+parser.add_argument('target_corpus',
+                    help='corpus name/path relative to an nltk_data directory')
 """
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
