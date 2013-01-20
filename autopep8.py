@@ -1002,7 +1002,7 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
         if shortened is not None:
             break
 
-    if length is None or length > max_line_length:
+    if aggressive and (length is None or length > max_line_length):
         commas_shortened = _shorten_line_at_commas(
             tokens=tokens,
             source=source,

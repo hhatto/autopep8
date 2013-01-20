@@ -1286,7 +1286,7 @@ x = [3244234243234,
      234243,
      234243]
 """
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_with_shorter_length(self):
