@@ -1078,23 +1078,16 @@ def _shorten_line_at_commas(tokens, source, indentation, newline):
         return None
 
     fixed = ''
-    last_column = -1
     for tkn in tokens:
         token_type = tkn[0]
         token_string = tkn[1]
-        _, start_column = tkn[2]
-        _, end_column = tkn[3]
 
         fixed += token_string
 
         if token_type == token.OP and token_string == ',':
             fixed += newline
         else:
-            # Preserve spacing
-            if start_column > last_column:
-                fixed += source[last_column:start_column]
-
-        last_column = end_column
+            fixed += ' '
 
     if check_syntax(fixed):
         return indentation + fixed

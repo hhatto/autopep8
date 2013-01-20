@@ -1625,6 +1625,13 @@ one_two_three_four_five_six = {
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_should_ignore_imports(self):
+        line = """\
+import logging, os, bleach, commonware, urllib2, json, time, requests, urlparse, re
+"""
+        with autopep8_context(line, options=['--select=E501']) as result:
+            self.assertEqual(line, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
