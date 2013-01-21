@@ -1972,6 +1972,31 @@ def temporary_file():
         return tempfile.NamedTemporaryFile(mode='w')
 
 
+def fix_multiple_files(filenames, opts=None, output=None):
+    """Fix list of files.
+
+    Optionally fix files recursively.
+
+    """
+    while filenames:
+        name = filenames.pop(0)
+        if opts.recursive and os.path.isdir(name):
+            for root, directories, children in os.walk(name):
+                filenames += [os.path.join(root, f) for f in children
+                              if f.endswith('.py') and
+                              not f.startswith('.')]
+                for d in directories:
+                    if d.startswith('.'):
+                        directories.remove(d)
+        else:
+            if opts.verbose:
+                print('[file:%s]' % name, file=sys.stderr)
+            try:
+                fix_file(name, opts, output)
+            except IOError as error:
+                print(str(error), file=sys.stderr)
+
+
 def main():
     """Tool main."""
     opts, args = parse_args(sys.argv[1:])
@@ -2002,23 +2027,7 @@ def main():
 
     output = LineEndingWrapper(output)
 
-    while filenames:
-        name = filenames.pop(0)
-        if opts.recursive and os.path.isdir(name):
-            for root, directories, children in os.walk(name):
-                filenames += [os.path.join(root, f) for f in children
-                              if f.endswith('.py') and
-                              not f.startswith('.')]
-                for d in directories:
-                    if d.startswith('.'):
-                        directories.remove(d)
-        else:
-            if opts.verbose:
-                print('[file:%s]' % name, file=sys.stderr)
-            try:
-                fix_file(name, opts, output)
-            except IOError as error:
-                print(str(error), file=sys.stderr)
+    fix_multiple_files(filenames, opts, output)
 
 
 if __name__ == '__main__':
