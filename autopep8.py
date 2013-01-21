@@ -1801,42 +1801,47 @@ def code_match(code, select, ignore):
     return True
 
 
+def fix_string(original_source, opts, filename=None):
+    tmp_source = unicode().join(normalize_line_endings(original_source))
+
+    # Keep a history to break out of cycles.
+    previous_hashes = set([hash(tmp_source)])
+
+    fixed_source = tmp_source
+    if code_match('e26', select=opts.select, ignore=opts.ignore):
+        fixed_source = format_block_comments(fixed_source)
+
+    for _ in range(-1, opts.pep8_passes):
+        tmp_source = copy.copy(fixed_source)
+
+        fix = FixPEP8(filename, opts, contents=tmp_source)
+        fixed_source = fix.fix()
+
+        if hash(fixed_source) in previous_hashes:
+            break
+        else:
+            previous_hashes.add(hash(fixed_source))
+
+    return fixed_source
+
+
 def fix_file(filename, opts=None, output=None):
     if not opts:
         opts = parse_args([filename])[0]
 
     original_source = read_from_filename(filename, readlines=True)
 
-    tmp_source = unicode().join(normalize_line_endings(original_source))
-
-    fixed_source = tmp_source
+    fixed_source = original_source
 
     if opts.in_place:
         encoding = detect_encoding(filename)
 
-    if code_match('e26', select=opts.select, ignore=opts.ignore):
-        fixed_source = format_block_comments(fixed_source)
-
     interruption = None
     try:
-        # Keep a history to break out of cycles.
-        previous_hashes = set([hash(tmp_source)])
-
-        for _ in range(-1, opts.pep8_passes):
-            tmp_source = copy.copy(fixed_source)
-
-            fix = FixPEP8(filename, opts, contents=tmp_source)
-            fixed_source = fix.fix()
-
-            if hash(fixed_source) in previous_hashes:
-                break
-            else:
-                previous_hashes.add(hash(fixed_source))
+        fixed_source = fix_string(fixed_source, opts, filename=filename)
     except KeyboardInterrupt as exception:
         # Allow stopping early.
         interruption = exception
-
-    del tmp_source
 
     if opts.diff:
         new = StringIO(fixed_source)
