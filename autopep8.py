@@ -1801,20 +1801,20 @@ def code_match(code, select, ignore):
     return True
 
 
-def fix_string(original_source, opts, filename=None):
+def fix_string(original_source, options, filename=None):
     tmp_source = unicode().join(normalize_line_endings(original_source))
 
     # Keep a history to break out of cycles.
     previous_hashes = set([hash(tmp_source)])
 
     fixed_source = tmp_source
-    if code_match('e26', select=opts.select, ignore=opts.ignore):
+    if code_match('e26', select=options.select, ignore=options.ignore):
         fixed_source = format_block_comments(fixed_source)
 
-    for _ in range(-1, opts.pep8_passes):
+    for _ in range(-1, options.pep8_passes):
         tmp_source = copy.copy(fixed_source)
 
-        fix = FixPEP8(filename, opts, contents=tmp_source)
+        fix = FixPEP8(filename, options, contents=tmp_source)
         fixed_source = fix.fix()
 
         if hash(fixed_source) in previous_hashes:
@@ -1825,25 +1825,25 @@ def fix_string(original_source, opts, filename=None):
     return fixed_source
 
 
-def fix_file(filename, opts=None, output=None):
-    if not opts:
-        opts = parse_args([filename])[0]
+def fix_file(filename, options=None, output=None):
+    if not options:
+        options = parse_args([filename])[0]
 
     original_source = read_from_filename(filename, readlines=True)
 
     fixed_source = original_source
 
-    if opts.in_place:
+    if options.in_place:
         encoding = detect_encoding(filename)
 
     interruption = None
     try:
-        fixed_source = fix_string(fixed_source, opts, filename=filename)
+        fixed_source = fix_string(fixed_source, options, filename=filename)
     except KeyboardInterrupt as exception:
         # Allow stopping early.
         interruption = exception
 
-    if opts.diff:
+    if options.diff:
         new = StringIO(fixed_source)
         new = new.readlines()
         diff = _get_difftext(original_source, new, filename)
@@ -1851,7 +1851,7 @@ def fix_file(filename, opts=None, output=None):
             output.write(diff)
         else:
             return output
-    elif opts.in_place:
+    elif options.in_place:
         fp = open_with_encoding(filename, encoding=encoding,
                                 mode='w')
         fp.write(fixed_source)
@@ -1901,33 +1901,33 @@ def parse_args(args):
                            '(default: %default)')
     parser.add_option('--aggressive', action='store_true',
                       help='enable possibly unsafe changes (E711, E712)')
-    opts, args = parser.parse_args(args)
+    options, args = parser.parse_args(args)
 
-    if not len(args) and not opts.list_fixes:
+    if not len(args) and not options.list_fixes:
         parser.error('incorrect number of arguments')
 
     if '-' in args and len(args) > 1:
         parser.error('cannot mix stdin and regular files')
 
-    if len(args) > 1 and not (opts.in_place or opts.diff):
+    if len(args) > 1 and not (options.in_place or options.diff):
         parser.error('autopep8 only takes one filename as argument '
                      'unless the "--in-place" or "--diff" options are '
                      'used')
 
-    if opts.recursive and not (opts.in_place or opts.diff):
+    if options.recursive and not (options.in_place or options.diff):
         parser.error('--recursive must be used with --in-place or --diff')
 
-    if opts.in_place and opts.diff:
+    if options.in_place and options.diff:
         parser.error('--in-place and --diff are mutually exclusive')
 
-    if opts.max_line_length < 8:
+    if options.max_line_length < 8:
         parser.error('--max-line-length must greater than 8')
 
-    if args == ['-'] and (opts.in_place or opts.recursive):
+    if args == ['-'] and (options.in_place or options.recursive):
         parser.error('--in-place or --recursive cannot be used with '
                      'standard input')
 
-    return opts, args
+    return options, args
 
 
 def supported_fixes():
@@ -1972,7 +1972,7 @@ def temporary_file():
         return tempfile.NamedTemporaryFile(mode='w')
 
 
-def fix_multiple_files(filenames, opts=None, output=None):
+def fix_multiple_files(filenames, options=None, output=None):
     """Fix list of files.
 
     Optionally fix files recursively.
@@ -1980,7 +1980,7 @@ def fix_multiple_files(filenames, opts=None, output=None):
     """
     while filenames:
         name = filenames.pop(0)
-        if opts.recursive and os.path.isdir(name):
+        if options.recursive and os.path.isdir(name):
             for root, directories, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
                               if f.endswith('.py') and
@@ -1989,31 +1989,31 @@ def fix_multiple_files(filenames, opts=None, output=None):
                     if d.startswith('.'):
                         directories.remove(d)
         else:
-            if opts.verbose:
+            if options.verbose:
                 print('[file:%s]' % name, file=sys.stderr)
             try:
-                fix_file(name, opts, output)
+                fix_file(name, options, output)
             except IOError as error:
                 print(str(error), file=sys.stderr)
 
 
 def main():
     """Tool main."""
-    opts, args = parse_args(sys.argv[1:])
+    options, args = parse_args(sys.argv[1:])
 
-    if opts.list_fixes:
+    if options.list_fixes:
         for code, description in supported_fixes():
             print('{code} - {description}'.format(
                 code=code, description=description))
         return 0
 
-    if opts.in_place or opts.diff:
+    if options.in_place or options.diff:
         filenames = list(set(args))
     else:
         assert len(args) == 1
-        assert not opts.recursive
+        assert not options.recursive
         if args == ['-']:
-            assert not opts.in_place
+            assert not options.in_place
             temp = temporary_file()
             temp.write(sys.stdin.read())
             temp.flush()
@@ -2027,7 +2027,7 @@ def main():
 
     output = LineEndingWrapper(output)
 
-    fix_multiple_files(filenames, opts, output)
+    fix_multiple_files(filenames, options, output)
 
 
 if __name__ == '__main__':

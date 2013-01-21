@@ -2483,8 +2483,8 @@ def autopep8_context(line, options=None):
         options = []
 
     with temporary_file_context(line) as filename:
-        opts, _ = autopep8.parse_args([filename] + list(options))
-        yield autopep8.fix_file(filename=filename, opts=opts)
+        options, _ = autopep8.parse_args([filename] + list(options))
+        yield autopep8.fix_file(filename=filename, options=options)
 
 
 @contextlib.contextmanager
@@ -2504,13 +2504,13 @@ def autopep8_with_spawned_pep8(line, options=None):
         options = []
 
     with temporary_file_context(line) as filename:
-        opts, _ = autopep8.parse_args(list(options) + [filename])
+        options, _ = autopep8.parse_args(list(options) + [filename])
 
         # Monkey patch pep8 to trigger spawning
         original_pep8 = autopep8.pep8
         try:
             autopep8.pep8 = None
-            yield autopep8.fix_file(filename=filename, opts=opts)
+            yield autopep8.fix_file(filename=filename, options=options)
         finally:
             autopep8.pep8 = original_pep8
 
