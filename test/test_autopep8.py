@@ -256,6 +256,16 @@ def foo():
             'print(123)\n',
             autopep8.fix_string('print( 123 )\n'))
 
+    def test_fix_string_with_empty_string(self):
+        self.assertEqual(
+            '',
+            autopep8.fix_string(''))
+
+    def test_fix_string_with_multiple_lines(self):
+        self.assertEqual(
+            'print(123)\nx = 4\n',
+            autopep8.fix_string('print( 123 )\nx   =4'))
+
     def test_normalize_line_endings(self):
         self.assertEqual(
             ['abc\n', 'def\n', '123\n', 'hello\n', 'world\n'],
