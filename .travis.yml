@@ -15,6 +15,7 @@ script:
     - python test/test_autopep8.py
     - python test/acid.py test/example.py
     - pep8 autopep8.py
+    - if [ "$TRAVIS_PYTHON_VERSION" == "3.3" ]; then python -m doctest -v README.rst; fi
 
     # Check that running tests in source distribution works.
     - python setup.py sdist -d .tmp
