@@ -226,7 +226,9 @@ Use as a module
 ---------------
 
 The simplest way of using autopep8 as a module is via the ``fix_string()``
-function::
+function.
+
+.. code-block:: python
 
     >>> import autopep8
     >>> autopep8.fix_string('print(    123     )\n')
