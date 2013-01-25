@@ -231,8 +231,8 @@ function.
 .. code-block:: python
 
     >>> import autopep8
-    >>> autopep8.fix_string('print(    123     )\n')
-    'print(123)\n'
+    >>> autopep8.fix_string('x=       123\n')
+    'x = 123\n'
 
 
 Testing
