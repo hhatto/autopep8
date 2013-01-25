@@ -222,6 +222,17 @@ enable these sort of aggressive fixes, use the ``--aggressive`` option::
 ``--aggressive`` will also shorten lines more aggressively.
 
 
+Use as a module
+---------------
+
+The simplest way of using autopep8 as a module is via the ``fix_string()``
+function::
+
+    >>> import autopep8
+    >>> autopep8.fix_string('print(    123     )\n')
+    'print(123)\n'
+
+
 Testing
 -------
 Test cases are in ``test/test_autopep8.py``. They can be run directly via

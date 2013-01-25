@@ -1801,8 +1801,18 @@ def code_match(code, select, ignore):
     return True
 
 
-def fix_string(original_source, options, filename=None):
-    tmp_source = unicode().join(normalize_line_endings(original_source))
+def fix_string(source, options=None):
+    """Return fixed source code."""
+    if not options:
+        options = parse_args([''])[0]
+
+    sio = StringIO(source)
+    return fix_lines(sio.readlines(), options=options)
+
+
+def fix_lines(source_lines, options, filename=''):
+    """Return fixed source code."""
+    tmp_source = unicode().join(normalize_line_endings(source_lines))
 
     # Keep a history to break out of cycles.
     previous_hashes = set([hash(tmp_source)])
@@ -1838,7 +1848,7 @@ def fix_file(filename, options=None, output=None):
 
     interruption = None
     try:
-        fixed_source = fix_string(fixed_source, options, filename=filename)
+        fixed_source = fix_lines(fixed_source, options, filename=filename)
     except KeyboardInterrupt as exception:
         # Allow stopping early.
         interruption = exception

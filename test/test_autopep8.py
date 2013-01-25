@@ -245,6 +245,17 @@ def foo():
             autopep8.fix_file(
                 filename=os.path.join(ROOT_DIR, 'test', 'example.py')))
 
+    def test_fix_lines(self):
+        self.assertEqual(
+            'print(123)\n',
+            autopep8.fix_lines(['print( 123 )\n'],
+                               options=autopep8.parse_args([''])[0]))
+
+    def test_fix_string(self):
+        self.assertEqual(
+            'print(123)\n',
+            autopep8.fix_string('print( 123 )\n'))
+
     def test_normalize_line_endings(self):
         self.assertEqual(
             ['abc\n', 'def\n', '123\n', 'hello\n', 'world\n'],
