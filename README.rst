@@ -120,6 +120,7 @@ After running autopep8.
 Options::
 
     Usage: autopep8 [options] [filename [filename ...]]
+    Use filename '-'  for stdin.
 
     Automatically formats Python code to conform to the PEP 8 style guide.
 
@@ -136,11 +137,13 @@ Options::
                             maximum number of additional pep8 passes (default:
                             100)
       --list-fixes          list codes for fixes; used by --ignore and --select
-      --ignore=IGNORE       do not fix these errors/warnings (e.g. E4,W)
-      --select=SELECT       fix only these errors/warnings (e.g. E4,W)
+      --ignore=patterns     do not fix these errors/warnings (e.g. E4,W)
+      --select=patterns     fix only these errors/warnings (e.g. E4,W)
       --max-line-length=MAX_LINE_LENGTH
                             set maximum allowed line length (default: 79)
       --aggressive          enable possibly unsafe changes (E711, E712)
+      --exclude=globs       exclude files/directories that match these comma-
+                            separated globs
 
 
 Features
