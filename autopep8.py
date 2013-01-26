@@ -239,9 +239,11 @@ class FixPEP8(object):
                 print('Running in compatibility mode. Consider '
                       'upgrading to the latest pep8.',
                       file=sys.stderr)
-            results = _spawn_pep8((['--ignore=' + ','.join(self.options.ignore)]
+            results = _spawn_pep8((['--ignore=' +
+                                    ','.join(self.options.ignore)]
                                    if self.options.ignore else []) +
-                                  (['--select=' + ','.join(self.options.select)]
+                                  (['--select=' +
+                                    ','.join(self.options.select)]
                                    if self.options.select else []) +
                                   (['--max-line-length={length}'.format(
                                       length=self.options.max_line_length)]
@@ -1893,18 +1895,18 @@ def parse_args(args):
     parser.add_option('-r', '--recursive', action='store_true',
                       help='run recursively; must be used with --in-place or '
                            '--diff')
-    parser.add_option('-p', '--pep8-passes',
+    parser.add_option('-p', '--pep8-passes', metavar='n',
                       default=100, type=int,
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)')
     parser.add_option('--list-fixes', action='store_true',
                       help='list codes for fixes; '
                            'used by --ignore and --select')
-    parser.add_option('--ignore', metavar='patterns', default='',
+    parser.add_option('--ignore', metavar='errors', default='',
                       help='do not fix these errors/warnings (e.g. E4,W)')
-    parser.add_option('--select', metavar='patterns', default='',
+    parser.add_option('--select', metavar='errors', default='',
                       help='fix only these errors/warnings (e.g. E4,W)')
-    parser.add_option('--max-line-length', default=79, type=int,
+    parser.add_option('--max-line-length', metavar='n', default=79, type=int,
                       help='set maximum allowed line length '
                            '(default: %default)')
     parser.add_option('--aggressive', action='store_true',

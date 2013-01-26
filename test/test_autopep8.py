@@ -2382,7 +2382,8 @@ class TestOptions(unittest.TestCase):
                 output.write("123  \n")
 
             p = Popen(list(AUTOPEP8_CMD_TUPLE) +
-                      [temp_directory, '--recursive', '--exclude=a*', '--diff'],
+                      [temp_directory, '--recursive', '--exclude=a*',
+                       '--diff'],
                       stdout=PIPE)
             result = p.communicate()[0].decode('utf-8')
 
