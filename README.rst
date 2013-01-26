@@ -133,6 +133,8 @@ Options::
       -i, --in-place        make changes to files in place
       -r, --recursive       run recursively; must be used with --in-place or
                             --diff
+      --exclude=globs       exclude files/directories that match these comma-
+                            separated globs
       -p n, --pep8-passes=n
                             maximum number of additional pep8 passes (default:
                             100)
@@ -141,8 +143,6 @@ Options::
       --select=errors       fix only these errors/warnings (e.g. E4,W)
       --max-line-length=n   set maximum allowed line length (default: 79)
       --aggressive          enable possibly unsafe changes (E711, E712)
-      --exclude=globs       exclude files/directories that match these comma-
-                            separated globs
 
 
 Features

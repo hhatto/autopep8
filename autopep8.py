@@ -1895,6 +1895,9 @@ def parse_args(args):
     parser.add_option('-r', '--recursive', action='store_true',
                       help='run recursively; must be used with --in-place or '
                            '--diff')
+    parser.add_option('--exclude', metavar='globs',
+                      help='exclude files/directories that match these '
+                           'comma-separated globs')
     parser.add_option('-p', '--pep8-passes', metavar='n',
                       default=100, type=int,
                       help='maximum number of additional pep8 passes'
@@ -1911,9 +1914,6 @@ def parse_args(args):
                            '(default: %default)')
     parser.add_option('--aggressive', action='store_true',
                       help='enable possibly unsafe changes (E711, E712)')
-    parser.add_option('--exclude', metavar='globs',
-                      help='exclude files/directories that match these '
-                           'comma-separated globs')
     options, args = parser.parse_args(args)
 
     if not len(args) and not options.list_fixes:
