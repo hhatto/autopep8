@@ -2369,6 +2369,29 @@ class TestOptions(unittest.TestCase):
             import shutil
             shutil.rmtree(temp_directory)
 
+    def test_exclude(self):
+        import tempfile
+        temp_directory = tempfile.mkdtemp(dir='.')
+        try:
+            with open(os.path.join(temp_directory, 'a.py'), 'w') as output:
+                output.write("'abc'  \n")
+
+            os.mkdir(os.path.join(temp_directory, 'd'))
+            with open(os.path.join(temp_directory, 'd', 'b.py'),
+                      'w') as output:
+                output.write("123  \n")
+
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [temp_directory, '--recursive', '--exclude=a*', '--diff'],
+                      stdout=PIPE)
+            result = p.communicate()[0].decode('utf-8')
+
+            self.assertNotIn('abc', result)
+            self.assertIn('123', result)
+        finally:
+            import shutil
+            shutil.rmtree(temp_directory)
+
     def test_only_recursive(self):
         line = "'abc'  \n"
         with temporary_file_context(line) as filename:

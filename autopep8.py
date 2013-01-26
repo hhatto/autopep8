@@ -24,12 +24,13 @@
 from __future__ import print_function
 from __future__ import division
 
+import codecs
 import copy
+import fnmatch
+import inspect
 import os
 import re
 import sys
-import inspect
-import codecs
 try:
     from StringIO import StringIO
 except ImportError:
@@ -220,12 +221,9 @@ class FixPEP8(object):
         """Return a version of the source code with PEP 8 violations fixed."""
         if pep8:
             pep8_options = {
-                'ignore':
-                self.options.ignore and self.options.ignore.split(','),
-                'select':
-                self.options.select and self.options.select.split(','),
-                'max_line_length':
-                self.options.max_line_length,
+                'ignore': self.options.ignore,
+                'select': self.options.select,
+                'max_line_length': self.options.max_line_length,
             }
             results = _execute_pep8(pep8_options, self.source)
         else:
@@ -241,9 +239,9 @@ class FixPEP8(object):
                 print('Running in compatibility mode. Consider '
                       'upgrading to the latest pep8.',
                       file=sys.stderr)
-            results = _spawn_pep8((['--ignore=' + self.options.ignore]
+            results = _spawn_pep8((['--ignore=' + ','.join(self.options.ignore)]
                                    if self.options.ignore else []) +
-                                  (['--select=' + self.options.select]
+                                  (['--select=' + ','.join(self.options.select)]
                                    if self.options.select else []) +
                                   (['--max-line-length={length}'.format(
                                       length=self.options.max_line_length)]
@@ -1788,12 +1786,12 @@ def mutual_startswith(a, b):
 
 def code_match(code, select, ignore):
     if ignore:
-        for ignored_code in [c.strip() for c in ignore.split(',')]:
+        for ignored_code in [c.strip() for c in ignore]:
             if mutual_startswith(code.lower(), ignored_code.lower()):
                 return False
 
     if select:
-        for selected_code in [c.strip() for c in select.split(',')]:
+        for selected_code in [c.strip() for c in select]:
             if mutual_startswith(code.lower(), selected_code.lower()):
                 return True
         return False
@@ -1902,15 +1900,18 @@ def parse_args(args):
     parser.add_option('--list-fixes', action='store_true',
                       help='list codes for fixes; '
                            'used by --ignore and --select')
-    parser.add_option('--ignore', default='',
+    parser.add_option('--ignore', metavar='patterns', default='',
                       help='do not fix these errors/warnings (e.g. E4,W)')
-    parser.add_option('--select', default='',
+    parser.add_option('--select', metavar='patterns', default='',
                       help='fix only these errors/warnings (e.g. E4,W)')
     parser.add_option('--max-line-length', default=79, type=int,
                       help='set maximum allowed line length '
                            '(default: %default)')
     parser.add_option('--aggressive', action='store_true',
                       help='enable possibly unsafe changes (E711, E712)')
+    parser.add_option('--exclude', metavar='globs',
+                      help='exclude files/directories that match these '
+                           'comma-separated globs')
     options, args = parser.parse_args(args)
 
     if not len(args) and not options.list_fixes:
@@ -1927,6 +1928,9 @@ def parse_args(args):
     if options.recursive and not (options.in_place or options.diff):
         parser.error('--recursive must be used with --in-place or --diff')
 
+    if options.exclude and not options.recursive:
+        parser.error('--exclude is only relevant when used with --recursive')
+
     if options.in_place and options.diff:
         parser.error('--in-place and --diff are mutually exclusive')
 
@@ -1936,6 +1940,17 @@ def parse_args(args):
     if args == ['-'] and (options.in_place or options.recursive):
         parser.error('--in-place or --recursive cannot be used with '
                      'standard input')
+
+    if options.ignore:
+        options.ignore = options.ignore.split(',')
+
+    if options.select:
+        options.select = options.select.split(',')
+
+    if options.exclude:
+        options.exclude = options.exclude.split(',')
+    else:
+        options.exclude = []
 
     return options, args
 
@@ -1982,7 +1997,22 @@ def temporary_file():
         return tempfile.NamedTemporaryFile(mode='w')
 
 
-def fix_multiple_files(filenames, options=None, output=None):
+def match_file(filename, options):
+    """Return True if file is okay for modifying/recursing."""
+    if not filename.endswith('.py'):
+        return False
+
+    if filename.startswith('.'):
+        return False
+
+    for pattern in options.exclude:
+        if fnmatch.fnmatch(filename, pattern):
+            return False
+
+    return True
+
+
+def fix_multiple_files(filenames, options, output=None):
     """Fix list of files.
 
     Optionally fix files recursively.
@@ -1993,8 +2023,7 @@ def fix_multiple_files(filenames, options=None, output=None):
         if options.recursive and os.path.isdir(name):
             for root, directories, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
-                              if f.endswith('.py') and
-                              not f.startswith('.')]
+                              if match_file(f, options)]
                 for d in directories:
                     if d.startswith('.'):
                         directories.remove(d)
