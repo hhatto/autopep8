@@ -60,6 +60,9 @@ check:
 	./autopep8.py --diff test/test_autopep8.py
 	./autopep8.py --diff autopep8.py
 
+mutant:
+	@mut.py -t autopep8 -u test.test_autopep8 -mc
+
 pypireg:
 	${PYTHON} setup.py register
 	${PYTHON} setup.py sdist upload
