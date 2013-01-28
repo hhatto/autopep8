@@ -1846,12 +1846,7 @@ def fix_file(filename, options=None, output=None):
     if options.in_place:
         encoding = detect_encoding(filename)
 
-    interruption = None
-    try:
-        fixed_source = fix_lines(fixed_source, options, filename=filename)
-    except KeyboardInterrupt as exception:
-        # Allow stopping early.
-        interruption = exception
+    fixed_source = fix_lines(fixed_source, options, filename=filename)
 
     if options.diff:
         new = StringIO(fixed_source)
@@ -1871,9 +1866,6 @@ def fix_file(filename, options=None, output=None):
             output.write(fixed_source)
         else:
             return fixed_source
-
-    if interruption:
-        raise interruption
 
 
 def parse_args(args):
