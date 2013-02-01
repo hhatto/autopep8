@@ -61,7 +61,7 @@ check:
 	./autopep8.py --diff autopep8.py
 
 mutant:
-	@mut.py -t autopep8 -u test.test_autopep8 -mc
+	@mut.py --disable-operator RIL -t autopep8 -u test.test_autopep8 -mc
 
 pypireg:
 	${PYTHON} setup.py register
