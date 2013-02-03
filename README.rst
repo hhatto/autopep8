@@ -18,11 +18,11 @@ can be reported by pep8.
 
 Installation
 ------------
-from pip::
+From pip::
 
     $ pip install --upgrade autopep8
 
-from easy_install::
+From easy_install::
 
     $ easy_install -ZU autopep8
 
