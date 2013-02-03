@@ -2032,39 +2032,39 @@ def fix_multiple_files(filenames, options, output=None):
 
 def main():
     """Tool main."""
-    options, args = parse_args(sys.argv[1:])
+    try:
+        options, args = parse_args(sys.argv[1:])
 
-    if options.list_fixes:
-        for code, description in supported_fixes():
-            print('{code} - {description}'.format(
-                code=code, description=description))
-        return 0
+        if options.list_fixes:
+            for code, description in supported_fixes():
+                print('{code} - {description}'.format(
+                    code=code, description=description))
+            return
 
-    if options.in_place or options.diff:
-        filenames = list(set(args))
-    else:
-        assert len(args) == 1
-        assert not options.recursive
-        if args == ['-']:
-            assert not options.in_place
-            temp = temporary_file()
-            temp.write(sys.stdin.read())
-            temp.flush()
-            filenames = [temp.name]
+        if options.in_place or options.diff:
+            filenames = list(set(args))
         else:
-            filenames = args[:1]
+            assert len(args) == 1
+            assert not options.recursive
+            if args == ['-']:
+                assert not options.in_place
+                temp = temporary_file()
+                temp.write(sys.stdin.read())
+                temp.flush()
+                filenames = [temp.name]
+            else:
+                filenames = args[:1]
 
-    output = codecs.getwriter('utf-8')(sys.stdout.buffer
-                                       if sys.version_info[0] >= 3
-                                       else sys.stdout)
+        output = codecs.getwriter('utf-8')(sys.stdout.buffer
+                                           if sys.version_info[0] >= 3
+                                           else sys.stdout)
 
-    output = LineEndingWrapper(output)
+        output = LineEndingWrapper(output)
 
-    fix_multiple_files(filenames, options, output)
+        fix_multiple_files(filenames, options, output)
+    except KeyboardInterrupt:
+        sys.exit(1)
 
 
 if __name__ == '__main__':
-    try:
-        sys.exit(main())
-    except KeyboardInterrupt:
-        sys.exit(1)
+    main()
