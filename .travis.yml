@@ -16,7 +16,6 @@ script:
     - python test/acid.py test/example.py
 
     # This fails on PyPy.
-    - echo "$TRAVIS_PYTHON_VERSION"
     - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then pep8 autopep8.py; fi
 
     - if [ "$TRAVIS_PYTHON_VERSION" == "3.3" ]; then python -m doctest -v README.rst; fi
