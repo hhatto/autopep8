@@ -2039,7 +2039,7 @@ def main():
             for code, description in supported_fixes():
                 print('{code} - {description}'.format(
                     code=code, description=description))
-            return
+            return 0
 
         if options.in_place or options.diff:
             filenames = list(set(args))
@@ -2063,8 +2063,8 @@ def main():
 
         fix_multiple_files(filenames, options, output)
     except KeyboardInterrupt:
-        sys.exit(1)
+        return 1
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
