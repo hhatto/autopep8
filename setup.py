@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Setup for autopep8."""
 
+import ast
 from setuptools import setup
 
 
@@ -10,8 +11,7 @@ def version():
     with open('autopep8.py') as input_file:
         for line in input_file:
             if line.startswith('__version__'):
-                import ast
-                return ast.literal_eval(line.split('=')[1].strip())
+                return ast.parse(line).body[0].value.s
 
 
 with open('README.rst') as readme:
