@@ -1991,7 +1991,7 @@ def temporary_file():
         return tempfile.NamedTemporaryFile(mode='w')
 
 
-def match_file(filename, options):
+def match_file(filename, exclude):
     """Return True if file is okay for modifying/recursing."""
     if not filename.endswith('.py'):
         return False
@@ -1999,11 +1999,26 @@ def match_file(filename, options):
     if filename.startswith('.'):
         return False
 
-    for pattern in options.exclude:
+    for pattern in exclude:
         if fnmatch.fnmatch(filename, pattern):
             return False
 
     return True
+
+
+def find_files(filenames, options):
+    """Yield filenames."""
+    while filenames:
+        name = filenames.pop(0)
+        if options.recursive and os.path.isdir(name):
+            for root, directories, children in os.walk(name):
+                filenames += [os.path.join(root, f) for f in children
+                              if match_file(f, options.exclude)]
+                for d in directories:
+                    if d.startswith('.'):
+                        directories.remove(d)
+        else:
+            yield name
 
 
 def fix_multiple_files(filenames, options, output=None):
@@ -2012,22 +2027,13 @@ def fix_multiple_files(filenames, options, output=None):
     Optionally fix files recursively.
 
     """
-    while filenames:
-        name = filenames.pop(0)
-        if options.recursive and os.path.isdir(name):
-            for root, directories, children in os.walk(name):
-                filenames += [os.path.join(root, f) for f in children
-                              if match_file(f, options)]
-                for d in directories:
-                    if d.startswith('.'):
-                        directories.remove(d)
-        else:
-            if options.verbose:
-                print('[file:%s]' % name, file=sys.stderr)
-            try:
-                fix_file(name, options, output)
-            except IOError as error:
-                print(str(error), file=sys.stderr)
+    for name in find_files(filenames, options):
+        if options.verbose:
+            print('[file:%s]' % name, file=sys.stderr)
+        try:
+            fix_file(name, options, output)
+        except IOError as error:
+            print(str(error), file=sys.stderr)
 
 
 def main():
