@@ -2006,14 +2006,14 @@ def match_file(filename, exclude):
     return True
 
 
-def find_files(filenames, options):
+def find_files(filenames, recursive, exclude):
     """Yield filenames."""
     while filenames:
         name = filenames.pop(0)
-        if options.recursive and os.path.isdir(name):
+        if recursive and os.path.isdir(name):
             for root, directories, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
-                              if match_file(f, options.exclude)]
+                              if match_file(f, exclude)]
                 for d in directories:
                     if d.startswith('.'):
                         directories.remove(d)
@@ -2027,7 +2027,7 @@ def fix_multiple_files(filenames, options, output=None):
     Optionally fix files recursively.
 
     """
-    for name in find_files(filenames, options):
+    for name in find_files(filenames, options.recursive, options.exclude):
         if options.verbose:
             print('[file:%s]' % name, file=sys.stderr)
         try:
