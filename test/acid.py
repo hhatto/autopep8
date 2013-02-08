@@ -160,7 +160,6 @@ def filter_disassembly(text):
         if len(tokens) <= 3:
             continue
 
-
         if tokens[1] == 'STORE_NAME' and tokens[3] == '(__doc__)':
             fixed = re.sub(r'\s', '', lines[index - 1])
             lines[index - 1] = fixed.replace(
@@ -219,7 +218,7 @@ def _disassemble(code):
 
     disassembled_code = [
         re.sub('<code object .* line [0-9]+>',
-               '<code object>',  sio.getvalue())]
+               '<code object>', sio.getvalue())]
 
     for c in code.co_consts:
         if hasattr(c, 'co_code'):
