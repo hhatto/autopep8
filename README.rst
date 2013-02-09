@@ -133,6 +133,8 @@ Options::
       -i, --in-place        make changes to files in place
       -r, --recursive       run recursively; must be used with --in-place or
                             --diff
+      -j n, --jobs=n        number of parallel jobs; match CPU count if value is
+                            less than 1
       --exclude=globs       exclude files/directories that match these comma-
                             separated globs
       -p n, --pep8-passes=n
