@@ -2336,6 +2336,22 @@ class TestOptions(unittest.TestCase):
                 with open(filename_b) as f:
                     self.assertEqual(fixed, f.read())
 
+    def test_parallel_jobs_with_automatic_cpu_count(self):
+        line = "'abc'  \n"
+        fixed = "'abc'\n"
+
+        with temporary_file_context(line) as filename_a:
+            with temporary_file_context(line) as filename_b:
+                p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                          [filename_a, filename_b, '--jobs=0', '--in-place'])
+                p.wait()
+
+                with open(filename_a) as f:
+                    self.assertEqual(fixed, f.read())
+
+                with open(filename_b) as f:
+                    self.assertEqual(fixed, f.read())
+
     def test_in_place_with_empty_file(self):
         line = ''
 
