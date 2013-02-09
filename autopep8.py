@@ -2033,9 +2033,14 @@ def find_files(filenames, recursive, exclude):
             yield name
 
 
-def multiprocess_fix(parameters):
-    """Helper function for running fix_file() in parallel."""
-    fix_file(*parameters)
+def _fix_file(parameters):
+    """Helper function for optionally running fix_file() in parallel."""
+    if parameters[1].verbose:
+        print('[file:{}]'.format(parameters[0]), file=sys.stderr)
+    try:
+        fix_file(*parameters)
+    except IOError as error:
+        print(str(error), file=sys.stderr)
 
 
 def fix_multiple_files(filenames, options, output=None):
@@ -2048,16 +2053,11 @@ def fix_multiple_files(filenames, options, output=None):
     if options.jobs > 1:
         import multiprocessing
         pool = multiprocessing.Pool(options.jobs)
-        pool.map(multiprocess_fix,
+        pool.map(_fix_file,
                  [(name, options) for name in filenames])
     else:
         for name in filenames:
-            if options.verbose:
-                print('[file:%s]' % name, file=sys.stderr)
-            try:
-                fix_file(name, options, output)
-            except IOError as error:
-                print(str(error), file=sys.stderr)
+            _fix_file((name, options, output))
 
 
 def main():
