@@ -1890,13 +1890,13 @@ def parse_args(args):
     parser.add_option('-j', '--jobs', type=int, metavar='n', default=1,
                       help='number of parallel jobs; '
                            'match CPU count if value is less than 1')
-    parser.add_option('--exclude', metavar='globs',
-                      help='exclude files/directories that match these '
-                           'comma-separated globs')
     parser.add_option('-p', '--pep8-passes', metavar='n',
                       default=100, type=int,
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)')
+    parser.add_option('--exclude', metavar='globs',
+                      help='exclude files/directories that match these '
+                           'comma-separated globs')
     parser.add_option('--list-fixes', action='store_true',
                       help='list codes for fixes; '
                            'used by --ignore and --select')

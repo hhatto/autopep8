@@ -135,11 +135,11 @@ Options::
                             --diff
       -j n, --jobs=n        number of parallel jobs; match CPU count if value is
                             less than 1
-      --exclude=globs       exclude files/directories that match these comma-
-                            separated globs
       -p n, --pep8-passes=n
                             maximum number of additional pep8 passes (default:
                             100)
+      --exclude=globs       exclude files/directories that match these comma-
+                            separated globs
       --list-fixes          list codes for fixes; used by --ignore and --select
       --ignore=errors       do not fix these errors/warnings (e.g. E4,W)
       --select=errors       fix only these errors/warnings (e.g. E4,W)
