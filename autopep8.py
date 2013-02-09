@@ -1887,6 +1887,9 @@ def parse_args(args):
     parser.add_option('-r', '--recursive', action='store_true',
                       help='run recursively; must be used with --in-place or '
                            '--diff')
+    parser.add_option('-j', '--jobs', type=int, default=1,
+                      help='number of parallel jobs; '
+                           'match CPU count if value is less than 1')
     parser.add_option('--exclude', metavar='globs',
                       help='exclude files/directories that match these '
                            'comma-separated globs')
@@ -1945,6 +1948,15 @@ def parse_args(args):
         options.exclude = options.exclude.split(',')
     else:
         options.exclude = []
+
+    if options.jobs < 1:
+        # Do not import multiprocessing globally in case it is not supported
+        # on the platform.
+        import multiprocessing
+        options.jobs = multiprocessing.cpu_count()
+
+    if options.jobs > 1 and not options.in_place:
+        parser.error('parallel jobs requires --in-place')
 
     return options, args
 
@@ -2021,19 +2033,31 @@ def find_files(filenames, recursive, exclude):
             yield name
 
 
+def multiprocess_fix(parameters):
+    """Helper function for running fix_file() in parallel."""
+    fix_file(*parameters)
+
+
 def fix_multiple_files(filenames, options, output=None):
     """Fix list of files.
 
     Optionally fix files recursively.
 
     """
-    for name in find_files(filenames, options.recursive, options.exclude):
-        if options.verbose:
-            print('[file:%s]' % name, file=sys.stderr)
-        try:
-            fix_file(name, options, output)
-        except IOError as error:
-            print(str(error), file=sys.stderr)
+    filenames = find_files(filenames, options.recursive, options.exclude)
+    if options.jobs > 1:
+        import multiprocessing
+        pool = multiprocessing.Pool(options.jobs)
+        pool.map(multiprocess_fix,
+                 [(name, options) for name in filenames])
+    else:
+        for name in filenames:
+            if options.verbose:
+                print('[file:%s]' % name, file=sys.stderr)
+            try:
+                fix_file(name, options, output)
+            except IOError as error:
+                print(str(error), file=sys.stderr)
 
 
 def main():
