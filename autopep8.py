@@ -683,20 +683,12 @@ class FixPEP8(object):
                 reverse=reverse,
                 aggressive=self.options.aggressive)
 
-        if candidates[0] and candidates[1]:
-            lines = candidates[0].split(self.newline)
-            if (len(lines) > 1 and
-                    lines[0].endswith('(') and
-                    not lines[1].lstrip().startswith(')')):
-                self.source[line_index] = candidates[0]
-            else:
-                self.source[line_index] = candidates[1]
-        elif candidates[0]:
-            self.source[line_index] = candidates[0]
-        elif candidates[1]:
-            self.source[line_index] = candidates[1]
+        preference = line_shortening_preference(candidates[0],
+                                                candidates[1],
+                                                self.newline)
+        if preference is not None:
+            self.source[line_index] = preference
         else:
-            # Otherwise both don't work
             return []
 
     def fix_e502(self, result):
@@ -1925,6 +1917,22 @@ def supported_fixes():
             yield (code.group(1).upper(),
                    re.sub(r'\s+', ' ',
                           getattr(instance, attribute).__doc__))
+
+
+def line_shortening_preference(candidate0, candidate1, newline):
+    """Return candidate that looks better."""
+    if candidate0 and candidate1:
+        lines = candidate0.split(newline)
+        if (len(lines) > 1 and
+                lines[0].endswith('(') and
+                not lines[1].lstrip().startswith(')')):
+            return candidate0
+        else:
+            return candidate1
+    elif candidate0:
+        return candidate0
+    else:
+        return candidate1
 
 
 class LineEndingWrapper(object):
