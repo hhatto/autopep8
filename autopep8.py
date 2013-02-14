@@ -675,7 +675,7 @@ class FixPEP8(object):
         # my_long_function_name(x, y,
         #     z, ...)
         candidates = [None, None]
-        for candidate_index, reverse in enumerate([False, True]):
+        for candidate_index, reverse in enumerate([True, False]):
             candidates[candidate_index] = shorten_line(
                 tokens, source, target, indent,
                 self.indent_word, newline=self.newline,
@@ -683,9 +683,10 @@ class FixPEP8(object):
                 reverse=reverse,
                 aggressive=self.options.aggressive)
 
-        preference = line_shortening_preference(candidates[0],
-                                                candidates[1],
-                                                newline=self.newline)
+        candidates = sorted(
+            candidates, key=lambda x: line_shortening_rank(x, self.newline))
+
+        preference = candidates[0]
         if preference is not None:
             self.source[line_index] = preference
         else:
@@ -1919,20 +1920,22 @@ def supported_fixes():
                           getattr(instance, attribute).__doc__))
 
 
-def line_shortening_preference(candidate0, candidate1, newline):
-    """Return candidate that looks better."""
-    if candidate0 and candidate1:
-        lines = candidate0.split(newline)
+def line_shortening_rank(candidate, newline):
+    """Return rank of candidate.
+
+    This is for sorting candidates.
+
+    """
+    if candidate:
+        lines = candidate.split(newline)
         if (len(lines) > 1 and
                 lines[0].endswith('(') and
                 not lines[1].lstrip().startswith(')')):
-            return candidate0
+            return 0
         else:
-            return candidate1
-    elif candidate0:
-        return candidate0
+            return 1
     else:
-        return candidate1
+        return 1000
 
 
 class LineEndingWrapper(object):
