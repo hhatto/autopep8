@@ -2438,66 +2438,6 @@ class TestOptions(unittest.TestCase):
             self.assertIn('E101', result)
 
 
-class TestSpawnPEP8Process(unittest.TestCase):
-
-    def test_basic(self):
-        line = "print('abc' )    \n1 * 1\n"
-        fixed = "print('abc')\n1 * 1\n"
-        with autopep8_with_spawned_pep8(line) as result:
-            self.assertEqual(fixed, result)
-
-    def test_verbose(self):
-        line = "print('abc' )    \n1 * 1\n"
-        fixed = "print('abc')\n1 * 1\n"
-        sio = StringIO()
-        with capture_stderr(sio):
-            with autopep8_with_spawned_pep8(
-                    line, options=['--verbose']) as result:
-                self.assertEqual(fixed, result)
-        self.assertIn('compatibility mode', sio.getvalue())
-
-    def test_max_line_length(self):
-        line = "foooooooooooooooooo('abcdefghijklmnopqrstuvwxyz')\n"
-        fixed = "foooooooooooooooooo(\n    'abcdefghijklmnopqrstuvwxyz')\n"
-        with autopep8_with_spawned_pep8(
-                line, options=['--max-line-length=40']) as result:
-            self.assertEqual(fixed, result)
-
-    def test_format_block_comments(self):
-        line = """
-foo(  )
-# abc
-bar()#bizz
-  #blah blah
-    #four space indentation
-if True:
-    1
-""".lstrip()
-        fixed = """
-foo()
-# abc
-bar()  # bizz
-  # blah blah
-    # four space indentation
-if True:
-    1
-""".lstrip()
-        with autopep8_with_spawned_pep8(line) as result:
-            self.assertEqual(fixed, result)
-
-    def test_pep8_ignore(self):
-        line = "'abc'  \n"
-        with autopep8_with_spawned_pep8(
-                line, options=['--ignore=E,W']) as result:
-            self.assertEqual(line, result)
-
-    def test_pep8_select(self):
-        line = "'abc'  \n"
-        with autopep8_with_spawned_pep8(
-                line, options=['--select=E101']) as result:
-            self.assertEqual(line, result)
-
-
 class TestCoverage(unittest.TestCase):
 
     def test_fixpep8_class_constructor(self):

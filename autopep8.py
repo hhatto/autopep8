@@ -38,7 +38,6 @@ except ImportError:
 import token
 import tokenize
 from optparse import OptionParser
-from subprocess import Popen, PIPE
 import difflib
 import tempfile
 
@@ -47,18 +46,19 @@ try:
     import pep8
     try:
         if StrictVersion(pep8.__version__) < StrictVersion('1.3a2'):
-            pep8 = None
+            print('pep8 >= 1.3 required')
+            sys.exit(1)
     except ValueError:
         # Ignore non-standard version tags.
         pass
 except ImportError:
-    pep8 = None
+    print('pep8 must be installed')
+    sys.exit(1)
 
 
 __version__ = '0.8.6'
 
 
-PEP8_BIN = 'pep8'
 CR = '\r'
 LF = '\n'
 CRLF = '\r\n'
@@ -219,38 +219,12 @@ class FixPEP8(object):
 
     def fix(self):
         """Return a version of the source code with PEP 8 violations fixed."""
-        if pep8:
-            pep8_options = {
-                'ignore': self.options.ignore,
-                'select': self.options.select,
-                'max_line_length': self.options.max_line_length,
-            }
-            results = _execute_pep8(pep8_options, self.source)
-        else:
-            encoding = detect_encoding(self.filename)
-
-            (_tmp_open_file, tmp_filename) = tempfile.mkstemp()
-            os.close(_tmp_open_file)
-            fp = open_with_encoding(tmp_filename, encoding=encoding, mode='w')
-            fp.write(unicode().join(self.source))
-            fp.close()
-
-            if self.options.verbose:
-                print('Running in compatibility mode. Consider '
-                      'upgrading to the latest pep8.',
-                      file=sys.stderr)
-            results = _spawn_pep8((['--ignore=' +
-                                    ','.join(self.options.ignore)]
-                                   if self.options.ignore else []) +
-                                  (['--select=' +
-                                    ','.join(self.options.select)]
-                                   if self.options.select else []) +
-                                  (['--max-line-length={length}'.format(
-                                      length=self.options.max_line_length)]
-                                   if self.options.max_line_length else []) +
-                                  [tmp_filename])
-            if not pep8:
-                os.remove(tmp_filename)
+        pep8_options = {
+            'ignore': self.options.ignore,
+            'select': self.options.select,
+            'max_line_length': self.options.max_line_length,
+        }
+        results = _execute_pep8(pep8_options, self.source)
 
         if self.options.verbose:
             progress = {}
@@ -944,16 +918,6 @@ def _get_indentation(line):
         return ''
 
 
-def _analyze_pep8result(result):
-    tmp = result.split(':')
-    info = ' '.join(result.split()[1:])
-    return {'id': info.lstrip().split()[0],
-            'filename': tmp[0],
-            'line': int(tmp[1]),
-            'column': int(tmp[2]),
-            'info': info}
-
-
 def _get_difftext(old, new, filename):
     diff = difflib.unified_diff(
         old, new,
@@ -987,6 +951,17 @@ def _priority_key(pep8_result):
 def shorten_line(tokens, source, target, indentation, indent_word, newline,
                  max_line_length, reverse=False, aggressive=False):
     """Separate line at OPERATOR."""
+    shortened = _shorten_line(
+        tokens=tokens,
+        source=source,
+        target=target,
+        indentation=indentation,
+        indent_word=indent_word,
+        newline=newline,
+        max_line_length=max_line_length,
+        reverse=reverse,
+        aggressive=aggressive)
+
     actual_length = len(indentation) + len(source)
 
     delta = (actual_length - max_line_length) // 3
@@ -1135,13 +1110,6 @@ def fix_whitespace(line, offset, replacement):
         return line
     else:
         return left + replacement + right
-
-
-def _spawn_pep8(pep8_options):
-    """Execute pep8 via subprocess.Popen."""
-    p = Popen([PEP8_BIN] + pep8_options, stdout=PIPE)
-    output = p.communicate()[0].decode('utf-8')
-    return [_analyze_pep8result(l) for l in output.splitlines()]
 
 
 def _execute_pep8(pep8_options, source):
