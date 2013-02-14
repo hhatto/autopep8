@@ -685,7 +685,7 @@ class FixPEP8(object):
 
         preference = line_shortening_preference(candidates[0],
                                                 candidates[1],
-                                                self.newline)
+                                                newline=self.newline)
         if preference is not None:
             self.source[line_index] = preference
         else:
