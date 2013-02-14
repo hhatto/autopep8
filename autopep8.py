@@ -951,17 +951,6 @@ def _priority_key(pep8_result):
 def shorten_line(tokens, source, target, indentation, indent_word, newline,
                  max_line_length, reverse=False, aggressive=False):
     """Separate line at OPERATOR."""
-    shortened = _shorten_line(
-        tokens=tokens,
-        source=source,
-        target=target,
-        indentation=indentation,
-        indent_word=indent_word,
-        newline=newline,
-        max_line_length=max_line_length,
-        reverse=reverse,
-        aggressive=aggressive)
-
     actual_length = len(indentation) + len(source)
 
     delta = (actual_length - max_line_length) // 3
