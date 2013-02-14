@@ -41,19 +41,10 @@ from optparse import OptionParser
 import difflib
 import tempfile
 
-from distutils.version import StrictVersion
 try:
     import pep8
-    try:
-        if StrictVersion(pep8.__version__) < StrictVersion('1.3.2'):
-            print('pep8 >= 1.3.2 required')
-            sys.exit(1)
-    except ValueError:
-        # Ignore non-standard version tags.
-        pass
 except ImportError:
-    print('pep8 must be installed')
-    sys.exit(1)
+    pep8 = None
 
 
 __version__ = '0.8.6'
@@ -2019,6 +2010,10 @@ def fix_multiple_files(filenames, options, output=None):
 
 def main():
     """Tool main."""
+    if not pep8:
+        print('pep8 >= 1.3.2 required', file=sys.stderr)
+        return 1
+
     try:
         options, args = parse_args(sys.argv[1:])
 
