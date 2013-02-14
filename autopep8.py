@@ -45,8 +45,8 @@ from distutils.version import StrictVersion
 try:
     import pep8
     try:
-        if StrictVersion(pep8.__version__) < StrictVersion('1.3a2'):
-            print('pep8 >= 1.3 required')
+        if StrictVersion(pep8.__version__) < StrictVersion('1.3.2'):
+            print('pep8 >= 1.3.2 required')
             sys.exit(1)
     except ValueError:
         # Ignore non-standard version tags.
