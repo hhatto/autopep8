@@ -1430,6 +1430,17 @@ looooooooooooooong = foo(
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_avoid_breaking_at_empty_parentheses_if_possible(self):
+        line = """\
+someverylongindenttionwhatnot().foo().bar().baz("and here is a long string 123456789012345678901234567890")
+"""
+        fixed = """\
+someverylongindenttionwhatnot().foo().bar().baz(
+    "and here is a long string 123456789012345678901234567890")
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_multiple_lines(self):
         line = """
 

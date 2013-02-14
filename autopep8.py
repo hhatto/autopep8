@@ -684,7 +684,10 @@ class FixPEP8(object):
                 aggressive=self.options.aggressive)
 
         if candidates[0] and candidates[1]:
-            if candidates[0].split(self.newline)[0].endswith('('):
+            lines = candidates[0].split(self.newline)
+            if (len(lines) > 1 and
+                    lines[0].endswith('(') and
+                    not lines[1].lstrip().startswith(')')):
                 self.source[line_index] = candidates[0]
             else:
                 self.source[line_index] = candidates[1]
