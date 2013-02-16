@@ -676,9 +676,8 @@ class FixPEP8(object):
         # my_long_function_name(x, y,
         #     z, ...)
         candidates = shorten_line(
-            tokens, source, target, indent,
+            tokens, source, indent,
             self.indent_word, newline=self.newline,
-            max_line_length=self.options.max_line_length,
             aggressive=self.options.aggressive)
 
         candidates = list(sorted(
@@ -932,32 +931,20 @@ def _priority_key(pep8_result):
         return len(priority)
 
 
-def shorten_line(tokens, source, target, indentation, indent_word, newline,
-                 max_line_length, aggressive=False):
+def shorten_line(tokens, source, indentation, indent_word, newline,
+                 aggressive=False):
     """Separate line at OPERATOR.
 
     Multiple candidates will be yielded.
 
     """
-    actual_length = len(indentation) + len(source)
-
-    delta = (actual_length - max_line_length) // 3
-    assert delta >= 0
-
-    if not delta:
-        delta = 1
-
-    length = None
-    for length in range(max_line_length, actual_length, delta):
-        for candidate in _shorten_line(tokens=tokens,
-                                       source=source,
-                                       target=target,
-                                       indentation=indentation,
-                                       indent_word=indent_word,
-                                       newline=newline,
-                                       max_line_length=length,
-                                       aggressive=aggressive):
-            yield candidate
+    for candidate in _shorten_line(tokens=tokens,
+                                   source=source,
+                                   indentation=indentation,
+                                   indent_word=indent_word,
+                                   newline=newline,
+                                   aggressive=aggressive):
+        yield candidate
 
     if aggressive:
         commas_shortened = _shorten_line_at_commas(
@@ -971,25 +958,20 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
             yield commas_shortened
 
 
-def _shorten_line(tokens, source, target, indentation, indent_word, newline,
-                  max_line_length, aggressive=False):
+def _shorten_line(tokens, source, indentation, indent_word, newline,
+                  aggressive=False):
     """Separate line at OPERATOR.
 
     Multiple candidates will be yielded.
 
     """
-    max_line_length_minus_indentation = max_line_length - len(indentation)
     for tkn in tokens:
         # Don't break on '=' after keyword as this violates PEP 8.
         if token.OP == tkn[0] and tkn[1] != '=':
             assert tkn[0] != token.INDENT
 
             offset = tkn[2][1] + 1
-            if (len(target.rstrip()) - offset >
-                    (max_line_length_minus_indentation -
-                     len(indent_word))):
-                continue
-            first = source[:offset - len(indentation)]
+            first = source[:offset]
 
             second_indent = indentation
             if first.rstrip().endswith('('):
@@ -999,16 +981,10 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
             else:
                 second_indent += indent_word
 
-            second = (second_indent +
-                      source[offset - len(indentation):].lstrip())
+            second = (second_indent + source[offset:].lstrip())
             if not second.strip():
                 continue
 
-            # Don't modify if lines are not short enough
-            if len(first) > max_line_length_minus_indentation:
-                continue
-            if len(second) > max_line_length:  # Already includes indentation
-                continue
             # Do not begin a line with a comma
             if second.lstrip().startswith(','):
                 continue
@@ -1950,6 +1926,16 @@ def line_shortening_rank(candidate, newline):
 
         if lines[0].endswith('(['):
             rank += 10
+
+        for _line in lines:
+            for bad_start in ['.', '%', '+', '-', '/']:
+                if _line.startswith(bad_start):
+                    rank += 100
+
+            # Avoid lonely opening. They result in worse indentation.
+            for start in '([{':
+                if _line.strip() == start:
+                    rank += 100
     else:
         rank = 100000
 
