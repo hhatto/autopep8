@@ -18,7 +18,7 @@ script:
     - if [ "$TRAVIS_PYTHON_VERSION" == "3.3" ]; then python -m doctest -v README.rst; fi
 
     # Check that running tests in source distribution works.
-    - python setup.py sdist -d .tmp
+    - python setup.py sdist --quiet --dist-dir=.tmp
     - cd .tmp
     - tar xf *.tar.gz
     - cd *
