@@ -1954,7 +1954,7 @@ def line_shortening_rank(candidate, newline, indent_word):
             for ending in '([{':
                 # Avoid lonely opening. They result in longer lines.
                 if (current_line.endswith(ending) and
-                    len(current_line.strip()) < len(indent_word)):
+                        len(current_line.strip()) < len(indent_word)):
                     rank += 100
     else:
         rank = 100000
