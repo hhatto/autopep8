@@ -681,9 +681,10 @@ class FixPEP8(object):
             aggressive=self.options.aggressive)
 
         candidates = list(sorted(
-            candidates, key=lambda x: line_shortening_rank(x,
-                                                           self.newline,
-                                                           self.indent_word)))
+            set(candidates),
+            key=lambda x: line_shortening_rank(x,
+                                               self.newline,
+                                               self.indent_word)))
 
         if self.options.verbose >= 4:
             print(('-' * 79 + '\n').join([''] + candidates + ['']),
@@ -1072,18 +1073,16 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
     fixed = None
     for line in split_at_offsets(source, offsets):
         if fixed:
-            fixed += newline
+            fixed += newline + current_indent + line
+
+            for symbol in '([{':
+                if line.endswith(symbol):
+                    current_indent += indent_word
         else:
             # First line.
-            fixed = ''
+            fixed = line
             assert not current_indent
             current_indent = indent_word
-
-        fixed += line
-
-        for symbol in '([{':
-            if line.endswith(symbol):
-                current_indent += indent_word
 
     assert fixed is not None
 
