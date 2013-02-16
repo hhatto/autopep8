@@ -22,4 +22,4 @@ script:
     - cd .tmp
     - tar xf *.tar.gz
     - cd *
-    - python setup.py test
+    - python setup.py test --quiet
