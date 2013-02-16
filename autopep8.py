@@ -47,6 +47,12 @@ except ImportError:
     pep8 = None
 
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
+
 __version__ = '0.8.6'
 
 
@@ -54,16 +60,14 @@ CR = '\r'
 LF = '\n'
 CRLF = '\r\n'
 
+
+# For generating line shortening candidates.
 SHORTEN_OPERATOR_GROUPS = frozenset([
     frozenset([',']),
     frozenset(['%']),
+    frozenset([',', '(', '[', '{']),
     frozenset([',', '(', '[', '{', '%', '+', '-', '*', '/', '//']),
 ])
-
-try:
-    unicode
-except NameError:
-    unicode = str
 
 
 def open_with_encoding(filename, encoding=None, mode='r'):
