@@ -26,3 +26,5 @@ script:
     - tar xf *.tar.gz
     - cd *
     - python setup.py test
+
+    - echo 'Done'
