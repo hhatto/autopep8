@@ -1017,7 +1017,7 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
         if token_string in key_token_strings:
             offsets.append(next_offset)
 
-    fixed = newline.join(split_at_offsets(source, offsets))
+    fixed = (newline + indent_word).join(split_at_offsets(source, offsets))
     if check_syntax(fixed):
         return indentation + fixed
     else:
@@ -1941,6 +1941,7 @@ def split_at_offsets(line, offsets):
     result = []
 
     previous_offset = 0
+    current_offset = 0
     for current_offset in sorted(offsets):
         if current_offset < len(line) and previous_offset != current_offset:
             result.append(line[previous_offset:current_offset])
