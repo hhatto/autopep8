@@ -1926,13 +1926,13 @@ def line_shortening_rank(candidate, newline):
                 offset = max(offset, 1 + lines[0].find(symbol))
 
         max_length = max([offset + len(x.strip()) for x in lines])
+        rank += max_length
+        rank += len(lines)
 
         bad_staring_symbol = {
             '(': ')',
             '[': ']',
             '{': '}'}.get(lines[0][-1], None)
-
-        rank += max_length
 
         if len(lines) > 1:
             if (bad_staring_symbol and
