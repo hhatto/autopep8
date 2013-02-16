@@ -23,3 +23,5 @@ script:
     - tar xf *.tar.gz
     - cd *
     - python setup.py test --quiet
+
+    - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then pep8 autopep8.py; fi
