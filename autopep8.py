@@ -1947,7 +1947,7 @@ def line_shortening_rank(candidate, newline):
                 if current_line.startswith(bad_start):
                     rank += 100
 
-            # Avoid lonely opening. They result in worse indentation.
+            # Avoid lonely opening. They result in longer lines.
             for start in '([{':
                 if current_line.strip() == start:
                     rank += 100
