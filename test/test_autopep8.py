@@ -288,6 +288,18 @@ def foo():
         self.assertFalse(autopep8.code_match('E26', select='W', ignore=''))
         self.assertFalse(autopep8.code_match('E26', select='W', ignore='E1'))
 
+    def test_split_at_offsets(self):
+        self.assertEqual([''], autopep8.split_at_offsets('', [0]))
+        self.assertEqual(['1234'], autopep8.split_at_offsets('1234', [0]))
+        self.assertEqual(['1', '234'], autopep8.split_at_offsets('1234', [1]))
+        self.assertEqual(['12', '34'], autopep8.split_at_offsets('1234', [2]))
+        self.assertEqual(['12', '3', '4'],
+                         autopep8.split_at_offsets('1234', [2, 3]))
+
+    def test_split_at_offsets_with_out_of_order(self):
+        self.assertEqual(['12', '3', '4'],
+                         autopep8.split_at_offsets('1234', [3, 2]))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 

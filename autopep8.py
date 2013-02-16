@@ -1007,27 +1007,18 @@ def _shorten_line_at_commas(tokens, source, indentation, indent_word, newline):
     if ',' not in source:
         return None
 
-    fixed = ''
+    offsets = []
     for tkn in tokens:
         token_type = tkn[0]
         token_string = tkn[1]
+        next_offset = tkn[2][1] + 1
 
         assert token_type != token.INDENT
 
-        if token_string == '.':
-            fixed = fixed.rstrip()
-
-        if token_string == ',':
-            fixed = fixed.rstrip() + token_string
-        else:
-            fixed += token_string
-
         if (token_type == token.OP and token_string == ','):
-            fixed += newline + indent_word
-        elif token_type not in (token.NEWLINE, token.ENDMARKER):
-            if token_string != '.':
-                fixed += ' '
+            offsets.append(next_offset)
 
+    fixed = newline.join(split_at_offsets(source, offsets))
     if check_syntax(fixed):
         return indentation + fixed
     else:
@@ -1927,19 +1918,38 @@ def line_shortening_rank(candidate, newline):
         if lines[0].endswith('(['):
             rank += 10
 
-        for _line in lines:
+        for current_line in lines:
             for bad_start in ['.', '%', '+', '-', '/']:
-                if _line.startswith(bad_start):
+                if current_line.startswith(bad_start):
                     rank += 100
 
             # Avoid lonely opening. They result in worse indentation.
             for start in '([{':
-                if _line.strip() == start:
+                if current_line.strip() == start:
                     rank += 100
     else:
         rank = 100000
 
     return max(0, rank)
+
+
+def split_at_offsets(line, offsets):
+    """Split line at offsets.
+
+    Return list of strings.
+
+    """
+    result = []
+
+    previous_offset = 0
+    for current_offset in sorted(offsets):
+        if current_offset < len(line) and previous_offset != current_offset:
+            result.append(line[previous_offset:current_offset])
+        previous_offset = current_offset
+
+    result.append(line[current_offset:])
+
+    return result
 
 
 class LineEndingWrapper(object):
