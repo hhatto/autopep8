@@ -650,7 +650,8 @@ class FixPEP8(object):
 
         indent = _get_indentation(target)
         source = target[len(indent):]
-        sio = StringIO(target)
+        assert source.lstrip() == source
+        sio = StringIO(source)
 
         # Check for multiline string.
         try:
@@ -981,6 +982,8 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
     for tkn in tokens:
         # Don't break on '=' after keyword as this violates PEP 8.
         if token.OP == tkn[0] and tkn[1] != '=':
+            assert tkn[0] != token.INDENT
+
             offset = tkn[2][1] + 1
             if (len(target.rstrip()) - offset >
                     (max_line_length_minus_indentation -
@@ -1033,6 +1036,8 @@ def _shorten_line_at_commas(tokens, source, indentation, indent_word, newline):
         token_type = tkn[0]
         token_string = tkn[1]
 
+        assert token_type != token.INDENT
+
         if token_string == '.':
             fixed = fixed.rstrip()
 
@@ -1047,7 +1052,7 @@ def _shorten_line_at_commas(tokens, source, indentation, indent_word, newline):
             if token_string != '.':
                 fixed += ' '
 
-    if check_syntax(fixed.lstrip()):
+    if check_syntax(fixed):
         return indentation + fixed
     else:
         return None
