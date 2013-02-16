@@ -54,6 +54,12 @@ CR = '\r'
 LF = '\n'
 CRLF = '\r\n'
 
+SHORTEN_OPERATOR_GROUPS = frozenset([
+    frozenset([',']),
+    frozenset(['%']),
+    frozenset([',', '(', '[', '{', '%', '+', '-', '*', '/', '//']),
+])
+
 try:
     unicode
 except NameError:
@@ -965,39 +971,17 @@ def shorten_line(tokens, source, indentation, indent_word, newline,
         yield candidate
 
     if aggressive:
-        commas_shortened = _shorten_line_at_tokens(
-            tokens=tokens,
-            source=source,
-            indentation=indentation,
-            indent_word=indent_word,
-            newline=newline,
-            key_token_strings=[','])
+        for key_token_strings in SHORTEN_OPERATOR_GROUPS:
+            shortened = _shorten_line_at_tokens(
+                tokens=tokens,
+                source=source,
+                indentation=indentation,
+                indent_word=indent_word,
+                newline=newline,
+                key_token_strings=key_token_strings)
 
-        if commas_shortened is not None and commas_shortened != source:
-            yield commas_shortened
-
-        operator_shortened = _shorten_line_at_tokens(
-            tokens=tokens,
-            source=source,
-            indentation=indentation,
-            indent_word=indent_word,
-            newline=newline,
-            key_token_strings=['%', '+', '-', '*', '/', '//'])
-
-        if operator_shortened is not None and operator_shortened != source:
-            yield operator_shortened
-
-        extremely_shortened = _shorten_line_at_tokens(
-            tokens=tokens,
-            source=source,
-            indentation=indentation,
-            indent_word=indent_word,
-            newline=newline,
-            key_token_strings=[
-                ',', '(', '[', '{', '%', '+', '-', '*', '/', '//'])
-
-        if extremely_shortened is not None and extremely_shortened != source:
-            yield extremely_shortened
+            if shortened is not None and shortened != source:
+                yield shortened
 
 
 def _shorten_line(tokens, source, indentation, indent_word, newline,
