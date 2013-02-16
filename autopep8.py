@@ -674,21 +674,17 @@ class FixPEP8(object):
         # over
         # my_long_function_name(x, y,
         #     z, ...)
-        candidates = [None, None]
-        for candidate_index, reverse in enumerate([True, False]):
-            candidates[candidate_index] = shorten_line(
-                tokens, source, target, indent,
-                self.indent_word, newline=self.newline,
-                max_line_length=self.options.max_line_length,
-                reverse=reverse,
-                aggressive=self.options.aggressive)
+        candidates = shorten_line(
+            tokens, source, target, indent,
+            self.indent_word, newline=self.newline,
+            max_line_length=self.options.max_line_length,
+            aggressive=self.options.aggressive)
 
-        candidates = sorted(
-            candidates, key=lambda x: line_shortening_rank(x, self.newline))
+        candidates = list(sorted(
+            candidates, key=lambda x: line_shortening_rank(x, self.newline)))
 
-        preference = candidates[0]
-        if preference is not None:
-            self.source[line_index] = preference
+        if candidates and candidates[0] is not None:
+            self.source[line_index] = candidates[0]
         else:
             return []
 
@@ -936,8 +932,12 @@ def _priority_key(pep8_result):
 
 
 def shorten_line(tokens, source, target, indentation, indent_word, newline,
-                 max_line_length, reverse=False, aggressive=False):
-    """Separate line at OPERATOR."""
+                 max_line_length, aggressive=False):
+    """Separate line at OPERATOR.
+
+    Multiple candidates will be yielded.
+
+    """
     actual_length = len(indentation) + len(source)
 
     delta = (actual_length - max_line_length) // 3
@@ -946,24 +946,19 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
     if not delta:
         delta = 1
 
-    shortened = None
     length = None
     for length in range(max_line_length, actual_length, delta):
-        shortened = _shorten_line(
-            tokens=tokens,
-            source=source,
-            target=target,
-            indentation=indentation,
-            indent_word=indent_word,
-            newline=newline,
-            max_line_length=length,
-            reverse=reverse,
-            aggressive=aggressive)
+        for candidate in _shorten_line(tokens=tokens,
+                                       source=source,
+                                       target=target,
+                                       indentation=indentation,
+                                       indent_word=indent_word,
+                                       newline=newline,
+                                       max_line_length=length,
+                                       aggressive=aggressive):
+            yield candidate
 
-        if shortened is not None:
-            break
-
-    if aggressive and (length is None or length > max_line_length):
+    if aggressive:
         commas_shortened = _shorten_line_at_commas(
             tokens=tokens,
             source=source,
@@ -972,30 +967,25 @@ def shorten_line(tokens, source, target, indentation, indent_word, newline,
             newline=newline)
 
         if commas_shortened is not None and commas_shortened != source:
-            shortened = commas_shortened
-
-    return shortened
+            yield commas_shortened
 
 
 def _shorten_line(tokens, source, target, indentation, indent_word, newline,
-                  max_line_length, reverse=False, aggressive=False):
-    """Separate line at OPERATOR."""
+                  max_line_length, aggressive=False):
+    """Separate line at OPERATOR.
+
+    Multiple candidates will be yielded.
+
+    """
     max_line_length_minus_indentation = max_line_length - len(indentation)
-    if reverse:
-        tokens = reversed(tokens)
     for tkn in tokens:
         # Don't break on '=' after keyword as this violates PEP 8.
         if token.OP == tkn[0] and tkn[1] != '=':
             offset = tkn[2][1] + 1
-            if reverse:
-                if offset > (max_line_length_minus_indentation -
-                             len(indent_word)):
-                    continue
-            else:
-                if (len(target.rstrip()) - offset >
-                        (max_line_length_minus_indentation -
-                         len(indent_word))):
-                    continue
+            if (len(target.rstrip()) - offset >
+                    (max_line_length_minus_indentation -
+                     len(indent_word))):
+                continue
             first = source[:offset - len(indentation)]
 
             second_indent = indentation
@@ -1030,8 +1020,7 @@ def _shorten_line(tokens, source, target, indentation, indent_word, newline,
             # Only fix if syntax is okay.
             if check_syntax(normalize_multiline(fixed)
                             if aggressive else fixed):
-                return indentation + fixed
-    return None
+                yield indentation + fixed
 
 
 def _shorten_line_at_commas(tokens, source, indentation, indent_word, newline):
@@ -1047,15 +1036,18 @@ def _shorten_line_at_commas(tokens, source, indentation, indent_word, newline):
         if token_string == '.':
             fixed = fixed.rstrip()
 
-        fixed += token_string
+        if token_string == ',':
+            fixed = fixed.rstrip() + token_string
+        else:
+            fixed += token_string
 
-        if token_type == token.OP and token_string == ',':
+        if (token_type == token.OP and token_string == ','):
             fixed += newline + indent_word
         elif token_type not in (token.NEWLINE, token.ENDMARKER):
             if token_string != '.':
                 fixed += ' '
 
-    if check_syntax(fixed):
+    if check_syntax(fixed.lstrip()):
         return indentation + fixed
     else:
         return None
@@ -1926,16 +1918,37 @@ def line_shortening_rank(candidate, newline):
     This is for sorting candidates.
 
     """
+    rank = 0
     if candidate:
         lines = candidate.split(newline)
-        if (len(lines) > 1 and
-                lines[0].endswith('(') and
-                not lines[1].lstrip().startswith(')')):
-            return 0
-        else:
-            return 1
+
+        offset = 0
+        if lines[0].rstrip()[-1] not in '([{':
+            for symbol in '([{':
+                offset = max(offset, 1 + lines[0].find(symbol))
+
+        max_length = max([offset + len(x.strip()) for x in lines])
+
+        bad_staring_symbol = {
+            '(': ')',
+            '[': ']',
+            '{': '}'}.get(lines[0][-1], None)
+
+        rank += max_length
+
+        if len(lines) > 1:
+            if (bad_staring_symbol and
+                    lines[1].lstrip().startswith(bad_staring_symbol)):
+                rank += 20
+            else:
+                rank -= 10
+
+        if lines[0].endswith('(['):
+            rank += 10
     else:
-        return 1000
+        rank = 100000
+
+    return max(0, rank)
 
 
 class LineEndingWrapper(object):

@@ -623,8 +623,8 @@ sql = 'update %s set %s %s' % (from_table,
         fixed = """
 
 sql = 'update %s set %s %s' % (from_table,
-                               ','.join(
-                                   ['%s=%s' % (col, col) for col in cols]),
+                               ','.join(['%s=%s' % (
+                                   col, col) for col in cols]),
                                where_clause)
 """
         with autopep8_context(line) as result:
@@ -1278,8 +1278,8 @@ print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,
 """
         fixed = """
 
-print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
-      333, 333, 333)
+print(111, 111, 111, 111, 222, 222, 222, 222,
+      222, 222, 222, 222, 222, 333, 333, 333, 333)
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -1314,10 +1314,10 @@ parser.add_argument('source_corpus', help='corpus name/path relative to an nltk_
 parser.add_argument('target_corpus', help='corpus name/path relative to an nltk_data directory')
 """
         fixed = """\
-parser.add_argument('source_corpus',
-                    help='corpus name/path relative to an nltk_data directory')
-parser.add_argument('target_corpus',
-                    help='corpus name/path relative to an nltk_data directory')
+parser.add_argument(
+    'source_corpus', help='corpus name/path relative to an nltk_data directory')
+parser.add_argument(
+    'target_corpus', help='corpus name/path relative to an nltk_data directory')
 """
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
@@ -1337,8 +1337,8 @@ def d():
         fixed = """
 
 def d():
-    print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222,
-          222, 333, 333, 333, 333)
+    print(111, 111, 111, 111, 222, 222, 222, 222,
+          222, 222, 222, 222, 222, 333, 333, 333, 333)
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -1352,8 +1352,8 @@ if True:
         fixed = """
 
 if True:
-    print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222,
-          222, 333, 333, 333, 333)
+    print(111, 111, 111, 111, 222, 222, 222, 222,
+          222, 222, 222, 222, 222, 333, 333, 333, 333)
 """
         with autopep8_context(line, options=['--select=E501']) as result:
             self.assertEqual(fixed, result)
@@ -1381,11 +1381,11 @@ fooooooooooooooooooooooooooooooo000000000000000000000000 = [1,
 def d():
     111 + 111 + 111 + 111 + 111 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 333 + 333 + 333 + 333
 """
-        fixed = """
+        fixed = r"""
 
 def d():
-    111 + 111 + 111 + 111 + 111 + 222 + 222 + 222 + 222 + 222 + 222 + \\
-        222 + 222 + 222 + 333 + 333 + 333 + 333
+    111 + 111 + 111 + 111 + 111 + 222 + 222 + 222 + 222 + \
+        222 + 222 + 222 + 222 + 222 + 333 + 333 + 333 + 333
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -1495,6 +1495,7 @@ if True:
             self.assertEqual(fixed, result)
 
     def test_e501_do_not_begin_line_with_comma(self):
+        self.maxDiff = None
         # This fix is incomplete. (The line is still too long.) But it is here
         # just to confirm that we do not put a comma at the beginning of a
         # line.
@@ -1513,8 +1514,7 @@ def dummy():
         if True:
             if True:
                 object = ModifyAction(
-                    [MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
-                    MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
+                    [MODIFY70.text, OBJECTBINDING71.text, COLON72.text], MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -1634,22 +1634,22 @@ models = {
 models = {
     'auth.group': {
         'Meta': {'object_name': 'Group'},
-        'id': (
-            'django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+        'id': ('django.db.models.fields.AutoField', [], {
+               'primary_key': 'True'}),
         'name': ('django.db.models.fields.CharField', [], {
                  'unique': 'True', 'max_length': '80'}),
-        'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to':
-                        "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
+        'permissions': ('django.db.models.fields.related.ManyToManyField', [], {
+                        'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
     },
     'auth.permission': {
-        'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together':
-                 "(('content_type', 'codename'),)", 'object_name': 'Permission'},
+        'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
+                 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
         'codename': ('django.db.models.fields.CharField', [], {
                      'max_length': '100'}),
         'content_type': ('django.db.models.fields.related.ForeignKey', [], {
                          'to': "orm['contenttypes.ContentType']"}),
-        'id': (
-            'django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+        'id': ('django.db.models.fields.AutoField', [], {
+               'primary_key': 'True'}),
         'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
     },
 }
