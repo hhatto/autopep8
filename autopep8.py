@@ -1042,7 +1042,9 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
             if next_offset < len(source) - 1:
                 offsets.append(next_offset)
 
-    fixed = (newline + indent_word).join(split_at_offsets(source, offsets))
+    fixed = (newline + indentation + indent_word).join(
+        split_at_offsets(source, offsets))
+
     if check_syntax(fixed):
         return indentation + fixed
     else:
