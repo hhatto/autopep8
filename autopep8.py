@@ -947,12 +947,13 @@ def shorten_line(tokens, source, indentation, indent_word, newline,
         yield candidate
 
     if aggressive:
-        commas_shortened = _shorten_line_at_commas(
+        commas_shortened = _shorten_line_at_tokens(
             tokens=tokens,
             source=source,
             indentation=indentation,
             indent_word=indent_word,
-            newline=newline)
+            newline=newline,
+            key_token_strings=[','])
 
         if commas_shortened is not None and commas_shortened != source:
             yield commas_shortened
@@ -1002,11 +1003,9 @@ def _shorten_line(tokens, source, indentation, indent_word, newline,
                 yield indentation + fixed
 
 
-def _shorten_line_at_commas(tokens, source, indentation, indent_word, newline):
+def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
+                            key_token_strings):
     """Separate line by breaking at commas."""
-    if ',' not in source:
-        return None
-
     offsets = []
     for tkn in tokens:
         token_type = tkn[0]
@@ -1015,7 +1014,7 @@ def _shorten_line_at_commas(tokens, source, indentation, indent_word, newline):
 
         assert token_type != token.INDENT
 
-        if (token_type == token.OP and token_string == ','):
+        if token_string in key_token_strings:
             offsets.append(next_offset)
 
     fixed = newline.join(split_at_offsets(source, offsets))
