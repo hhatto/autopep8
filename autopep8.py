@@ -678,13 +678,6 @@ class FixPEP8(object):
             else:
                 return []
 
-        # Prefer
-        # my_long_function_name(
-        #     x, y, z, ...)
-        #
-        # over
-        # my_long_function_name(x, y,
-        #     z, ...)
         candidates = shorten_line(
             tokens, source, indent,
             self.indent_word, newline=self.newline,
