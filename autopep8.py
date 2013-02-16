@@ -1026,7 +1026,9 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
         assert token_type != token.INDENT
 
         if token_string in key_token_strings:
-            offsets.append(next_offset)
+            # Don't split right before newline.
+            if next_offset < len(source) - 1:
+                offsets.append(next_offset)
 
     fixed = (newline + indent_word).join(split_at_offsets(source, offsets))
     if check_syntax(fixed):
