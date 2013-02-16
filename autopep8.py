@@ -1028,7 +1028,7 @@ def _shorten_line(tokens, source, indentation, indent_word, newline,
 
 def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
                             key_token_strings):
-    """Separate line by breaking at commas."""
+    """Separate line by breaking at tokens in key_token_strings."""
     offsets = []
     for tkn in tokens:
         token_type = tkn[0]
