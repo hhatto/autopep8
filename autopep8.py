@@ -689,14 +689,21 @@ class FixPEP8(object):
             print(('-' * 79 + '\n').join([''] + candidates + ['']),
                   file=sys.stderr)
 
-        if (candidates and
-                candidates[0] is not None and
-                candidates[0] != target and
-                get_longest_length(candidates[0], self.newline) <
-                get_longest_length(target, self.newline)):
-            self.source[line_index] = candidates[0]
-        else:
-            return []
+        for _candidate in candidates:
+            if _candidate is None:
+                continue
+
+            if _candidate == target:
+                continue
+
+            if (get_longest_length(_candidate, self.newline) >=
+                    get_longest_length(target, self.newline)):
+                continue
+
+            self.source[line_index] = _candidate
+            return
+
+        return []
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""
