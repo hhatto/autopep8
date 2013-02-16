@@ -1700,6 +1700,18 @@ foo('                                                                           
         with autopep8_context(line) as result:
             self.assertEqual(line, result)
 
+    def test_e501_aggressive_with_percent(self):
+        line = """\
+raise MultiProjectException("Ambiguous workspace: %s=%s, %s" % ( varname, varname_path, os.path.abspath(config_filename)))
+"""
+        fixed = """\
+raise MultiProjectException(
+    "Ambiguous workspace: %s=%s, %s" %
+    (varname, varname_path, os.path.abspath(config_filename)))
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"

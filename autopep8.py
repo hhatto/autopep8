@@ -685,6 +685,10 @@ class FixPEP8(object):
                                                            self.newline,
                                                            self.indent_word)))
 
+        if self.options.verbose >= 4:
+            print(('-' * 79 + '\n').join([''] + candidates + ['']),
+                  file=sys.stderr)
+
         if (candidates and
                 candidates[0] is not None and
                 candidates[0] != target and
@@ -964,16 +968,16 @@ def shorten_line(tokens, source, indentation, indent_word, newline,
         if commas_shortened is not None and commas_shortened != source:
             yield commas_shortened
 
-        moderately_shortened = _shorten_line_at_tokens(
+        operator_shortened = _shorten_line_at_tokens(
             tokens=tokens,
             source=source,
             indentation=indentation,
             indent_word=indent_word,
             newline=newline,
-            key_token_strings=[',', '(', '[', '{'])
+            key_token_strings=['%', '+', '-', '*', '/', '//'])
 
-        if moderately_shortened is not None and moderately_shortened != source:
-            yield moderately_shortened
+        if operator_shortened is not None and operator_shortened != source:
+            yield operator_shortened
 
         extremely_shortened = _shorten_line_at_tokens(
             tokens=tokens,
@@ -1034,8 +1038,13 @@ def _shorten_line(tokens, source, indentation, indent_word, newline,
 
 def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
                             key_token_strings):
-    """Separate line by breaking at tokens in key_token_strings."""
+    """Separate line by breaking at tokens in key_token_strings.
+
+    This will always break the line at the first parenthesis.
+
+    """
     offsets = []
+    first_paren = True
     for tkn in tokens:
         token_type = tkn[0]
         token_string = tkn[1]
@@ -1043,10 +1052,14 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
 
         assert token_type != token.INDENT
 
-        if token_string in key_token_strings:
+        if token_string in key_token_strings or (first_paren and
+                                                 token_string == '('):
             # Don't split right before newline.
             if next_offset < len(source) - 1:
                 offsets.append(next_offset)
+
+            if token_string == '(':
+                first_paren = False
 
     current_indent = None
     fixed = None
@@ -1976,6 +1989,9 @@ def line_shortening_rank(candidate, newline, indent_word):
                 if (current_line.endswith(ending) and
                         len(current_line.strip()) <= len(indent_word)):
                     rank += 100
+
+            if current_line.endswith('%'):
+                rank -= 20
     else:
         rank = 100000
 
