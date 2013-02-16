@@ -681,7 +681,9 @@ class FixPEP8(object):
             aggressive=self.options.aggressive)
 
         candidates = list(sorted(
-            candidates, key=lambda x: line_shortening_rank(x, self.newline)))
+            candidates, key=lambda x: line_shortening_rank(x,
+                                                           self.newline,
+                                                           self.indent_word)))
 
         if candidates and candidates[0] is not None:
             self.source[line_index] = candidates[0]
@@ -1910,7 +1912,7 @@ def supported_fixes():
                           getattr(instance, attribute).__doc__))
 
 
-def line_shortening_rank(candidate, newline):
+def line_shortening_rank(candidate, newline, indent_word):
     """Return rank of candidate.
 
     This is for sorting candidates.
@@ -1949,9 +1951,10 @@ def line_shortening_rank(candidate, newline):
                 if current_line.startswith(bad_start):
                     rank += 100
 
-            # Avoid lonely opening. They result in longer lines.
-            for start in '([{':
-                if current_line.strip() == start:
+            for ending in '([{':
+                # Avoid lonely opening. They result in longer lines.
+                if (current_line.endswith(ending) and
+                    len(current_line.strip()) < len(indent_word)):
                     rank += 100
     else:
         rank = 100000
