@@ -1301,21 +1301,22 @@ print(111, 111, 111, 111, 222, 222, 222, 222,
 x = [3244234243234, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243]
 """
         fixed = """\
-x = [3244234243234,
-     234234234324,
-     234234324,
-     23424234,
-     234234234,
-     234234,
-     234243,
-     234243,
-     234234234324,
-     234234324,
-     23424234,
-     234234234,
-     234234,
-     234243,
-     234243]
+x = [
+    3244234243234,
+    234234234324,
+    234234324,
+    23424234,
+    234234234,
+    234234,
+    234243,
+    234243,
+    234234234324,
+    234234324,
+    23424234,
+    234234234,
+    234234,
+    234243,
+    234243]
 """
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
@@ -1327,9 +1328,11 @@ parser.add_argument('target_corpus', help='corpus name/path relative to an nltk_
 """
         fixed = """\
 parser.add_argument(
-    'source_corpus', help='corpus name/path relative to an nltk_data directory')
+    'source_corpus',
+    help='corpus name/path relative to an nltk_data directory')
 parser.add_argument(
-    'target_corpus', help='corpus name/path relative to an nltk_data directory')
+    'target_corpus',
+    help='corpus name/path relative to an nltk_data directory')
 """
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)

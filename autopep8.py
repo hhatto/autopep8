@@ -958,6 +958,17 @@ def shorten_line(tokens, source, indentation, indent_word, newline,
         if commas_shortened is not None and commas_shortened != source:
             yield commas_shortened
 
+        extremely_shortened = _shorten_line_at_tokens(
+            tokens=tokens,
+            source=source,
+            indentation=indentation,
+            indent_word=indent_word,
+            newline=newline,
+            key_token_strings=[',', '(', '[', '{'])
+
+        if extremely_shortened is not None and extremely_shortened != source:
+            yield extremely_shortened
+
 
 def _shorten_line(tokens, source, indentation, indent_word, newline,
                   aggressive=False):
