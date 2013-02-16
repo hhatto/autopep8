@@ -15,9 +15,6 @@ script:
     - python test/test_autopep8.py
     - python test/acid.py test/example.py
 
-    # This fails on PyPy.
-    - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then pep8 autopep8.py; fi
-
     - if [ "$TRAVIS_PYTHON_VERSION" == "3.3" ]; then python -m doctest -v README.rst; fi
 
     # Check that running tests in source distribution works.
@@ -26,5 +23,3 @@ script:
     - tar xf *.tar.gz
     - cd *
     - python setup.py test
-
-    - echo 'Done'
