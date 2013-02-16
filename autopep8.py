@@ -685,7 +685,11 @@ class FixPEP8(object):
                                                            self.newline,
                                                            self.indent_word)))
 
-        if candidates and candidates[0] is not None:
+        if (candidates and
+                candidates[0] is not None and
+                candidates[0] != target and
+                get_longest_length(candidates[0], self.newline) <
+                get_longest_length(target, self.newline)):
             self.source[line_index] = candidates[0]
         else:
             return []
@@ -1954,7 +1958,7 @@ def line_shortening_rank(candidate, newline, indent_word):
             for ending in '([{':
                 # Avoid lonely opening. They result in longer lines.
                 if (current_line.endswith(ending) and
-                        len(current_line.strip()) < len(indent_word)):
+                        len(current_line.strip()) <= len(indent_word)):
                     rank += 100
     else:
         rank = 100000
@@ -1980,6 +1984,11 @@ def split_at_offsets(line, offsets):
     result.append(line[current_offset:])
 
     return result
+
+
+def get_longest_length(text, newline):
+    """Return length of longest line."""
+    return max([len(line) for line in text.split(newline)])
 
 
 class LineEndingWrapper(object):
