@@ -2080,7 +2080,7 @@ def find_files(filenames, recursive, exclude):
 def _fix_file(parameters):
     """Helper function for optionally running fix_file() in parallel."""
     if parameters[1].verbose:
-        print('[file:{f}]'.format(f=parameters[0]), file=sys.stderr)
+        print('[file:{0}]'.format(parameters[0]), file=sys.stderr)
     try:
         fix_file(*parameters)
     except IOError as error:
