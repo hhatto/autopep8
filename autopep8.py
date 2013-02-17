@@ -669,8 +669,7 @@ class FixPEP8(object):
         except (tokenize.TokenError, IndentationError):
             multi_line_candidate = break_multi_line(
                 target, newline=self.newline,
-                indent_word=self.indent_word,
-                max_line_length=self.options.max_line_length)
+                indent_word=self.indent_word)
 
             if multi_line_candidate:
                 self.source[line_index] = multi_line_candidate
@@ -1564,12 +1563,14 @@ def refactor_with_2to3(source_text, fixer_name):
     return unicode(tool.refactor_string(source_text, name=''))
 
 
-def break_multi_line(source_text, newline, indent_word, max_line_length):
+def break_multi_line(source_text, newline, indent_word):
     """Break first line of multi-line code.
 
     Return None if a break is not possible.
 
     """
+    indentation = _get_indentation(source_text)
+
     # Handle special case only.
     for symbol in '([{':
         # Only valid if symbol is not on a line by itself.
@@ -1579,16 +1580,15 @@ def break_multi_line(source_text, newline, indent_word, max_line_length):
 
             index = 1 + source_text.find(symbol)
 
-            if index >= max_line_length:
+            if index <= len(indent_word) + len(indentation):
                 continue
 
             if is_probably_inside_string_or_comment(source_text, index - 1):
                 continue
 
-            assert index < len(source_text)
             return (
                 source_text[:index].rstrip() + newline +
-                _get_indentation(source_text) + indent_word +
+                indentation + indent_word +
                 source_text[index:].lstrip())
 
     return None
