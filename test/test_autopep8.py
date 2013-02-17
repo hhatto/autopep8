@@ -300,6 +300,25 @@ def foo():
         self.assertEqual(['12', '3', '4'],
                          autopep8.split_at_offsets('1234', [3, 2]))
 
+    def test_is_probably_inside_string_or_comment(self):
+        self.assertTrue(autopep8.is_probably_inside_string_or_comment(
+            '# abc', 1))
+
+        self.assertFalse(autopep8.is_probably_inside_string_or_comment(
+            'hello # abc', 1))
+
+        self.assertTrue(autopep8.is_probably_inside_string_or_comment(
+            '"abc"', 1))
+
+        self.assertFalse(autopep8.is_probably_inside_string_or_comment(
+            'hello "abc"', 1))
+
+        self.assertTrue(autopep8.is_probably_inside_string_or_comment(
+            '"abc"', 0))
+
+        self.assertFalse(autopep8.is_probably_inside_string_or_comment(
+            ' "abc"', 0))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 

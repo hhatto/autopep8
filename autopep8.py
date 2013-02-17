@@ -1576,20 +1576,14 @@ def break_multi_line(source_text, newline, indent_word, max_line_length):
         if (symbol in source_text
                 and source_text.rstrip().endswith(',')
                 and not source_text.lstrip().startswith(symbol)):
+
             index = 1 + source_text.find(symbol)
+
             if index >= max_line_length:
-                return None
+                continue
 
-            # Make sure we are not in a string.
-            for quote in ['"', "'"]:
-                if quote in source_text:
-                    if source_text.find(quote) < index:
-                        return None
-
-            # Make sure we are not in a comment.
-            if '#' in source_text:
-                if source_text.find('#') < index:
-                    return None
+            if is_probably_inside_string_or_comment(source_text, index - 1):
+                continue
 
             assert index < len(source_text)
             return (
@@ -1598,6 +1592,22 @@ def break_multi_line(source_text, newline, indent_word, max_line_length):
                 source_text[index:].lstrip())
 
     return None
+
+
+def is_probably_inside_string_or_comment(line, index):
+    """Return True if index may be inside a string or comment."""
+    # Make sure we are not in a string.
+    for quote in ['"', "'"]:
+        if quote in line:
+            if line.find(quote) <= index:
+                return True
+
+    # Make sure we are not in a comment.
+    if '#' in line:
+        if line.find('#') <= index:
+            return True
+
+    return False
 
 
 def check_syntax(code):
