@@ -1887,8 +1887,8 @@ def parse_args(args):
     if options.in_place and options.diff:
         parser.error('--in-place and --diff are mutually exclusive')
 
-    if options.max_line_length < 8:
-        parser.error('--max-line-length must greater than 8')
+    if options.max_line_length <= 0:
+        parser.error('--max-line-length must be greater than 0')
 
     if args == ['-'] and (options.in_place or options.recursive):
         parser.error('--in-place or --recursive cannot be used with '
