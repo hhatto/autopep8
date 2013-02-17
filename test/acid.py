@@ -36,7 +36,7 @@ def colored(text, color):
     return color + text + END
 
 
-def run(filename, fast_check=False, passes=2000,
+def run(filename, fast_check=False, passes=2000, max_line_length=79,
         ignore='', check_ignore='', verbose=False,
         comparison_function=None,
         aggressive=False):
@@ -47,7 +47,8 @@ def run(filename, fast_check=False, passes=2000,
     """
     autopep8_bin = os.path.join(ROOT_PATH, 'autopep8.py')
     command = ([autopep8_bin] + (['--verbose'] if verbose else []) +
-               ['--pep8-passes={p}'.format(p=passes),
+               ['--pep8-passes={0}'.format(passes),
+                '--max-line-length={0}'.format(max_line_length),
                 '--ignore=' + ignore, filename] +
                (['--aggressive'] if aggressive else []))
 
@@ -246,6 +247,9 @@ def process_args():
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)',
                       default=2000)
+    parser.add_option('--max-line-length', metavar='n', default=79, type=int,
+                      help='set maximum allowed line length '
+                           '(default: %default)')
     parser.add_option('--compare-bytecode', action='store_true',
                       help='compare bytecode before and after fixes; '
                            'sets default --ignore=' + compare_bytecode_ignore)
@@ -344,6 +348,7 @@ def check(opts, args):
                 if not run(os.path.join(name),
                            fast_check=opts.fast_check,
                            passes=opts.pep8_passes,
+                           max_line_length=opts.max_line_length,
                            ignore=opts.ignore,
                            check_ignore=opts.check_ignore,
                            verbose=opts.verbose,
