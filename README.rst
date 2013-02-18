@@ -139,7 +139,7 @@ Options::
       --exclude=globs       exclude files/directories that match these comma-
                             separated globs
       --list-fixes          list codes for fixes; used by --ignore and --select
-      --ignore=errors       do not fix these errors/warnings (e.g. E4,W)
+      --ignore=errors       do not fix these errors/warnings (default E226,E24)
       --select=errors       fix only these errors/warnings (e.g. E4,W)
       --max-line-length=n   set maximum allowed line length (default: 79)
       --aggressive          enable possibly unsafe changes (E711, E712)

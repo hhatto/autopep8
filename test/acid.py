@@ -242,7 +242,7 @@ def process_args():
     parser.add_option('--check-ignore',
                       help='comma-separated errors to ignore when checking '
                            'for completeness (default: %default)',
-                      default='E501')
+                      default='')
     parser.add_option('-p', '--pep8-passes',
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)',

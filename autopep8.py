@@ -1867,7 +1867,8 @@ def parse_args(args):
                       help='list codes for fixes; '
                            'used by --ignore and --select')
     parser.add_option('--ignore', metavar='errors', default='',
-                      help='do not fix these errors/warnings (e.g. E4,W)')
+                      help='do not fix these errors/warnings '
+                           '(default {0})'.format(pep8.DEFAULT_IGNORE))
     parser.add_option('--select', metavar='errors', default='',
                       help='fix only these errors/warnings (e.g. E4,W)')
     parser.add_option('--max-line-length', metavar='n', default=79, type=int,
@@ -1904,11 +1905,13 @@ def parse_args(args):
         parser.error('--in-place or --recursive cannot be used with '
                      'standard input')
 
-    if options.ignore:
-        options.ignore = options.ignore.split(',')
-
     if options.select:
         options.select = options.select.split(',')
+
+    if options.ignore:
+        options.ignore = options.ignore.split(',')
+    elif not options.select and pep8.DEFAULT_IGNORE:
+        options.ignore = pep8.DEFAULT_IGNORE.split(',')
 
     if options.exclude:
         options.exclude = options.exclude.split(',')

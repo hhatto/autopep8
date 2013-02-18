@@ -1092,7 +1092,7 @@ class Foo():
     def test_e225(self):
         line = "1+1\n2 +2\n3+ 3\n"
         fixed = "1 + 1\n2 + 2\n3 + 3\n"
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--select=E,W']) as result:
             self.assertEqual(fixed, result)
 
     def test_e225_with_indentation_fix(self):
@@ -1837,7 +1837,7 @@ def foo():
         bar = bar * bar
         return bar
 """
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--select=E,W']) as result:
             self.assertEqual(fixed, result)
 
     def test_e702_with_semicolon_in_string(self):
