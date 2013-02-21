@@ -244,7 +244,7 @@ Test cases are in ``test/test_autopep8.py``. They can be run directly via
 testing against multiple Python interpreters. (We currently test against
 CPython versions 2.6, 2.7, 3.2, and 3.3. We also test against PyPy.)
 
-.. _`tox`: http://pypi.python.org/pypi/tox
+.. _`tox`: https://pypi.python.org/pypi/tox
 
 Broad spectrum testing is available via ``test/acid.py``. This script runs
 autopep8 against Python code and checks for correctness and completeness of the
@@ -261,7 +261,7 @@ Links
 * `Travis CI`_
 * Jenkins_
 
-.. _PyPI: http://pypi.python.org/pypi/autopep8/
+.. _PyPI: https://pypi.python.org/pypi/autopep8/
 .. _GitHub: https://github.com/hhatto/autopep8
 .. _`Travis CI`: https://travis-ci.org/hhatto/autopep8
 .. _Jenkins: http://jenkins.hexacosa.net/job/autopep8/
