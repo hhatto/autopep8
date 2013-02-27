@@ -1747,6 +1747,44 @@ raise MultiProjectException(
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_aggressive_with_def(self):
+        line = """\
+def foo(sldfkjlsdfsdf, kksdfsdfsf,sdfsdfsdf, sdfsdfkdk, szdfsdfsdf, sdfsdfsdfsdlkfjsdlf, sdfsdfddf,sdfsdfsfd, sdfsdfdsf):
+    pass
+"""
+        fixed = """\
+
+
+def foo(sldfkjlsdfsdf, kksdfsdfsf, sdfsdfsdf, sdfsdfkdk,
+        szdfsdfsdf, sdfsdfsdfsdlkfjsdlf, sdfsdfddf, sdfsdfsfd, sdfsdfdsf):
+    pass
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_more_aggressive_with_def(self):
+        line = """\
+def foo(sldfkjlsdfsdf, kksdfsdfsf,sdfsdfsdf, sdfsdfkdk, szdfsdfsdf, sdfsdfsdfsdlkfjsdlf, sdfsdfddf,sdfsdfsfd, sdfsdfdsf):
+    pass
+"""
+        fixed = """\
+
+
+def foo(
+    sldfkjlsdfsdf,
+    kksdfsdfsf,
+    sdfsdfsdf,
+    sdfsdfkdk,
+    szdfsdfsdf,
+    sdfsdfsdfsdlkfjsdlf,
+    sdfsdfddf,
+    sdfsdfsfd,
+        sdfsdfdsf):
+    pass
+"""
+        with autopep8_context(line, options=['--aggressive', '--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"

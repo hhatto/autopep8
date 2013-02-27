@@ -976,7 +976,8 @@ def shorten_line(tokens, source, indentation, indent_word, newline,
                 indentation=indentation,
                 indent_word=indent_word,
                 newline=newline,
-                key_token_strings=key_token_strings)
+                key_token_strings=key_token_strings,
+                aggressive=aggressive)
 
             if shortened is not None and shortened != source:
                 yield shortened
@@ -1027,7 +1028,7 @@ def _shorten_line(tokens, source, indentation, indent_word, newline,
 
 
 def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
-                            key_token_strings):
+                            key_token_strings, aggressive):
     """Separate line by breaking at tokens in key_token_strings.
 
     This will always break the line at the first parenthesis.
@@ -1068,7 +1069,8 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
 
     assert fixed is not None
 
-    if check_syntax(fixed):
+    if check_syntax(normalize_multiline(fixed)
+                    if aggressive > 1 else fixed):
         return indentation + fixed
     else:
         return None
@@ -1086,6 +1088,9 @@ def normalize_multiline(line):
             if not line.strip().endswith('}'):
                 line += '}'
             return '{' + line
+
+    if line.startswith('def ') and line.rstrip().endswith(':'):
+        return line[len('def'):].strip().rstrip(':')
 
     return line
 
@@ -1862,6 +1867,9 @@ def parse_args(args):
                       default=100, type=int,
                       help='maximum number of additional pep8 passes'
                            ' (default: %default)')
+    parser.add_option('-a', '--aggressive', action='count', default=0,
+                      help='enable possibly unsafe changes (E711, E712); '
+                           'multiple -a reuilt in more aggressive changes')
     parser.add_option('--exclude', metavar='globs',
                       help='exclude files/directories that match these '
                            'comma-separated globs')
@@ -1876,8 +1884,6 @@ def parse_args(args):
     parser.add_option('--max-line-length', metavar='n', default=79, type=int,
                       help='set maximum allowed line length '
                            '(default: %default)')
-    parser.add_option('--aggressive', action='store_true',
-                      help='enable possibly unsafe changes (E711, E712)')
     options, args = parser.parse_args(args)
 
     if not len(args) and not options.list_fixes:
