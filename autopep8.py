@@ -1869,7 +1869,7 @@ def parse_args(args):
                            ' (default: %default)')
     parser.add_option('-a', '--aggressive', action='count', default=0,
                       help='enable possibly unsafe changes (E711, E712); '
-                           'multiple -a reuilt in more aggressive changes')
+                           'multiple -a result in more aggressive changes')
     parser.add_option('--exclude', metavar='globs',
                       help='exclude files/directories that match these '
                            'comma-separated globs')
