@@ -2438,8 +2438,6 @@ class TestOptions(unittest.TestCase):
             with open(filename) as f:
                 self.assertEqual(fixed, f.read())
 
-    @unittest.skipIf(os.getenv('TRAVIS') == 'true',
-                     'Travis currently does not like multiprocessing')
     def test_parallel_jobs(self):
         line = "'abc'  \n"
         fixed = "'abc'\n"
@@ -2456,8 +2454,6 @@ class TestOptions(unittest.TestCase):
                 with open(filename_b) as f:
                     self.assertEqual(fixed, f.read())
 
-    @unittest.skipIf(os.getenv('TRAVIS') == 'true',
-                     'Travis currently does not like multiprocessing')
     def test_parallel_jobs_with_automatic_cpu_count(self):
         line = "'abc'  \n"
         fixed = "'abc'\n"

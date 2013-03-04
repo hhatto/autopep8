@@ -11,6 +11,12 @@ install:
     - if [ "$TRAVIS_PYTHON_VERSION" == "2.6" ]; then pip --quiet install unittest2; fi
     - python setup.py install
 
+before_script:
+    # This is needed for Python multiprocessing.
+    # https://github.com/travis-ci/travis-cookbooks/issues/155
+    - sudo rm -rf /dev/shm
+    - sudo ln -s /run/shm /dev/shm
+
 script:
     - python test/test_autopep8.py
     - python test/acid.py test/example.py
