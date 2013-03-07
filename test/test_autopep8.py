@@ -741,7 +741,6 @@ class TestDuplicateController(controller.CementBaseController):
         pass
 """
         fixed = """
-
 class BogusController(controller.CementBaseController):
     class Meta:
         pass
@@ -1753,8 +1752,6 @@ def foo(sldfkjlsdfsdf, kksdfsdfsf,sdfsdfsdf, sdfsdfkdk, szdfsdfsdf, sdfsdfsdfsdl
     pass
 """
         fixed = """\
-
-
 def foo(sldfkjlsdfsdf, kksdfsdfsf, sdfsdfsdf, sdfsdfkdk,
         szdfsdfsdf, sdfsdfsdfsdlkfjsdlf, sdfsdfddf, sdfsdfsfd, sdfsdfdsf):
     pass
