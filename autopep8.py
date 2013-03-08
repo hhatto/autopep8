@@ -420,7 +420,7 @@ class FixPEP8(object):
         fixed = (_get_indentation(logical_lines[0]) +
                  self.indent_word + original.lstrip())
         if fixed == original:
-            # Fallback to slower method.
+            # Fall back to slower method.
             return self._fix_reindent(result, logical)
         else:
             self.source[line_index] = fixed
@@ -432,7 +432,7 @@ class FixPEP8(object):
         if modified_lines != []:
             return modified_lines
         else:
-            # Fallback to slower method.
+            # Fall back to slower method.
             return self._fix_reindent(result, logical)
 
     def _align_visual_indent(self, result, logical):
