@@ -58,7 +58,6 @@ Before running autopep8.
         x = [a,[100,200,300,9876543210,'This is a long string that goes on and on']]
     def func22(): return {True: True}.has_key({'foo': 2}.has_key('foo'));
     class UselessClass(   object ):
-
         def __init__    ( self, bar ):
          #Comments should have a space after the hash.
          if bar : bar+=1;  bar=bar* bar   ; return bar
