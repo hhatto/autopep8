@@ -48,6 +48,8 @@ Before running autopep8.
 
     def someone_likes_semicolons(                             foo  = None            ,\
     bar='bar'):
+
+
         """Hello; bye."""; print( 'A'<>foo)            #<> is a deprecated form of !=
         return 0;
     def func11():
