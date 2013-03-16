@@ -105,6 +105,17 @@ def read_from_filename(filename, readlines=False):
         return input_file.readlines() if readlines else input_file.read()
 
 
+def extended_blank_lines(logical_line, blank_lines, indent_level, line_number,
+                         previous_logical, previous_indent_level):
+    """Check for missing blank lines after class declaration."""
+    if previous_logical.startswith('class '):
+        if logical_line.startswith(('def ', 'class ', '@')):
+            if indent_level:
+                if not blank_lines:
+                    yield (0, "E301 expected 1 blank line, found 0")
+pep8.register_check(extended_blank_lines)
+
+
 class FixPEP8(object):
 
     """Fix invalid code.

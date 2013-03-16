@@ -375,6 +375,7 @@ while True:
     def test_e101_should_fix_docstrings(self):
         line = """
 class Bar(object):
+
     def foo():
         '''
 \tdocstring
@@ -382,6 +383,7 @@ class Bar(object):
 """.lstrip()
         fixed = """
 class Bar(object):
+
     def foo():
         '''
         docstring
@@ -474,14 +476,14 @@ try:
         self.assertEqual('', output)
 
     def test_e111_short(self):
-        line = "class Dummy:\n  def __init__(self):\n    pass\n"
-        fixed = "class Dummy:\n    def __init__(self):\n        pass\n"
+        line = "class Dummy:\n\n  def __init__(self):\n    pass\n"
+        fixed = "class Dummy:\n\n    def __init__(self):\n        pass\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e111_long(self):
-        line = "class Dummy:\n     def __init__(self):\n          pass\n"
-        fixed = "class Dummy:\n    def __init__(self):\n        pass\n"
+        line = "class Dummy:\n\n     def __init__(self):\n          pass\n"
+        fixed = "class Dummy:\n\n    def __init__(self):\n        pass\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -698,35 +700,43 @@ if (
 
         line = """
 class BogusController(controller.CementBaseController):
+
     class Meta:
         pass
 
 class BogusController2(controller.CementBaseController):
+
     class Meta:
         pass
 
 class BogusController3(controller.CementBaseController):
+
     class Meta:
         pass
 
 class BogusController4(controller.CementBaseController):
+
     class Meta:
         pass
 
 class TestBaseController(controller.CementBaseController):
+
     class Meta:
         pass
 
 class TestBaseController2(controller.CementBaseController):
+
     class Meta:
         pass
 
 class TestStackedController(controller.CementBaseController):
+
     class Meta:
         arguments = [
             ]
 
 class TestDuplicateController(controller.CementBaseController):
+
     class Meta:
 
         config_defaults = dict(
@@ -742,42 +752,50 @@ class TestDuplicateController(controller.CementBaseController):
 """
         fixed = """
 class BogusController(controller.CementBaseController):
+
     class Meta:
         pass
 
 
 class BogusController2(controller.CementBaseController):
+
     class Meta:
         pass
 
 
 class BogusController3(controller.CementBaseController):
+
     class Meta:
         pass
 
 
 class BogusController4(controller.CementBaseController):
+
     class Meta:
         pass
 
 
 class TestBaseController(controller.CementBaseController):
+
     class Meta:
         pass
 
 
 class TestBaseController2(controller.CementBaseController):
+
     class Meta:
         pass
 
 
 class TestStackedController(controller.CementBaseController):
+
     class Meta:
         arguments = [
         ]
 
 
 class TestDuplicateController(controller.CementBaseController):
+
     class Meta:
 
         config_defaults = dict(
@@ -1051,11 +1069,13 @@ $(function(){
     def test_e223_with_tab_indentation(self):
         line = """
 class Foo():
+
 \tdef __init__(self):
 \t\tx= 1\t+ 3
 """.lstrip()
         fixed = """
 class Foo():
+
 \tdef __init__(self):
 \t\tx = 1 + 3
 """.lstrip()
@@ -1077,11 +1097,13 @@ class Foo():
     def test_e224_with_tab_indentation(self):
         line = """
 class Foo():
+
 \tdef __init__(self):
 \t\tx= \t3
 """.lstrip()
         fixed = """
 class Foo():
+
 \tdef __init__(self):
 \t\tx = 3
 """.lstrip()
@@ -1097,11 +1119,13 @@ class Foo():
     def test_e225_with_indentation_fix(self):
         line = """
 class Foo(object):
+
   def bar(self):
     return self.elephant is not None
 """.lstrip()
         fixed = """
 class Foo(object):
+
     def bar(self):
         return self.elephant is not None
 """.lstrip()
@@ -1261,6 +1285,12 @@ class Foo(object):
     def test_e301(self):
         line = "class k:\n    s = 0\n    def f():\n        print 1\n"
         fixed = "class k:\n    s = 0\n\n    def f():\n        print 1\n"
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e301_extended(self):
+        line = "class Foo:\n    def bar():\n        print 1\n"
+        fixed = "class Foo:\n\n    def bar():\n        print 1\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -1649,6 +1679,7 @@ def foo():
     def test_e501_with_function_should_not_break_on_colon(self):
         line = r"""
 class Useless(object):
+
     def _table_field_is_plain_widget(self, widget):
         if widget.__class__ == Widget or\
                 (widget.__class__ == WidgetMeta and Widget in widget.__bases__):
