@@ -105,8 +105,10 @@ def read_from_filename(filename, readlines=False):
         return input_file.readlines() if readlines else input_file.read()
 
 
-def extended_blank_lines(logical_line, blank_lines, indent_level, line_number,
-                         previous_logical, previous_indent_level):
+def extended_blank_lines(logical_line,
+                         blank_lines,
+                         indent_level,
+                         previous_logical):
     """Check for missing blank lines after class declaration."""
     if previous_logical.startswith('class '):
         if logical_line.startswith(('def ', 'class ', '@')):
