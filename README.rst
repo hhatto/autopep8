@@ -29,7 +29,7 @@ From easy_install::
 
 Requirements
 ------------
-autopep8 requires pep8_ (>= 1.3.2).
+autopep8 requires pep8_ (>= 1.4.5).
 
 .. _pep8: https://github.com/jcrocholl/pep8
 
