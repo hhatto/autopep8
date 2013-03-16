@@ -196,6 +196,8 @@ autopep8 also fixes some issues not found by pep8_.
 - Correct some non-idiomatic Python code (via ``2to3 -f idioms``). (This is
   triggered if ``E712`` is enabled.)
 - Normalize files with mixed line endings.
+- Put a blank line between a class declaration and its first method
+  declaration.
 
 
 More advanced usage
