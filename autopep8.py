@@ -1025,7 +1025,7 @@ def _shorten_line(tokens, source, indentation, indent_word, newline,
                 fixed = first + newline + second
 
             # Only fix if syntax is okay.
-            if check_syntax(normalize_multiline(fixed)
+            if check_syntax(normalize_multiline(fixed, newline=newline)
                             if aggressive else fixed):
                 yield indentation + fixed
 
@@ -1072,21 +1072,21 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
 
     assert fixed is not None
 
-    if check_syntax(normalize_multiline(fixed)
+    if check_syntax(normalize_multiline(fixed, newline=newline)
                     if aggressive > 1 else fixed):
         return indentation + fixed
     else:
         return None
 
 
-def normalize_multiline(line):
+def normalize_multiline(line, newline):
     """Remove multiline-related code that will cause syntax error.
 
     This is for purposes of checking syntax.
 
     """
     for quote in '\'"':
-        dict_pattern = r'^{q}[^{q}]*{q}\s*:\s*'.format(q=quote)
+        dict_pattern = r'^{q}[^{q}]*{q} *: *'.format(q=quote)
         if re.match(dict_pattern, line):
             if not line.strip().endswith('}'):
                 line += '}'
@@ -1094,7 +1094,8 @@ def normalize_multiline(line):
 
     if line.startswith('def ') and line.rstrip().endswith(':'):
         # Do not allow ':' to be alone. That is invalid.
-        if ':' not in line.split():
+        split_line = line.split(newline)
+        if ':' not in split_line and 'def' not in split_line:
             return line[len('def'):].strip().rstrip(':')
 
     return line
