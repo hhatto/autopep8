@@ -198,6 +198,7 @@ autopep8 also fixes some issues not found by pep8_.
 - Normalize files with mixed line endings.
 - Put a blank line between a class declaration and its first method
   declaration.
+- Remove blank lines between a function declaration and its docstring.
 
 
 More advanced usage

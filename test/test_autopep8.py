@@ -1306,6 +1306,19 @@ class Foo(object):
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e303_extended(self):
+        line = '''\
+def foo():
+
+    """Document."""
+'''
+        fixed = '''\
+def foo():
+    """Document."""
+'''
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e304(self):
         line = "@contextmanager\n\ndef f():\n    print 1\n"
         fixed = "@contextmanager\ndef f():\n    print 1\n"
