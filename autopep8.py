@@ -110,8 +110,7 @@ def extended_blank_lines(logical_line,
                          indent_level,
                          previous_logical):
     """Check for missing blank lines after class declaration."""
-    if (previous_logical.startswith('class ') or
-            pep8.DOCSTRING_REGEX.match(previous_logical)):
+    if (previous_logical.startswith('class ')):
         if (logical_line.startswith(('def ', 'class ', '@')) or
                 pep8.DOCSTRING_REGEX.match(logical_line)):
             if indent_level:
