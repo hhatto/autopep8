@@ -206,7 +206,7 @@ to fix various types of indentation issues::
 
     $ autopep8 --select=E1,W1 <filename>
 
-Similarly, to just fix deprecated code:
+Similarly, to just fix deprecated code::
 
     $ autopep8 --select=W6 <filename>
 
