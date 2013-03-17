@@ -2265,7 +2265,7 @@ correct = dict().has_key('good syntax ?')
 
         fixed = """
 # -*- coding: utf-8 -*-
-## éはe
+# éはe
 correct = 'good syntax ?' in dict()
 """.lstrip()
 

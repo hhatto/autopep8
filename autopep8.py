@@ -862,11 +862,18 @@ def fix_e26(source):
     fixed_lines = []
     sio = StringIO(source)
     for (line_number, line) in enumerate(sio.readlines(), start=1):
-        if (re.match(r'\s*#+\w+', line) and
+        if (line.lstrip().startswith('#') and
                 line_number not in string_line_numbers):
-            fixed_lines.append(_get_indentation(line) +
-                               '# ' +
-                               line.lstrip().lstrip('#'))
+
+            indentation = _get_indentation(line)
+            line = line.lstrip()
+
+            # Normalize beginning if not a shebang.
+            if len(line) > 1:
+                if line[1] in ' #' or line[1].isalnum():
+                    line = '# ' + line.lstrip('# \t')
+
+            fixed_lines.append(indentation + line)
         else:
             fixed_lines.append(line)
 
