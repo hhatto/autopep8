@@ -161,29 +161,17 @@ autopep8 fixes the following issues_ reported by pep8_::
     E126 - Fix over-indented hanging indentation.
     E127 - Fix visual indentation.
     E128 - Fix visual indentation.
-    E201 - Remove extraneous whitespace.
-    E202 - Remove extraneous whitespace.
-    E203 - Remove extraneous whitespace.
+    E20  - Remove extraneous whitespace.
     E211 - Remove extraneous whitespace.
-    E221 - Fix extraneous whitespace around keywords.
-    E222 - Fix extraneous whitespace around keywords.
-    E223 - Fix extraneous whitespace around keywords.
+    E22  - Fix extraneous whitespace around keywords.
     E224 - Remove extraneous whitespace around operator.
-    E225 - Fix missing whitespace around operator.
-    E226 - Fix missing whitespace around operator.
-    E227 - Fix missing whitespace around operator.
-    E228 - Fix missing whitespace around operator.
+    E22  - Fix missing whitespace around operator.
     E231 - Add missing whitespace.
     E241 - Fix extraneous whitespace around keywords.
     E242 - Remove extraneous whitespace around operator.
     E251 - Remove whitespace around parameter '=' sign.
-    E26  - Format block comments.
-    E261 - Fix spacing after comment hash.
-    E262 - Fix spacing after comment hash.
-    E271 - Fix extraneous whitespace around keywords.
-    E272 - Fix extraneous whitespace around keywords.
-    E273 - Fix extraneous whitespace around keywords.
-    E274 - Fix extraneous whitespace around keywords.
+    E26  - Fix spacing after comment hash.
+    E27  - Fix extraneous whitespace around keywords.
     E301 - Add missing blank line.
     E302 - Add missing 2 blank lines.
     E303 - Remove extra blank lines.
@@ -192,8 +180,7 @@ autopep8 fixes the following issues_ reported by pep8_::
     E501 - Try to make lines fit within --max-line-length characters.
     E502 - Remove extraneous escape of newline.
     E701 - Put colon-separated compound statement on separate lines.
-    E702 - Put semicolon-separated compound statement on separate lines.
-    E703 - Put semicolon-separated compound statement on separate lines.
+    E70  - Put semicolon-separated compound statement on separate lines.
     E711 - Fix comparison with None.
     E712 - Fix comparison with boolean.
     W191 - Reindent all lines.
