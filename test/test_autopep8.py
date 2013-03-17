@@ -215,6 +215,10 @@ def foo():
             '# abc',
             autopep8.fix_e26('####abc'))
 
+        self.assertEqual(
+            '# abc',
+            autopep8.fix_e26('##   #   ##abc'))
+
     def test_format_block_comments_with_multiple_lines(self):
         self.assertEqual(
             """
