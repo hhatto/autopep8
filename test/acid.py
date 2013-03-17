@@ -230,7 +230,7 @@ def _disassemble(code):
 
 def process_args():
     """Return processed arguments (options and positional arguments)."""
-    compare_bytecode_ignore = 'E71,E721,W601,W602,W604'
+    compare_bytecode_ignore = 'E71,E721,W'
 
     import optparse
     parser = optparse.OptionParser()
