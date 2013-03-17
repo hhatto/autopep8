@@ -33,7 +33,7 @@ else:
                           os.path.join(ROOT_DIR, 'autopep8.py'),)
 
 
-class TestUtils(unittest.TestCase):
+class UnitTests(unittest.TestCase):
 
     def test_find_newline_only_cr(self):
         source = ["print 1\r", "print 2\r", "print3\r"]
@@ -333,7 +333,7 @@ def foo():
             autopep8.fix_w6('while 1: pass\n'))
 
 
-class TestFixPEP8Error(unittest.TestCase):
+class SystemTests(unittest.TestCase):
 
     def test_e101(self):
         line = """
@@ -2098,9 +2098,6 @@ raise IOError('abc '
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-
-class TestFixPEP8Warning(unittest.TestCase):
-
     def test_w191_should_ignore_multiline_strings(self):
         line = """
 print(3 <> 4, '''
@@ -2451,7 +2448,7 @@ correct = 'good syntax ?' in dict()
             self.assertEqual(fixed, result)
 
 
-class TestOptions(unittest.TestCase):
+class CommandLineTests(unittest.TestCase):
 
     def test_diff(self):
         line = "'abc'  \n"
@@ -2623,9 +2620,6 @@ class TestOptions(unittest.TestCase):
     def test_list_fixes(self):
         with autopep8_subprocess('', options=['--list-fixes']) as result:
             self.assertIn('E101', result)
-
-
-class TestCoverage(unittest.TestCase):
 
     def test_fixpep8_class_constructor(self):
         line = "print 1\nprint 2\n"
