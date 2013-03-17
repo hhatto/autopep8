@@ -539,17 +539,6 @@ class FixPEP8(object):
             fixed = target[:offset] + ' ' + target[offset:]
             self.source[line_index] = fixed
 
-    def fix_e241(self, result):
-        """Remove extraneous whitespace around commas."""
-        original = ''.join(self.source)
-        new = refactor(original, ['ws_comma'])
-
-        if original.strip() == new.strip():
-            self.source = [new]
-            return range(1, 1 + len(original))
-        else:
-            return []
-
     def fix_e251(self, result):
         """Remove whitespace around parameter '=' sign."""
         line_index = result['line'] - 1
