@@ -1908,6 +1908,9 @@ def apply_global_fixes(source, options):
     """
     for (code, function) in global_fixes():
         if code_match(code, select=options.select, ignore=options.ignore):
+            if options.verbose:
+                print('--->  Applying global fix for {0}'.format(code.upper()),
+                      file=sys.stderr)
             source = function(source)
 
     return source
