@@ -903,7 +903,7 @@ def fix_w602(source):
 
 
 def fix_w6(source):
-    """Fix other deprecated code."""
+    """Fix various deprecated code (via lib2to3)."""
     return refactor(source,
                     ['apply',
                      'except',
@@ -1869,13 +1869,8 @@ def fix_file(filename, options=None, output=None):
             return fixed_source
 
 
-def apply_global_fixes(source, options):
-    """Run global fixes on source code.
-
-    Thsese are fixes that only need be done once (unlike those in FixPEP8,
-    which are dependent on pep8).
-
-    """
+def global_fixes():
+    """Yield multiple (code, function) tuples."""
     for function in globals().values():
         if inspect.isfunction(function):
             arguments = inspect.getargspec(function)[0]
@@ -1883,11 +1878,20 @@ def apply_global_fixes(source, options):
                 continue
 
             code = extract_code_from_function(function)
+            if code:
+                yield (code, function)
 
-            if code and code_match(code,
-                                   select=options.select,
-                                   ignore=options.ignore):
-                source = function(source)
+
+def apply_global_fixes(source, options):
+    """Run global fixes on source code.
+
+    Thsese are fixes that only need be done once (unlike those in FixPEP8,
+    which are dependent on pep8).
+
+    """
+    for (code, function) in global_fixes():
+        if code_match(code, select=options.select, ignore=options.ignore):
+            source = function(source)
 
     return source
 
@@ -2020,6 +2024,10 @@ def supported_fixes():
             yield (code.group(1).upper(),
                    re.sub(r'\s+', ' ',
                           getattr(instance, attribute).__doc__))
+
+    for (code, function) in global_fixes():
+            yield (code.upper() + (4 - len(code)) * ' ',
+                   re.sub(r'\s+', ' ', function.__doc__))
 
 
 def line_shortening_rank(candidate, newline, indent_word):

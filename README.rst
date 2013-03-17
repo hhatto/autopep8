@@ -161,15 +161,29 @@ autopep8 fixes the following issues_ reported by pep8_::
     E126 - Fix over-indented hanging indentation.
     E127 - Fix visual indentation.
     E128 - Fix visual indentation.
-    E20  - Remove extraneous whitespace.
+    E201 - Remove extraneous whitespace.
+    E202 - Remove extraneous whitespace.
+    E203 - Remove extraneous whitespace.
     E211 - Remove extraneous whitespace.
-    E22  - Fix extraneous whitespace around keywords.
+    E221 - Fix extraneous whitespace around keywords.
+    E222 - Fix extraneous whitespace around keywords.
+    E223 - Fix extraneous whitespace around keywords.
+    E224 - Remove extraneous whitespace around operator.
+    E225 - Fix missing whitespace around operator.
+    E226 - Fix missing whitespace around operator.
+    E227 - Fix missing whitespace around operator.
+    E228 - Fix missing whitespace around operator.
     E231 - Add missing whitespace.
     E241 - Fix extraneous whitespace around keywords.
     E242 - Remove extraneous whitespace around operator.
     E251 - Remove whitespace around parameter '=' sign.
-    E26  - Fix spacing after comment hash.
-    E27  - Fix extraneous whitespace around keywords.
+    E26  - Format block comments.
+    E261 - Fix spacing after comment hash.
+    E262 - Fix spacing after comment hash.
+    E271 - Fix extraneous whitespace around keywords.
+    E272 - Fix extraneous whitespace around keywords.
+    E273 - Fix extraneous whitespace around keywords.
+    E274 - Fix extraneous whitespace around keywords.
     E301 - Add missing blank line.
     E302 - Add missing 2 blank lines.
     E303 - Remove extra blank lines.
@@ -179,17 +193,14 @@ autopep8 fixes the following issues_ reported by pep8_::
     E502 - Remove extraneous escape of newline.
     E701 - Put colon-separated compound statement on separate lines.
     E702 - Put semicolon-separated compound statement on separate lines.
+    E703 - Put semicolon-separated compound statement on separate lines.
     E711 - Fix comparison with None.
     E712 - Fix comparison with boolean.
-    E721 - Switch to use isinstance().
     W191 - Reindent all lines.
     W291 - Remove trailing whitespace.
     W293 - Remove trailing whitespace on blank line.
     W391 - Remove trailing blank lines.
-    W601 - Replace the {}.has_key() form with 'in'.
-    W602 - Fix deprecated form of raising exception.
-    W603 - Replace <> with !=.
-    W604 - Replace backticks with repr().
+    W6   - Fix various deprecated code (via lib2to3).
 
 autopep8 also fixes some issues not found by pep8_.
 
