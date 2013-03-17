@@ -1976,8 +1976,7 @@ def parse_args(args):
                       help='list codes for fixes; '
                            'used by --ignore and --select')
     parser.add_option('--ignore', metavar='errors', default='',
-                      help='do not fix these errors/warnings '
-                           '(default {0})'.format(pep8.DEFAULT_IGNORE))
+                      help='do not fix these errors/warnings')
     parser.add_option('--select', metavar='errors', default='',
                       help='fix only these errors/warnings (e.g. E4,W)')
     parser.add_option('--max-line-length', metavar='n', default=79, type=int,
@@ -2017,8 +2016,11 @@ def parse_args(args):
 
     if options.ignore:
         options.ignore = options.ignore.split(',')
-    elif not options.select and pep8.DEFAULT_IGNORE:
+    elif not options.select and not options.aggressive:
         options.ignore = pep8.DEFAULT_IGNORE.split(',')
+    else:
+        # Enable everything if not selecting and not aggressive.
+        options.ignore = []
 
     if options.exclude:
         options.exclude = options.exclude.split(',')
