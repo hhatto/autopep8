@@ -524,11 +524,31 @@ class FixPEP8(object):
 
     def fix_e231(self, result):
         """Add missing whitespace."""
-        line_index = result['line'] - 1
-        target = self.source[line_index]
-        offset = result['column']
-        fixed = target[:offset] + ' ' + target[offset:]
-        self.source[line_index] = fixed
+        # Optimize for comma case. This will fix all commas in the full source
+        # code in one pass.
+        if ',' in result['info']:
+            original = ''.join(self.source)
+            new = refactor(original, ['ws_comma'])
+            if original.strip() != new.strip():
+                self.source = [new]
+                return range(1, 1 + len(original))
+        else:
+            line_index = result['line'] - 1
+            target = self.source[line_index]
+            offset = result['column']
+            fixed = target[:offset] + ' ' + target[offset:]
+            self.source[line_index] = fixed
+
+    def fix_e241(self, result):
+        """Remove extraneous whitespace around commas."""
+        original = ''.join(self.source)
+        new = refactor(original, ['ws_comma'])
+
+        if original.strip() == new.strip():
+            self.source = [new]
+            return range(1, 1 + len(original))
+        else:
+            return []
 
     def fix_e251(self, result):
         """Remove whitespace around parameter '=' sign."""

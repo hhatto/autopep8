@@ -1185,6 +1185,13 @@ class Foo(object):
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e231_with_many_commas(self):
+        fixed = str(list(range(200))) + '\n'
+        import re
+        line = re.sub(', ', ',', fixed)
+        with autopep8_context(line, options=['--select=E231']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e241(self):
         line = "l = (1,  2)\n"
         fixed = "l = (1, 2)\n"
