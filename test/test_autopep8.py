@@ -323,6 +323,15 @@ def foo():
         self.assertFalse(autopep8.is_probably_inside_string_or_comment(
             ' "abc"', 0))
 
+    def test_fix_w6(self):
+        self.assertEqual(
+            'try: pass\nexcept ValueError as e: pass\n',
+            autopep8.fix_w6('try: pass\nexcept ValueError, e: pass\n'))
+
+        self.assertEqual(
+            'while True: pass\n',
+            autopep8.fix_w6('while 1: pass\n'))
+
 
 class TestFixPEP8Error(unittest.TestCase):
 
