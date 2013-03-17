@@ -340,6 +340,18 @@ def foo():
             'while True: pass\n',
             autopep8.fix_w6('while 1: pass\n'))
 
+        self.assertEqual(
+            """\
+import sys
+sys.maxsize
+range(10)
+""",
+            autopep8.fix_w6("""\
+import sys
+sys.maxint
+xrange(10)
+"""))
+
 
 class SystemTests(unittest.TestCase):
 

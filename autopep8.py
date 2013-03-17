@@ -927,6 +927,7 @@ def fix_w6(source):
                      'operator',
                      'paren',
                      'reduce',
+                     'renames',
                      'repr',
                      'standarderror',
                      'sys_exc',
@@ -934,6 +935,7 @@ def fix_w6(source):
                      'tuple_params',
                      'types',
                      'ws_comma',
+                     'xrange',
                      'xreadlines'])
 
 
