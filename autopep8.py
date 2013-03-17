@@ -25,7 +25,8 @@
 """Automatically formats Python code to conform to the PEP 8 style guide.
 
 Fixes that only need be done once can be added by adding a function of the form
-"fix_<code>(source)" to this module. It should return the fixed source code.
+"fix_<code>(source)" to this module. They should return the fixed source code.
+These fixes are picked up by apply_global_fixes().
 
 Fixes that depend on pep8 should be added as method to FixPEP8. See the class
 documentation for more information.
