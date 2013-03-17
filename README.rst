@@ -194,8 +194,8 @@ autopep8 fixes the following issues_ reported by pep8_::
 autopep8 also fixes some issues not found by pep8_.
 
 - Format block comments. (This is triggered if ``E26`` is enabled.)
-- Correct some non-idiomatic Python code (via ``2to3 -f idioms``). (This is
-  triggered if ``E712`` is enabled.)
+- Correct deprecated or non-idiomatic Python code (via ``lib2to3``). (This is
+  triggered if ``W6`` is enabled.)
 - Normalize files with mixed line endings.
 - Put a blank line between a class declaration and its first method
   declaration.

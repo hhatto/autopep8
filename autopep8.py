@@ -851,7 +851,7 @@ class FixPEP8(object):
         return range(1, 1 + original_length)
 
 
-def refactor(source, fixer_name, ignore=None):
+def refactor(source, fixer_names, ignore=None):
     """Return refactored code using lib2to3.
 
     Skip if ignore string is produced in the refactored code.
@@ -860,7 +860,7 @@ def refactor(source, fixer_name, ignore=None):
     from lib2to3 import pgen2
     try:
         new_text = refactor_with_2to3(source,
-                                      fixer_name=fixer_name)
+                                      fixer_names=fixer_names)
     except (pgen2.parse.ParseError,
             UnicodeDecodeError,
             UnicodeEncodeError,
@@ -874,30 +874,37 @@ def refactor(source, fixer_name, ignore=None):
     return new_text
 
 
-def fix_e721(source):
-    """Switch to use isinstance()."""
-    return refactor(source, 'idioms')
-
-
-def fix_w601(source):
-    """Replace the {}.has_key() form with 'in'."""
-    return refactor(source, 'has_key')
-
-
 def fix_w602(source):
     """Fix deprecated form of raising exception."""
-    return refactor(source, 'raise',
+    return refactor(source, ['raise'],
                     ignore='with_traceback')
 
 
-def fix_w603(source):
-    """Replace <> with !=."""
-    return refactor(source, 'ne')
-
-
-def fix_w604(source):
-    """Replace backticks with repr()."""
-    return refactor(source, 'repr')
+def fix_w6(source):
+    """Fix other deprecated code."""
+    return refactor(source,
+                    ['apply',
+                     'except',
+                     'exec',
+                     'execfile',
+                     'exitfunc',
+                     'has_key',
+                     'idioms',
+                     'import',
+                     'methodattrs',  # Python >= 2.6
+                     'ne',
+                     'numliterals',
+                     'operator',
+                     'paren',
+                     'reduce',
+                     'repr',
+                     'standarderror',
+                     'sys_exc',
+                     'throw',
+                     'tuple_params',
+                     'types',
+                     'ws_comma',
+                     'xreadlines'])
 
 
 def find_newline(source):
@@ -1580,14 +1587,14 @@ def _leading_space_count(line):
     return i
 
 
-def refactor_with_2to3(source_text, fixer_name):
+def refactor_with_2to3(source_text, fixer_names):
     """Use lib2to3 to refactor the source.
 
     Return the refactored source code.
 
     """
     from lib2to3.refactor import RefactoringTool
-    fixers = ['lib2to3.fixes.fix_' + fixer_name]
+    fixers = ['lib2to3.fixes.fix_' + name for name in fixer_names]
     tool = RefactoringTool(fixer_names=fixers, explicit=fixers)
     return unicode(tool.refactor_string(source_text, name=''))
 
