@@ -943,8 +943,6 @@ def fix_w6(source):
                      'throw',
                      'tuple_params',
                      'types',
-                     'ws_comma',
-                     'xrange',
                      'xreadlines'])
 
 

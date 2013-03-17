@@ -344,12 +344,10 @@ def foo():
             """\
 import sys
 sys.maxsize
-range(10)
 """,
             autopep8.fix_w6("""\
 import sys
 sys.maxint
-xrange(10)
 """))
 
 
