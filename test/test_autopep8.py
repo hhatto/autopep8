@@ -1294,6 +1294,24 @@ class Foo(object):
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e301_extended_with_docstring(self):
+        line = '''\
+class Foo(object):
+    """Test."""
+    def foo():
+        """Test."""
+'''
+        fixed = '''\
+class Foo(object):
+
+    """Test."""
+
+    def foo():
+        """Test."""
+'''
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e302(self):
         line = "def f():\n    print 1\n\ndef ff():\n    print 2\n"
         fixed = "def f():\n    print 1\n\n\ndef ff():\n    print 2\n"
