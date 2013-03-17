@@ -187,13 +187,12 @@ autopep8 fixes the following issues_ reported by pep8_::
     W291 - Remove trailing whitespace.
     W293 - Remove trailing whitespace on blank line.
     W391 - Remove trailing blank lines.
-    W6   - Fix various deprecated code (via lib2to3).
 
 autopep8 also fixes some issues not found by pep8_.
 
-- Format block comments. (This is triggered if ``E26`` is enabled.)
 - Correct deprecated or non-idiomatic Python code (via ``lib2to3``). (This is
   triggered if ``W6`` is enabled.)
+- Format block comments. (This is triggered if ``E26`` is enabled.)
 - Normalize files with mixed line endings.
 - Put a blank line between a class declaration and its first method
   declaration.
