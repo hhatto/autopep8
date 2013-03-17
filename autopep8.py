@@ -851,6 +851,28 @@ class FixPEP8(object):
         return range(1, 1 + original_length)
 
 
+def fix_e26(source):
+    """Format block comments."""
+    if '#' not in source:
+        # Optimization.
+        return source
+
+    string_line_numbers = multiline_string_lines(source,
+                                                 include_docstrings=True)
+    fixed_lines = []
+    sio = StringIO(source)
+    for (line_number, line) in enumerate(sio.readlines(), start=1):
+        if (re.match(r'\s*#+\w+', line) and
+                line_number not in string_line_numbers):
+            fixed_lines.append(_get_indentation(line) +
+                               '# ' +
+                               line.lstrip().lstrip('#'))
+        else:
+            fixed_lines.append(line)
+
+    return ''.join(fixed_lines)
+
+
 def refactor(source, fixer_names, ignore=None):
     """Return refactored code using lib2to3.
 
@@ -1752,28 +1774,6 @@ def shorten_comment(line, newline, max_line_length):
         return line + newline
 
 
-def format_block_comments(source):
-    """Format block comments."""
-    if '#' not in source:
-        # Optimization.
-        return source
-
-    string_line_numbers = multiline_string_lines(source,
-                                                 include_docstrings=True)
-    fixed_lines = []
-    sio = StringIO(source)
-    for (line_number, line) in enumerate(sio.readlines(), start=1):
-        if (re.match(r'\s*#+\w+', line) and
-                line_number not in string_line_numbers):
-            fixed_lines.append(_get_indentation(line) +
-                               '# ' +
-                               line.lstrip().lstrip('#'))
-        else:
-            fixed_lines.append(line)
-
-    return ''.join(fixed_lines)
-
-
 def normalize_line_endings(lines):
     """Return fixed line endings.
 
@@ -1876,9 +1876,6 @@ def apply_global_fixes(source, options):
     which are dependent on pep8).
 
     """
-    if code_match('e26', select=options.select, ignore=options.ignore):
-        source = format_block_comments(source)
-
     for function in globals().values():
         if inspect.isfunction(function):
             arguments = inspect.getargspec(function)[0]

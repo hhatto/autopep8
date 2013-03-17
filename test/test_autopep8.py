@@ -209,11 +209,11 @@ def foo():
     def test_format_block_comments(self):
         self.assertEqual(
             '# abc',
-            autopep8.format_block_comments('#abc'))
+            autopep8.fix_e26('#abc'))
 
         self.assertEqual(
             '# abc',
-            autopep8.format_block_comments('####abc'))
+            autopep8.fix_e26('####abc'))
 
     def test_format_block_comments_with_multiple_lines(self):
         self.assertEqual(
@@ -227,7 +227,7 @@ def foo():
 #do not modify strings'''
 #
 """.lstrip(),
-            autopep8.format_block_comments("""
+            autopep8.fix_e26("""
 # abc
   #blah blah
     #four space indentation
@@ -241,7 +241,7 @@ def foo():
     def test_format_block_comments_should_not_corrupt_special_comments(self):
         self.assertEqual(
             '#: abc',
-            autopep8.format_block_comments('#: abc'))
+            autopep8.fix_e26('#: abc'))
 
     def test_fix_file(self):
         self.assertIn(
