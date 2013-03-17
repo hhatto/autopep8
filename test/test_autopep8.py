@@ -247,6 +247,10 @@ def foo():
             '#: abc',
             autopep8.fix_e26('#: abc'))
 
+        self.assertEqual(
+            '#!/bin/bash\n',
+            autopep8.fix_e26('#!/bin/bash\n'))
+
     def test_fix_file(self):
         self.assertIn(
             'import ',
