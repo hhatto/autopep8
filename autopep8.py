@@ -155,10 +155,8 @@ class FixPEP8(object):
         - e502
         - e701,e702
         - e711
-        - e721
         - w291,w293
         - w391
-        - w602,w603,w604
 
     """
 
@@ -828,10 +826,6 @@ class FixPEP8(object):
 
         self.source[line_index] = left + new_right
 
-    def fix_e721(self, _):
-        """Switch to use isinstance()."""
-        return self.refactor('idioms')
-
     def fix_w291(self, result):
         """Remove trailing whitespace."""
         fixed_line = self.source[result['line'] - 1].rstrip()
@@ -856,47 +850,54 @@ class FixPEP8(object):
         self.source = self.source[:original_length - blank_count]
         return range(1, 1 + original_length)
 
-    def refactor(self, fixer_name, ignore=None):
-        """Return refactored code using lib2to3.
 
-        Skip if ignore string is produced in the refactored code.
+def refactor(source, fixer_name, ignore=None):
+    """Return refactored code using lib2to3.
 
-        """
-        from lib2to3 import pgen2
-        try:
-            new_text = refactor_with_2to3(''.join(self.source),
-                                          fixer_name=fixer_name)
-        except (pgen2.parse.ParseError,
-                UnicodeDecodeError, UnicodeEncodeError):
-            return []
+    Skip if ignore string is produced in the refactored code.
 
-        original = unicode().join(self.source).strip()
-        if original == new_text.strip():
-            return []
-        else:
-            if ignore:
-                if ignore in new_text and ignore not in ''.join(self.source):
-                    return []
-            original_length = len(self.source)
-            self.source = [new_text]
-            return range(1, 1 + original_length)
+    """
+    from lib2to3 import pgen2
+    try:
+        new_text = refactor_with_2to3(source,
+                                      fixer_name=fixer_name)
+    except (pgen2.parse.ParseError,
+            UnicodeDecodeError,
+            UnicodeEncodeError,
+            IndentationError):
+        return source
 
-    def fix_w601(self, _):
-        """Replace the {}.has_key() form with 'in'."""
-        return self.refactor('has_key')
+    if ignore:
+        if ignore in new_text and ignore not in source:
+            return source
 
-    def fix_w602(self, _):
-        """Fix deprecated form of raising exception."""
-        return self.refactor('raise',
-                             ignore='with_traceback')
+    return new_text
 
-    def fix_w603(self, _):
-        """Replace <> with !=."""
-        return self.refactor('ne')
 
-    def fix_w604(self, _):
-        """Replace backticks with repr()."""
-        return self.refactor('repr')
+def fix_e721(source):
+    """Switch to use isinstance()."""
+    return refactor(source, 'idioms')
+
+
+def fix_w601(source):
+    """Replace the {}.has_key() form with 'in'."""
+    return refactor(source, 'has_key')
+
+
+def fix_w602(source):
+    """Fix deprecated form of raising exception."""
+    return refactor(source, 'raise',
+                    ignore='with_traceback')
+
+
+def fix_w603(source):
+    """Replace <> with !=."""
+    return refactor(source, 'ne')
+
+
+def fix_w604(source):
+    """Replace backticks with repr()."""
+    return refactor(source, 'repr')
 
 
 def find_newline(source):
@@ -1585,11 +1586,9 @@ def refactor_with_2to3(source_text, fixer_name):
     Return the refactored source code.
 
     """
-    from lib2to3 import refactor
+    from lib2to3.refactor import RefactoringTool
     fixers = ['lib2to3.fixes.fix_' + fixer_name]
-    tool = refactor.RefactoringTool(
-        fixer_names=fixers,
-        explicit=fixers)
+    tool = RefactoringTool(fixer_names=fixers, explicit=fixers)
     return unicode(tool.refactor_string(source_text, name=''))
 
 
@@ -1813,9 +1812,8 @@ def fix_lines(source_lines, options, filename=''):
     # Keep a history to break out of cycles.
     previous_hashes = set([hash(tmp_source)])
 
-    fixed_source = tmp_source
-    if code_match('e26', select=options.select, ignore=options.ignore):
-        fixed_source = format_block_comments(fixed_source)
+    # Apply global fixes only once (for efficiency).
+    fixed_source = apply_global_fixes(tmp_source, options)
 
     for _ in range(-1, options.pep8_passes):
         tmp_source = copy.copy(fixed_source)
@@ -1862,6 +1860,50 @@ def fix_file(filename, options=None, output=None):
             output.write(fixed_source)
         else:
             return fixed_source
+
+
+def apply_global_fixes(source, options):
+    """Run global fixes on source code.
+
+    Thsese are fixes that only need be done once (unlike those in FixPEP8,
+    which are dependent on pep8).
+
+    """
+    if code_match('e26', select=options.select, ignore=options.ignore):
+        source = format_block_comments(source)
+
+    for function in globals().values():
+        if inspect.isfunction(function):
+            arguments = inspect.getargspec(function)[0]
+            if arguments != ['source']:
+                continue
+
+            code = extract_code_from_function(function)
+
+            if code and code_match(code,
+                                   select=options.select,
+                                   ignore=options.ignore):
+                source = function(source)
+
+    return source
+
+
+def extract_code_from_function(function):
+    """Return code handled by function."""
+    name = function.__name__
+    if not name.startswith('fix_'):
+        return None
+
+    code = re.sub('^fix_', '', name)
+    if not code:
+        return None
+
+    try:
+        int(code[1:])
+    except ValueError:
+        return None
+
+    return code
 
 
 def parse_args(args):

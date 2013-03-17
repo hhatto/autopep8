@@ -941,7 +941,7 @@ if True:
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e191(self):
+    def test_w191(self):
         line = """
 while True:
 \tif True:
