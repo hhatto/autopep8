@@ -1964,8 +1964,8 @@ def parse_args(args):
                            'match CPU count if value is less than 1')
     parser.add_option('-p', '--pep8-passes', metavar='n',
                       default=100, type=int,
-                      help='maximum number of additional pep8 passes'
-                           ' (default: %default)')
+                      help='maximum number of additional pep8 passes '
+                           '(default: %default)')
     parser.add_option('-a', '--aggressive', action='count', default=0,
                       help='enable possibly unsafe changes (E711, E712); '
                            'multiple -a result in more aggressive changes')
@@ -1976,7 +1976,8 @@ def parse_args(args):
                       help='list codes for fixes; '
                            'used by --ignore and --select')
     parser.add_option('--ignore', metavar='errors', default='',
-                      help='do not fix these errors/warnings')
+                      help='do not fix these errors/warnings '
+                           '(default: {0})'.format(pep8.DEFAULT_IGNORE))
     parser.add_option('--select', metavar='errors', default='',
                       help='fix only these errors/warnings (e.g. E4,W)')
     parser.add_option('--max-line-length', metavar='n', default=79, type=int,
@@ -2016,11 +2017,12 @@ def parse_args(args):
 
     if options.ignore:
         options.ignore = options.ignore.split(',')
-    elif not options.select and not options.aggressive:
-        options.ignore = pep8.DEFAULT_IGNORE.split(',')
-    else:
-        # Enable everything if not selecting and not aggressive.
-        options.ignore = []
+    elif not options.select:
+        if options.aggressive:
+            # Enable everything by default if aggressive.
+            options.select = ['E', 'W']
+        else:
+            options.ignore = pep8.DEFAULT_IGNORE.split(',')
 
     if options.exclude:
         options.exclude = options.exclude.split(',')

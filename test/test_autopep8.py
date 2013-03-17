@@ -1193,25 +1193,31 @@ class Foo(object):
     def test_e241(self):
         line = "l = (1,  2)\n"
         fixed = "l = (1, 2)\n"
-        with autopep8_context(line, options=['--ignore=W']) as result:
+        with autopep8_context(line, options=['--select=E']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e241_should_be_enabled_by_aggressive(self):
+        line = "l = (1,  2)\n"
+        fixed = "l = (1, 2)\n"
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e241_double(self):
         line = "l = (1,   2)\n"
         fixed = "l = (1, 2)\n"
-        with autopep8_context(line, options=['--ignore=W']) as result:
+        with autopep8_context(line, options=['--select=E']) as result:
             self.assertEqual(fixed, result)
 
     def test_e242(self):
         line = "l = (1,\t2)\n"
         fixed = "l = (1, 2)\n"
-        with autopep8_context(line, options=['--ignore=W']) as result:
+        with autopep8_context(line, options=['--select=E']) as result:
             self.assertEqual(fixed, result)
 
     def test_e242_double(self):
         line = "l = (1,\t\t2)\n"
         fixed = "l = (1, 2)\n"
-        with autopep8_context(line, options=['--ignore=W']) as result:
+        with autopep8_context(line, options=['--select=E']) as result:
             self.assertEqual(fixed, result)
 
     def test_e251(self):
