@@ -22,7 +22,15 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""Automatically formats Python code to conform to the PEP 8 style guide."""
+"""Automatically formats Python code to conform to the PEP 8 style guide.
+
+Fixes that only need be done once can be added by adding a function of the form
+"fix_<code>(source)" to this module. It should return the fixed source code.
+
+Fixes that depend on pep8 should be added as method to FixPEP8. See the class
+documentation for more information.
+
+"""
 
 from __future__ import print_function
 from __future__ import division
@@ -1940,7 +1948,7 @@ def parse_args(args):
                                 '[filename [filename ...]]'
                                 '\nUse filename \'-\'  for stdin.',
                           version='autopep8: %s' % __version__,
-                          description=__doc__,
+                          description=__doc__.split('\n')[0],
                           prog='autopep8')
     parser.add_option('-v', '--verbose', action='count', dest='verbose',
                       default=0,
