@@ -53,10 +53,7 @@ from optparse import OptionParser
 import difflib
 import tempfile
 
-try:
-    import pep8
-except ImportError:
-    pep8 = None
+import pep8
 
 
 try:
@@ -2223,10 +2220,6 @@ def fix_multiple_files(filenames, options, output=None):
 
 def main():
     """Tool main."""
-    if not pep8:
-        print('pep8 >= 1.3.2 required', file=sys.stderr)
-        return 1
-
     try:
         options, args = parse_args(sys.argv[1:])
 
