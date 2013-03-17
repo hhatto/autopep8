@@ -2026,8 +2026,8 @@ def supported_fixes():
                           getattr(instance, attribute).__doc__))
 
     for (code, function) in global_fixes():
-            yield (code.upper() + (4 - len(code)) * ' ',
-                   re.sub(r'\s+', ' ', function.__doc__))
+        yield (code.upper() + (4 - len(code)) * ' ',
+               re.sub(r'\s+', ' ', function.__doc__))
 
 
 def line_shortening_rank(candidate, newline, indent_word):
