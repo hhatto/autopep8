@@ -1141,7 +1141,7 @@ def normalize_multiline(line, newline):
 
     if line.startswith('def ') and line.rstrip().endswith(':'):
         # Do not allow ':' to be alone. That is invalid.
-        split_line = line.split(newline)
+        split_line = [item.strip() for item in line.split(newline)]
         if ':' not in split_line and 'def' not in split_line:
             return line[len('def'):].strip().rstrip(':')
 
