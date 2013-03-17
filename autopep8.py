@@ -870,7 +870,7 @@ def fix_e26(source):
 
             # Normalize beginning if not a shebang.
             if len(line) > 1:
-                # Leave this like '#    ' alone.
+                # Leave multiple spaces like '#    ' alone.
                 if line.count('#') > 1 or line[1].isalnum():
                     line = '# ' + line.lstrip('# \t')
 
