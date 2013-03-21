@@ -79,6 +79,10 @@ SHORTEN_OPERATOR_GROUPS = frozenset([
 ])
 
 
+DEFAULT_IGNORE = ','.join([pep8.DEFAULT_IGNORE,
+                           'W6'])
+
+
 def open_with_encoding(filename, encoding=None, mode='r'):
     """Return opened file with a specific encoding."""
     if not encoding:
@@ -1977,7 +1981,7 @@ def parse_args(args):
                            'used by --ignore and --select')
     parser.add_option('--ignore', metavar='errors', default='',
                       help='do not fix these errors/warnings '
-                           '(default: {0})'.format(pep8.DEFAULT_IGNORE))
+                           '(default: {0})'.format(DEFAULT_IGNORE))
     parser.add_option('--select', metavar='errors', default='',
                       help='fix only these errors/warnings (e.g. E4,W)')
     parser.add_option('--max-line-length', metavar='n', default=79, type=int,
@@ -2022,7 +2026,7 @@ def parse_args(args):
             # Enable everything by default if aggressive.
             options.select = ['E', 'W']
         else:
-            options.ignore = pep8.DEFAULT_IGNORE.split(',')
+            options.ignore = DEFAULT_IGNORE.split(',')
 
     if options.exclude:
         options.exclude = options.exclude.split(',')
