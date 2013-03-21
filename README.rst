@@ -196,8 +196,9 @@ autopep8 also fixes some issues not found by pep8_.
 - Format block comments. (This is triggered if ``E26`` is enabled.)
 - Normalize files with mixed line endings.
 - Put a blank line between a class declaration and its first method
-  declaration.
-- Remove blank lines between a function declaration and its docstring.
+  declaration. (Enabled with ``E301``.)
+- Remove blank lines between a function declaration and its docstring. (Enabled
+  with ``E303``.)
 
 
 More advanced usage
