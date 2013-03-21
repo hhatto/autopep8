@@ -45,7 +45,9 @@ def main():
     new_readme = '\n\n'.join([
         top,
         BEFORE_KEY, before,
-        AFTER_KEY, indent(autopep8.fix_string(textwrap.dedent(before))),
+        AFTER_KEY, indent(autopep8.fix_string(
+            textwrap.dedent(before),
+            options=autopep8.parse_args(['', '--aggressive'])[0])),
         bottom])
 
     with open(README_PATH, 'w') as output_file:

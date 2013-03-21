@@ -38,7 +38,7 @@ Usage
 -----
 To modify a file in place::
 
-    $ autopep8 -i <filename>
+    $ autopep8 --in-place --aggressive <filename>
 
 Before running autopep8.
 
