@@ -2226,6 +2226,25 @@ def fix_multiple_files(filenames, options, output=None):
             _fix_file((name, options, output))
 
 
+def is_python_file(filename):
+    """Return True if filename is Python file."""
+    if filename.endswith('.py'):
+        return True
+
+    try:
+        with open_with_encoding(filename) as f:
+            first_line = f.readlines(1)[0]
+    except (IOError, IndexError):
+        return False
+
+    if len(first_line) > 200:
+        # This is probably not even a text file.
+        return False
+
+    if first_line.startswith('#!') and 'python' in first_line:
+        return True
+
+
 def main():
     """Tool main."""
     try:

@@ -350,6 +350,18 @@ import sys
 sys.maxint
 """))
 
+    def test_is_python_file(self):
+        self.assertTrue(autopep8.is_python_file(__file__))
+
+        with temporary_file_context('#!/usr/bin/env python') as filename:
+            self.assertTrue(autopep8.is_python_file(filename))
+
+        with temporary_file_context('#!/usr/bin/python') as filename:
+            self.assertTrue(autopep8.is_python_file(filename))
+
+        with temporary_file_context('#!/usr/bin/python3') as filename:
+            self.assertTrue(autopep8.is_python_file(filename))
+
 
 class SystemTests(unittest.TestCase):
 
