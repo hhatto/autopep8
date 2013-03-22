@@ -155,7 +155,7 @@ class FixPEP8(object):
 
     [fixed method list]
         - e111
-        - e121,e122,e123,e124,e125,e126,e127,e128
+        - e121,e122,e123,e124,e125,e126,e127,e128,e129
         - e201,e202,e203
         - e211
         - e221,e222,e223,e224,e225
@@ -188,6 +188,7 @@ class FixPEP8(object):
         # method definition
         self.fix_e111 = self.fix_e101
         self.fix_e128 = self.fix_e127
+        self.fix_e129 = self.fix_e125
         self.fix_e202 = self.fix_e201
         self.fix_e203 = self.fix_e201
         self.fix_e211 = self.fix_e201
