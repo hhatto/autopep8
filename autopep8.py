@@ -70,6 +70,9 @@ LF = '\n'
 CRLF = '\r\n'
 
 
+PYTHON_SHEBANG_REGEX = re.compile(r'^#!.*\bpython[23]?\b')
+
+
 # For generating line shortening candidates.
 SHORTEN_OPERATOR_GROUPS = frozenset([
     frozenset([',']),
@@ -2171,15 +2174,15 @@ def temporary_file():
 
 def match_file(filename, exclude):
     """Return True if file is okay for modifying/recursing."""
-    if not filename.endswith('.py'):
-        return False
-
     if filename.startswith('.'):
         return False
 
     for pattern in exclude:
         if fnmatch.fnmatch(filename, pattern):
             return False
+
+    if not is_python_file(filename):
+        return False
 
     return True
 
@@ -2241,8 +2244,10 @@ def is_python_file(filename):
         # This is probably not even a text file.
         return False
 
-    if first_line.startswith('#!') and 'python' in first_line:
-        return True
+    if not PYTHON_SHEBANG_REGEX.match(first_line):
+        return False
+
+    return True
 
 
 def main():

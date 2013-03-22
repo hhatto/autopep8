@@ -362,6 +362,14 @@ sys.maxint
         with temporary_file_context('#!/usr/bin/python3') as filename:
             self.assertTrue(autopep8.is_python_file(filename))
 
+        with temporary_file_context('#!/usr/bin/pythonic') as filename:
+            self.assertFalse(autopep8.is_python_file(filename))
+
+        with temporary_file_context('###!/usr/bin/python') as filename:
+            self.assertFalse(autopep8.is_python_file(filename))
+
+        self.assertFalse(autopep8.is_python_file(os.devnull))
+
 
 class SystemTests(unittest.TestCase):
 
