@@ -369,6 +369,7 @@ sys.maxint
             self.assertFalse(autopep8.is_python_file(filename))
 
         self.assertFalse(autopep8.is_python_file(os.devnull))
+        self.assertFalse(autopep8.is_python_file('/bin/bash'))
 
 
 class SystemTests(unittest.TestCase):
