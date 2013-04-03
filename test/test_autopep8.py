@@ -351,8 +351,8 @@ sys.maxint
 """))
 
     def test_is_python_file(self):
-        if __file__ != 'nosetests':
-            self.assertTrue(autopep8.is_python_file(__file__))
+        self.assertTrue(autopep8.is_python_file(
+            os.path.join(ROOT_DIR, 'autopep8.py')))
 
         with temporary_file_context('#!/usr/bin/env python') as filename:
             self.assertTrue(autopep8.is_python_file(filename))
