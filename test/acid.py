@@ -6,6 +6,7 @@ import difflib
 import dis
 import os
 import re
+import shlex
 import sys
 import subprocess
 import tempfile
@@ -36,7 +37,7 @@ def colored(text, color):
     return color + text + END
 
 
-def run(filename, fast_check=False, passes=2000, max_line_length=79,
+def run(filename, command, fast_check=False, passes=2000, max_line_length=79,
         ignore='', check_ignore='', verbose=False,
         comparison_function=None,
         aggressive=False):
@@ -45,8 +46,7 @@ def run(filename, fast_check=False, passes=2000, max_line_length=79,
     Return True on success.
 
     """
-    autopep8_bin = os.path.join(ROOT_PATH, 'autopep8.py')
-    command = ([autopep8_bin] + (['--verbose'] if verbose else []) +
+    command = (shlex.split(command) + (['--verbose'] if verbose else []) +
                ['--pep8-passes={0}'.format(passes),
                 '--max-line-length={0}'.format(max_line_length),
                 '--ignore=' + ignore, filename] +
@@ -234,6 +234,9 @@ def process_args():
 
     import optparse
     parser = optparse.OptionParser()
+    parser.add_option('--command',
+                      default=os.path.join(ROOT_PATH, 'autopep8.py'),
+                      help='autopep8 command (default: %default)')
     parser.add_option('--fast-check', action='store_true',
                       help='ignore incomplete PEP8 fixes and broken files')
     parser.add_option('--ignore',
@@ -346,6 +349,7 @@ def check(opts, args):
                 sys.stderr.write(colored(verbose_message + '\n', YELLOW))
 
                 if not run(os.path.join(name),
+                           command=opts.command,
                            fast_check=opts.fast_check,
                            passes=opts.pep8_passes,
                            max_line_length=opts.max_line_length,
