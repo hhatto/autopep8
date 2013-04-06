@@ -37,7 +37,6 @@ coverage:
 	@${COVERAGE} combine
 	@${COVERAGE} report --show-missing
 	@${COVERAGE} xml --include=autopep8.py
-	@rm .coverage
 
 open_coverage: coverage
 	@${COVERAGE} html
