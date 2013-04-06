@@ -25,6 +25,7 @@ import autopep8
 
 if 'AUTOPEP8_COVERAGE' in os.environ and int(os.environ['AUTOPEP8_COVERAGE']):
     AUTOPEP8_CMD_TUPLE = ('coverage', 'run', '--branch', '--parallel',
+                          '--omit=*/virtualenv/*',
                           os.path.join(ROOT_DIR, 'autopep8.py'),)
 else:
     # We need to specify the executable to make sure the correct Python
