@@ -33,8 +33,7 @@ script:
 
     - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then pep8 autopep8.py; fi
 
-    - coverage run --omit='*/virtualenv/*' --branch --parallel-mode test/test_autopep8.py
-    - coverage run --omit='*/virtualenv/*' --branch --parallel-mode autopep8.py -vvvaad test/example.py
+    - AUTOPEP8_COVERAGE=1 coverage run --omit='*/virtualenv/*' --branch --parallel-mode test/test_autopep8.py
     - coverage combine
     - coverage report --show-missing
 
