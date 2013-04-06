@@ -2663,13 +2663,23 @@ class CommandLineTests(unittest.TestCase):
             import shutil
             shutil.rmtree(temp_directory)
 
-    def test_only_recursive(self):
+    def test_invalid_option_combinations(self):
         line = "'abc'  \n"
         with temporary_file_context(line) as filename:
-            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename, '--recursive'],
-                      stderr=PIPE)
-            result = p.communicate()[1].decode('utf-8')
-        self.assertIn('must be used with --in-place or --diff', result)
+            for options in [['--recursive', filename],  # without --diff
+                            ['--jobs=0', filename],
+                            ['--exclude=foo', filename],  # without --recursive
+                            ['--max-line-length=0', filename],
+                            [],  # no argument
+                            ['-', '--in-place'],
+                            ['-', '--recursive'],
+                            ['-', filename],
+                            ]:
+                p = Popen(list(AUTOPEP8_CMD_TUPLE) + options,
+                          stderr=PIPE)
+                result = p.communicate()[1].decode('utf-8')
+                self.assertNotEqual(0, p.returncode, msg=str(options))
+                self.assertTrue(len(result))
 
     def test_list_fixes(self):
         with autopep8_subprocess('', options=['--list-fixes']) as result:
@@ -2680,14 +2690,6 @@ class CommandLineTests(unittest.TestCase):
         with temporary_file_context(line) as filename:
             pep8obj = autopep8.FixPEP8(filename, None)
         self.assertEqual("".join(pep8obj.source), line)
-
-    def test_no_argument(self):
-        with disable_stderr():
-            try:
-                autopep8.parse_args([])
-                self.assertEqual("not work", "test has failed!!")
-            except SystemExit as e:
-                self.assertEqual(e.code, 2)
 
     def test_inplace_with_multi_files(self):
         with disable_stderr():
