@@ -20,7 +20,7 @@ before_script:
 
 script:
     - python test/test_autopep8.py
-    - python test/acid.py test/example.py
+    - python test/acid.py --aggressive test/example.py
 
     - if [ "$TRAVIS_PYTHON_VERSION" == "3.3" ]; then python -m doctest -v README.rst; fi
 
