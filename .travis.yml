@@ -34,6 +34,7 @@ script:
     - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then pep8 autopep8.py; fi
 
     - coverage run --omit='*/virtualenv/*' test/test_autopep8.py
+    - coverage report --show-missing
 
 after_script:
     - coveralls
