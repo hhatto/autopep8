@@ -32,7 +32,7 @@ test_unit:
 	${PYTHON} test/test_autopep8.py
 
 coverage:
-	@rm -rf htmlcov
+	@coverage erase
 	@AUTOPEP8_COVERAGE=1 ${COVERAGE} run --branch --parallel-mode --omit='*/site-packages/*' test/test_autopep8.py
 	@${COVERAGE} combine
 	@${COVERAGE} report --show-missing
