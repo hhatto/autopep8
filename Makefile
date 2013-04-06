@@ -33,15 +33,14 @@ test_unit:
 
 coverage:
 	@rm -rf htmlcov
-	@AUTOPEP8_COVERAGE=1 ${COVERAGE} run --branch --parallel test/test_autopep8.py
+	@AUTOPEP8_COVERAGE=1 ${COVERAGE} run --branch --parallel-mode --omit='*/site-packages/*' test/test_autopep8.py
 	@${COVERAGE} combine
-	@${COVERAGE} report
-	@${COVERAGE} html
+	@${COVERAGE} report --show-missing
 	@${COVERAGE} xml --include=autopep8.py
-	@echo 'Coverage report: htmlcov/index.html'
 	@rm .coverage
 
 open_coverage: coverage
+	@${COVERAGE} html
 	@python -m webbrowser -n "file://${PWD}/htmlcov/index.html"
 
 readme:

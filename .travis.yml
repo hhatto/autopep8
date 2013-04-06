@@ -33,9 +33,8 @@ script:
 
     - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then pep8 autopep8.py; fi
 
-    - AUTOPEP8_COVERAGE=1 coverage run --omit='*/virtualenv/*' --branch --parallel-mode test/test_autopep8.py
-    - coverage combine
-    - coverage report --show-missing
+    # pypy is too slow.
+    - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then make coverage; fi
 
 after_script:
     - coveralls
