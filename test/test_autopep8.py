@@ -380,6 +380,11 @@ sys.maxint
 
         self.assertFalse(autopep8.match_file(os.devnull, exclude=[]))
 
+        with temporary_file_context('', suffix='.py', prefix='') as filename:
+            self.assertTrue(autopep8.match_file(filename, exclude=[]),
+                             msg=filename)
+
+
 
 class SystemTests(unittest.TestCase):
 
