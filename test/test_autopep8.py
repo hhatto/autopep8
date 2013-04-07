@@ -2525,6 +2525,12 @@ class CommandLineTests(unittest.TestCase):
         with autopep8_subprocess('', ['--diff']) as result:
             self.assertEqual('\n'.join(result.split('\n')[3:]), '')
 
+    def test_diff_with_nonexistent_file(self):
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['--diff', 'non_existent_file'],
+                  stdout=PIPE, stderr=PIPE)
+        error = p.communicate()[1].decode('utf-8')
+        self.assertIn('non_existent_file', error)
+
     def test_pep8_passes(self):
         line = "'abc'  \n"
         fixed = "'abc'\n"
@@ -2646,6 +2652,25 @@ class CommandLineTests(unittest.TestCase):
             self.assertEqual(
                 '-123  \n+123',
                 '\n'.join(result.split('\n')[8:10]))
+        finally:
+            import shutil
+            shutil.rmtree(temp_directory)
+
+    def test_recursive_should_ignore_hidden(self):
+        import tempfile
+        temp_directory = tempfile.mkdtemp(dir='.')
+        temp_subdirectory = tempfile.mkdtemp(prefix='.', dir=temp_directory)
+        try:
+            with open(os.path.join(temp_subdirectory, 'a.py'), 'w') as output:
+                output.write("'abc'  \n")
+
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [temp_directory, '--recursive', '--diff'],
+                      stdout=PIPE)
+            result = p.communicate()[0].decode('utf-8')
+
+            self.assertEqual(0, p.returncode)
+            self.assertEqual('', result)
         finally:
             import shutil
             shutil.rmtree(temp_directory)
