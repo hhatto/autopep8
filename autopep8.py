@@ -967,15 +967,13 @@ def find_newline(source):
             cr += 1
         elif s.endswith(LF):
             lf += 1
-    _max = max(cr, crlf, lf)
+    _max = max(lf, cr, crlf)
     if _max == lf:
         return LF
     elif _max == crlf:
         return CRLF
-    elif _max == cr:
-        return CR
     else:
-        return LF
+        return CR
 
 
 def _get_indentword(source):
