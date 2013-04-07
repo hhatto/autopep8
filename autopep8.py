@@ -2175,7 +2175,7 @@ def temporary_file():
 
 def match_file(filename, exclude):
     """Return True if file is okay for modifying/recursing."""
-    if filename.startswith('.'):
+    if os.path.basename(filename).startswith('.'):
         return False
 
     for pattern in exclude:

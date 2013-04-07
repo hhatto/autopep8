@@ -373,6 +373,13 @@ sys.maxint
         self.assertFalse(autopep8.is_python_file(os.devnull))
         self.assertFalse(autopep8.is_python_file('/bin/bash'))
 
+    def test_match_file(self):
+        with temporary_file_context('', suffix='.py', prefix='.') as filename:
+            self.assertFalse(autopep8.match_file(filename, exclude=[]),
+                             msg=filename)
+
+        self.assertFalse(autopep8.match_file(os.devnull, exclude=[]))
+
 
 class SystemTests(unittest.TestCase):
 
@@ -2753,8 +2760,8 @@ def autopep8_subprocess(line, options=None):
 
 
 @contextlib.contextmanager
-def temporary_file_context(text):
-    tempfile = mkstemp()
+def temporary_file_context(text, suffix='', prefix=''):
+    tempfile = mkstemp(suffix=suffix, prefix=prefix)
     os.close(tempfile[0])
     with open(tempfile[1], 'w') as temp_file:
         temp_file.write(text)
