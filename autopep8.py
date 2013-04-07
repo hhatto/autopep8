@@ -2161,9 +2161,6 @@ class LineEndingWrapper(object):
     def write(self, s):
         self.__output.write(s.replace('\r\n', '\n').replace('\r', '\n'))
 
-    def __getattr__(self, key):
-        return getattr(self.__output, key)
-
 
 def temporary_file():
     """Return temporary file."""
