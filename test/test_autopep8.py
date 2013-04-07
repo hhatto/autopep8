@@ -1453,6 +1453,12 @@ def foo():
         with autopep8_context(line, options=['--select=E401']) as result:
             self.assertEqual(line, result)
 
+    def test_e401_with_escaped_newline_case(self):
+        line = 'import foo, \\\n    bar\n'
+        fixed = 'import foo\nimport \\\n    bar\n'
+        with autopep8_context(line, options=['--select=E401']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_basic(self):
         line = """
 
