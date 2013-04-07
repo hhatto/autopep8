@@ -348,9 +348,9 @@ class FixPEP8(object):
         This is done by adding or removing from its initial indent only.
 
         """
-        if not logical:
-            return []
+        assert logical
         ls, _, original = logical
+
         try:
             rewrapper = Wrapper(original)
         except (tokenize.TokenError, IndentationError):
@@ -406,8 +406,7 @@ class FixPEP8(object):
     def fix_e123(self, result, logical):
         """Align closing bracket to match opening bracket."""
         # Fix by deleting whitespace to the correct level.
-        if not logical:
-            return []
+        assert logical
         logical_lines = logical[2]
         line_index = result['line'] - 1
         original_line = self.source[line_index]
@@ -440,8 +439,7 @@ class FixPEP8(object):
     def fix_e126(self, result, logical):
         """Fix over-indented hanging indentation."""
         # fix by deleting whitespace to the left
-        if not logical:
-            return []
+        assert logical
         logical_lines = logical[2]
         line_index = result['line'] - 1
         original = self.source[line_index]
@@ -470,8 +468,7 @@ class FixPEP8(object):
         This includes over (E127) and under (E128) indented lines.
 
         """
-        if not logical:
-            return []
+        assert logical
         logical_lines = logical[2]
         line_index = result['line'] - 1
         original = self.source[line_index]
