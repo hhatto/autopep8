@@ -382,8 +382,7 @@ sys.maxint
 
         with temporary_file_context('', suffix='.py', prefix='') as filename:
             self.assertTrue(autopep8.match_file(filename, exclude=[]),
-                             msg=filename)
-
+                            msg=filename)
 
 
 class SystemTests(unittest.TestCase):
