@@ -31,7 +31,8 @@ else:
     # We need to specify the executable to make sure the correct Python
     # interpreter gets used.
     AUTOPEP8_CMD_TUPLE = (sys.executable,
-                          os.path.join(ROOT_DIR, 'autopep8.py'),)
+                          os.path.join(ROOT_DIR,
+                                       'autopep8.py'),)  # pragma: no cover
 
 
 class UnitTests(unittest.TestCase):
@@ -414,15 +415,15 @@ sys.maxint
 
     def test_extract_code_from_function(self):
         def fix_e123():
-            pass
+            pass  # pragma: no cover
         self.assertEqual('e123', autopep8.extract_code_from_function(fix_e123))
 
         def foo():
-            pass
+            pass  # pragma: no cover
         self.assertEqual(None, autopep8.extract_code_from_function(foo))
 
         def fix_foo():
-            pass
+            pass  # pragma: no cover
         self.assertEqual(None, autopep8.extract_code_from_function(fix_foo))
 
 
@@ -2775,12 +2776,14 @@ class CommandLineTests(unittest.TestCase):
         self.assertEqual("".join(pep8obj.source), line)
 
     def test_inplace_with_multi_files(self):
+        exception = None
         with disable_stderr():
             try:
                 autopep8.parse_args(['test.py', 'dummy.py'])
-                self.assertEqual("not work", "test has failed!!")
             except SystemExit as e:
-                self.assertEqual(e.code, 2)
+                exception = e
+        self.assertTrue(exception)
+        self.assertEqual(exception.code, 2)
 
     def test_standard_out_should_use_native_line_ending(self):
         line = '1\r\n2\r\n3\r\n'
@@ -2825,10 +2828,7 @@ def autopep8_context(line, options=None):
 
 
 @contextlib.contextmanager
-def autopep8_subprocess(line, options=None):
-    if not options:
-        options = []
-
+def autopep8_subprocess(line, options):
     with temporary_file_context(line) as filename:
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename] + options,
                   stdout=PIPE)
