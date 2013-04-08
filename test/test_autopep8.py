@@ -403,6 +403,19 @@ sys.maxint
             autopep8.line_shortening_rank('x\n',
                                           newline='\n', indent_word='    '))
 
+    def test_extract_code_from_function(self):
+        def fix_e123():
+            pass
+        self.assertEqual('e123', autopep8.extract_code_from_function(fix_e123))
+
+        def foo():
+            pass
+        self.assertEqual(None, autopep8.extract_code_from_function(foo))
+
+        def fix_foo():
+            pass
+        self.assertEqual(None, autopep8.extract_code_from_function(fix_foo))
+
 
 class SystemTests(unittest.TestCase):
 
