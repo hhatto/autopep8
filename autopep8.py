@@ -2070,7 +2070,7 @@ def line_shortening_rank(candidate, newline, indent_word):
 
     """
     rank = 0
-    if candidate:
+    if candidate.strip():
         lines = candidate.split(newline)
 
         offset = 0

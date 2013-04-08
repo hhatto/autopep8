@@ -384,6 +384,25 @@ sys.maxint
             self.assertTrue(autopep8.match_file(filename, exclude=[]),
                             msg=filename)
 
+    def test_line_shortening_rank(self):
+        self.assertGreater(
+            autopep8.line_shortening_rank('(1\n+1)\n',
+                                          newline='\n', indent_word='    '),
+            autopep8.line_shortening_rank('(1+\n1)\n',
+                                          newline='\n', indent_word='    '))
+
+        self.assertGreaterEqual(
+            autopep8.line_shortening_rank('(1+\n1)\n',
+                                          newline='\n', indent_word='    '),
+            autopep8.line_shortening_rank('(1+1)\n',
+                                          newline='\n', indent_word='    '))
+
+        self.assertGreater(
+            autopep8.line_shortening_rank('\n',
+                                          newline='\n', indent_word='    '),
+            autopep8.line_shortening_rank('x\n',
+                                          newline='\n', indent_word='    '))
+
 
 class SystemTests(unittest.TestCase):
 
