@@ -1882,7 +1882,7 @@ def fix_file(filename, options=None, output=None):
         if output:
             output.write(diff)
         else:
-            return output
+            return diff
     elif options.in_place:
         fp = open_with_encoding(filename, encoding=encoding,
                                 mode='w')

@@ -258,6 +258,15 @@ def foo():
             autopep8.fix_file(
                 filename=os.path.join(ROOT_DIR, 'test', 'example.py')))
 
+    def test_fix_file_with_diff(self):
+        filename = os.path.join(ROOT_DIR, 'test', 'example.py')
+
+        self.assertIn(
+            '@@',
+            autopep8.fix_file(
+                filename=filename,
+                options=autopep8.parse_args(['--diff', filename])[0]))
+
     def test_fix_lines(self):
         self.assertEqual(
             'print(123)\n',
