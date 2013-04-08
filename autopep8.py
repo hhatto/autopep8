@@ -1927,6 +1927,9 @@ def apply_global_fixes(source, options):
 
 def extract_code_from_function(function):
     """Return code handled by function."""
+    if not function.__name__.startswith('fix_'):
+        return None
+
     code = re.sub('^fix_', '', function.__name__)
     if not code:
         return None
