@@ -430,6 +430,10 @@ sys.maxint
             pass  # pragma: no cover
         self.assertEqual(None, autopep8.extract_code_from_function(e123))
 
+        def fix_():
+            pass  # pragma: no cover
+        self.assertEqual(None, autopep8.extract_code_from_function(fix_))
+
 
 class SystemTests(unittest.TestCase):
 
