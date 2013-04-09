@@ -365,14 +365,7 @@ class FixPEP8(object):
             valid = valid_indents[row]
             got = rewrapper.rel_indent[row]
         else:
-            # Line number from pep8 isn't a continuation line. Instead,
-            # compare our own function's result, look for the first mismatch,
-            # and just hope that we take fewer than 100 iterations to finish.
-            for row in range(0, len(original), 1):
-                valid = valid_indents[row]
-                got = rewrapper.rel_indent[row]
-                if valid != got:
-                    break
+            return []
         line = ls[0] + row
         # always pick the expected indent, for now.
         indent_to = valid[0]
