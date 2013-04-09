@@ -1782,7 +1782,8 @@ def shorten_comment(line, newline, max_line_length):
                                     initial_indent=indentation,
                                     subsequent_indent=indentation,
                                     width=max_line_length,
-                                    break_long_words=False)
+                                    break_long_words=False,
+                                    break_on_hyphens=False)
         return newline.join(split_lines) + newline
     else:
         return line + newline
