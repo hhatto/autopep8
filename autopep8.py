@@ -342,7 +342,7 @@ class FixPEP8(object):
         original = self.source[ls[0]:le[0] + 1]
         return ls, le, original
 
-    def _fix_reindent(self, result, logical, fix_distinct=False):
+    def _fix_reindent(self, result, logical):
         """Fix a badly indented line.
 
         This is done by adding or removing from its initial indent only.
@@ -369,11 +369,6 @@ class FixPEP8(object):
         line = ls[0] + row
         # always pick the expected indent, for now.
         indent_to = valid[0]
-        if fix_distinct and indent_to == 4:
-            if len(valid) == 1:
-                return []
-            else:
-                indent_to = valid[1]
 
         if got != indent_to:
             orig_line = self.source[line]
@@ -420,7 +415,7 @@ class FixPEP8(object):
     def fix_e125(self, result, logical):
         """Indent to distinguish line from next logical line."""
         # Fix by indenting the line in error to the next stop.
-        modified_lines = self._fix_reindent(result, logical, fix_distinct=True)
+        modified_lines = self._fix_reindent(result, logical)
         if modified_lines:
             return modified_lines
         else:
