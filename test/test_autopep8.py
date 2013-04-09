@@ -2611,10 +2611,10 @@ class CommandLineTests(unittest.TestCase):
         line = '+'.join(100 * ['323424234234'])
         with temporary_file_context(line) as filename:
             p = Popen(list(AUTOPEP8_CMD_TUPLE) +
-                      [filename, '-vvv', '--diff'],
+                      [filename, '-vvvv', '--diff'],
                       stdout=PIPE, stderr=PIPE)
             verbose_error = p.communicate()[1].decode('utf-8')
-        self.assertIn('---', verbose_error)
+        self.assertIn('------------', verbose_error)
 
     def test_in_place(self):
         line = "'abc'  \n"
