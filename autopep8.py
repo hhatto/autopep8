@@ -351,10 +351,7 @@ class FixPEP8(object):
         assert logical
         ls, _, original = logical
 
-        try:
-            rewrapper = Wrapper(original)
-        except (tokenize.TokenError, IndentationError):
-            return []
+        rewrapper = Wrapper(original)
         valid_indents = rewrapper.pep8_expected()
         if not rewrapper.rel_indent:
             return []
