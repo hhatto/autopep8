@@ -183,8 +183,7 @@ class FixPEP8(object):
         self.newline = find_newline(self.source)
         self.options = options
         self.indent_word = _get_indentword(unicode().join(self.source))
-        self.logical_start = None
-        self.logical_end = None
+
         # method definition
         self.fix_e111 = self.fix_e101
         self.fix_e128 = self.fix_e127
@@ -285,10 +284,8 @@ class FixPEP8(object):
         else:
             return []
 
-    def find_logical(self, force=False):
+    def _find_logical(self):
         # make a variable which is the index of all the starts of lines
-        if not force and self.logical_start is not None:
-            return
         logical_start = []
         logical_end = []
         last_newline = True
@@ -313,8 +310,7 @@ class FixPEP8(object):
                     parens += 1
                 elif t[1] in '}])':
                     parens -= 1
-        self.logical_start = logical_start
-        self.logical_end = logical_end
+        return (logical_start, logical_end)
 
     def _get_logical(self, result):
         """Return the logical line corresponding to the result.
@@ -323,7 +319,7 @@ class FixPEP8(object):
 
         """
         try:
-            self.find_logical()
+            (logical_start, logical_end) = self._find_logical()
         except (IndentationError, tokenize.TokenError):
             return None
 
@@ -331,11 +327,11 @@ class FixPEP8(object):
         col = result['column'] - 1
         ls = None
         le = None
-        for i in range(0, len(self.logical_start), 1):
-            x = self.logical_end[i]
+        for i in range(0, len(logical_start), 1):
+            x = logical_end[i]
             if x[0] > row or (x[0] == row and x[1] > col):
                 le = x
-                ls = self.logical_start[i]
+                ls = logical_start[i]
                 break
         if ls is None:
             return None
