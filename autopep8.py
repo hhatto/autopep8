@@ -2257,7 +2257,7 @@ def main():
 
         fix_multiple_files(filenames, options, output)
     except KeyboardInterrupt:
-        return 1
+        return 1  # pragma: no cover
 
 
 if __name__ == '__main__':
