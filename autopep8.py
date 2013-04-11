@@ -1451,16 +1451,15 @@ class Wrapper(object):
         # What follows is an adjusted version of
         # pep8.py:continuation_line_indentation. All of the comments have been
         # stripped and the 'yield' statements replaced with 'pass'.
-        tokens = self.tokens
-        if not tokens:
+        if not self.tokens:
             return
 
-        first_row = tokens[0][2][0]
-        nrows = 1 + tokens[-1][2][0] - first_row
+        first_row = self.tokens[0][2][0]
+        nrows = 1 + self.tokens[-1][2][0] - first_row
 
         # here are the return values
         valid_indents = [list()] * nrows
-        indent_level = tokens[0][2][1]
+        indent_level = self.tokens[0][2][1]
         valid_indents[0].append(indent_level)
 
         if nrows == 1:
