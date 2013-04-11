@@ -10,7 +10,7 @@ python:
 install:
     - if [ "$TRAVIS_PYTHON_VERSION" == "2.6" ]; then pip --quiet install unittest2; fi
     - python setup.py --quiet install
-    - pip install --quiet coveralls
+    - pip install --quiet coverage
 
 before_script:
     # This is needed for Python multiprocessing.
@@ -29,5 +29,6 @@ script:
     # pypy is too slow.
     - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then make coverage; fi
 
-after_script:
+after_success:
+    - pip install --quiet coveralls
     - coveralls
