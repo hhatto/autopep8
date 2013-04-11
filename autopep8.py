@@ -712,8 +712,7 @@ class FixPEP8(object):
                   file=sys.stderr)
 
         for _candidate in candidates:
-            if _candidate is None:
-                continue
+            assert _candidate is not None
 
             if _candidate == target:
                 continue
