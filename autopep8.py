@@ -714,9 +714,6 @@ class FixPEP8(object):
         for _candidate in candidates:
             assert _candidate is not None
 
-            if _candidate == target:
-                continue
-
             if (get_longest_length(_candidate, self.newline) >=
                     get_longest_length(target, self.newline)):
                 continue
