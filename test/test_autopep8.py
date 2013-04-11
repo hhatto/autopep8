@@ -961,6 +961,20 @@ if True:
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e123_with_escaped_newline(self):
+        line = r"""
+x = \
+    (
+)
+"""
+        fixed = r"""
+x = \
+    (
+    )
+"""
+        with autopep8_context(line, options=['--select=E12']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e125(self):
         line = """
 for k, v in sys.modules.items():
