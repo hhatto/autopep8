@@ -441,6 +441,26 @@ sys.maxint
             pass  # pragma: no cover
         self.assertEqual(None, autopep8.extract_code_from_function(fix_))
 
+    def test_reindenter(self):
+        reindenter = autopep8.Reindenter(['if True:\n', '  pass\n'],
+                                         '\n')
+
+        self.assertEqual(set([1, 2]), reindenter.run())
+
+        self.assertEqual(['if True:\n', '    pass\n'],
+                         reindenter.fixed_lines())
+
+    def test_reindenter_with_good_input(self):
+        lines = ['if True:\n', '    pass\n']
+
+        reindenter = autopep8.Reindenter(lines,
+                                         '\n')
+
+        self.assertEqual(set(), reindenter.run())
+
+        self.assertEqual(lines,
+                         reindenter.fixed_lines())
+
 
 class SystemTests(unittest.TestCase):
 
