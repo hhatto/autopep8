@@ -617,9 +617,7 @@ class FixPEP8(object):
         cnt = 0
         line = result['line'] - 2
         modified_lines = []
-        while cnt < delete_linenum:
-            if line < 0:
-                break
+        while cnt < delete_linenum and line >= 0:
             if not self.source[line].strip():
                 self.source[line] = ''
                 modified_lines.append(1 + line)  # Line indexed at 1
