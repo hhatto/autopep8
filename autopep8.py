@@ -1452,7 +1452,7 @@ class Wrapper(object):
         # pep8.py:continuation_line_indentation. All of the comments have been
         # stripped and the 'yield' statements replaced with 'pass'.
         if not self.tokens:
-            return
+            return  # pragma: no cover
 
         first_row = self.tokens[0][2][0]
         nrows = 1 + self.tokens[-1][2][0] - first_row
@@ -1464,7 +1464,7 @@ class Wrapper(object):
 
         if nrows == 1:
             # bug, really.
-            return valid_indents
+            return valid_indents  # pragma: no cover
 
         indent_next = self.logical_line.endswith(':')
 
