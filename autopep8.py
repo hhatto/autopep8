@@ -350,7 +350,7 @@ class FixPEP8(object):
         rewrapper = Wrapper(original)
         valid_indents = rewrapper.pep8_expected()
         if not rewrapper.rel_indent:
-            return []
+            return []  # pragma: no cover
         if result['line'] > ls[0]:
             # got a valid continuation line number from pep8
             row = result['line'] - ls[0] - 1
@@ -358,7 +358,7 @@ class FixPEP8(object):
             valid = valid_indents[row]
             got = rewrapper.rel_indent[row]
         else:
-            return []
+            return []  # pragma: no cover
         line = ls[0] + row
         # always pick the expected indent, for now.
         indent_to = valid[0]
@@ -372,7 +372,7 @@ class FixPEP8(object):
                 self.source[line] = new_line
                 return [line + 1]  # Line indexed at 1
         else:
-            return []
+            return []  # pragma: no cover
 
     def fix_e121(self, result, logical):
         """Fix indentation to be a multiple of four."""
