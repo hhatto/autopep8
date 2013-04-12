@@ -471,6 +471,26 @@ sys.maxint
             fix_pep8.fix_e225({'line': 1,
                                'column': 5}))
 
+    def test_fix_e401_avoid_non_import(self):
+        fix_pep8 = autopep8.FixPEP8(filename='',
+                                    options=autopep8.parse_args(['']),
+                                    contents='    1\n')
+
+        self.assertEqual(
+            [],
+            fix_pep8.fix_e401({'line': 1,
+                               'column': 5}))
+
+    def test_fix_e401_avoid_semicolon(self):
+        fix_pep8 = autopep8.FixPEP8(filename='',
+                                    options=autopep8.parse_args(['']),
+                                    contents='import foo; import bar\n')
+
+        self.assertEqual(
+            [],
+            fix_pep8.fix_e401({'line': 1,
+                               'column': 5}))
+
 
 class SystemTests(unittest.TestCase):
 
