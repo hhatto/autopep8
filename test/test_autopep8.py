@@ -471,6 +471,16 @@ sys.maxint
             fix_pep8.fix_e225({'line': 1,
                                'column': 5}))
 
+    def test_fix_e271_ignore_redundant(self):
+        fix_pep8 = autopep8.FixPEP8(filename='',
+                                    options=autopep8.parse_args(['']),
+                                    contents='x = 1\n')
+
+        self.assertEqual(
+            [],
+            fix_pep8.fix_e271({'line': 1,
+                               'column': 2}))
+
     def test_fix_e401_avoid_non_import(self):
         fix_pep8 = autopep8.FixPEP8(filename='',
                                     options=autopep8.parse_args(['']),
