@@ -501,6 +501,63 @@ sys.maxint
             fix_pep8.fix_e401({'line': 1,
                                'column': 5}))
 
+    def test_fix_e711_avoid_failure(self):
+        fix_pep8 = autopep8.FixPEP8(filename='',
+                                    options=autopep8.parse_args(['']),
+                                    contents='None == x\n')
+
+        self.assertEqual(
+            [],
+            fix_pep8.fix_e711({'line': 1,
+                               'column': 6}))
+
+        self.assertEqual(
+            [],
+            fix_pep8.fix_e711({'line': 1,
+                               'column': 700}))
+
+        fix_pep8 = autopep8.FixPEP8(filename='',
+                                    options=autopep8.parse_args(['']),
+                                    contents='x <> None\n')
+
+        self.assertEqual(
+            [],
+            fix_pep8.fix_e711({'line': 1,
+                               'column': 3}))
+
+    def test_fix_e712_avoid_failure(self):
+        fix_pep8 = autopep8.FixPEP8(filename='',
+                                    options=autopep8.parse_args(['']),
+                                    contents='True == x\n')
+
+        self.assertEqual(
+            [],
+            fix_pep8.fix_e712({'line': 1,
+                               'column': 5}))
+
+        self.assertEqual(
+            [],
+            fix_pep8.fix_e712({'line': 1,
+                               'column': 700}))
+
+        fix_pep8 = autopep8.FixPEP8(filename='',
+                                    options=autopep8.parse_args(['']),
+                                    contents='True != x\n')
+
+        self.assertEqual(
+            [],
+            fix_pep8.fix_e712({'line': 1,
+                               'column': 5}))
+
+        fix_pep8 = autopep8.FixPEP8(filename='',
+                                    options=autopep8.parse_args(['']),
+                                    contents='x <> True\n')
+
+        self.assertEqual(
+            [],
+            fix_pep8.fix_e712({'line': 1,
+                               'column': 5}))
+
     def test_get_logical_with_empty_string(self):
         fix_pep8 = autopep8.FixPEP8(filename='',
                                     options=autopep8.parse_args(['']),
