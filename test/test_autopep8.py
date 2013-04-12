@@ -501,6 +501,14 @@ sys.maxint
             fix_pep8.fix_e401({'line': 1,
                                'column': 5}))
 
+    def test_get_logical_with_empty_string(self):
+        fix_pep8 = autopep8.FixPEP8(filename='',
+                                    options=autopep8.parse_args(['']),
+                                    contents='')
+
+        fix_pep8._get_logical({'line': 1,
+                               'column': 1})
+
 
 class SystemTests(unittest.TestCase):
 
