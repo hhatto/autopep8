@@ -461,6 +461,16 @@ sys.maxint
         self.assertEqual(lines,
                          reindenter.fixed_lines())
 
+    def test_fix_e225_avoid_failure(self):
+        fix_pep8 = autopep8.FixPEP8(filename='',
+                                    options=autopep8.parse_args(['']),
+                                    contents='    1\n')
+
+        self.assertEqual(
+            [],
+            fix_pep8.fix_e225({'line': 1,
+                               'column': 5}))
+
 
 class SystemTests(unittest.TestCase):
 
