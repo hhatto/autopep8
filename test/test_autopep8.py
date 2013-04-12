@@ -542,21 +542,21 @@ sys.maxint
 
         fix_pep8 = autopep8.FixPEP8(filename='',
                                     options=autopep8.parse_args(['']),
-                                    contents='True != x\n')
+                                    contents='x != True\n')
 
         self.assertEqual(
             [],
             fix_pep8.fix_e712({'line': 1,
-                               'column': 5}))
+                               'column': 3}))
 
         fix_pep8 = autopep8.FixPEP8(filename='',
                                     options=autopep8.parse_args(['']),
-                                    contents='x <> True\n')
+                                    contents='x == False\n')
 
         self.assertEqual(
             [],
             fix_pep8.fix_e712({'line': 1,
-                               'column': 5}))
+                               'column': 3}))
 
     def test_get_logical_with_empty_string(self):
         fix_pep8 = autopep8.FixPEP8(filename='',
