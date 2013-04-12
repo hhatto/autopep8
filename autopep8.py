@@ -429,7 +429,7 @@ class FixPEP8(object):
                  self.indent_word + original.lstrip())
         if fixed == original:
             # Fall back to slower method.
-            return self._fix_reindent(result, logical)
+            return self._fix_reindent(result, logical)  # pragma: no cover
         else:
             self.source[line_index] = fixed
 
