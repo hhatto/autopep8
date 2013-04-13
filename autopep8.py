@@ -1270,7 +1270,7 @@ class Reindenter(object):
                     # An indented comment line. If we saw the same
                     # indentation before, reuse what it most recently
                     # mapped to.
-                    want = have2want.get(have, - 1)
+                    want = have2want.get(have, -1)
                     if want < 0:
                         # Then it probably belongs to the next real stmt.
                         for j in range(i + 1, len(stats) - 1):
