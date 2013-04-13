@@ -459,11 +459,17 @@ class FixPEP8(object):
             fixed = (_get_indentation(logical_lines[0]) +
                      self.indent_word + original.lstrip())
         else:
+            start_index = None
             for symbol in '([{':
                 if symbol in logical_lines[0]:
-                    fixed = logical_lines[0].find(
-                        symbol) * ' ' + original.lstrip()
-                    break
+                    found_index = logical_lines[0].find(symbol)
+                    if start_index is None:
+                        start_index = found_index
+                    else:
+                        start_index = min(start_index, found_index)
+
+            if start_index is not None:
+                fixed = start_index * ' ' + original.lstrip()
 
         if fixed == original:
             return []

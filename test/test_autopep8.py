@@ -1204,6 +1204,20 @@ if True:
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e127_with_bracket_then_parenthesis(self):
+        line = r"""
+if True:
+    foo = [food(1)
+               for bar in bars]
+""".lstrip()
+        fixed = r"""
+if True:
+    foo = [food(1)
+           for bar in bars]
+""".lstrip()
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e12_with_backslash(self):
         line = r"""
 if True:
