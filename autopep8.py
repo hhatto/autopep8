@@ -1292,7 +1292,7 @@ class Reindenter(object):
                                 break
                     if want < 0:
                         # Still no luck -- leave it alone.
-                        want = have  # pragma: no cover
+                        want = have
                 else:
                     want = 0
             assert want >= 0

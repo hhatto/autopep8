@@ -461,6 +461,17 @@ sys.maxint
         self.assertEqual(lines,
                          reindenter.fixed_lines())
 
+    def test_reindenter_should_leave_stray_comment_alone(self):
+        lines = ['  #\n', 'if True:\n', '  pass\n']
+
+        reindenter = autopep8.Reindenter(lines,
+                                         '\n')
+
+        self.assertEqual(set([1, 2, 3]), reindenter.run())
+
+        self.assertEqual(['  #\n', 'if True:\n', '    pass\n'],
+                         reindenter.fixed_lines())
+
     def test_fix_e225_avoid_failure(self):
         fix_pep8 = autopep8.FixPEP8(filename='',
                                     options=autopep8.parse_args(['']),
