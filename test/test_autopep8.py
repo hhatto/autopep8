@@ -574,8 +574,9 @@ sys.maxint
                                     options=autopep8.parse_args(['']),
                                     contents='')
 
-        fix_pep8._get_logical({'line': 1,
-                               'column': 1})
+        self.assertEqual(None,
+                         fix_pep8._get_logical({'line': 1,
+                                                'column': 1}))
 
 
 class SystemTests(unittest.TestCase):
