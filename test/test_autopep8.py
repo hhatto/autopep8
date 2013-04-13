@@ -1072,6 +1072,26 @@ def baz():
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(line, result)
 
+    def test_e121_with_stupid_fallback(self):
+        line = """\
+list(''.join([
+    "%d"
+       % 1,
+    list(""),
+    ""
+]))
+"""
+        fixed = """\
+list(''.join([
+    "%d"
+             % 1,
+    list(""),
+    ""
+]))
+"""
+        with autopep8_context(line, options=['--select=E12']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e123(self):
         line = """
 if True:
