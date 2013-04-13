@@ -1075,18 +1075,18 @@ def baz():
     def test_e121_with_stupid_fallback(self):
         line = """\
 list(''.join([
-    "%d"
+    '%d'
        % 1,
-    list(""),
-    ""
+    list(''),
+    ''
 ]))
 """
         fixed = """\
 list(''.join([
-    "%d"
+    '%d'
              % 1,
-    list(""),
-    ""
+    list(''),
+    ''
 ]))
 """
         with autopep8_context(line, options=['--select=E12']) as result:
