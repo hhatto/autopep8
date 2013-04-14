@@ -32,5 +32,5 @@ after_success:
           pip install --quiet coverage &&
           make coverage &&
           pip install --quiet coveralls &&
-          coveralls
+          coveralls;
       fi
