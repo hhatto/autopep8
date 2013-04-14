@@ -27,10 +27,4 @@ script:
 
 after_success:
     # pypy is too slow.
-    - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]
-      then
-          pip install --quiet coverage &&
-          make coverage &&
-          pip install --quiet coveralls &&
-          coveralls;
-      fi
+    - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then ./coveralls.bash; fi
