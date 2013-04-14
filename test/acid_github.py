@@ -17,14 +17,18 @@ def latest_repositories():
     """Return names of latest released repositories on Github."""
     import requests
 
-    for result in requests.get('https://github.com/timeline.json').json():
-        try:
-            repository = result['repository']
-            size = repository['size']
-            if 0 < size < 1000 and repository['language'] == 'Python':
-                yield repository['url']
-        except KeyError:
-            continue
+    try:
+        for result in requests.get('https://github.com/timeline.json').json():
+            try:
+                repository = result['repository']
+                size = repository['size']
+                if 0 < size < 1000 and repository['language'] == 'Python':
+                    yield repository['url']
+            except KeyError:
+                continue
+    except ValueError:
+        # Ignore GitHub server flakiness.
+        pass
 
 
 def download_repository(name, output_directory):
