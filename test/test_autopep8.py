@@ -579,27 +579,27 @@ sys.maxint
                                                 'column': 1}))
 
     def test_get_diff_text(self):
+        # We ignore the first two lines since it differs on Python 2.6.
         self.assertEqual(
             """\
---- original/
-+++ fixed/
-@@ -1 +1 @@
 -foo
 +bar
 """,
-            autopep8.get_diff_text(['foo\n'], ['bar\n'], ''))
+            '\n'.join(autopep8.get_diff_text(['foo\n'],
+                                             ['bar\n'],
+                                             '').split('\n')[3:]))
 
     def test_get_diff_text_without_newline(self):
+        # We ignore the first two lines since it differs on Python 2.6.
         self.assertEqual(
             """\
---- original/
-+++ fixed/
-@@ -1 +1 @@
 -foo
 \ No lineterm at end of file
 +foo
 """,
-            autopep8.get_diff_text(['foo'], ['foo\n'], ''))
+            '\n'.join(autopep8.get_diff_text(['foo'],
+                                             ['foo\n'],
+                                             '').split('\n')[3:]))
 
 
 class SystemTests(unittest.TestCase):
