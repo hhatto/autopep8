@@ -42,6 +42,7 @@ import fnmatch
 import inspect
 import os
 import re
+import signal
 import sys
 try:
     from StringIO import StringIO
@@ -2230,6 +2231,9 @@ def is_python_file(filename):
 
 def main():
     """Tool main."""
+    # Exit on broken pipe.
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+
     try:
         options, args = parse_args(sys.argv[1:])
 
