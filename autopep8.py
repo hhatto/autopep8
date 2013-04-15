@@ -981,12 +981,24 @@ def _get_indentation(line):
         return ''
 
 
-def _get_difftext(old, new, filename):
+def get_diff_text(old, new, filename):
+    """Return text of unified diff between old and new."""
+    lineterm = '\n'
     diff = difflib.unified_diff(
         old, new,
         'original/' + filename,
-        'fixed/' + filename)
-    return ''.join(diff)
+        'fixed/' + filename,
+        lineterm=lineterm)
+
+    text = ''
+    for line in diff:
+        text += line
+
+        # Work around missing newline (http://bugs.python.org/issue2142).
+        if not line.endswith(lineterm):
+            text += lineterm + r'\ No lineterm at end of file' + lineterm
+
+    return text
 
 
 def _priority_key(pep8_result):
@@ -1860,7 +1872,7 @@ def fix_file(filename, options=None, output=None):
     if options.diff:
         new = StringIO(fixed_source)
         new = new.readlines()
-        diff = _get_difftext(original_source, new, filename)
+        diff = get_diff_text(original_source, new, filename)
         if output:
             output.write(diff)
             output.flush()

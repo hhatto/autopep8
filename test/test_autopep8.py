@@ -578,6 +578,29 @@ sys.maxint
                          fix_pep8._get_logical({'line': 1,
                                                 'column': 1}))
 
+    def test_get_diff_text(self):
+        self.assertEqual(
+            """\
+--- original/
++++ fixed/
+@@ -1 +1 @@
+-foo
++bar
+""",
+            autopep8.get_diff_text(['foo\n'], ['bar\n'], ''))
+
+    def test_get_diff_text_without_newline(self):
+        self.assertEqual(
+            """\
+--- original/
++++ fixed/
+@@ -1 +1 @@
+-foo
+\ No lineterm at end of file
++foo
+""",
+            autopep8.get_diff_text(['foo'], ['foo\n'], ''))
+
 
 class SystemTests(unittest.TestCase):
 
