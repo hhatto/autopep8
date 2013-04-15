@@ -1862,6 +1862,7 @@ def fix_file(filename, options=None, output=None):
         diff = _get_difftext(original_source, new, filename)
         if output:
             output.write(diff)
+            output.flush()
         else:
             return diff
     elif options.in_place:
@@ -1872,6 +1873,7 @@ def fix_file(filename, options=None, output=None):
     else:
         if output:
             output.write(fixed_source)
+            output.flush()
         else:
             return fixed_source
 
@@ -2135,6 +2137,9 @@ class LineEndingWrapper(object):
 
     def write(self, s):
         self.__output.write(s.replace('\r\n', '\n').replace('\r', '\n'))
+
+    def flush(self):
+        self.__output.flush()
 
 
 def temporary_file():
