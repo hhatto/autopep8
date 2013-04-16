@@ -983,20 +983,20 @@ def _get_indentation(line):
 
 def get_diff_text(old, new, filename):
     """Return text of unified diff between old and new."""
-    lineterm = '\n'
+    newline = '\n'
     diff = difflib.unified_diff(
         old, new,
         'original/' + filename,
         'fixed/' + filename,
-        lineterm=lineterm)
+        lineterm=newline)
 
     text = ''
     for line in diff:
         text += line
 
         # Work around missing newline (http://bugs.python.org/issue2142).
-        if not line.endswith(lineterm):
-            text += lineterm + r'\ No lineterm at end of file' + lineterm
+        if not line.endswith(newline):
+            text += newline + r'\ No newline at end of file' + newline
 
     return text
 
