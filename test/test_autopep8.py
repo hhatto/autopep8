@@ -594,7 +594,7 @@ sys.maxint
         self.assertEqual(
             """\
 -foo
-\ No lineterm at end of file
+\ No newline at end of file
 +foo
 """,
             '\n'.join(autopep8.get_diff_text(['foo'],
