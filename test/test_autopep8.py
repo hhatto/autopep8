@@ -420,6 +420,12 @@ sys.maxint
             autopep8.line_shortening_rank('x\n',
                                           newline='\n', indent_word='    '))
 
+        self.assertGreater(
+            autopep8.line_shortening_rank('[foo(\nx) for x in y]\n',
+                                          newline='\n', indent_word='    '),
+            autopep8.line_shortening_rank('[foo(x)\nfor x in y]\n',
+                                          newline='\n', indent_word='    '))
+
     def test_extract_code_from_function(self):
         def fix_e123():
             pass  # pragma: no cover
@@ -938,8 +944,8 @@ sql = 'update %s set %s %s' % (from_table,
         fixed = """
 
 sql = 'update %s set %s %s' % (from_table,
-                               ','.join(['%s=%s' % (
-                                   col, col) for col in cols]),
+                               ','.join(['%s=%s' % (col, col)
+                                        for col in cols]),
                                where_clause)
 """
         with autopep8_context(line) as result:

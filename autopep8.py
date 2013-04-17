@@ -2105,6 +2105,10 @@ def line_shortening_rank(candidate, newline, indent_word):
 
             if current_line.endswith('%'):
                 rank -= 20
+
+            # Try to break list comprehensions at the "for".
+            if current_line.lstrip().startswith('for'):
+                rank -= 50
     else:
         rank = 100000
 
