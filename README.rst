@@ -1,5 +1,7 @@
+========
 autopep8
 ========
+
 .. image:: https://travis-ci.org/hhatto/autopep8.png?branch=master
    :target: https://travis-ci.org/hhatto/autopep8
    :alt: Build status
@@ -10,7 +12,8 @@ autopep8
 
 
 About
------
+=====
+
 autopep8 automatically formats Python code to conform to the `PEP 8`_ style
 guide. It uses the pep8_ utility to determine what parts of the code needs to
 be formatted. autopep8 is capable of fixing most of the formatting issues_ that
@@ -21,7 +24,8 @@ can be reported by pep8.
 
 
 Installation
-------------
+============
+
 From pip::
 
     $ pip install --upgrade autopep8
@@ -32,14 +36,16 @@ From easy_install::
 
 
 Requirements
-------------
+============
+
 autopep8 requires pep8_ (>= 1.4.5).
 
 .. _pep8: https://github.com/jcrocholl/pep8
 
 
 Usage
------
+=====
+
 To modify a file in place (with all fixes enabled)::
 
     $ autopep8 --in-place --aggressive <filename>
@@ -153,7 +159,8 @@ Options::
 
 
 Features
---------
+========
+
 autopep8 fixes the following issues_ reported by pep8_::
 
     E101 - Reindent all lines.
@@ -206,7 +213,8 @@ autopep8 also fixes some issues not found by pep8_.
 
 
 More advanced usage
--------------------
+===================
+
 To enable only a subset of the fixes, use the ``--select`` option. For example,
 to fix various types of indentation issues::
 
@@ -241,7 +249,7 @@ fixes, use the ``--aggressive`` option::
 
 
 Use as a module
----------------
+===============
 
 The simplest way of using autopep8 as a module is via the ``fix_string()``
 function.
@@ -254,7 +262,8 @@ function.
 
 
 Testing
--------
+=======
+
 Test cases are in ``test/test_autopep8.py``. They can be run directly via
 ``python test/test_autopep8.py`` or via tox_. The latter is useful for
 testing against multiple Python interpreters. (We currently test against
@@ -271,7 +280,8 @@ against Python code in Github repositories.
 
 
 Links
------
+=====
+
 * PyPI_
 * GitHub_
 * `Travis CI`_
