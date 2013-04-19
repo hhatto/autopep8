@@ -1943,7 +1943,7 @@ def parse_args(args):
     parser = OptionParser(usage='Usage: autopep8 [options] '
                                 '[filename [filename ...]]'
                                 '\nUse filename \'-\'  for stdin.',
-                          version='autopep8: %s' % __version__,
+                          version='%prog {0}'.format(__version__),
                           description=__doc__.split('\n')[0],
                           prog='autopep8')
     parser.add_option('-v', '--verbose', action='count', dest='verbose',
