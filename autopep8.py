@@ -2248,7 +2248,9 @@ def is_python_file(filename):
 def main():
     """Tool main."""
     # Exit on broken pipe.
-    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+
+    if sys.platform != 'win32':
+        signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
     try:
         options, args = parse_args(sys.argv[1:])
