@@ -2250,9 +2250,9 @@ def main():
     try:
         # Exit on broken pipe.
         signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
         # SIGPIPE is not available on Windows.
-        pass  # pragma: no cover
+        pass
 
     try:
         options, args = parse_args(sys.argv[1:])
