@@ -2247,10 +2247,12 @@ def is_python_file(filename):
 
 def main():
     """Tool main."""
-    # Exit on broken pipe.
-
-    if sys.platform != 'win32':
+    try:
+        # Exit on broken pipe.
         signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+    except AttributeError:
+        # SIGPIPE is not available on Windows.
+        pass  # pragma: no cover
 
     try:
         options, args = parse_args(sys.argv[1:])
