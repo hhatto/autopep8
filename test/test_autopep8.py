@@ -1495,6 +1495,13 @@ class Foo(object):
         with autopep8_context(line, options=['--select=E231']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e231_with_colon_after_comma(self):
+        """ws_comma fixer ignores this case."""
+        line = "a[b1,:]\n"
+        fixed = "a[b1, :]\n"
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e241(self):
         line = "l = (1,  2)\n"
         fixed = "l = (1, 2)\n"
