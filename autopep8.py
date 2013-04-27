@@ -2190,9 +2190,8 @@ def find_files(filenames, recursive, exclude):
             for root, directories, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
                               if match_file(f, exclude)]
-                for d in directories:
-                    if d.startswith('.'):
-                        directories.remove(d)
+                directories[:] = [d for d in directories
+                                  if not d.startswith('.')]
         else:
             yield name
 
