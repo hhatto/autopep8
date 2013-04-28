@@ -1008,13 +1008,20 @@ def _priority_key(pep8_result):
     like indentation.
 
     """
-    priority = ['e101', 'e111', 'w191',  # Global fixes
-                'e701',  # Fix multiline colon-based before semicolon based
-                'e702',  # Break multiline statements early
-                'e225', 'e231',  # things that make lines longer
-                'e201',  # Remove extraneous whitespace before breaking lines
-                'e501',  # before we break lines
-                ]
+    priority = [
+        # Global fixes.
+        'e101', 'e111', 'w191',
+        # Fix multiline colon-based before semicolon based.
+        'e701',
+        # Break multiline statements early.
+        'e702',
+        # Things that make lines longer.
+        'e225', 'e231',
+        # Remove extraneous whitespace before breaking lines.
+        'e201',
+        # Before breaking lines.
+        'e121', 'e122','e123', 'e124', 'e125', 'e126', 'e127', 'e128', 'e129',
+    ]
     key = pep8_result['id'].lower()
     if key in priority:
         return priority.index(key)
