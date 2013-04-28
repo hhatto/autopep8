@@ -115,11 +115,11 @@ abcde = abcdefg_abcdefg_abcdefg(a_parameter=a,
                                 b_parameter=b, c_parameter=c, d_parameter=d,
     e_parameter=e)
 """,
-            autopep8.break_multiline("""\
+                         autopep8.break_multiline("""\
 abcde = abcdefg_abcdefg_abcdefg(a_parameter=a,
                                 b_parameter=b, c_parameter=c, d_parameter=d, e_parameter=e)
 """,
-                newline='\n', indent_word='    '))
+                                                  newline='\n', indent_word='    '))
 
     def test_break_multiline_should_not_break_too_short_line(self):
         self.assertEqual(
