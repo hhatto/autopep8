@@ -693,12 +693,12 @@ class FixPEP8(object):
         try:
             tokens = list(tokenize.generate_tokens(sio.readline))
         except (tokenize.TokenError, IndentationError):
-            multi_line_candidate = break_multi_line(
+            multiline_candidate = break_multiline(
                 target, newline=self.newline,
                 indent_word=self.indent_word)
 
-            if multi_line_candidate:
-                self.source[line_index] = multi_line_candidate
+            if multiline_candidate:
+                self.source[line_index] = multiline_candidate
                 return
             else:
                 return []
@@ -1244,7 +1244,7 @@ class Reindenter(object):
         # Note that a line is all-blank iff it is a newline.
         self.lines = []
         for line_number, line in enumerate(self.raw, start=1):
-            # Do not modify if inside a multi-line string.
+            # Do not modify if inside a multiline string.
             if line_number in self.string_content_line_numbers:
                 self.lines.append(line)
             else:
@@ -1512,7 +1512,7 @@ class Wrapper(object):
                 # use at the given indent level, and return the offset. This
                 # algorithm is susceptible to "carried errors", but should
                 # through repeated runs eventually solve indentation for
-                # multi-line expressions less than PEP8_PASSES_MAX lines long.
+                # multiline expressions less than PEP8_PASSES_MAX lines long.
 
                 if depth:
                     for open_row in range(row - 1, -1, -1):
@@ -1647,8 +1647,8 @@ def refactor_with_2to3(source_text, fixer_names):
     return unicode(tool.refactor_string(source_text, name=''))
 
 
-def break_multi_line(source_text, newline, indent_word):
-    """Break first line of multi-line code.
+def break_multiline(source_text, newline, indent_word):
+    """Break first line of multiline code.
 
     Return None if a break is not possible.
 
@@ -1740,7 +1740,7 @@ def filter_results(source, results, aggressive=False):
 
         # Filter out incorrect E101 reports when there are no tabs.
         # pep8 will complain about this even if the tab indentation found
-        # elsewhere is in a multi-line string.
+        # elsewhere is in a multiline string.
         if issue_id == 'e101' and '\t' not in split_source[r['line']]:
             continue
 

@@ -94,51 +94,51 @@ class UnitTests(unittest.TestCase):
             'a b',
             autopep8.fix_whitespace('a\t  \t  b', offset=1, replacement=' '))
 
-    def test_break_multi_line(self):
+    def test_break_multiline(self):
         self.assertEqual(
             'foo_bar_zap_bing_bang_boom(\n    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
-            autopep8.break_multi_line(
+            autopep8.break_multiline(
                 'foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
                 newline='\n', indent_word='    '))
 
-    def test_break_multi_line_with_long_function(self):
+    def test_break_multiline_with_long_function(self):
         self.assertEqual(
             'foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom(\n'
             '    333,\n',
-            autopep8.break_multi_line(
+            autopep8.break_multiline(
                 'foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom(333,\n',
                 newline='\n', indent_word='    '))
 
-    def test_break_multi_line_with_long_second_line(self):
+    def test_break_multiline_with_long_second_line(self):
         self.assertEqual("""\
 abcde = abcdefg_abcdefg_abcdefg(a_parameter=a,
                                 b_parameter=b, c_parameter=c, d_parameter=d,
     e_parameter=e)
 """,
-            autopep8.break_multi_line("""\
+            autopep8.break_multiline("""\
 abcde = abcdefg_abcdefg_abcdefg(a_parameter=a,
                                 b_parameter=b, c_parameter=c, d_parameter=d, e_parameter=e)
 """,
                 newline='\n', indent_word='    '))
 
-    def test_break_multi_line_should_not_break_too_short_line(self):
+    def test_break_multiline_should_not_break_too_short_line(self):
         self.assertEqual(
             None,
-            autopep8.break_multi_line(
+            autopep8.break_multiline(
                 'fo(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333,\n',
                 newline='\n', indent_word='    '))
 
-    def test_break_multi_line_should_not_modify_comment(self):
+    def test_break_multiline_should_not_modify_comment(self):
         self.assertEqual(
             None,
-            autopep8.break_multi_line(
+            autopep8.break_multiline(
                 '# foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
                 newline='\n', indent_word='    '))
 
-    def test_break_multi_line_should_not_modify_lonely_brace(self):
+    def test_break_multiline_should_not_modify_lonely_brace(self):
         self.assertEqual(
             None,
-            autopep8.break_multi_line(
+            autopep8.break_multiline(
                 '(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 222, 222, 222, 222, 333,\n',
                 newline='\n', indent_word='    '))
 
@@ -690,7 +690,7 @@ class Bar(object):
 
     def test_e101_when_pep8_mistakes_first_tab_in_string(self):
         # pep8 will complain about this even if the tab indentation found
-        # elsewhere is in a multi-line string.
+        # elsewhere is in a multiline string.
         line = """
 x = '''
 \tHello.
@@ -762,7 +762,7 @@ try:
 
     def test_e101_skip_innocuous(self):
         # pep8 will complain about this even if the tab indentation found
-        # elsewhere is in a multi-line string. If we don't filter the innocuous
+        # elsewhere is in a multiline string. If we don't filter the innocuous
         # report properly, the below command will take a long time.
         p = Popen(list(AUTOPEP8_CMD_TUPLE) +
                   ['-vvv', '--select=E101', '--diff',
@@ -2609,7 +2609,7 @@ else:
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(line, result)
 
-    def test_w601_with_multi_line(self):
+    def test_w601_with_multiline(self):
         line = """
 
 a.has_key(
