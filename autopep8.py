@@ -1656,13 +1656,23 @@ def break_multi_line(source_text, newline, indent_word):
     indentation = _get_indentation(source_text)
 
     # Handle special case only.
-    for symbol in '([{':
+    for symbol in '([{,':
         # Only valid if symbol is not on a line by itself.
-        if (symbol in source_text and
-                source_text.rstrip().endswith(',') and
-                not source_text.lstrip().startswith(symbol)):
+        if (symbol in source_text and not source_text.strip() == symbol):
 
-            index = 1 + source_text.find(symbol)
+            last_character = source_text.rstrip()[-1]
+            if symbol != ',':
+                if not last_character == ',':
+                    continue
+
+                index = 1 + source_text.find(symbol)
+            else:
+                if (last_character != ')' or
+                        ']' in source_text or
+                        '}' in source_text):
+                    continue
+
+                index = 1 + source_text.rfind(symbol)
 
             if index <= len(indent_word) + len(indentation):
                 continue

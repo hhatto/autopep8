@@ -109,6 +109,18 @@ class UnitTests(unittest.TestCase):
                 'foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom(333,\n',
                 newline='\n', indent_word='    '))
 
+    def test_break_multi_line_with_long_second_line(self):
+        self.assertEqual("""\
+abcde = abcdefg_abcdefg_abcdefg(a_parameter=a,
+                                b_parameter=b, c_parameter=c, d_parameter=d,
+    e_parameter=e)
+""",
+            autopep8.break_multi_line("""\
+abcde = abcdefg_abcdefg_abcdefg(a_parameter=a,
+                                b_parameter=b, c_parameter=c, d_parameter=d, e_parameter=e)
+""",
+                newline='\n', indent_word='    '))
+
     def test_break_multi_line_should_not_break_too_short_line(self):
         self.assertEqual(
             None,
@@ -1920,7 +1932,8 @@ foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222
 
 foo_bar_zap_bing_bang_boom(
     111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,
-    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333)
+    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
+    333)
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
