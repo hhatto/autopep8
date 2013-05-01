@@ -1969,7 +1969,7 @@ def parse_args(args):
                       help='number of parallel jobs; '
                            'match CPU count if value is less than 1')
     parser.add_option('-p', '--pep8-passes', metavar='n',
-                      default=100, type=int,
+                      default=10000, type=int,
                       help='maximum number of additional pep8 passes '
                            '(default: %default)')
     parser.add_option('-a', '--aggressive', action='count', default=0,

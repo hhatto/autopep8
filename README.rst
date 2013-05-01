@@ -146,7 +146,7 @@ Options::
                             less than 1
       -p n, --pep8-passes=n
                             maximum number of additional pep8 passes (default:
-                            100)
+                            10000)
       -a, --aggressive      enable possibly unsafe changes (E711, E712); multiple
                             -a result in more aggressive changes
       --exclude=globs       exclude files/directories that match these comma-
@@ -231,11 +231,6 @@ If the file being fixed is large, you may want to enable verbose progress
 messages::
 
     $ autopep8 -v <filename>
-
-Large files may also take many more iterations to completely fix. Thus, you may
-need to increase the maximum number of passes::
-
-    $ autopep8 -p 1000 <filename>
 
 By default autopep8 makes only safe changes. Thus, by default, it does not fix
 ``E711`` and ``E712``. (Changing ``x == None`` to ``x is None`` may change the
