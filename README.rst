@@ -145,8 +145,7 @@ Options::
       -j n, --jobs=n        number of parallel jobs; match CPU count if value is
                             less than 1
       -p n, --pep8-passes=n
-                            maximum number of additional pep8 passes (default:
-                            10000)
+                            maximum number of additional pep8 passes (default: -1)
       -a, --aggressive      enable possibly unsafe changes (E711, E712); multiple
                             -a result in more aggressive changes
       --exclude=globs       exclude files/directories that match these comma-
