@@ -1850,7 +1850,12 @@ def fix_lines(source_lines, options, filename=''):
     # Apply global fixes only once (for efficiency).
     fixed_source = apply_global_fixes(tmp_source, options)
 
-    for _ in range(-1, options.pep8_passes):
+    passes = 0
+    while True:
+        if options.pep8_passes >= 0 and passes > options.pep8_passes:
+            break
+        passes += 1
+
         tmp_source = copy.copy(fixed_source)
 
         fix = FixPEP8(filename, options, contents=tmp_source)
@@ -1969,7 +1974,7 @@ def parse_args(args):
                       help='number of parallel jobs; '
                            'match CPU count if value is less than 1')
     parser.add_option('-p', '--pep8-passes', metavar='n',
-                      default=10000, type=int,
+                      default=-1, type=int,
                       help='maximum number of additional pep8 passes '
                            '(default: %default)')
     parser.add_option('-a', '--aggressive', action='count', default=0,
