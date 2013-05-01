@@ -1976,7 +1976,7 @@ def parse_args(args):
     parser.add_option('-p', '--pep8-passes', metavar='n',
                       default=-1, type=int,
                       help='maximum number of additional pep8 passes '
-                           '(default: %default)')
+                           '(default: infinite)')
     parser.add_option('-a', '--aggressive', action='count', default=0,
                       help='enable possibly unsafe changes (E711, E712); '
                            'multiple -a result in more aggressive changes')
