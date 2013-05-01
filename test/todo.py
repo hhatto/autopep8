@@ -1,2 +1,2 @@
-# autopep8 in.py --max-line-length=1
-split = lambda expr, text: (clean(t) for t in re.split(expr, text))
+abcde = abcdefg_abcdefg_abcdefg(a_parameter=a,
+                                b_parameter=b, c_parameter=c, d_parameter=d, e_parameter=e)
