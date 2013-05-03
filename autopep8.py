@@ -83,8 +83,7 @@ SHORTEN_OPERATOR_GROUPS = frozenset([
 ])
 
 
-DEFAULT_IGNORE = ','.join([pep8.DEFAULT_IGNORE,
-                           'W6'])
+DEFAULT_IGNORE = 'E24,W6'
 
 
 def open_with_encoding(filename, encoding=None, mode='r'):
