@@ -234,8 +234,8 @@ messages::
 By default autopep8 only makes whitespace changes. Thus, by default, it does
 not fix ``E711`` and ``E712``. (Changing ``x == None`` to ``x is None`` may
 change the meaning of the program if ``x`` has its ``__eq__`` method
-overridden.) Nor does it correct deprecated code ``W6``. To enable these sort
-of aggressive fixes, use the ``--aggressive`` option::
+overridden.) Nor does it correct deprecated code ``W6``. To enable these
+more aggressive fixes, use the ``--aggressive`` option::
 
     $ autopep8 --aggressive <filename>
 
