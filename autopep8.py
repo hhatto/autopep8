@@ -1982,7 +1982,7 @@ def parse_args(args):
                       help='maximum number of additional pep8 passes '
                            '(default: infinite)')
     parser.add_option('-a', '--aggressive', action='count', default=0,
-                      help='enable possibly unsafe changes (E711, E712); '
+                      help='enable non-whitespace changes; '
                            'multiple -a result in more aggressive changes')
     parser.add_option('--exclude', metavar='globs',
                       help='exclude files/directories that match these '

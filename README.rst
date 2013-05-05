@@ -147,13 +147,12 @@ Options::
       -p n, --pep8-passes=n
                             maximum number of additional pep8 passes (default:
                             infinite)
-      -a, --aggressive      enable possibly unsafe changes (E711, E712); multiple
-                            -a result in more aggressive changes
+      -a, --aggressive      enable non-whitespace changes; multiple -a result in
+                            more aggressive changes
       --exclude=globs       exclude files/directories that match these comma-
                             separated globs
       --list-fixes          list codes for fixes; used by --ignore and --select
-      --ignore=errors       do not fix these errors/warnings (default:
-                            E226,E24,W6)
+      --ignore=errors       do not fix these errors/warnings (default: E24,W6)
       --select=errors       fix only these errors/warnings (e.g. E4,W)
       --max-line-length=n   set maximum allowed line length (default: 79)
 
@@ -232,7 +231,7 @@ messages::
 
     $ autopep8 -v <filename>
 
-By default autopep8 makes only safe changes. Thus, by default, it does not fix
+By default autopep8 makes whitespace changes. Thus, by default, it does not fix
 ``E711`` and ``E712``. (Changing ``x == None`` to ``x is None`` may change the
 meaning of the program if ``x`` has its ``__eq__`` method overridden.) Nor
 does it correct deprecated code ``W6``. To enable these sort of aggressive
