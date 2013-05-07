@@ -337,9 +337,9 @@ def check(opts, args):
                     filenames += [os.path.join(root, f) for f in children
                                   if f.endswith('.py') and
                                   not f.startswith('.')]
-                    for d in directories:
-                        if d.startswith('.'):
-                            directories.remove(d)
+
+                directories[:] = [d for d in directories
+                                  if not d.startswith('.')]
             else:
                 verbose_message = '--->  Testing with '
                 try:
