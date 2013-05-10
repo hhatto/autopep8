@@ -87,7 +87,7 @@ DEFAULT_IGNORE = 'E24,W6'
 
 
 ERROR = codecs.getwriter('utf-8')(sys.stderr.buffer
-                                  if sys.version_info[0] >= 3
+                                  if hasattr(sys.stderr, 'buffer')
                                   else sys.stderr)
 
 
@@ -2294,7 +2294,7 @@ def main():
                 filenames = args[:1]
 
         output = codecs.getwriter('utf-8')(sys.stdout.buffer
-                                           if sys.version_info[0] >= 3
+                                           if hasattr(sys.stdout, 'buffer')
                                            else sys.stdout)
 
         output = LineEndingWrapper(output)
