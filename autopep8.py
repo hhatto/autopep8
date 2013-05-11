@@ -86,11 +86,6 @@ SHORTEN_OPERATOR_GROUPS = frozenset([
 DEFAULT_IGNORE = 'E24,W6'
 
 
-ERROR = codecs.getwriter('utf-8')(sys.stderr.buffer
-                                  if hasattr(sys.stderr, 'buffer')
-                                  else sys.stderr)
-
-
 def open_with_encoding(filename, encoding=None, mode='r'):
     """Return opened file with a specific encoding."""
     if not encoding:
@@ -242,19 +237,19 @@ class FixPEP8(object):
                         print(
                             '--->  Not fixing {f} on line {l}'.format(
                                 f=result['id'], l=result['line']),
-                            file=ERROR)
+                            file=sys.stderr)
                 else:  # We assume one-line fix when None
                     completed_lines.add(result['line'])
             else:
                 if self.options.verbose >= 3:
                     print("--->  '%s' is not defined." % fixed_methodname,
-                          file=ERROR)
+                          file=sys.stderr)
                     info = result['info'].strip()
                     print('--->  %s:%s:%s:%s' % (self.filename,
                                                  result['line'],
                                                  result['column'],
                                                  info),
-                          file=ERROR)
+                          file=sys.stderr)
 
     def fix(self):
         """Return a version of the source code with PEP 8 violations fixed."""
@@ -272,7 +267,7 @@ class FixPEP8(object):
                     progress[r['id']] = set()
                 progress[r['id']].add(r['line'])
             print('--->  {n} issue(s) to fix {progress}'.format(
-                n=len(results), progress=progress), file=ERROR)
+                n=len(results), progress=progress), file=sys.stderr)
 
         self._fix_source(filter_results(source=unicode().join(self.source),
                                         results=results,
@@ -720,7 +715,10 @@ class FixPEP8(object):
 
         if self.options.verbose >= 4:
             print(('-' * 79 + '\n').join([''] + candidates + ['']),
-                  file=ERROR)
+                  file=codecs.getwriter('utf-8')(sys.stderr.buffer
+                                                 if hasattr(sys.stderr,
+                                                            'buffer')
+                                                 else sys.stderr))
 
         for _candidate in candidates:
             assert _candidate is not None
@@ -1881,8 +1879,15 @@ def fix_file(filename, options=None, output=None):
 
     fixed_source = original_source
 
-    if options.in_place:
+    if options.in_place or output:
         encoding = detect_encoding(filename)
+
+    if output:
+        output = codecs.getwriter(encoding)(output.buffer
+                                            if hasattr(output, 'buffer')
+                                            else output)
+
+        output = LineEndingWrapper(output)
 
     fixed_source = fix_lines(fixed_source, options, filename=filename)
 
@@ -1932,7 +1937,7 @@ def apply_global_fixes(source, options):
         if code_match(code, select=options.select, ignore=options.ignore):
             if options.verbose:
                 print('--->  Applying global fix for {0}'.format(code.upper()),
-                      file=ERROR)
+                      file=sys.stderr)
             source = function(source)
 
     return source
@@ -2216,11 +2221,11 @@ def find_files(filenames, recursive, exclude):
 def _fix_file(parameters):
     """Helper function for optionally running fix_file() in parallel."""
     if parameters[1].verbose:
-        print('[file:{0}]'.format(parameters[0]), file=ERROR)
+        print('[file:{0}]'.format(parameters[0]), file=sys.stderr)
     try:
         fix_file(*parameters)
     except IOError as error:
-        print(str(error), file=ERROR)
+        print(str(error), file=sys.stderr)
 
 
 def fix_multiple_files(filenames, options, output=None):
@@ -2293,13 +2298,7 @@ def main():
             else:
                 filenames = args[:1]
 
-        output = codecs.getwriter('utf-8')(sys.stdout.buffer
-                                           if hasattr(sys.stdout, 'buffer')
-                                           else sys.stdout)
-
-        output = LineEndingWrapper(output)
-
-        fix_multiple_files(filenames, options, output)
+        fix_multiple_files(filenames, options, sys.stdout)
     except KeyboardInterrupt:
         return 1  # pragma: no cover
 
