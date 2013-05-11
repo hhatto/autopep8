@@ -39,6 +39,7 @@ with open('README.rst') as readme:
             'Programming Language :: Python :: 3.2',
             'Programming Language :: Python :: 3.3',
             'Topic :: Software Development :: Libraries :: Python Modules',
+            'Topic :: Software Development :: Quality Assurance',
         ],
         keywords='automation, pep8, format',
         install_requires=['pep8 >= 1.4.5'],
