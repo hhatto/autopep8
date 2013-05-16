@@ -183,7 +183,7 @@ class FixPEP8(object):
             self.source = sio.readlines()
         self.newline = find_newline(self.source)
         self.options = options
-        self.indent_word = _get_indentword(unicode().join(self.source))
+        self.indent_word = _get_indentword(''.join(self.source))
 
         # method definition
         self.fix_e111 = self.fix_e101
@@ -270,10 +270,10 @@ class FixPEP8(object):
             print('--->  {n} issue(s) to fix {progress}'.format(
                 n=len(results), progress=progress), file=sys.stderr)
 
-        self._fix_source(filter_results(source=unicode().join(self.source),
+        self._fix_source(filter_results(source=''.join(self.source),
                                         results=results,
                                         aggressive=self.options.aggressive))
-        return unicode().join(self.source)
+        return ''.join(self.source)
 
     def fix_e101(self, _):
         """Reindent all lines."""
@@ -1845,7 +1845,7 @@ def fix_string(source, options=None):
 
 def fix_lines(source_lines, options, filename=''):
     """Return fixed source code."""
-    tmp_source = unicode().join(normalize_line_endings(source_lines))
+    tmp_source = ''.join(normalize_line_endings(source_lines))
 
     # Keep a history to break out of cycles.
     previous_hashes = set([hash(tmp_source)])
