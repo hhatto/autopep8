@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+from __future__ import unicode_literals
+
 import os
 import sys
 
@@ -2276,14 +2278,8 @@ import time
 time.strftime('%d-%m-%Y')
 """.lstrip()
 
-        if sys.version_info[0] < 3:
-            line = unicode(line, 'utf-8')
-            fixed = unicode(fixed, 'utf-8')
-            with autopep8_context(line.encode('utf-8')) as result:
-                self.assertEqual(fixed, result)
-        else:
-            with autopep8_context(line) as result:
-                self.assertEqual(fixed, result)
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
 
     def test_e702_with_escaped_newline(self):
         line = '1; \\\n2\n'
@@ -2622,14 +2618,8 @@ correct = dict().has_key('good syntax ?')
 correct = 'good syntax ?' in dict()
 """.lstrip()
 
-        if sys.version_info[0] < 3:
-            line = unicode(line, 'utf-8')
-            fixed = unicode(fixed, 'utf-8')
-            with autopep8_context(line.encode('utf-8'), options=['--aggressive']) as result:
-                self.assertEqual(fixed, result)
-        else:
-            with autopep8_context(line, options=['--aggressive']) as result:
-                self.assertEqual(fixed, result)
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
 
     def test_w602_arg_is_string(self):
         line = "raise ValueError, \"w602 test\"\n"
@@ -3079,7 +3069,9 @@ def autopep8_subprocess(line, options):
 def temporary_file_context(text, suffix='', prefix=''):
     tempfile = mkstemp(suffix=suffix, prefix=prefix)
     os.close(tempfile[0])
-    with open(tempfile[1], 'w') as temp_file:
+    with autopep8.open_with_encoding(tempfile[1],
+                                     encoding='utf-8',
+                                     mode='w') as temp_file:
         temp_file.write(text)
     yield tempfile[1]
     os.remove(tempfile[1])
