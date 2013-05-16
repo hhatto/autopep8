@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 """Test that autopep8 runs without crashing on various Python files."""
 
-from __future__ import unicode_literals
-
 import ast
 import difflib
 import dis
