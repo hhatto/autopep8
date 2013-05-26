@@ -147,7 +147,9 @@ def tree(code):
 
     for _object in code.co_consts:
         if isinstance(_object, types.CodeType):
-            dictionary['co_consts'].append(tree(_object))
+            _object = tree(_object)
+
+        dictionary['co_consts'].append(_object)
 
     return dictionary
 
