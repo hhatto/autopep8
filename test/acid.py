@@ -11,6 +11,12 @@ import tempfile
 import types
 
 
+try:
+    basestring
+except NameError:
+    basestring = str
+
+
 ROOT_PATH = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
 
 # Override system-installed version of autopep8.
@@ -148,6 +154,11 @@ def tree(code):
     for _object in code.co_consts:
         if isinstance(_object, types.CodeType):
             _object = tree(_object)
+
+        # Filter out indentation in docstrings.
+        if isinstance(_object, basestring):
+            _object = '\n'.join(
+                [line.lstrip() for line in _object.splitlines()])
 
         dictionary['co_consts'].append(_object)
 
