@@ -151,12 +151,12 @@ def tree(code):
                                                    'co_firstlineno']:
             dictionary[name] = getattr(code, name)
 
-    for _object in code.co_consts:
+    for index, _object in enumerate(code.co_consts):
         if isinstance(_object, types.CodeType):
             _object = tree(_object)
 
         # Filter out indentation in docstrings.
-        if isinstance(_object, basestring):
+        if index == 0 and isinstance(_object, basestring):
             _object = '\n'.join(
                 [line.lstrip() for line in _object.splitlines()])
 
