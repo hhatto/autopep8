@@ -134,53 +134,6 @@ def is_bytecode_string(text):
     return False
 
 
-def filter_disassembly(text):
-    """Filter out innocuous differences."""
-    # Ignore formatting of docstrings. We modify docstrings for indentation and
-    # trailing whitespace.
-    lines = text.splitlines()
-    for index, current_line in enumerate(lines):
-        tokens = current_line.split()
-        if len(tokens) <= 3:
-            continue
-
-        if tokens[1] == 'STORE_NAME' and tokens[3] == '(__doc__)':
-            fixed = re.sub(r'\s', '', lines[index - 1])
-            lines[index - 1] = fixed.replace(
-                r'\n', '').replace(r'\r', '').replace(r'\t', '')
-
-        if tokens[1] == 'LOAD_CONST' and is_bytecode_string(tokens[3]):
-            # We do this for LOAD_CONST too due to false positives on Travis
-            # CI. It somehow isn't enough to just remove the trailing
-            # whitespace.
-            fixed = re.sub(r'\s', '', lines[index])
-            lines[index] = fixed.replace(
-                r'\n', '').replace(r'\r', '').replace(r'\t', '')
-
-        # BUILD_TUPLE and LOAD_CONST are sometimes used interchangeably.
-        if tokens[1] == 'LOAD_CONST' and tokens[3] == '(())':
-            lines[index] = lines[index].replace(
-                'LOAD_CONST               8 (())',
-                'BUILD_TUPLE              0')
-
-        # LOAD_NAME and LOAD_CONST are sometimes used interchangeably.
-        if tokens[1] == 'LOAD_NAME':
-            if tokens[3] == '(False)':
-                lines[index] = lines[index].replace(
-                    'LOAD_NAME               21 (False)',
-                    'LOAD_CONST              12 (False)')
-            elif tokens[3] == '(None)':
-                # TODO: Strip number and just leave human-readable name?
-                lines[index] = lines[index].replace(
-                    'LOAD_NAME               14 (None)',
-                    'LOAD_CONST               5 (None)')
-                lines[index] = lines[index].replace(
-                    'LOAD_NAME               17 (None)',
-                    'LOAD_CONST               2 (None)')
-
-    return '\n'.join(lines)
-
-
 def tree(code):
     dictionary = {}
     for name in dir(code):
