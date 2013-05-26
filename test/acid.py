@@ -250,51 +250,49 @@ def check(opts, args):
             signal.alarm(int(opts.timeout))
 
         while filenames:
-            name = os.path.realpath(filenames.pop(0))
-            if not os.path.exists(name):
-                # Invalid symlink.
-                continue
-
-            if name in completed_filenames:
-                sys.stderr.write(
-                    colored('--->  Skipping previously tested ' + name + '\n',
-                            YELLOW))
-                continue
-            else:
-                completed_filenames.update(name)
-
             try:
-                is_directory = os.path.isdir(name)
-            except UnicodeEncodeError:
+                name = os.path.realpath(filenames.pop(0))
+                if not os.path.exists(name):
+                    # Invalid symlink.
+                    continue
+
+                if name in completed_filenames:
+                    sys.stderr.write(
+                        colored('--->  Skipping previously tested ' + name + '\n',
+                                YELLOW))
+                    continue
+                else:
+                    completed_filenames.update(name)
+                if os.path.isdir(name):
+                    for root, directories, children in os.walk(name):
+                        filenames += [os.path.join(root, f) for f in children
+                                      if f.endswith('.py') and
+                                      not f.startswith('.')]
+
+                    directories[:] = [d for d in directories
+                                      if not d.startswith('.')]
+                else:
+                    verbose_message = '--->  Testing with '
+                    try:
+                        verbose_message += name
+                    except UnicodeEncodeError:
+                        verbose_message += '...'
+                    sys.stderr.write(colored(verbose_message + '\n', YELLOW))
+
+                    if not run(os.path.join(name),
+                               command=opts.command,
+                               fast_check=opts.fast_check,
+                               passes=opts.pep8_passes,
+                               max_line_length=opts.max_line_length,
+                               ignore=opts.ignore,
+                               check_ignore=opts.check_ignore,
+                               verbose=opts.verbose,
+                               comparison_function=comparison_function,
+                               aggressive=opts.aggressive):
+                        return False
+            except (UnicodeDecodeError, UnicodeEncodeError):
+                # Ignore annoying codec problems on Python 2.
                 continue
-
-            if is_directory:
-                for root, directories, children in os.walk(name):
-                    filenames += [os.path.join(root, f) for f in children
-                                  if f.endswith('.py') and
-                                  not f.startswith('.')]
-
-                directories[:] = [d for d in directories
-                                  if not d.startswith('.')]
-            else:
-                verbose_message = '--->  Testing with '
-                try:
-                    verbose_message += name
-                except UnicodeEncodeError:
-                    verbose_message += '...'
-                sys.stderr.write(colored(verbose_message + '\n', YELLOW))
-
-                if not run(os.path.join(name),
-                           command=opts.command,
-                           fast_check=opts.fast_check,
-                           passes=opts.pep8_passes,
-                           max_line_length=opts.max_line_length,
-                           ignore=opts.ignore,
-                           check_ignore=opts.check_ignore,
-                           verbose=opts.verbose,
-                           comparison_function=comparison_function,
-                           aggressive=opts.aggressive):
-                    return False
     except TimeoutException:
         sys.stderr.write('Timed out\n')
     finally:
