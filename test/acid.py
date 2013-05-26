@@ -287,8 +287,9 @@ def check(opts, args):
                                comparison_function=comparison_function,
                                aggressive=opts.aggressive):
                         return False
-            except (UnicodeDecodeError, UnicodeEncodeError):
+            except (UnicodeDecodeError, UnicodeEncodeError) as exception:
                 # Ignore annoying codec problems on Python 2.
+                print(exception)
                 continue
     except TimeoutException:
         sys.stderr.write('Timed out\n')
