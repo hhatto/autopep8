@@ -135,6 +135,7 @@ def is_bytecode_string(text):
 
 
 def tree(code):
+    """Return dictionary representation of the code object."""
     dictionary = {'co_consts': []}
     for name in dir(code):
         if name.startswith('co_') and name not in ['co_code',
