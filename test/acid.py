@@ -127,21 +127,6 @@ def disassemble(filename):
         return tree(compile(f.read(), '<string>', 'exec'))
 
 
-def is_bytecode_string(text):
-    """Return True if this is a bytecode string."""
-    assert text.startswith('(')
-    text = text[1:]
-    for prefix in ['ur', 'br', 'u', 'b', 'r']:  # Longer one first.
-        if text.startswith(prefix):
-            text = text[len(prefix):]
-            break
-
-    for symbol in ['"', "'"]:
-        if text.startswith(symbol):
-            return True
-    return False
-
-
 def tree(code):
     """Return dictionary representation of the code object."""
     dictionary = {'co_consts': []}
