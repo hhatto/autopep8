@@ -157,10 +157,11 @@ def tree(code):
         if isinstance(_object, types.CodeType):
             _object = tree(_object)
 
-        # Filter out indentation in docstrings.
+        # Ignore leading/trailing whitespace in docstrings. We purposely modify
+        # these in autopep8.
         if index == 0 and isinstance(_object, basestring):
             _object = '\n'.join(
-                [line.lstrip() for line in _object.splitlines()])
+                [line.strip() for line in _object.splitlines()])
 
         dictionary['co_consts'].append(_object)
 
