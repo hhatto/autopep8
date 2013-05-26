@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 """Test that autopep8 runs without crashing on various Python files."""
 
+from __future__ import print_function
+
 import difflib
 import os
 import pprint
