@@ -4,7 +4,6 @@
 import difflib
 import os
 import pprint
-import re
 import shlex
 import sys
 import subprocess
@@ -102,6 +101,10 @@ def compare_bytecode(old_filename, new_filename):
     """Return True if bytecode of the two files are equivalent."""
     before_bytecode = disassemble(old_filename)
     after_bytecode = disassemble(new_filename)
+
+    pprint.pprint(before_bytecode)
+    pprint.pprint(after_bytecode)
+
     if before_bytecode != after_bytecode:
         sys.stderr.write(
             'New bytecode does not match original ' +
@@ -135,18 +138,18 @@ def is_bytecode_string(text):
 
 
 def tree(code):
-    dictionary = {}
+    dictionary = {'co_consts': []}
     for name in dir(code):
         if name.startswith('co_') and name not in ['co_code',
-                                                   'co_lnotab',
                                                    'co_consts',
+                                                   'co_lnotab',
                                                    'co_filename',
                                                    'co_firstlineno']:
             dictionary[name] = getattr(code, name)
 
     for _object in code.co_consts:
         if isinstance(_object, types.CodeType):
-            dictionary['co_consts'] = tree(_object)
+            dictionary['co_consts'].append(tree(_object))
 
     return dictionary
 
