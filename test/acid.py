@@ -258,8 +258,9 @@ def check(opts, args):
 
                 if name in completed_filenames:
                     sys.stderr.write(
-                        colored('--->  Skipping previously tested ' + name + '\n',
-                                YELLOW))
+                        colored(
+                            '--->  Skipping previously tested ' + name + '\n',
+                            YELLOW))
                     continue
                 else:
                     completed_filenames.update(name)
@@ -272,11 +273,7 @@ def check(opts, args):
                     directories[:] = [d for d in directories
                                       if not d.startswith('.')]
                 else:
-                    verbose_message = '--->  Testing with '
-                    try:
-                        verbose_message += name
-                    except UnicodeEncodeError:
-                        verbose_message += '...'
+                    verbose_message = '--->  Testing with ' + name
                     sys.stderr.write(colored(verbose_message + '\n', YELLOW))
 
                     if not run(os.path.join(name),
