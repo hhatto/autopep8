@@ -1,20 +1,15 @@
 #!/usr/bin/env python
 """Test that autopep8 runs without crashing on various Python files."""
 
-import ast
 import difflib
-import dis
 import os
+import pprint
 import re
 import shlex
 import sys
 import subprocess
 import tempfile
-
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+import types
 
 
 ROOT_PATH = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
@@ -103,16 +98,6 @@ def check_syntax(filename, raise_error=False):
                 return False
 
 
-def compare_ast(old_filename, new_filename):
-    """Return True if AST of the two files are equivalent."""
-    return ast_dump(old_filename) == ast_dump(new_filename)
-
-
-def ast_dump(filename):
-    with autopep8.open_with_encoding(filename) as f:
-        return ast.dump(ast.parse(f.read(), '<string>', 'exec'))
-
-
 def compare_bytecode(old_filename, new_filename):
     """Return True if bytecode of the two files are equivalent."""
     before_bytecode = disassemble(old_filename)
@@ -122,18 +107,16 @@ def compare_bytecode(old_filename, new_filename):
             'New bytecode does not match original ' +
             old_filename + '\n' +
             ''.join(difflib.unified_diff(
-                before_bytecode.splitlines(True),
-                after_bytecode.splitlines(True))) + '\n')
+                pprint.pformat(before_bytecode).splitlines(True),
+                pprint.pformat(after_bytecode).splitlines(True))) + '\n')
         return False
     return True
 
 
 def disassemble(filename):
-    """dis, but without line numbers."""
+    """Return dictionary of disassembly."""
     with autopep8.open_with_encoding(filename) as f:
-        code = compile(f.read(), '<string>', 'exec')
-
-    return filter_disassembly('\n'.join(_disassemble(code)))
+        return tree(compile(f.read(), '<string>', 'exec'))
 
 
 def is_bytecode_string(text):
@@ -198,34 +181,21 @@ def filter_disassembly(text):
     return '\n'.join(lines)
 
 
-def _disassemble(code):
-    """Disassemble a code object."""
-    sio = StringIO()
+def tree(code):
+    dictionary = {}
+    for name in dir(code):
+        if name.startswith('co_') and name not in ['co_code',
+                                                   'co_lnotab',
+                                                   'co_consts',
+                                                   'co_filename',
+                                                   'co_firstlineno']:
+            dictionary[name] = getattr(code, name)
 
-    findlinestarts = dis.findlinestarts
-    dis.findlinestarts = lambda _: {}
+    for _object in code.co_consts:
+        if isinstance(_object, types.CodeType):
+            dictionary['co_consts'] = tree(_object)
 
-    findlabels = dis.findlabels
-    dis.findlabels = lambda _: {}
-
-    sys.stdout, sio = sio, sys.stdout
-
-    try:
-        dis.dis(code)
-    finally:
-        sys.stdout, sio = sio, sys.stdout
-        dis.findlinestarts = findlinestarts
-        dis.findlabels = findlabels
-
-    disassembled_code = [
-        re.sub('<code object .* line [0-9]+>',
-               '<code object>', sio.getvalue())]
-
-    for c in code.co_consts:
-        if hasattr(c, 'co_code'):
-            disassembled_code += _disassemble(c)
-
-    return disassembled_code
+    return dictionary
 
 
 def process_args():
@@ -302,8 +272,7 @@ def check(opts, args):
     completed_filenames = set()
 
     if opts.compare_bytecode:
-        comparison_function = lambda x, y: (compare_ast(x, y) or
-                                            compare_bytecode(x, y))
+        comparison_function = compare_bytecode
     else:
         comparison_function = None
 
