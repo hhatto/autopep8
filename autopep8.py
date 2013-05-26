@@ -109,7 +109,7 @@ def detect_encoding(filename):
             test_file.read()
 
         return encoding
-    except (SyntaxError, LookupError, UnicodeDecodeError):
+    except (LookupError, SyntaxError, UnicodeDecodeError):
         return 'latin-1'
 
 
@@ -321,7 +321,7 @@ class FixPEP8(object):
         """
         try:
             (logical_start, logical_end) = self._find_logical()
-        except (IndentationError, tokenize.TokenError):
+        except (SyntaxError, tokenize.TokenError):
             return None
 
         row = result['line'] - 1
@@ -692,7 +692,7 @@ class FixPEP8(object):
         # Check for multiline string.
         try:
             tokens = list(tokenize.generate_tokens(sio.readline))
-        except (tokenize.TokenError, IndentationError):
+        except (SyntaxError, tokenize.TokenError):
             multiline_candidate = break_multiline(
                 target, newline=self.newline,
                 indent_word=self.indent_word)
@@ -897,9 +897,9 @@ def refactor(source, fixer_names, ignore=None):
         new_text = refactor_with_2to3(source,
                                       fixer_names=fixer_names)
     except (pgen2.parse.ParseError,
+            SyntaxError,
             UnicodeDecodeError,
-            UnicodeEncodeError,
-            IndentationError):
+            UnicodeEncodeError):
         return source
 
     if ignore:
@@ -970,7 +970,7 @@ def _get_indentword(source):
             if t[0] == token.INDENT:
                 indent_word = t[1]
                 break
-    except (tokenize.TokenError, IndentationError):
+    except (SyntaxError, tokenize.TokenError):
         pass
     return indent_word
 
@@ -1266,7 +1266,7 @@ class Reindenter(object):
         """
         try:
             stats = reindent_stats(tokenize.generate_tokens(self.getline))
-        except (tokenize.TokenError, IndentationError):
+        except (SyntaxError, tokenize.TokenError):
             return set()
         # Remove trailing empty lines.
         lines = self.lines
@@ -1771,7 +1771,7 @@ def multiline_string_lines(source, include_docstrings=False):
                     line_numbers |= set(range(1 + start_row, 1 + end_row))
 
             previous_token_type = token_type
-    except (IndentationError, tokenize.TokenError):
+    except (SyntaxError, tokenize.TokenError):
         pass
 
     return line_numbers
