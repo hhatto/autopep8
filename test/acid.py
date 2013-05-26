@@ -102,9 +102,6 @@ def compare_bytecode(old_filename, new_filename):
     before_bytecode = disassemble(old_filename)
     after_bytecode = disassemble(new_filename)
 
-    pprint.pprint(before_bytecode)
-    pprint.pprint(after_bytecode)
-
     if before_bytecode != after_bytecode:
         sys.stderr.write(
             'New bytecode does not match original ' +
