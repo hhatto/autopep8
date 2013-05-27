@@ -105,54 +105,6 @@ def check_syntax(filename, raise_error=False):
                 return False
 
 
-def compare_bytecode(old_filename, new_filename):
-    """Return True if bytecode of the two files are equivalent."""
-    before_bytecode = disassemble(old_filename)
-    after_bytecode = disassemble(new_filename)
-
-    if before_bytecode != after_bytecode:
-        sys.stderr.write(
-            'New bytecode does not match original ' +
-            old_filename + '\n' +
-            ''.join(difflib.unified_diff(
-                pprint.pformat(before_bytecode).splitlines(True),
-                pprint.pformat(after_bytecode).splitlines(True))) + '\n')
-        return False
-    return True
-
-
-def disassemble(filename):
-    """Return dictionary of disassembly."""
-    with autopep8.open_with_encoding(filename) as f:
-        return tree(compile(f.read(), '<string>', 'exec'))
-
-
-def tree(code):
-    """Return dictionary representation of the code object."""
-    dictionary = {'co_consts': []}
-    for name in dir(code):
-        if name.startswith('co_') and name not in ['co_code',
-                                                   'co_consts',
-                                                   'co_lnotab',
-                                                   'co_filename',
-                                                   'co_firstlineno']:
-            dictionary[name] = getattr(code, name)
-
-    for index, _object in enumerate(code.co_consts):
-        if isinstance(_object, types.CodeType):
-            _object = tree(_object)
-
-        # Ignore leading/trailing whitespace in docstrings. We purposely modify
-        # these in autopep8.
-        if index == 0 and isinstance(_object, basestring):
-            _object = '\n'.join(
-                [line.strip() for line in _object.splitlines()])
-
-        dictionary['co_consts'].append(_object)
-
-    return dictionary
-
-
 def process_args():
     """Return processed arguments (options and positional arguments)."""
     compare_bytecode_ignore = 'E71,E721,W'
@@ -209,6 +161,16 @@ class TimeoutException(Exception):
 
 def timeout(_, __):
     raise TimeoutException()
+
+
+
+def compare_bytecode(filename_a, filename_b):
+    import pydiff
+    diff = pydiff.diff_bytecode_of_files(filename_a, filename_b)
+    if diff:
+        sys.stderr.write('New bytecode does not match original:\n' +
+                         diff + '\n')
+    return not diff
 
 
 def check(opts, args):
