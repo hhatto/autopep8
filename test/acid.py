@@ -3,14 +3,11 @@
 
 from __future__ import print_function
 
-import difflib
 import os
-import pprint
 import shlex
 import sys
 import subprocess
 import tempfile
-import types
 
 
 try:
