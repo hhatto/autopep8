@@ -2146,7 +2146,7 @@ def line_shortening_rank(candidate, newline, indent_word):
 
 
 def count_unbalanced_brackets(line):
-    """Return number of unmatched open/close parentheses."""
+    """Return number of unmatched open/close brackets."""
     count = 0
     for opening, closing in ['()', '[]', '{}']:
         count += abs(line.count(opening) - line.count(closing))
