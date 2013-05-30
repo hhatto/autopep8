@@ -1652,19 +1652,23 @@ class Foo(object):
         line = '''\
 class Foo(object):
     """Test."""
-    def foo():
+    def foo(self):
 
 
 
         """Test."""
+        def bar():
+            pass
 '''
         fixed = '''\
 class Foo(object):
 
     """Test."""
 
-    def foo():
+    def foo(self):
         """Test."""
+        def bar():
+            pass
 '''
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
