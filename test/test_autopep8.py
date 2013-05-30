@@ -1652,8 +1652,10 @@ class Foo(object):
         line = '''\
 class Foo(object):
     """Test."""
-
     def foo():
+
+
+
         """Test."""
 '''
         fixed = '''\
