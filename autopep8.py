@@ -2137,10 +2137,21 @@ def line_shortening_rank(candidate, newline, indent_word):
             # Try to break list comprehensions at the "for".
             if current_line.lstrip().startswith('for'):
                 rank -= 50
+
+            rank += 10 * count_unbalanced_parentheses(current_line)
     else:
         rank = 100000
 
     return max(0, rank)
+
+
+def count_unbalanced_parentheses(line):
+    """Return number of unmatched open/close parentheses."""
+    count = 0
+    for opening, closing in ['()', '[]', '{}']:
+        count += abs(line.count(opening) - line.count(closing))
+
+    return count
 
 
 def split_at_offsets(line, offsets):

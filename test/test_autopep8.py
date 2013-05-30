@@ -609,6 +609,28 @@ sys.maxint
                                              ['foo\n'],
                                              '').split('\n')[3:]))
 
+    def test_count_unbalanced_parentheses(self):
+        self.assertEqual(
+            0,
+            autopep8.count_unbalanced_parentheses('()'))
+
+        self.assertEqual(
+            1,
+            autopep8.count_unbalanced_parentheses('('))
+
+        self.assertEqual(
+            2,
+            autopep8.count_unbalanced_parentheses('(['))
+
+        self.assertEqual(
+            1,
+            autopep8.count_unbalanced_parentheses('[])'))
+
+        self.assertEqual(
+            1,
+            autopep8.count_unbalanced_parentheses(
+                "'','.join(['%s=%s' % (col, col)')"))
+
 
 class SystemTests(unittest.TestCase):
 
@@ -946,8 +968,8 @@ sql = 'update %s set %s %s' % (from_table,
         fixed = """
 
 sql = 'update %s set %s %s' % (from_table,
-                               ','.join(['%s=%s' % (col, col)
-                                        for col in cols]),
+                               ','.join(
+                                   ['%s=%s' % (col, col) for col in cols]),
                                where_clause)
 """
         with autopep8_context(line) as result:
@@ -1758,6 +1780,19 @@ print(111, 111, 111, 111, 222, 222, 222, 222,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_basic_should_prefer_balanced_parentheses(self):
+        line = """\
+if True:
+    reconstructed = iradon(radon(image), filter="ramp", interpolation="nearest")
+"""
+        fixed = """\
+if True:
+    reconstructed = iradon(
+        radon(image), filter="ramp", interpolation="nearest")
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_very_long_line(self):
         line = """\
 x = [3244234243234, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243]
@@ -2099,15 +2134,10 @@ class Useless(object):
 models = {
     'auth.group': {
         'Meta': {'object_name': 'Group'},
-        'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-        'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
         'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
     },
     'auth.permission': {
         'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-        'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-        'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-        'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
         'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
     },
 }
@@ -2116,22 +2146,12 @@ models = {
 models = {
     'auth.group': {
         'Meta': {'object_name': 'Group'},
-        'id': ('django.db.models.fields.AutoField', [], {
-               'primary_key': 'True'}),
-        'name': ('django.db.models.fields.CharField', [], {
-                 'unique': 'True', 'max_length': '80'}),
         'permissions': ('django.db.models.fields.related.ManyToManyField', [], {
                         'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
     },
     'auth.permission': {
         'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
                  'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-        'codename': ('django.db.models.fields.CharField', [], {
-                     'max_length': '100'}),
-        'content_type': ('django.db.models.fields.related.ForeignKey', [], {
-                         'to': "orm['contenttypes.ContentType']"}),
-        'id': ('django.db.models.fields.AutoField', [], {
-               'primary_key': 'True'}),
         'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
     },
 }
