@@ -609,26 +609,26 @@ sys.maxint
                                              ['foo\n'],
                                              '').split('\n')[3:]))
 
-    def test_count_unbalanced_parentheses(self):
+    def test_count_unbalanced_brackets(self):
         self.assertEqual(
             0,
-            autopep8.count_unbalanced_parentheses('()'))
+            autopep8.count_unbalanced_brackets('()'))
 
         self.assertEqual(
             1,
-            autopep8.count_unbalanced_parentheses('('))
+            autopep8.count_unbalanced_brackets('('))
 
         self.assertEqual(
             2,
-            autopep8.count_unbalanced_parentheses('(['))
+            autopep8.count_unbalanced_brackets('(['))
 
         self.assertEqual(
             1,
-            autopep8.count_unbalanced_parentheses('[])'))
+            autopep8.count_unbalanced_brackets('[])'))
 
         self.assertEqual(
             1,
-            autopep8.count_unbalanced_parentheses(
+            autopep8.count_unbalanced_brackets(
                 "'','.join(['%s=%s' % (col, col)')"))
 
 
@@ -1780,7 +1780,7 @@ print(111, 111, 111, 111, 222, 222, 222, 222,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_basic_should_prefer_balanced_parentheses(self):
+    def test_e501_basic_should_prefer_balanced_brackets(self):
         line = """\
 if True:
     reconstructed = iradon(radon(image), filter="ramp", interpolation="nearest")

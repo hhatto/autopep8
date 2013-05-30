@@ -2138,14 +2138,14 @@ def line_shortening_rank(candidate, newline, indent_word):
             if current_line.lstrip().startswith('for'):
                 rank -= 50
 
-            rank += 10 * count_unbalanced_parentheses(current_line)
+            rank += 10 * count_unbalanced_brackets(current_line)
     else:
         rank = 100000
 
     return max(0, rank)
 
 
-def count_unbalanced_parentheses(line):
+def count_unbalanced_brackets(line):
     """Return number of unmatched open/close parentheses."""
     count = 0
     for opening, closing in ['()', '[]', '{}']:
