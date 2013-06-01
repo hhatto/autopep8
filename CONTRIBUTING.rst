@@ -26,5 +26,5 @@ Pull requests
 When submitting a pull request, please do the following.
 
 1. Add a test case to ``test/test_autopep8.py`` that demonstrates what your
-   changes does.
-2. Make sure all tests continue to pass after your changes.
+   change does.
+2. Make sure all tests pass.
