@@ -13,7 +13,7 @@ When submitting a bug report, please provide the following:
 1. ``python --version``
 2. ``autopep8 --version``
 3. The example input that causes the bug.
-4. autopep8 command-line options used to cause the bug.
+4. The ``autopep8`` command-line options used to cause the bug.
 5. The expected output.
 6. Does the bug happen with the latest version of autopep8? To upgrade::
 
