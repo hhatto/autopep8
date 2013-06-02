@@ -53,7 +53,6 @@ import token
 import tokenize
 from optparse import OptionParser
 import difflib
-import tempfile
 
 import pep8
 
@@ -2206,14 +2205,6 @@ class LineEndingWrapper(object):
         self.__output.flush()
 
 
-def temporary_file():
-    """Return temporary file."""
-    try:
-        return tempfile.NamedTemporaryFile(mode='w', encoding='utf-8')
-    except TypeError:
-        return tempfile.NamedTemporaryFile(mode='w')
-
-
 def match_file(filename, exclude):
     """Return True if file is okay for modifying/recursing."""
     if os.path.basename(filename).startswith('.'):
@@ -2309,21 +2300,20 @@ def main():
                     code=code, description=description))
             return 0
 
-        if options.in_place or options.diff:
-            filenames = list(set(args))
+        if args == ['-']:
+            assert not options.in_place
+            sys.stdout.write(fix_string(sys.stdin.read(),
+                                        options))
         else:
-            assert len(args) == 1
-            assert not options.recursive
-            if args == ['-']:
-                assert not options.in_place
-                temp = temporary_file()
-                temp.write(sys.stdin.read())
-                temp.flush()
-                filenames = [temp.name]
+            if options.in_place or options.diff:
+                filenames = list(set(args))
             else:
+                assert len(args) == 1
+                assert not options.recursive
+
                 filenames = args[:1]
 
-        fix_multiple_files(filenames, options, sys.stdout)
+            fix_multiple_files(filenames, options, sys.stdout)
     except KeyboardInterrupt:
         return 1  # pragma: no cover
 
