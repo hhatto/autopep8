@@ -3063,7 +3063,7 @@ class CommandLineTests(unittest.TestCase):
 
     def test_standard_in(self):
         line = 'print( 1 )\n'
-        fixed = 'print(1)\n'
+        fixed = 'print(1)' + os.linesep
         process = Popen(list(AUTOPEP8_CMD_TUPLE) +
                         ['-'],
                         stdout=PIPE,
