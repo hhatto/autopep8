@@ -4,11 +4,6 @@
 import autopep8
 
 
-README_PATH = 'README.rst'
-BEFORE_KEY = 'Before running autopep8.\n\n.. code-block:: python'
-AFTER_KEY = 'After running autopep8.\n\n.. code-block:: python'
-
-
 def split_readme(readme_path, before_key, after_key, end_key):
     """Return split readme."""
     with open(readme_path) as readme_file:
@@ -37,21 +32,25 @@ def indent(text):
 
 
 def main():
-    (top, before, bottom) = split_readme(README_PATH,
-                                         before_key=BEFORE_KEY,
-                                         after_key=AFTER_KEY,
+    readme_path = 'README.rst'
+    before_key = 'Before running autopep8.\n\n.. code-block:: python'
+    after_key = 'After running autopep8.\n\n.. code-block:: python'
+
+    (top, before, bottom) = split_readme(readme_path,
+                                         before_key=before_key,
+                                         after_key=after_key,
                                          end_key='Options::')
 
     import textwrap
     new_readme = '\n\n'.join([
         top,
-        BEFORE_KEY, before,
-        AFTER_KEY, indent(autopep8.fix_string(
+        before_key, before,
+        after_key, indent(autopep8.fix_string(
             textwrap.dedent(before),
             options=autopep8.parse_args(['', '--aggressive'])[0])),
         bottom])
 
-    with open(README_PATH, 'w') as output_file:
+    with open(readme_path, 'w') as output_file:
         output_file.write(new_readme)
 
 
