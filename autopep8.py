@@ -2302,9 +2302,11 @@ def main():
 
         if args == ['-']:
             assert not options.in_place
-            output = LineEndingWrapper(sys.stdout)
-            output.write(fix_string(sys.stdin.read(),
-                                    options))
+
+            # LineEndingWrapper is unnecessary here due to the symmetry between
+            # standard in and standard out.
+            sys.stdout.write(fix_string(sys.stdin.read(),
+                                        options))
         else:
             if options.in_place or options.diff:
                 filenames = list(set(args))
