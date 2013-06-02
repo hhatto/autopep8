@@ -14,14 +14,14 @@ test: test_basic test_diff test_unit
 
 test_basic:
 	@echo '--->  Running basic test'
-	${PYTHON} autopep8.py test/example.py > .tmp.test.py
+	${PYTHON} autopep8.py --aggressive test/example.py > .tmp.test.py
 	pep8 --repeat .tmp.test.py
 	@rm .tmp.test.py
 
 test_diff:
 	@echo '--->  Running --diff test'
 	@cp test/example.py .tmp.example.py
-	${PYTHON} autopep8.py --diff .tmp.example.py > .tmp.example.py.patch
+	${PYTHON} autopep8.py --aggressive --diff .tmp.example.py > .tmp.example.py.patch
 	patch < .tmp.example.py.patch
 	@rm .tmp.example.py.patch
 	pep8 --repeat .tmp.example.py && ${PYTHON} -m py_compile .tmp.example.py
