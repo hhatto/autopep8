@@ -9,3 +9,4 @@ htmlcov
 *.class
 coverage.xml
 README.html
+pep8.py
