@@ -2016,8 +2016,18 @@ def parse_args(args):
     if not len(args) and not options.list_fixes:
         parser.error('incorrect number of arguments')
 
-    if '-' in args and len(args) > 1:
-        parser.error('cannot mix stdin and regular files')
+    if '-' in args:
+        if len(args) > 1:
+            parser.error('cannot mix stdin and regular files')
+
+        if options.diff:
+            parser.error('--diff cannot be used with standard input')
+
+        if options.in_place:
+            parser.error('--in-place cannot be used with standard input')
+
+        if options.recursive:
+            parser.error('--recursive cannot be used with standard input')
 
     if len(args) > 1 and not (options.in_place or options.diff):
         parser.error('autopep8 only takes one filename as argument '
@@ -2035,10 +2045,6 @@ def parse_args(args):
 
     if options.max_line_length <= 0:
         parser.error('--max-line-length must be greater than 0')
-
-    if args == ['-'] and (options.in_place or options.recursive):
-        parser.error('--in-place or --recursive cannot be used with '
-                     'standard input')
 
     if options.select:
         options.select = options.select.split(',')
