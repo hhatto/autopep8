@@ -163,7 +163,11 @@ def timeout(_, __):
 
 def compare_bytecode(filename_a, filename_b):
     import pydiff
-    diff = pydiff.diff_bytecode_of_files(filename_a, filename_b)
+    try:
+        diff = pydiff.diff_bytecode_of_files(filename_a, filename_b)
+    except pydiff.DisassembleSyntaxError:
+        return True
+
     if diff:
         sys.stderr.write('New bytecode does not match original:\n' +
                          diff + '\n')
