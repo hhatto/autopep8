@@ -715,7 +715,7 @@ class FixPEP8(object):
             aggressive=self.options.aggressive)
 
         candidates = list(sorted(
-            set(candidates),
+            set(candidates).union([target]),
             key=lambda x: line_shortening_rank(x,
                                                self.newline,
                                                self.indent_word)))
@@ -729,11 +729,6 @@ class FixPEP8(object):
 
         for _candidate in candidates:
             assert _candidate is not None
-
-            if (get_longest_length(_candidate, self.newline) >=
-                    get_longest_length(target, self.newline)):
-                continue
-
             self.source[line_index] = _candidate
             return
 

@@ -1877,15 +1877,15 @@ fooooooooooooooooooooooooooooooo000000000000000000000000 = [1,
                                                             ('TransferTime', 'FLOAT')
                                                            ]
 """
-        fixed = """
+        with autopep8_context(line, options=['--select=E501']) as result:
+            self.assertEqual(line, result)
 
-fooooooooooooooooooooooooooooooo000000000000000000000000 = [1,
-                                                            ('TransferTime',
-                                                             'FLOAT')
-                                                           ]
+    def test_e501_should_avoid_making_things_ugly(self):
+        line = """\
+x = ('                                                                                             ')
 """
         with autopep8_context(line, options=['--select=E501']) as result:
-            self.assertEqual(fixed, result)
+            self.assertEqual(line, result)
 
     def test_e501_arithmetic_operator_with_indent(self):
         line = """
