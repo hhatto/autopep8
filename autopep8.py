@@ -1931,7 +1931,7 @@ def global_fixes():
 def apply_global_fixes(source, options):
     """Run global fixes on source code.
 
-    Thsese are fixes that only need be done once (unlike those in FixPEP8,
+    These are fixes that only need be done once (unlike those in FixPEP8,
     which are dependent on pep8).
 
     """
