@@ -631,6 +631,16 @@ sys.maxint
             autopep8.count_unbalanced_brackets(
                 "'','.join(['%s=%s' % (col, col)')"))
 
+    def test_refactor_with_2to3(self):
+        self.assertEqual(
+            '1 in {}\n',
+            autopep8.refactor_with_2to3('{}.has_key(1)\n', ['has_key']))
+
+    def test_refactor_with_2to3_should_handle_syntax_error_gracefully(self):
+        self.assertEqual(
+            '{}.has_key(1\n',
+            autopep8.refactor_with_2to3('{}.has_key(1\n', ['has_key']))
+
 
 class SystemTests(unittest.TestCase):
 

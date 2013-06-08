@@ -1648,7 +1648,12 @@ def refactor_with_2to3(source_text, fixer_names):
     from lib2to3.refactor import RefactoringTool
     fixers = ['lib2to3.fixes.fix_' + name for name in fixer_names]
     tool = RefactoringTool(fixer_names=fixers, explicit=fixers)
-    return unicode(tool.refactor_string(source_text, name=''))
+
+    from lib2to3.pgen2 import tokenize as lib2to3_tokenize
+    try:
+        return unicode(tool.refactor_string(source_text, name=''))
+    except lib2to3_tokenize.TokenError:
+        return source_text
 
 
 def break_multiline(source_text, newline, indent_word):
