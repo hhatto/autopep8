@@ -93,7 +93,7 @@ def check_syntax(filename, raise_error=False):
     """Return True if syntax is okay."""
     with autopep8.open_with_encoding(filename) as input_file:
         try:
-            compile(input_file.read(), '<string>', 'exec')
+            compile(input_file.read(), '<string>', 'exec', dont_inherit=True)
             return True
         except (SyntaxError, TypeError, UnicodeDecodeError):
             if raise_error:
@@ -163,10 +163,7 @@ def timeout(_, __):
 
 def compare_bytecode(filename_a, filename_b):
     import pydiff
-    try:
-        diff = pydiff.diff_bytecode_of_files(filename_a, filename_b)
-    except pydiff.DisassembleSyntaxError:
-        return True
+    diff = pydiff.diff_bytecode_of_files(filename_a, filename_b)
 
     if diff:
         sys.stderr.write('New bytecode does not match original:\n' +
