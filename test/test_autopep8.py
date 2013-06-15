@@ -262,6 +262,12 @@ def foo():
             '#!/bin/bash\n',
             autopep8.fix_e26('#!/bin/bash\n'))
 
+    def test_format_block_comments_should_only_touch_real_comments(self):
+        commented_out_code = '#x = 1'
+        self.assertEqual(
+            commented_out_code,
+            autopep8.fix_e26(commented_out_code))
+
     def test_fix_file(self):
         self.assertIn(
             'import ',
@@ -2063,12 +2069,18 @@ if True:
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
 
 # http://foo.bar/abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-
+
+# The following is ugly commented-out code and should not be touched.
+#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
 """
         fixed = """123
                         # This is a long comment that should be wrapped. I will
                         # wrap it using textwrap to be within 72 characters.
 
 # http://foo.bar/abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-
+
+# The following is ugly commented-out code and should not be touched.
+#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)

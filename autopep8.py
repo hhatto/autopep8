@@ -863,13 +863,15 @@ def fix_e26(source):
         # Optimization.
         return source
 
-    string_line_numbers = multiline_string_lines(source,
-                                                 include_docstrings=True)
+    ignored_line_numbers = multiline_string_lines(
+        source,
+        include_docstrings=True) | set(commented_out_code_lines(source))
+
     fixed_lines = []
     sio = StringIO(source)
     for (line_number, line) in enumerate(sio.readlines(), start=1):
         if (line.lstrip().startswith('#') and
-                line_number not in string_line_numbers):
+                line_number not in ignored_line_numbers):
 
             indentation = _get_indentation(line)
             line = line.lstrip()
@@ -1723,6 +1725,8 @@ def filter_results(source, results, aggressive=False):
     all_string_line_numbers = multiline_string_lines(
         source, include_docstrings=True)
 
+    commented_out_code_line_numbers = commented_out_code_lines(source)
+
     split_source = [None] + source.splitlines()
 
     for r in results:
@@ -1747,6 +1751,9 @@ def filter_results(source, results, aggressive=False):
         if issue_id in ['e711', 'e712'] and not aggressive:
             continue
 
+        if r['line'] in commented_out_code_line_numbers:
+            continue
+
         yield r
 
 
@@ -1766,8 +1773,6 @@ def multiline_string_lines(source, include_docstrings=False):
             token_type = t[0]
             start_row = t[2][0]
             end_row = t[3][0]
-            start_row = t[2][0]
-            end_row = t[3][0]
 
             if (token_type == tokenize.STRING and start_row != end_row):
                 if (include_docstrings or
@@ -1777,6 +1782,35 @@ def multiline_string_lines(source, include_docstrings=False):
                     line_numbers |= set(range(1 + start_row, 1 + end_row))
 
             previous_token_type = token_type
+    except (SyntaxError, tokenize.TokenError):
+        pass
+
+    return line_numbers
+
+
+def commented_out_code_lines(source):
+    """Return line numbers of comments that are likely code.
+
+    Commented-out code is bad practice, but modifying it just adds even more
+    clutter.
+
+    """
+    sio = StringIO(source)
+    line_numbers = []
+    try:
+        for t in tokenize.generate_tokens(sio.readline):
+            token_type = t[0]
+            token_string = t[1]
+            start_row = t[2][0]
+
+            if token_type == tokenize.COMMENT:
+                stripped_line = token_string.lstrip('#').strip()
+                if (
+                    ' ' in stripped_line and
+                    '#' not in stripped_line and
+                    check_syntax(stripped_line)
+                ):
+                    line_numbers.append(start_row)
     except (SyntaxError, tokenize.TokenError):
         pass
 
