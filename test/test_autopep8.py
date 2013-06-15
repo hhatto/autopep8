@@ -647,6 +647,16 @@ sys.maxint
             '{}.has_key(1\n',
             autopep8.refactor_with_2to3('{}.has_key(1\n', ['has_key']))
 
+    def test_commented_out_code_lines(self):
+        self.assertEqual(
+            [1, 4],
+            autopep8.commented_out_code_lines("""\
+#x = 1
+#Hello
+#Hello world.
+#html_use_index = True
+"""))
+
 
 class SystemTests(unittest.TestCase):
 
