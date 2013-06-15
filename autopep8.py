@@ -510,10 +510,7 @@ class FixPEP8(object):
                                offset=offset,
                                replacement='')
 
-        if fixed == target:
-            return []
-        else:
-            self.source[line_index] = fixed
+        self.source[line_index] = fixed
 
     def fix_e224(self, result):
         """Remove extraneous whitespace around operator."""
