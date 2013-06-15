@@ -223,6 +223,9 @@ class FixPEP8(object):
             if hasattr(self, fixed_methodname):
                 fix = getattr(self, fixed_methodname)
 
+                line_index = result['line'] - 1
+                original_line = self.source[line_index]
+
                 is_logical_fix = len(inspect.getargspec(fix).args) > 2
                 if is_logical_fix:
                     # Do not run logical fix if any lines have been modified.
@@ -237,6 +240,12 @@ class FixPEP8(object):
                 else:
                     modified_lines = fix(result)
 
+                if (
+                    modified_lines is None and
+                    self.source[line_index] == original_line
+                ):
+                    modified_lines = []
+
                 if modified_lines:
                     completed_lines.update(modified_lines)
                 elif modified_lines == []:  # Empty list means no fix
@@ -245,7 +254,7 @@ class FixPEP8(object):
                             '--->  Not fixing {f} on line {l}'.format(
                                 f=result['id'], l=result['line']),
                             file=sys.stderr)
-                else:  # We assume one-line fix when None
+                else:  # We assume one-line fix when None.
                     completed_lines.add(result['line'])
             else:
                 if self.options.verbose >= 3:
@@ -684,11 +693,8 @@ class FixPEP8(object):
                 line=target,
                 newline=self.newline,
                 max_line_length=self.options.max_line_length)
-            if fixed == self.source[line_index]:
-                return []
-            else:
-                self.source[line_index] = fixed
-                return
+            self.source[line_index] = fixed
+            return
 
         indent = _get_indentation(target)
         source = target[len(indent):]
@@ -729,11 +735,8 @@ class FixPEP8(object):
 
         for _candidate in candidates:
             assert _candidate is not None
-            if self.source[line_index] == _candidate:
-                return []
-            else:
-                self.source[line_index] = _candidate
-                return
+            self.source[line_index] = _candidate
+            return
 
         return []
 
