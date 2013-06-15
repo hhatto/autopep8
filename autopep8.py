@@ -729,8 +729,11 @@ class FixPEP8(object):
 
         for _candidate in candidates:
             assert _candidate is not None
-            self.source[line_index] = _candidate
-            return
+            if self.source[line_index] == _candidate:
+                return []
+            else:
+                self.source[line_index] = _candidate
+                return
 
         return []
 
