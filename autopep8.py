@@ -219,7 +219,7 @@ class FixPEP8(object):
             if result['line'] in completed_lines:
                 continue
 
-            fixed_methodname = 'fix_%s' % result['id'].lower()
+            fixed_methodname = 'fix_' + result['id'].lower()
             if hasattr(self, fixed_methodname):
                 fix = getattr(self, fixed_methodname)
 
@@ -258,13 +258,15 @@ class FixPEP8(object):
                     completed_lines.add(result['line'])
             else:
                 if self.options.verbose >= 3:
-                    print("--->  '%s' is not defined." % fixed_methodname,
-                          file=sys.stderr)
+                    print(
+                        "--->  '{0}' is not defined.".format(fixed_methodname),
+                        file=sys.stderr)
+
                     info = result['info'].strip()
-                    print('--->  %s:%s:%s:%s' % (self.filename,
-                                                 result['line'],
-                                                 result['column'],
-                                                 info),
+                    print('--->  {0}:{1}:{2}:{3}'.format(self.filename,
+                                                         result['line'],
+                                                         result['column'],
+                                                         info),
                           file=sys.stderr)
 
     def fix(self):
@@ -838,7 +840,7 @@ class FixPEP8(object):
     def fix_w291(self, result):
         """Remove trailing whitespace."""
         fixed_line = self.source[result['line'] - 1].rstrip()
-        self.source[result['line'] - 1] = '%s%s' % (fixed_line, self.newline)
+        self.source[result['line'] - 1] = fixed_line + self.newline
 
     def fix_w293(self, result):
         """Remove trailing whitespace on blank line."""
