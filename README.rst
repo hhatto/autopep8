@@ -242,7 +242,9 @@ more aggressive fixes, use the ``--aggressive`` option::
 
     $ autopep8 --aggressive <filename>
 
-``--aggressive`` will also shorten lines more aggressively.
+``--aggressive`` will also shorten lines more aggressively. It will also remove
+trailing whitespace more aggressively. (Usually, we don't touch trailing
+whitespace in docstrings other multiline strings.)
 
 
 Use as a module
