@@ -6,6 +6,7 @@ build
 dist
 htmlcov
 .tox
+.travis-solo/
 *.class
 coverage.xml
 README.html
