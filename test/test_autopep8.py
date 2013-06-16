@@ -1806,7 +1806,7 @@ print(111, 111, 111, 111, 222, 222, 222, 222,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_basic_with_inline_comments(self):
+    def test_e501_with_inline_comments(self):
         line = """\
 '                                                          '  # Long inline comments should be moved above.
 if True:
@@ -1821,6 +1821,15 @@ if True:
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
+
+    def test_e501_with_inline_comments_should_skip_edge_cases(self):
+        line = """\
+if True:
+    x = \\
+        '                                                          '  # Long inline comments should be moved above.
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
 
     def test_e501_basic_should_prefer_balanced_brackets(self):
         line = """\

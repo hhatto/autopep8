@@ -717,7 +717,9 @@ class FixPEP8(object):
         candidates = shorten_line(
             tokens, source, indent,
             self.indent_word, newline=self.newline,
-            aggressive=self.options.aggressive)
+            aggressive=self.options.aggressive,
+            previous_line=(
+                self.source[line_index - 1] if line_index >= 1 else ''))
 
         candidates = list(sorted(
             set(candidates).union([target]),
@@ -1042,7 +1044,7 @@ def _priority_key(pep8_result):
 
 
 def shorten_line(tokens, source, indentation, indent_word, newline,
-                 aggressive=False):
+                 aggressive=False, previous_line=''):
     """Separate line at OPERATOR.
 
     Multiple candidates will be yielded.
@@ -1053,7 +1055,8 @@ def shorten_line(tokens, source, indentation, indent_word, newline,
                                    indentation=indentation,
                                    indent_word=indent_word,
                                    newline=newline,
-                                   aggressive=aggressive):
+                                   aggressive=aggressive,
+                                   previous_line=previous_line):
         yield candidate
 
     if aggressive:
@@ -1072,7 +1075,7 @@ def shorten_line(tokens, source, indentation, indent_word, newline,
 
 
 def _shorten_line(tokens, source, indentation, indent_word, newline,
-                  aggressive=False):
+                  aggressive=False, previous_line=''):
     """Separate line at OPERATOR.
 
     Multiple candidates will be yielded.
@@ -1082,7 +1085,10 @@ def _shorten_line(tokens, source, indentation, indent_word, newline,
         token_type = tkn[0]
         token_string = tkn[1]
 
-        if token_type == tokenize.COMMENT:
+        if (
+            token_type == tokenize.COMMENT and
+            not previous_line.rstrip().endswith('\\')
+        ):
             # Move inline comments to previous line.
             offset = tkn[2][1]
             first = source[:offset]
