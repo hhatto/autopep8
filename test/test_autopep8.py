@@ -180,6 +180,20 @@ def foo():
 '''
 """.lstrip()))
 
+    def test_multiline_string_should_report_doctests(self):
+        self.assertEqual(
+            set([3, 4, 5, 7]),
+            autopep8.multiline_string_lines(
+                """
+def foo():
+    '''Foo.
+    >>> 1
+    1
+    '''
+    hello = '''
+'''
+""".lstrip()))
+
     def test_supported_fixes(self):
         self.assertIn('E101', [f[0] for f in autopep8.supported_fixes()])
 
@@ -2725,6 +2739,11 @@ correct = 'good syntax ?' in dict()
         fixed = 'raise ValueError("""\nhello""")\n'
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
+
+    def test_w602_multiline_with_trailing_spaces_non_aggressive(self):
+        line = 'raise ValueError, """\nhello"""    \n'
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
 
     def test_w602_multiline_with_escaped_newline(self):
         line = 'raise ValueError, \\\n"""\nhello"""\n'
