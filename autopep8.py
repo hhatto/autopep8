@@ -1741,16 +1741,15 @@ def filter_results(source, results, aggressive=False):
             elif issue_id in ['e501', 'w191']:
                 continue
 
-            # Do not modify doctests and multiline strings at all in
-            # non-aggressive mode. Remove trailing whitespace could break
-            # doctests.
-            if not aggressive:
-                if issue_id.startswith('w29') or issue_id.startswith('w39'):
-                    continue
-
         if r['line'] in all_string_line_numbers:
             if issue_id in ['e501']:
                 continue
+
+            # Do not modify multiline strings in non-aggressive mode. Remove
+            # trailing whitespace could break doctests.
+            if not aggressive:
+                if issue_id.startswith('w29') or issue_id.startswith('w39'):
+                    continue
 
         # Filter out incorrect E101 reports when there are no tabs.
         # pep8 will complain about this even if the tab indentation found
@@ -1781,15 +1780,13 @@ def multiline_string_lines(source, include_docstrings=False):
     try:
         for t in tokenize.generate_tokens(sio.readline):
             token_type = t[0]
-            token_string = t[1]
             start_row = t[2][0]
             end_row = t[3][0]
 
             if (token_type == tokenize.STRING and start_row != end_row):
                 if (
                     include_docstrings or
-                    previous_token_type != tokenize.INDENT or
-                    '>>>' in token_string  # doctests are important.
+                    previous_token_type != tokenize.INDENT
                 ):
                     # We increment by one since we want the contents of the
                     # string.

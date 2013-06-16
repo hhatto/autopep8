@@ -180,20 +180,6 @@ def foo():
 '''
 """.lstrip()))
 
-    def test_multiline_string_should_report_doctests(self):
-        self.assertEqual(
-            set([3, 4, 5, 7]),
-            autopep8.multiline_string_lines(
-                """
-def foo():
-    '''Foo.
-    >>> 1
-    1
-    '''
-    hello = '''
-'''
-""".lstrip()))
-
     def test_supported_fixes(self):
         self.assertIn('E101', [f[0] for f in autopep8.supported_fixes()])
 
