@@ -2726,11 +2726,6 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
-    def test_w602_multiline_with_trailing_spaces_non_aggressive(self):
-        line = 'raise ValueError, """\nhello"""    \n'
-        with autopep8_context(line) as result:
-            self.assertEqual(line, result)
-
     def test_w602_multiline_with_escaped_newline(self):
         line = 'raise ValueError, \\\n"""\nhello"""\n'
         fixed = 'raise ValueError("""\nhello""")\n'
@@ -2850,6 +2845,18 @@ correct = 'good syntax ?' in dict()
     def test_w604_with_multiple_lines(self):
         line = '`(1\n      )`\n'
         fixed = 'repr((1\n      ))\n'
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_trailing_whitespace_in_multiline_string(self):
+        line = 'x = """ \nhello"""    \n'
+        fixed = 'x = """ \nhello"""\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_trailing_whitespace_in_multiline_string_aggressive(self):
+        line = 'x = """ \nhello"""    \n'
+        fixed = 'x = """\nhello"""\n'
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 

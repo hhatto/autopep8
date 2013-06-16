@@ -1745,11 +1745,13 @@ def filter_results(source, results, aggressive=False):
             if issue_id in ['e501']:
                 continue
 
+        # We must offset by 1 for lines that contain the trailing contents of
+        # multiline strings.
+        if not aggressive and (r['line'] + 1) in all_string_line_numbers:
             # Do not modify multiline strings in non-aggressive mode. Remove
             # trailing whitespace could break doctests.
-            if not aggressive:
-                if issue_id.startswith('w29') or issue_id.startswith('w39'):
-                    continue
+            if issue_id.startswith('w29') or issue_id.startswith('w39'):
+                continue
 
         # Filter out incorrect E101 reports when there are no tabs.
         # pep8 will complain about this even if the tab indentation found
