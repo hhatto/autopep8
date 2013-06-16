@@ -1079,9 +1079,20 @@ def _shorten_line(tokens, source, indentation, indent_word, newline,
 
     """
     for tkn in tokens:
-        # Don't break on '=' after keyword as this violates PEP 8.
-        if token.OP == tkn[0] and tkn[1] != '=':
-            assert tkn[0] != token.INDENT
+        token_type = tkn[0]
+        token_string = tkn[1]
+
+        if token_type == tokenize.COMMENT:
+            # Move inline comments to previous line.
+            offset = tkn[2][1]
+            first = source[:offset]
+            second = source[offset:]
+            yield (indentation + second.strip() + newline +
+                   indentation + first.strip() + newline)
+        elif token_type == token.OP and token_string != '=':
+            # Don't break on '=' after keyword as this violates PEP 8.
+
+            assert token_type != token.INDENT
 
             offset = tkn[2][1] + 1
             first = source[:offset]
@@ -1104,7 +1115,7 @@ def _shorten_line(tokens, source, indentation, indent_word, newline,
             # Do end a line with a dot
             if first.rstrip().endswith('.'):
                 continue
-            if tkn[1] in '+-*/':
+            if token_string in '+-*/':
                 fixed = first + ' \\' + newline + second
             else:
                 fixed = first + newline + second
