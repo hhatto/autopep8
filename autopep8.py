@@ -400,7 +400,16 @@ class FixPEP8(object):
     def fix_e122(self, result, logical):
         """Add absent indentation for hanging indentation."""
         # Fix by adding an initial indent.
-        return self._fix_reindent(result, logical)
+        modified_lines = self._fix_reindent(result, logical)
+        if modified_lines:
+            return modified_lines
+        else:
+            # Fallback
+            line_index = result['line'] - 1
+            original_line = self.source[line_index]
+            indentation = _get_indentation(original_line)
+            self.source[line_index] = (indentation + self.indent_word +
+                                       original_line.lstrip())
 
     def fix_e123(self, result, logical):
         """Align closing bracket to match opening bracket."""

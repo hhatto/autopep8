@@ -14,6 +14,7 @@ else:
 import contextlib
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
+from distutils.version import StrictVersion
 
 try:
     from StringIO import StringIO
@@ -24,6 +25,8 @@ ROOT_DIR = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
 
 sys.path.insert(0, ROOT_DIR)
 import autopep8
+
+import pep8
 
 if 'AUTOPEP8_COVERAGE' in os.environ and int(os.environ['AUTOPEP8_COVERAGE']):
     AUTOPEP8_CMD_TUPLE = ('coverage', 'run', '--branch', '--parallel',
@@ -1181,6 +1184,33 @@ list(''.join([
 ]))
 """
         with autopep8_context(line, options=['--select=E12']) as result:
+            self.assertEqual(fixed, result)
+
+    @unittest.skipIf(StrictVersion(pep8.__version__) <
+                     StrictVersion('1.4.6a0'),
+                     'older pep8 versions do not detect this')
+    def test_e122_with_fallback(self):
+        """The "Development Status" line won't get fixed because pep8 doesn't
+        detect it for some reason."""
+        line = """\
+foooo('',
+      scripts=[''],
+      classifiers=[
+      'Development Status :: 4 - Beta',
+      'Environment :: Console',
+      'Intended Audience :: Developers',
+      ])
+"""
+        fixed = """\
+foooo('',
+      scripts=[''],
+      classifiers=[
+      'Development Status :: 4 - Beta',
+          'Environment :: Console',
+          'Intended Audience :: Developers',
+      ])
+"""
+        with autopep8_context(line, options=[]) as result:
             self.assertEqual(fixed, result)
 
     def test_e123(self):
