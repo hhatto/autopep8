@@ -1526,7 +1526,7 @@ class Wrapper(object):
         last_indent = (0, 0)
         last_token_multiline = None
 
-        for token_type, text, start, end, _ in self.tokens:
+        for token_type, text, start, end, line in self.tokens:
             newline = row < start[0] - first_row
             if newline:
                 row = start[0] - first_row
@@ -1606,7 +1606,7 @@ class Wrapper(object):
                 # pep8.
                 visual_indent = indent_chances.get(start[1])
                 last_indent = start
-                rel_indent[row] = start[1] - indent_level
+                rel_indent[row] = pep8.expand_indent(line) - indent_level
                 hang = rel_indent[row] - rel_indent[open_row]
 
                 if token_type == tokenize.OP and text in ']})':
