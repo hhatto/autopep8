@@ -1793,7 +1793,7 @@ def filter_results(source, results, aggressive=False):
             continue
 
         if r['line'] in commented_out_code_line_numbers:
-            if issue_id in ['e501', 'e261', 'e262']:
+            if issue_id == 'e501' or issue_id.startswith('e26'):
                 continue
 
         yield r
