@@ -1582,6 +1582,22 @@ class Foo(object):
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e231_should_only_do_ws_comma_once(self):
+        """If we don't check appropriately, we end up doing ws_comma multiple
+        times and skipping all other fixes."""
+        line = """\
+print( 1 )
+foo[0,:]
+bar[zap[0][0]:zig[0][0],:]
+"""
+        fixed = """\
+print(1)
+foo[0, :]
+bar[zap[0][0]:zig[0][0], :]
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e241(self):
         line = 'l = (1,  2)\n'
         fixed = 'l = (1, 2)\n'
