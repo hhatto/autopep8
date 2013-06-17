@@ -1275,6 +1275,9 @@ if True:
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(fixed, result)
 
+    @unittest.skipIf(StrictVersion(pep8.__version__) <
+                     StrictVersion('1.4.6a0'),
+                     'older pep8 versions do not detect this')
     def test_e126_should_not_interfere_with_other_fixes(self):
         line = """\
 self.assertEqual('bottom 1',
