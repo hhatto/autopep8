@@ -1793,9 +1793,8 @@ def filter_results(source, results, aggressive=False):
             continue
 
         if r['line'] in commented_out_code_line_numbers:
-            for prefix in ['e501', 'e26']:
-                if issue_id.startswith(prefix):
-                    continue
+            if issue_id in ['e501', 'e261', 'e262']:
+                continue
 
         yield r
 
