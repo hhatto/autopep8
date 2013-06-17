@@ -213,6 +213,8 @@ class FixPEP8(object):
         self.fix_e703 = self.fix_e702
         self.fix_w191 = self.fix_e101
 
+        self._ws_comma_done = False
+
     def _fix_source(self, results):
         completed_lines = set()
         for result in sorted(results, key=_priority_key):
@@ -547,8 +549,10 @@ class FixPEP8(object):
     def fix_e231(self, result):
         """Add missing whitespace."""
         # Optimize for comma case. This will fix all commas in the full source
-        # code in one pass.
-        if ',' in result['info']:
+        # code in one pass. Don't do this more than once. If it fails the first
+        # time, there is no point in trying again.
+        if ',' in result['info'] and not self._ws_comma_done:
+            self._ws_comma_done = True
             original = ''.join(self.source)
             new = refactor(original, ['ws_comma'])
             if original.strip() != new.strip():
