@@ -1674,6 +1674,12 @@ bar[zap[0][0]:zig[0][0], :]
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e261_with_inline_commented_out_code(self):
+        line = '1 # 0 + 0\n'
+        fixed = '1  # 0 + 0\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e261_with_dictionary(self):
         line = 'd = {# comment\n1: 2}\n'
         fixed = 'd = {  # comment\n    1: 2}\n'

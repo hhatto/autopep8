@@ -1845,6 +1845,11 @@ def commented_out_code_lines(source):
             token_type = t[0]
             token_string = t[1]
             start_row = t[2][0]
+            line = t[4]
+
+            # Ignore inline comments.
+            if not line.lstrip().startswith('#'):
+                continue
 
             if token_type == tokenize.COMMENT:
                 stripped_line = token_string.lstrip('#').strip()
