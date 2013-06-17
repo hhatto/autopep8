@@ -1275,6 +1275,22 @@ if True:
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e126_should_not_interfere_with_other_fixes(self):
+        line = """\
+self.assertEqual('bottom 1',
+    SimpleNamedNode.objects.filter(id__gt=1).exclude(
+        name='bottom 3').filter(
+            name__in=['bottom 3', 'bottom 1'])[0].name)
+"""
+        fixed = """\
+self.assertEqual('bottom 1',
+                 SimpleNamedNode.objects.filter(id__gt=1).exclude(
+                     name='bottom 3').filter(
+                     name__in=['bottom 3', 'bottom 1'])[0].name)
+"""
+        with autopep8_context(line, options=['--select=E12']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e127(self):
         line = """
 if True:
