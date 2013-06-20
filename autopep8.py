@@ -693,10 +693,10 @@ class FixPEP8(object):
         target = self.source[line_index]
 
         if target.lstrip().startswith('#'):
-            # Shorten comment if it is the last comment line.
+            last_comment = True
             try:
                 if self.source[line_index + 1].lstrip().startswith('#'):
-                    return []
+                    last_comment = False
             except IndexError:
                 pass
 
@@ -704,7 +704,8 @@ class FixPEP8(object):
             fixed = shorten_comment(
                 line=target,
                 newline=self.newline,
-                max_line_length=self.options.max_line_length)
+                max_line_length=self.options.max_line_length,
+                last_comment=last_comment)
             self.source[line_index] = fixed
             return
 
@@ -1865,7 +1866,7 @@ def commented_out_code_lines(source):
     return line_numbers
 
 
-def shorten_comment(line, newline, max_line_length):
+def shorten_comment(line, newline, max_line_length, last_comment=False):
     """Return trimmed or split long comment line."""
     assert len(line) > max_line_length
     line = line.rstrip()
@@ -1880,7 +1881,7 @@ def shorten_comment(line, newline, max_line_length):
             not line[-1].isalnum()):
         # Trim comments that end with things like ---------
         return line[:max_line_length] + newline
-    elif re.match(r'\s*#+\s*\w+', line):
+    elif last_comment and re.match(r'\s*#+\s*\w+', line):
         import textwrap
         split_lines = textwrap.wrap(line.lstrip(' \t#'),
                                     initial_indent=indentation,
