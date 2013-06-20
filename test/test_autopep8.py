@@ -2956,6 +2956,12 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_execfile_in_lambda_should_not_be_modified(self):
+        """Modifying this to the exec() form is invalid in Python 2."""
+        line = 'lambda: execfile("foo.py")\n'
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(line, result)
+
 
 class CommandLineTests(unittest.TestCase):
 

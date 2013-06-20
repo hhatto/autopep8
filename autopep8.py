@@ -944,7 +944,6 @@ def fix_w6(source):
                     ['apply',
                      'except',
                      'exec',
-                     'execfile',
                      'exitfunc',
                      'has_key',
                      'idioms',
