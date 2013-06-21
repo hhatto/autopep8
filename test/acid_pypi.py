@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 """Run acid test against latest packages on PyPi."""
 
+from __future__ import print_function
+
 import os
 import subprocess
 import sys
@@ -78,8 +80,12 @@ def main():
     skipped_packages = []
     last_hours = 1
     while True:
-        if opts.timeout > 0 and time.time() - start_time > opts.timeout:
-            break
+        if opts.timeout > 0:
+            elapsed = time.time() - start_time
+            print('Time: {} / {}'.format(elapsed, opts.timeout),
+                  file=sys.stderr)
+            if elapsed > opts.timeout:
+                break
 
         if args:
             if not names:
