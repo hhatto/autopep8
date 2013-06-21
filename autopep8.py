@@ -2207,8 +2207,9 @@ def line_shortening_rank(candidate, newline, indent_word):
             else:
                 rank -= 10
 
-        if lines[0].endswith('(['):
-            rank += 10
+        if lines[0].endswith('(') and lines[0][:-1].endswith(' '):
+            # "1 * (\n" is ugly as hell.
+            rank += 100
 
         for current_line in lines:
             for bad_start in ['.', '%', '+', '-', '/']:

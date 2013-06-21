@@ -2009,6 +2009,17 @@ x = ('                                                                          
         with autopep8_context(line, options=['--select=E501']) as result:
             self.assertEqual(line, result)
 
+    def test_e501_should_not_try_to_break_at_every_paren_in_arithmetic(self):
+        line = """\
+term3 = w6 * c5 * (8.0 * psi4 * (11.0 - 24.0 * t2) - 28 * psi3 * (1 - 6.0 * t2) + psi2 * (1 - 32 * t2) - psi * (2.0 * t2) + t4) / 720.0
+"""
+        fixed = """\
+term3 = w6 * c5 * (8.0 * psi4 * (11.0 - 24.0 * t2) - 28 * psi3 *
+                   (1 - 6.0 * t2) + psi2 * (1 - 32 * t2) - psi * (2.0 * t2) + t4) / 720.0
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_arithmetic_operator_with_indent(self):
         line = """
 
