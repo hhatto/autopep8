@@ -2207,7 +2207,7 @@ def line_shortening_rank(candidate, newline, indent_word):
             else:
                 rank -= 10
 
-        if lines[0].endswith('(') and re.match(r'.*[+\-\*/] \($', lines[0]):
+        if re.match(r'.*[+\-\*/] \($', lines[0]):
             # "1 * (\n" is ugly as hell.
             rank += 100
 
