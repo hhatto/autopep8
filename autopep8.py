@@ -2204,8 +2204,6 @@ def line_shortening_rank(candidate, newline, indent_word):
             if (bad_staring_symbol and
                     lines[1].lstrip().startswith(bad_staring_symbol)):
                 rank += 20
-            else:
-                rank -= 10
 
         if re.match(r'.*[+\-\*/] \($', lines[0]):
             # "1 * (\n" is ugly as hell.
