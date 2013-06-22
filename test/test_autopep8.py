@@ -106,6 +106,13 @@ class UnitTests(unittest.TestCase):
                 'foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
                 newline='\n', indent_word='    '))
 
+    def test_break_multiline_with_percent(self):
+        self.assertEqual(
+            'foo_bar_zap_bing_bang_boom(\n    "                                                                         %s" %\n',
+            autopep8.break_multiline(
+                'foo_bar_zap_bing_bang_boom("                                                                         %s" %\n',
+                newline='\n', indent_word='    '))
+
     def test_break_multiline_with_long_function(self):
         self.assertEqual(
             'foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom(\n'

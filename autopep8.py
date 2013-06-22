@@ -1702,11 +1702,11 @@ def break_multiline(source_text, newline, indent_word):
     # Handle special case only.
     for symbol in '([{':
         # Only valid if symbol is not on a line by itself.
-        if (symbol in source_text and not source_text.strip() == symbol):
-
-            if not source_text.rstrip()[-1] == ',':
-                continue
-
+        if (
+            symbol in source_text and
+            source_text.strip() != symbol and
+            source_text.rstrip().endswith((',', '%'))
+        ):
             index = 1 + source_text.find(symbol)
 
             if index <= len(indent_word) + len(indentation):
