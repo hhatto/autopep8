@@ -2265,11 +2265,6 @@ def split_at_offsets(line, offsets):
     return result
 
 
-def get_longest_length(text, newline):
-    """Return length of longest line."""
-    return max([len(line) for line in text.split(newline)])
-
-
 class LineEndingWrapper(object):
 
     r"""Replace line endings to work with sys.stdout.
