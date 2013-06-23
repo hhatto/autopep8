@@ -4,6 +4,7 @@
 *.swp
 .tox
 .travis-solo/
+.build-*/
 README.html
 __pycache__
 build
