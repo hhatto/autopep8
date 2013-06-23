@@ -9,7 +9,7 @@ python:
 
 install:
     - if [ "$TRAVIS_PYTHON_VERSION" == "2.6" ]; then pip --quiet install unittest2; fi
-    - python setup.py --quiet install
+    - python setup.py --quiet build --build-base=".build-$TRAVIS_PYTHON_VERSION" install
 
 before_script:
     # This is needed for Python multiprocessing.
