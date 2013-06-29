@@ -944,7 +944,6 @@ def fix_w6(source):
     return refactor(source,
                     ['apply',
                      'except',
-                     'exec',
                      'exitfunc',
                      'has_key',
                      'idioms',
