@@ -2051,7 +2051,7 @@ def extract_code_from_function(function):
 
 def parse_args(args):
     """Parse command-line options."""
-    parser = OptionParser(usage='Usage: autopep8 [options] '
+    parser = OptionParser(usage='Usage: %prog [options] '
                                 '[filename [filename ...]]'
                                 '\nUse filename \'-\'  for stdin.',
                           version='%prog {0}'.format(__version__),
