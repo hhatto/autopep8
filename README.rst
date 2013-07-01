@@ -244,7 +244,10 @@ more aggressive fixes, use the ``--aggressive`` option::
 
 ``--aggressive`` will also shorten lines more aggressively. It will also remove
 trailing whitespace more aggressively. (Usually, we don't touch trailing
-whitespace in docstrings other multiline strings.)
+whitespace in docstrings other multiline strings. And to do even more
+aggressive changes to docstrings, use docformatter_.)
+
+.. _docformatter: https://github.com/myint/docformatter
 
 
 Use as a module
