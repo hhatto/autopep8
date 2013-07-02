@@ -1192,8 +1192,6 @@ list(''.join([
             self.assertEqual(fixed, result)
 
     def test_e122_with_fallback(self):
-        """The "Development Status" line won't get fixed because pep8 doesn't
-        detect it for some reason."""
         line = """\
 foooo('',
       scripts=[''],
