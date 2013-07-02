@@ -14,7 +14,6 @@ else:
 import contextlib
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
-from distutils.version import StrictVersion
 
 try:
     from StringIO import StringIO
@@ -26,7 +25,6 @@ ROOT_DIR = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
 sys.path.insert(0, ROOT_DIR)
 import autopep8
 
-import pep8
 
 if 'AUTOPEP8_COVERAGE' in os.environ and int(os.environ['AUTOPEP8_COVERAGE']):
     AUTOPEP8_CMD_TUPLE = ('coverage', 'run', '--branch', '--parallel',
