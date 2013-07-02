@@ -42,7 +42,7 @@ with open('README.rst') as readme:
             'Topic :: Software Development :: Quality Assurance',
         ],
         keywords='automation, pep8, format',
-        install_requires=['pep8 >= 1.4.5'],
+        install_requires=['pep8 >= 1.4.6'],
         test_suite='test.test_autopep8',
         py_modules=['autopep8'],
         zip_safe=False,
