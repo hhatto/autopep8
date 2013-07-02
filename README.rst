@@ -65,7 +65,7 @@ Before running autopep8.
     def func11():
         a=(   1,2, 3,"a"  );
         ####This is a long comment. This should be wrapped to fit within 72 characters.
-        x = [a,[100,200,300,9876543210,'This is a long string that goes on and on']]
+        some_variable = [100,200,300,9876543210,'This is a long string that goes on and on']
     def func22(): return {True: True}.has_key({'foo': 2}.has_key('foo'));
     class UselessClass(   object ):
         def __init__    ( self, bar ):
@@ -99,8 +99,12 @@ After running autopep8.
         a = (1, 2, 3, "a")
         # This is a long comment. This should be wrapped to fit within 72
         # characters.
-        x = [a, [100, 200, 300, 9876543210,
-                 'This is a long string that goes on and on']]
+        some_variable = [
+            100,
+            200,
+            300,
+            9876543210,
+            'This is a long string that goes on and on']
 
 
     def func22():
