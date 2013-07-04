@@ -155,7 +155,6 @@ def timeout(_, __):
     raise TimeoutException()
 
 
-
 def compare_bytecode(filename_a, filename_b):
     try:
         import pydiff
