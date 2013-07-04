@@ -2349,10 +2349,6 @@ def is_python_file(filename):
     except (IOError, IndexError):
         return False
 
-    if len(first_line) > 200:
-        # This is probably not even a text file.
-        return False
-
     if not PYTHON_SHEBANG_REGEX.match(first_line):
         return False
 
