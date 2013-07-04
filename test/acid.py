@@ -157,7 +157,12 @@ def timeout(_, __):
 
 
 def compare_bytecode(filename_a, filename_b):
-    import pydiff
+    try:
+        import pydiff
+    except ImportError:
+        raise SystemExit('pydiff required for bytecode comparison; '
+                         'run "pip install pydiff"')
+
     diff = pydiff.diff_bytecode_of_files(filename_a, filename_b)
 
     if diff:
