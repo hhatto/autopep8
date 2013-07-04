@@ -51,14 +51,14 @@ open_readme: readme
 	@python -m webbrowser -n "file://${PWD}/README.html"
 
 check:
-	pep8 autopep8.py setup.py test/acid.py test/acid_github.py test/acid_pypi.py
+	pep8 autopep8.py setup.py test/acid.py test/acid_github.py test/acid_pypi.py update_readme.py
 	pylint --reports=no --include-ids=yes --max-module-lines=2500 \
 		--disable=C0111,C0103,E1101,E1002,E1123,F0401,R0902,R0903,W0404,W0622,R0914,R0912,R0915,R0904,R0911,R0913,W0142 \
-		--rcfile=/dev/null autopep8.py update_readme.py setup.py
+		--rcfile=/dev/null autopep8.py setup.py update_readme.py
 	pylint --reports=no --include-ids=yes --max-module-lines=2500 \
 		--disable=C0102,C0111,C0103,C0301,C0302,F0401,R0902,R0903,W0404,W0622,R0801,R0914,R0912,R0915,R0904,R0911,R0913,W0142,W0212,W0403 \
 		--rcfile=/dev/null test/acid.py test/acid_github.py test/acid_pypi.py test/test_autopep8.py
-	./autopep8.py --diff autopep8.py setup.py update_readme.py test/test_autopep8.py
+	./autopep8.py --diff autopep8.py setup.py test/test_autopep8.py update_readme.py
 
 mutant:
 	@mut.py --disable-operator RIL -t autopep8 -u test.test_autopep8 -mc
