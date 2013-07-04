@@ -1038,8 +1038,6 @@ if (
             self.assertEqual(fixed, result)
 
     def test_e12_large(self):
-        self.maxDiff = None
-
         line = """
 class BogusController(controller.CementBaseController):
 
@@ -2141,7 +2139,6 @@ if True:
             self.assertEqual(fixed, result)
 
     def test_e501_do_not_begin_line_with_comma(self):
-        self.maxDiff = None
         # This fix is incomplete. (The line is still too long.) But it is here
         # just to confirm that we do not put a comma at the beginning of a
         # line.
@@ -2269,7 +2266,6 @@ class Useless(object):
             self.assertEqual(line, result)
 
     def test_e501_with_aggressive(self):
-        self.maxDiff = None
         line = """\
 models = {
     'auth.group': {
