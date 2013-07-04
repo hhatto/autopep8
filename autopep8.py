@@ -586,9 +586,7 @@ class FixPEP8(object):
         #
         #     def foo(a=\
         #             1)
-        if (fixed.endswith('=\\\n') or
-                fixed.endswith('=\\\r\n') or
-                fixed.endswith('=\\\r')):
+        if fixed.endswith(('=\\\n', '=\\\r\n', '=\\\r')):
             self.source[line_index] = fixed.rstrip('\n\r \t\\')
             self.source[line_index + 1] = self.source[line_index + 1].lstrip()
             return [line_index + 1, line_index + 2]  # Line indexed at 1
