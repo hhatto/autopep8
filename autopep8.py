@@ -72,7 +72,7 @@ LF = '\n'
 CRLF = '\r\n'
 
 
-PYTHON_SHEBANG_REGEX = re.compile(r'^#!.*\bpython[23]?\b')
+PYTHON_SHEBANG_REGEX = re.compile(r'^#!.*\bpython[23]?\b\s*$')
 
 
 # For generating line shortening candidates.
