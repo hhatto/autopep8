@@ -218,8 +218,8 @@ def check(opts, args):
                                       if f.endswith('.py') and
                                       not f.startswith('.')]
 
-                    directories[:] = [d for d in directories
-                                      if not d.startswith('.')]
+                        directories[:] = [d for d in directories
+                                          if not d.startswith('.')]
                 else:
                     verbose_message = '--->  Testing with ' + name
                     sys.stderr.write(colored(verbose_message + '\n', YELLOW))
