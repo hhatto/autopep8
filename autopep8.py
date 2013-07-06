@@ -747,12 +747,8 @@ class FixPEP8(object):
                                                             'buffer')
                                                  else sys.stderr))
 
-        for _candidate in candidates:
-            assert _candidate is not None
-            self.source[line_index] = _candidate
-            return
-
-        return []
+        if candidates:
+            self.source[line_index] = candidates[0]
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""
