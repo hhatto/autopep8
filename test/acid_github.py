@@ -77,17 +77,11 @@ def main():
     else:
         names = None
 
-    import time
-    start_time = time.time()
-
     checked_repositories = []
     skipped_repositories = []
     interesting_repositories = []
     try:
         while True:
-            if opts.timeout > 0 and time.time() - start_time > opts.timeout:
-                break
-
             if args:
                 if not names:
                     break

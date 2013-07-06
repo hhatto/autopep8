@@ -3,6 +3,7 @@
 
 from __future__ import print_function
 
+import contextlib
 import os
 import shlex
 import sys
@@ -146,15 +147,6 @@ def process_args():
     return (opts, args)
 
 
-class TimeoutException(Exception):
-
-    """Timeout exception."""
-
-
-def timeout(_, __):
-    raise TimeoutException()
-
-
 def compare_bytecode(filename_a, filename_b):
     try:
         import pydiff
@@ -190,12 +182,7 @@ def check(opts, args):
     else:
         comparison_function = None
 
-    try:
-        import signal
-        if opts.timeout > 0:
-            signal.signal(signal.SIGALRM, timeout)
-            signal.alarm(int(opts.timeout))
-
+    with timeout(opts.timeout):
         while filenames:
             try:
                 name = os.path.realpath(filenames.pop(0))
@@ -237,13 +224,34 @@ def check(opts, args):
                 # Ignore annoying codec problems on Python 2.
                 print(exception)
                 continue
-    except TimeoutException:
-        sys.stderr.write('Timed out\n')
-    finally:
-        if opts.timeout > 0:
-            signal.alarm(0)
 
     return True
+
+
+@contextlib.contextmanager
+def timeout(seconds):
+    if seconds > 0:
+        try:
+            import signal
+            signal.signal(signal.SIGALRM, _timeout)
+            signal.alarm(int(seconds))
+            yield
+        except TimeoutException:
+            sys.stderr.write('Timed out\n')
+        finally:
+            signal.alarm(0)
+    else:
+        yield
+
+
+class TimeoutException(Exception):
+
+    """Timeout exception."""
+
+
+def _timeout(_, __):
+    raise TimeoutException()
+
 
 
 def main():

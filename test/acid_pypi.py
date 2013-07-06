@@ -73,20 +73,10 @@ def main():
     else:
         names = None
 
-    import time
-    start_time = time.time()
-
     checked_packages = []
     skipped_packages = []
     last_hours = 1
     while True:
-        if opts.timeout > 0:
-            elapsed = time.time() - start_time
-            print('Time: {} / {}'.format(elapsed, opts.timeout),
-                  file=sys.stderr)
-            if elapsed > opts.timeout:
-                break
-
         if args:
             if not names:
                 break
