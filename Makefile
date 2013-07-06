@@ -1,5 +1,6 @@
 all:
 	@echo "make test(test_basic, test_diff, test_unit)"
+	@echo "make fasttest"
 	@echo "make pypireg"
 	@echo "make coverage"
 	@echo "make check"
@@ -11,6 +12,7 @@ COVERAGE?=coverage
 TEST_DIR=test
 .PHONY: test
 test: test_basic test_diff test_unit
+fasttest: test_unit_fast
 
 test_basic:
 	@echo '--->  Running basic test'
@@ -30,6 +32,10 @@ test_diff:
 test_unit:
 	@echo '--->  Running unit tests'
 	${PYTHON} test/test_autopep8.py
+
+test_unit_fast:
+	@echo '--->  Running unit tests'
+	py.test -n2 test/test_autopep8.py
 
 coverage:
 	@coverage erase
