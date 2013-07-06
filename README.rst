@@ -66,7 +66,7 @@ Before running autopep8.
         a=(   1,2, 3,"a"  );
         ####This is a long comment. This should be wrapped to fit within 72 characters.
         some_variable = [100,200,300,9876543210,'This is a long string that goes on and on']
-    def func22(): return {True: True}.has_key({'foo': 2}.has_key('foo'));
+    def func22(): return {'has_key() is deprecated':True}.has_key({'foo':2}.has_key('foo'));
     class UselessClass(   object ):
         def __init__    ( self, bar ):
          #Comments should have a space after the hash.
@@ -108,7 +108,7 @@ After running autopep8.
 
 
     def func22():
-        return ('foo' in {'foo': 2}) in {True: True}
+        return ('foo' in {'foo': 2}) in {'has_key() is deprecated': True}
 
 
     class UselessClass(object):
