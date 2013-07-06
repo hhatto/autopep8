@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 """Update example in readme."""
 
+import textwrap
+
 import autopep8
 
 
@@ -41,13 +43,17 @@ def main():
                                          after_key=after_key,
                                          end_key='Options::')
 
-    import textwrap
+    input_code = textwrap.dedent(before)
+
+    output_code = autopep8.fix_string(
+        input_code,
+        options=autopep8.parse_args(['', '--aggressive'])[0])
+    compile(output_code, '<string>', 'exec', dont_inherit=True)
+
     new_readme = '\n\n'.join([
         top,
         before_key, before,
-        after_key, indent(autopep8.fix_string(
-            textwrap.dedent(before),
-            options=autopep8.parse_args(['', '--aggressive'])[0])),
+        after_key, indent(output_code),
         bottom])
 
     with open(readme_path, 'w') as output_file:
