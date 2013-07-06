@@ -236,8 +236,6 @@ def timeout(seconds):
             signal.signal(signal.SIGALRM, _timeout)
             signal.alarm(int(seconds))
             yield
-        except TimeoutException:
-            sys.stderr.write('Timed out\n')
         finally:
             signal.alarm(0)
     else:
@@ -253,7 +251,6 @@ def _timeout(_, __):
     raise TimeoutException()
 
 
-
 def main():
     """Run main."""
     return 0 if check(*process_args()) else 1
@@ -262,5 +259,7 @@ def main():
 if __name__ == '__main__':
     try:
         sys.exit(main())
+    except TimeoutException:
+        sys.stderr.write('Timed out\n')
     except KeyboardInterrupt:
         sys.exit(1)

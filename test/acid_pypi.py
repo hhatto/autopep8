@@ -76,56 +76,64 @@ def main():
     checked_packages = []
     skipped_packages = []
     last_hours = 1
-    while True:
-        if args:
-            if not names:
-                break
-        else:
-            while not names:
-                # Continually populate if user did not specify a package
-                # explicitly.
-                names = [p for p in latest_packages(last_hours)
-                         if p not in checked_packages and
-                         p not in skipped_packages]
-
+    with acid.timeout(opts.timeout):
+        while True:
+            if args:
                 if not names:
-                    last_hours *= 2
+                    break
+            else:
+                while not names:
+                    # Continually populate if user did not specify a package
+                    # explicitly.
+                    names = [p for p in latest_packages(last_hours)
+                             if p not in checked_packages and
+                             p not in skipped_packages]
 
-        package_name = names.pop(0)
-        print(package_name)
+                    if not names:
+                        last_hours *= 2
 
-        package_tmp_dir = os.path.join(TMP_DIR, package_name)
-        try:
-            os.mkdir(package_tmp_dir)
-        except OSError:
-            print('Skipping already checked package')
-            skipped_packages.append(package_name)
-            continue
+            package_name = names.pop(0)
+            print(package_name)
 
-        try:
-            download_package(package_name, output_directory=package_tmp_dir)
-        except subprocess.CalledProcessError:
-            print('ERROR: yolk fetch failed')
-            continue
-
-        for download_name in os.listdir(package_tmp_dir):
+            package_tmp_dir = os.path.join(TMP_DIR, package_name)
             try:
-                if not extract_package(
-                        os.path.join(package_tmp_dir, download_name),
-                        output_directory=package_tmp_dir):
-                    print('ERROR: Could not extract package')
-                    continue
-            except UnicodeDecodeError:
-                print('ERROR: Could not extract package')
+                os.mkdir(package_tmp_dir)
+            except OSError:
+                print('Skipping already checked package')
+                skipped_packages.append(package_name)
                 continue
 
-            if acid.check(opts, [package_tmp_dir]):
-                checked_packages.append(package_name)
-            else:
-                return 1
+            try:
+                download_package(
+                    package_name,
+                    output_directory=package_tmp_dir)
+            except subprocess.CalledProcessError:
+                print('ERROR: yolk fetch failed')
+                continue
+
+            for download_name in os.listdir(package_tmp_dir):
+                try:
+                    if not extract_package(
+                            os.path.join(package_tmp_dir, download_name),
+                            output_directory=package_tmp_dir):
+                        print('ERROR: Could not extract package')
+                        continue
+                except UnicodeDecodeError:
+                    print('ERROR: Could not extract package')
+                    continue
+
+                if acid.check(opts, [package_tmp_dir]):
+                    checked_packages.append(package_name)
+                else:
+                    return 1
 
     if checked_packages:
         print('\nTested packages:\n    ' + '\n    '.join(checked_packages))
 
 if __name__ == '__main__':
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except acid.TimeoutException:
+        sys.stderr.write('Timed out\n')
+    except KeyboardInterrupt:
+        sys.exit(1)

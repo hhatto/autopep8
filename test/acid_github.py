@@ -80,7 +80,7 @@ def main():
     checked_repositories = []
     skipped_repositories = []
     interesting_repositories = []
-    try:
+    with acid.timeout(opts.timeout):
         while True:
             if args:
                 if not names:
@@ -134,8 +134,6 @@ def main():
                     interesting_repositories.append(repository_name)
             else:
                 return 1
-    except KeyboardInterrupt:
-        pass
 
     if checked_repositories:
         print('\nTested repositories:')
@@ -144,4 +142,9 @@ def main():
                   (' *' if name in interesting_repositories else ''))
 
 if __name__ == '__main__':
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except acid.TimeoutException:
+        sys.stderr.write('Timed out\n')
+    except KeyboardInterrupt:
+        sys.exit(1)
