@@ -12,7 +12,7 @@ COVERAGE?=coverage
 TEST_DIR=test
 .PHONY: test
 test: test_basic test_diff test_unit
-fasttest: test_unit_fast
+fasttest: test_fast
 
 test_basic:
 	@echo '--->  Running basic test'
@@ -33,9 +33,15 @@ test_unit:
 	@echo '--->  Running unit tests'
 	${PYTHON} test/test_autopep8.py
 
-test_unit_fast:
-	@echo '--->  Running unit tests'
-	py.test -n2 test/test_autopep8.py
+test_fast:
+	@echo '[run]' > .pytest.coveragerc
+	@echo 'branch = True' >> .pytest.coveragerc
+	@echo 'omit = "*/site-packages/*"' >> .pytest.coveragerc
+	@echo '[report]' >> .pytest.coveragerc
+	@echo 'include = autopep8.py' >> .pytest.coveragerc
+	@AUTOPEP8_COVERAGE=1 py.test -n4 --cov-config .pytest.coveragerc \
+		--cov-report term-missing --cov autopep8 test/test_autopep8.py
+	@rm .pytest.coveragerc
 
 coverage:
 	@coverage erase
