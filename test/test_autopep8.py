@@ -3161,7 +3161,7 @@ class CommandLineTests(unittest.TestCase):
         line = "'abc'  \n"
         with temporary_file_context(line) as filename:
             for options in [['--recursive', filename],  # without --diff
-                            ['--jobs=0', filename],
+                            ['--jobs=2', filename],     # case of process is two or more
                             ['--exclude=foo', filename],  # without --recursive
                             ['--max-line-length=0', filename],
                             [],  # no argument
