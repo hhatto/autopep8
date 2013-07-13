@@ -439,9 +439,7 @@ class FixPEP8(object):
     def fix_e125(self, result, logical):
         """Indent to distinguish line from next logical line."""
         # Fix by indenting the line in error to the next stop.
-        modified_lines = self._fix_reindent(result, logical)
-        if modified_lines:
-            return modified_lines
+        return self._fix_reindent(result, logical)
 
     def fix_e126(self, result, logical):
         """Fix over-indented hanging indentation."""
