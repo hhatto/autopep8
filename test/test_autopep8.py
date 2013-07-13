@@ -1239,21 +1239,16 @@ x = \
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e125(self):
+    def test_e125_with_multiline_string(self):
         line = """
-for k, v in sys.modules.items():
-    if k in ('setuptools', 'pkg_resources') or (
-        not os.path.exists(os.path.join(v.__path__[0], '__init__.py'))):
-        sys.modules.pop(k)
-"""
-        fixed = """
-for k, v in sys.modules.items():
-    if k in ('setuptools', 'pkg_resources') or (
-            not os.path.exists(os.path.join(v.__path__[0], '__init__.py'))):
-        sys.modules.pop(k)
+for foo in '''
+    abc
+    123
+    '''.strip().split():
+    print(foo)
 """
         with autopep8_context(line, options=['--select=E12']) as result:
-            self.assertEqual(fixed, result)
+            self.assertEqual(line, result)
 
     def test_e126(self):
         line = """

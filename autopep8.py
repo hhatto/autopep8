@@ -442,11 +442,6 @@ class FixPEP8(object):
         modified_lines = self._fix_reindent(result, logical)
         if modified_lines:
             return modified_lines
-        else:
-            # Fallback
-            line_index = result['line'] - 1
-            original_line = self.source[line_index]
-            self.source[line_index] = self.indent_word + original_line
 
     def fix_e126(self, result, logical):
         """Fix over-indented hanging indentation."""
