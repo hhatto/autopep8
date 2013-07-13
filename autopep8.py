@@ -65,7 +65,7 @@ except NameError:
     unicode = str
 
 
-__version__ = '0.9.2a0'
+__version__ = '0.9.2'
 
 
 CR = '\r'
