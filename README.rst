@@ -19,7 +19,7 @@ guide. It uses the pep8_ utility to determine what parts of the code needs to
 be formatted. autopep8 is capable of fixing most of the formatting issues_ that
 can be reported by pep8.
 
-.. _PEP 8: http://www.python.org/dev/peps/pep-0008
+.. _PEP 8: http://www.python.org/dev/peps/pep-0008/
 .. _issues: https://pep8.readthedocs.org/en/latest/intro.html#error-codes
 
 
