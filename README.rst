@@ -30,10 +30,6 @@ From pip::
 
     $ pip install --upgrade autopep8
 
-From easy_install::
-
-    $ easy_install -ZU autopep8
-
 
 Requirements
 ============
