@@ -33,7 +33,8 @@ if 'AUTOPEP8_COVERAGE' in os.environ and int(os.environ['AUTOPEP8_COVERAGE']):
 else:
     # We need to specify the executable to make sure the correct Python
     # interpreter gets used.
-    AUTOPEP8_CMD_TUPLE = (os.path.join(ROOT_DIR,
+    AUTOPEP8_CMD_TUPLE = (sys.executable,
+                          os.path.join(ROOT_DIR,
                                        'autopep8.py'),)  # pragma: no cover
 
 
