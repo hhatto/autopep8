@@ -1,5 +1,6 @@
 *.class
-*.egg-info
+*.egg-info/
+*.egg/
 *.pyc
 *.swp
 .tox
