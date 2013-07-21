@@ -20,4 +20,4 @@ if vim.eval('&syntax') == 'python':
 
     if source != formatted:
         vim.current.buffer[:] = [line.encode(encoding)
-                                 for line in formatted.splitlines()]
+                                 for line in formatted.rstrip().splitlines()]
