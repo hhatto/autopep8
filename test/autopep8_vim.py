@@ -14,8 +14,8 @@ options = autopep8.parse_args(['--range',
                                str(1 + vim.current.range.end),
                                ''])[0]
 
-source = '\n'.join([line.decode(encoding)
-                    for line in vim.current.buffer]) + '\n'
+source = '\n'.join(line.decode(encoding)
+                   for line in vim.current.buffer) + '\n'
 
 formatted = autopep8.fix_string(source, options=options)
 
