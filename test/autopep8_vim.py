@@ -7,8 +7,8 @@ map <C-I> :pyf <path_to>/autopep8_vim.py<CR>
 import autopep8
 import vim
 
-# TODO: Find out how to get the actual encoding from Vim.
-encoding = 'utf-8'
+
+encoding = vim.eval('&fileencoding')
 options = autopep8.parse_args(['--range',
                                str(vim.current.range.start),
                                str(vim.current.range.end),
