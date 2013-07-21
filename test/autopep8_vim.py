@@ -4,21 +4,20 @@ map <C-I> :pyf <path_to>/autopep8_vim.py<CR>
 
 """
 
-import autopep8
 import vim
+if vim.eval('&syntax') == 'python':
+    encoding = vim.eval('&fileencoding')
+    source = '\n'.join(line.decode(encoding)
+                       for line in vim.current.buffer) + '\n'
 
+    import autopep8
+    options = autopep8.parse_args(['--range',
+                                   str(1 + vim.current.range.start),
+                                   str(1 + vim.current.range.end),
+                                   ''])[0]
 
-encoding = vim.eval('&fileencoding')
-options = autopep8.parse_args(['--range',
-                               str(1 + vim.current.range.start),
-                               str(1 + vim.current.range.end),
-                               ''])[0]
+    formatted = autopep8.fix_string(source, options=options)
 
-source = '\n'.join(line.decode(encoding)
-                   for line in vim.current.buffer) + '\n'
-
-formatted = autopep8.fix_string(source, options=options)
-
-if source != formatted:
-    vim.current.buffer[:] = [line.encode(encoding)
-                             for line in formatted.splitlines()]
+    if source != formatted:
+        vim.current.buffer[:] = [line.encode(encoding)
+                                 for line in formatted.splitlines()]
