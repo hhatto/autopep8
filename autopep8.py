@@ -65,7 +65,7 @@ except NameError:
     unicode = str
 
 
-__version__ = '0.9.2'
+__version__ = '0.9.3a0'
 
 
 CR = '\r'
@@ -290,6 +290,12 @@ class FixPEP8(object):
                 progress[r['id']].add(r['line'])
             print('--->  {n} issue(s) to fix {progress}'.format(
                 n=len(results), progress=progress), file=sys.stderr)
+
+        if self.options.line_range:
+            results = [
+                r for r in results
+                if self.options.line_range[0] <= r['line'] <=
+                self.options.line_range[1]]
 
         self._fix_source(filter_results(source=''.join(self.source),
                                         results=results,
@@ -1787,6 +1793,13 @@ def filter_results(source, results, aggressive=False):
         yield r
 
 
+def filter_result_range(results, start, end):
+    """Yield results within line range [start, end]."""
+    for r in results:
+        if start <= r['line'] <= end:
+            yield r
+
+
 def multiline_string_lines(source, include_docstrings=False):
     """Return line numbers that are within multiline strings.
 
@@ -2081,6 +2094,11 @@ def parse_args(args):
     parser.add_option('--max-line-length', metavar='n', default=79, type=int,
                       help='set maximum allowed line length '
                            '(default: %default)')
+    parser.add_option('--range', metavar='start end', dest='line_range',
+                      default=None, type=int, nargs=2,
+                      help='only fix errors found within this inclusive '
+                           'range of line numbers (e.g. 1 99); '
+                           'line numbers are indexed at 1')
     options, args = parser.parse_args(args)
 
     if not len(args) and not options.list_fixes:

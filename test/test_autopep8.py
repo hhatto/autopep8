@@ -2965,6 +2965,12 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(line, result)
 
+    def test_range(self):
+        line = 'print( 1 )\nprint( 2 )\n print( 3 )\n'
+        fixed = 'print( 1 )\nprint(2)\n print( 3 )\n'
+        with autopep8_context(line, options=['--range', '2', '2']) as result:
+            self.assertEqual(fixed, result)
+
 
 class CommandLineTests(unittest.TestCase):
 
