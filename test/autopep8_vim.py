@@ -10,8 +10,8 @@ import vim
 
 encoding = vim.eval('&fileencoding')
 options = autopep8.parse_args(['--range',
-                               str(vim.current.range.start),
-                               str(vim.current.range.end),
+                               str(1 + vim.current.range.start),
+                               str(1 + vim.current.range.end),
                                ''])[0]
 
 source = '\n'.join([line.decode(encoding)
