@@ -1933,8 +1933,11 @@ def fix_lines(source_lines, options, filename=''):
     # Keep a history to break out of cycles.
     previous_hashes = set([hash(tmp_source)])
 
-    # Apply global fixes only once (for efficiency).
-    fixed_source = apply_global_fixes(tmp_source, options)
+    if options.line_range:
+        fixed_source = tmp_source
+    else:
+        # Apply global fixes only once (for efficiency).
+        fixed_source = apply_global_fixes(tmp_source, options)
 
     passes = 0
     while True:
