@@ -1793,13 +1793,6 @@ def filter_results(source, results, aggressive=False):
         yield r
 
 
-def filter_result_range(results, start, end):
-    """Yield results within line range [start, end]."""
-    for r in results:
-        if start <= r['line'] <= end:
-            yield r
-
-
 def multiline_string_lines(source, include_docstrings=False):
     """Return line numbers that are within multiline strings.
 
