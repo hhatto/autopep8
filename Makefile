@@ -41,7 +41,7 @@ test_fast:
 	@echo 'include = autopep8.py' >> .pytest.coveragerc
 	@AUTOPEP8_COVERAGE=1 py.test -n4 --cov-config .pytest.coveragerc \
 		--cov-report term-missing --cov autopep8 test/test_autopep8.py
-	@rm .pytest.coveragerc
+	@rm .pytest.coveragerc .coverage
 
 coverage:
 	@coverage erase
