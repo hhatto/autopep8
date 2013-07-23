@@ -1787,7 +1787,7 @@ def filter_results(source, results, aggressive=False):
             continue
 
         if not aggressive:
-            if issue_id in ['e711', 'e712'] or issue_id.startswith('w6'):
+            if issue_id.startswith(('e711', 'e712', 'w6')):
                 continue
 
         if r['line'] in commented_out_code_line_numbers:
