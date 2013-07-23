@@ -947,7 +947,6 @@ def fix_w6(source):
                      'has_key',
                      'idioms',
                      'import',
-                     'methodattrs',  # Python >= 2.6
                      'ne',
                      'numliterals',
                      'operator',
