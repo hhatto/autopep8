@@ -219,23 +219,6 @@ autopep8 also fixes some issues not found by pep8_.
 More advanced usage
 ===================
 
-To enable only a subset of the fixes, use the ``--select`` option. For example,
-to fix various types of indentation issues::
-
-    $ autopep8 --select=E1,W1 <filename>
-
-Similarly, to just fix deprecated code::
-
-    $ autopep8 --select=W6 <filename>
-
-The above is useful when trying to port a single code base to work with both
-Python 2 and Python 3 at the same time.
-
-If the file being fixed is large, you may want to enable verbose progress
-messages::
-
-    $ autopep8 -v <filename>
-
 By default autopep8 only makes whitespace changes. Thus, by default, it does
 not fix ``E711`` and ``E712``. (Changing ``x == None`` to ``x is None`` may
 change the meaning of the program if ``x`` has its ``__eq__`` method
@@ -250,6 +233,23 @@ whitespace in docstrings and other multiline strings. And to do even more
 aggressive changes to docstrings, use docformatter_.)
 
 .. _docformatter: https://github.com/myint/docformatter
+
+To enable only a subset of the fixes, use the ``--select`` option. For example,
+to fix various types of indentation issues::
+
+    $ autopep8 --select=E1,W1 <filename>
+
+Similarly, to just fix deprecated code::
+
+    $ autopep8 --aggressive --select=W6 <filename>
+
+The above is useful when trying to port a single code base to work with both
+Python 2 and Python 3 at the same time.
+
+If the file being fixed is large, you may want to enable verbose progress
+messages::
+
+    $ autopep8 -v <filename>
 
 
 Use as a module
