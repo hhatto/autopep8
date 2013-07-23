@@ -85,7 +85,7 @@ SHORTEN_OPERATOR_GROUPS = frozenset([
 ])
 
 
-DEFAULT_IGNORE = 'E24,W6'
+DEFAULT_IGNORE = 'E24'
 
 
 def open_with_encoding(filename, encoding=None, mode='r'):
@@ -1786,8 +1786,9 @@ def filter_results(source, results, aggressive=False):
         if issue_id == 'e101' and '\t' not in split_source[r['line']]:
             continue
 
-        if issue_id in ['e711', 'e712'] and not aggressive:
-            continue
+        if not aggressive:
+            if issue_id in ['e711', 'e712'] or issue_id.startswith('w6'):
+                continue
 
         if r['line'] in commented_out_code_line_numbers:
             if issue_id == 'e501' or issue_id.startswith('e26'):
