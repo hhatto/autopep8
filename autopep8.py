@@ -1763,9 +1763,7 @@ def filter_results(source, results, aggressive=False):
         issue_id = r['id'].lower()
 
         if r['line'] in non_docstring_string_line_numbers:
-            if issue_id.startswith('e1'):
-                continue
-            elif issue_id in ['e501', 'w191']:
+            if issue_id.startswith(('e1', 'e501', 'w191')):
                 continue
 
         if r['line'] in all_string_line_numbers:
@@ -1777,7 +1775,7 @@ def filter_results(source, results, aggressive=False):
         if not aggressive and (r['line'] + 1) in all_string_line_numbers:
             # Do not modify multiline strings in non-aggressive mode. Remove
             # trailing whitespace could break doctests.
-            if issue_id.startswith('w29') or issue_id.startswith('w39'):
+            if issue_id.startswith(('w29', 'w39')):
                 continue
 
         # Filter out incorrect E101 reports when there are no tabs.
@@ -1791,7 +1789,7 @@ def filter_results(source, results, aggressive=False):
                 continue
 
         if r['line'] in commented_out_code_line_numbers:
-            if issue_id == 'e501' or issue_id.startswith('e26'):
+            if issue_id.startswith(('e26', 'e501')):
                 continue
 
         yield r
