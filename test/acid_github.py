@@ -26,7 +26,7 @@ def latest_repositories():
                     yield repository['url']
             except KeyError:
                 continue
-    except (requests.exceptions.ConnectionError, ValueError):
+    except (requests.exceptions.RequestException, ValueError):
         # Ignore GitHub server flakiness.
         pass
 
