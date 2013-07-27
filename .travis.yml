@@ -9,6 +9,7 @@ python:
 
 install:
     - if [ "$TRAVIS_PYTHON_VERSION" == "2.6" ]; then pip --quiet install unittest2; fi
+    - pip --quiet install pydiff
     - python setup.py --quiet build --build-base=".build-$TRAVIS_PYTHON_VERSION" install
 
 before_script:
@@ -20,6 +21,7 @@ before_script:
 script:
     - python test/test_autopep8.py
     - python test/acid.py --aggressive test/example.py
+    - python test/acid.py --compare-bytecode test/example.py
 
     - if [ "$TRAVIS_PYTHON_VERSION" == "3.3" ]; then python -m doctest -v README.rst; fi
 
