@@ -1373,7 +1373,7 @@ while True:
     if True:
         1
 """.lstrip()
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e201(self):
@@ -2651,43 +2651,44 @@ if True:
 else:
     32
 """.lstrip()
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_w291(self):
         line = "print 'a b '\t \n"
         fixed = "print 'a b '\n"
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_w291_with_comment(self):
         line = "print 'a b '  # comment\t \n"
         fixed = "print 'a b '  # comment\n"
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_w292(self):
         line = '1\n2'
         fixed = '1\n2\n'
-        with autopep8_context(line, options=['--select=W292']) as result:
+        with autopep8_context(line, options=['--aggressive',
+                                             '--select=W292']) as result:
             self.assertEqual(fixed, result)
 
     def test_w293(self):
         line = '1\n \n2\n'
         fixed = '1\n\n2\n'
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_w391(self):
         line = '  \n'
         fixed = ''
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_w391_more_complex(self):
         line = '123\n456\n  \n'
         fixed = '123\n456\n'
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_w601(self):

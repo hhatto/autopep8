@@ -877,7 +877,7 @@ class FixPEP8(object):
         return range(1, 1 + original_length)
 
 
-def fix_e26(source):
+def fix_e26(source, _=False):
     """Format block comments."""
     if '#' not in source:
         # Optimization.
@@ -932,14 +932,20 @@ def refactor(source, fixer_names, ignore=None):
     return new_text
 
 
-def fix_w602(source):
+def fix_w602(source, aggressive=True):
     """Fix deprecated form of raising exception."""
+    if not aggressive:
+        return source
+
     return refactor(source, ['raise'],
                     ignore='with_traceback')
 
 
-def fix_w6(source):
+def fix_w6(source, aggressive=True):
     """Fix various deprecated code (via lib2to3)."""
+    if not aggressive:
+        return source
+
     return refactor(source,
                     ['apply',
                      'except',
@@ -2007,7 +2013,7 @@ def global_fixes():
     for function in globals().values():
         if inspect.isfunction(function):
             arguments = inspect.getargspec(function)[0]
-            if arguments != ['source']:
+            if arguments[:1] != ['source']:
                 continue
 
             code = extract_code_from_function(function)
@@ -2027,7 +2033,7 @@ def apply_global_fixes(source, options):
             if options.verbose:
                 print('--->  Applying global fix for {0}'.format(code.upper()),
                       file=sys.stderr)
-            source = function(source)
+            source = function(source, options.aggressive)
 
     return source
 
