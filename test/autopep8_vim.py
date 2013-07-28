@@ -17,9 +17,10 @@ if vim.eval('&syntax') == 'python':
                                    ''])[0]
 
     formatted = autopep8.fix_string(source, options=options)
-    if formatted.endswith('\n'):
-        formatted = formatted[:-1]
 
     if source != formatted:
+        if formatted.endswith('\n'):
+            formatted = formatted[:-1]
+
         vim.current.buffer[:] = [line.encode(encoding)
                                  for line in formatted.splitlines()]
