@@ -37,7 +37,7 @@ def colored(text, color):
     return color + text + END
 
 
-def run(filename, command, fast_check=False, max_line_length=79,
+def run(filename, command, max_line_length=79,
         ignore='', check_ignore='', verbose=False,
         comparison_function=None,
         aggressive=False):
@@ -51,40 +51,35 @@ def run(filename, command, fast_check=False, max_line_length=79,
                 '--ignore=' + ignore, filename] +
                (['--aggressive'] if aggressive else []))
 
-    if fast_check:
-        if 0 != subprocess.call(command + ['--diff']):
+    with tempfile.NamedTemporaryFile(suffix='.py') as tmp_file:
+        if 0 != subprocess.call(command, stdout=tmp_file):
             sys.stderr.write('autopep8 crashed on ' + filename + '\n')
             return False
-    else:
-        with tempfile.NamedTemporaryFile(suffix='.py') as tmp_file:
-            if 0 != subprocess.call(command, stdout=tmp_file):
-                sys.stderr.write('autopep8 crashed on ' + filename + '\n')
-                return False
 
-            if 0 != subprocess.call(
-                ['pep8',
-                 '--ignore=' + ','.join([x for x in ignore.split(',') +
-                                         check_ignore.split(',') if x]),
-                 '--show-source', tmp_file.name],
-                    stdout=sys.stdout):
-                sys.stderr.write('autopep8 did not completely fix ' +
-                                 filename + '\n')
+        if 0 != subprocess.call(
+            ['pep8',
+             '--ignore=' + ','.join([x for x in ignore.split(',') +
+                                     check_ignore.split(',') if x]),
+             '--show-source', tmp_file.name],
+                stdout=sys.stdout):
+            sys.stderr.write('autopep8 did not completely fix ' +
+                             filename + '\n')
 
-            try:
-                if check_syntax(filename):
-                    try:
-                        check_syntax(tmp_file.name, raise_error=True)
-                    except (SyntaxError, TypeError,
-                            UnicodeDecodeError) as exception:
-                        sys.stderr.write('autopep8 broke ' + filename + '\n' +
-                                         str(exception) + '\n')
+        try:
+            if check_syntax(filename):
+                try:
+                    check_syntax(tmp_file.name, raise_error=True)
+                except (SyntaxError, TypeError,
+                        UnicodeDecodeError) as exception:
+                    sys.stderr.write('autopep8 broke ' + filename + '\n' +
+                                     str(exception) + '\n')
+                    return False
+
+                if comparison_function:
+                    if not comparison_function(filename, tmp_file.name):
                         return False
-
-                    if comparison_function:
-                        if not comparison_function(filename, tmp_file.name):
-                            return False
-            except IOError as exception:
-                sys.stderr.write(str(exception) + '\n')
+        except IOError as exception:
+            sys.stderr.write(str(exception) + '\n')
 
     return True
 
@@ -111,8 +106,6 @@ def process_args():
     parser.add_option('--command',
                       default=os.path.join(ROOT_PATH, 'autopep8.py'),
                       help='autopep8 command (default: %default)')
-    parser.add_option('--fast-check', action='store_true',
-                      help='ignore incomplete PEP8 fixes and broken files')
     parser.add_option('--ignore',
                       help='comma-separated errors to ignore',
                       default='')
@@ -212,7 +205,6 @@ def check(opts, args):
 
                     if not run(os.path.join(name),
                                command=opts.command,
-                               fast_check=opts.fast_check,
                                max_line_length=opts.max_line_length,
                                ignore=opts.ignore,
                                check_ignore=opts.check_ignore,
