@@ -735,8 +735,8 @@ class FixPEP8(object):
                 indent +
                 'return (' +
                 self.newline +
-                re.sub('^return ', '', source) +
-                ')' + self.newline
+                indent + self.indent_word + re.sub('^return ', '', source) +
+                indent + ')' + self.newline
             )
             return
 

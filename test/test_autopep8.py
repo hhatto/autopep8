@@ -1879,7 +1879,8 @@ def foo():
             '                 ', 1234353423243)
     )
 """
-        with autopep8_context(line, options=['--aggressive']) as result:
+        with autopep8_context(line, options=['--aggressive',
+                                             '--select=E501']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_with_inline_comments(self):
