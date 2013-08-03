@@ -41,18 +41,18 @@ from __future__ import unicode_literals
 
 import codecs
 import copy
+import difflib
 import fnmatch
 import inspect
 import io
 import locale
+import optparse
 import os
 import re
 import signal
 import sys
 import token
 import tokenize
-from optparse import OptionParser
-import difflib
 
 import pep8
 
@@ -2059,12 +2059,12 @@ def extract_code_from_function(function):
 
 def parse_args(args):
     """Parse command-line options."""
-    parser = OptionParser(usage='Usage: %prog [options] '
-                                '[filename [filename ...]]'
-                                '\nUse filename \'-\'  for stdin.',
-                          version='%prog {0}'.format(__version__),
-                          description=__doc__.split('\n')[0],
-                          prog='autopep8')
+    parser = optparse.OptionParser(usage='Usage: %prog [options] '
+                                         '[filename [filename ...]]'
+                                         '\nUse filename \'-\'  for stdin.',
+                                   version='%prog {0}'.format(__version__),
+                                   description=__doc__.split('\n')[0],
+                                   prog='autopep8')
     parser.add_option('-v', '--verbose', action='count', dest='verbose',
                       default=0,
                       help='print verbose messages; '
