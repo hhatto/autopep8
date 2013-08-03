@@ -1927,6 +1927,11 @@ def fix_string(source, options=None):
     if not options:
         options = parse_args([''])[0]
 
+    try:
+        source = source.decode(locale.getpreferredencoding(False))
+    except AttributeError:
+        pass
+
     sio = io.StringIO(source)
     return fix_lines(sio.readlines(), options=options)
 
@@ -2383,15 +2388,9 @@ def main():
         if args == ['-']:
             assert not options.in_place
 
-            contents = sys.stdin.read()
-            try:
-                contents = contents.decode(locale.getpreferredencoding(False))
-            except AttributeError:
-                pass
-
             # LineEndingWrapper is unnecessary here due to the symmetry between
             # standard in and standard out.
-            sys.stdout.write(fix_string(contents, options))
+            sys.stdout.write(fix_string(sys.stdin.read(), options))
         else:
             if options.in_place or options.diff:
                 filenames = list(set(args))
