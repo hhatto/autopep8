@@ -728,6 +728,18 @@ class FixPEP8(object):
             else:
                 return []
 
+        # Handle statements by putting the right hand side on a line by itself.
+        # This should let the next pass shorten it.
+        if self.options.aggressive and source.startswith('return '):
+            self.source[line_index] = (
+                indent +
+                'return (' +
+                self.newline +
+                re.sub('^return ', '', source) +
+                ')' + self.newline
+            )
+            return
+
         candidates = shorten_line(
             tokens, source, indent,
             self.indent_word, newline=self.newline,

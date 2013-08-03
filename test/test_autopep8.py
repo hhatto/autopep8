@@ -1867,6 +1867,21 @@ print(111, 111, 111, 111, 222, 222, 222, 222,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_return(self):
+        line = """\
+def foo():
+    return bar('                                  ', '                 ', 1234353423243)
+"""
+        fixed = """\
+def foo():
+    return (
+        bar('                                  ',
+            '                 ', 1234353423243)
+    )
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_inline_comments(self):
         line = """\
 '                                                          '  # Long inline comments should be moved above.
