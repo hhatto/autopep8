@@ -325,9 +325,7 @@ class FixPEP8(object):
                         tokenize.INDENT, tokenize.NL,
                         tokenize.ENDMARKER]:
                 continue
-            if not parens and t[0] in [
-                tokenize.NEWLINE, tokenize.SEMI
-            ]:
+            if not parens and t[0] in [tokenize.NEWLINE, tokenize.SEMI]:
                 last_newline = True
                 logical_end.append((t[3][0] - 1, t[2][1]))
                 continue
