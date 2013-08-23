@@ -3132,6 +3132,15 @@ class CommandLineTests(unittest.TestCase):
             import shutil
             shutil.rmtree(temp_directory)
 
+    def test_recursive_should_not_crash_on_unicode_filename(self):
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                  [os.path.join(ROOT_DIR, 'test', 'example'),
+                   '--recursive',
+                   '--diff'],
+                  stdout=PIPE)
+        p.communicate()
+        self.assertEqual(0, p.returncode)
+
     def test_recursive_should_ignore_hidden(self):
         import tempfile
         temp_directory = tempfile.mkdtemp(dir='.')
