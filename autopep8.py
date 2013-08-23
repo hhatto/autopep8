@@ -1937,10 +1937,8 @@ def fix_string(source, options=None):
     if not options:
         options = parse_args([''])[0]
 
-    try:
+    if not isinstance(source, unicode):
         source = source.decode(locale.getpreferredencoding(False))
-    except AttributeError:
-        pass
 
     sio = io.StringIO(source)
     return fix_lines(sio.readlines(), options=options)
