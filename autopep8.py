@@ -2118,6 +2118,8 @@ def parse_args(args):
     if not len(args) and not options.list_fixes:
         parser.error('incorrect number of arguments')
 
+    args = [decode_filename(name) for name in args]
+
     if '-' in args:
         if len(args) > 1:
             parser.error('cannot mix stdin and regular files')
@@ -2175,6 +2177,14 @@ def parse_args(args):
         parser.error('parallel jobs requires --in-place')
 
     return options, args
+
+
+def decode_filename(filename):
+    """Return Unicode filename."""
+    if isinstance(filename, unicode):
+        return filename
+    else:
+        return filename.decode(sys.getfilesystemencoding())
 
 
 def supported_fixes():
