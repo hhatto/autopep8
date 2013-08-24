@@ -2332,7 +2332,7 @@ def find_files(filenames, recursive, exclude):
     while filenames:
         name = filenames.pop(0)
         if recursive and os.path.isdir(name):
-            for root, directories, children in os.walk(unicode(name)):
+            for root, directories, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
                               if match_file(f, exclude)]
                 directories[:] = [d for d in directories

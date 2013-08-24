@@ -3138,7 +3138,7 @@ class CommandLineTests(unittest.TestCase):
                    '--recursive',
                    '--diff'],
                   stdout=PIPE)
-        p.communicate()
+        self.assertFalse(p.communicate()[0])
         self.assertEqual(0, p.returncode)
 
     def test_recursive_should_ignore_hidden(self):
