@@ -68,13 +68,13 @@ check:
 		--reports=no \
 		--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
 		--max-module-lines=2500 \
-		--disable=C0111,C0103,E1101,E1002,E1123,F0401,R0902,R0903,W0404,W0511,W0622,R0914,R0912,R0915,R0904,R0911,R0913,W0142 \
+		--disable=C0103,C0111,R0902,R0904,R0912,R0913,R0914,R0915,W0142,W0511 \
 		--rcfile=/dev/null autopep8.py setup.py update_readme.py
 	pylint \
 		--reports=no \
 		--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
 		--max-module-lines=2500 \
-		--disable=C0102,C0111,C0103,C0301,C0302,E1101,F0401,R0902,R0903,W0404,W0622,R0801,R0914,R0912,R0915,R0904,R0911,R0913,W0142,W0212,W0403 \
+		--disable=C0102,C0103,C0111,C0301,C0302,E1101,F0401,R0801,R0904,R0912,R0913,W0212 \
 		--rcfile=/dev/null \
 		--dummy-variables-rgx='_+' \
 		test/acid.py test/acid_github.py test/acid_pypi.py test/test_autopep8.py
