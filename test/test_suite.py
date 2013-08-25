@@ -88,6 +88,7 @@ def run(filename):
 
 
 def suite():
+    """Run against pep8 test suite."""
     result = True
     path = os.path.join(os.path.dirname(__file__), 'suite')
     for filename in os.listdir(path):
