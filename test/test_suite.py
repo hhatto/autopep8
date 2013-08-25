@@ -13,6 +13,16 @@ import sys
 import autopep8
 
 
+if sys.stdout.isatty():
+    GREEN = '\x1b[32m'
+    RED = '\x1b[31m'
+    END = '\x1b[0m'
+else:
+    GREEN = ''
+    RED = ''
+    END = ''
+
+
 def check(expected_filename, input_filename):
     """Test and compare output.
 
@@ -40,9 +50,14 @@ def check(expected_filename, input_filename):
                                          mode='w') as got_file:
             got_file.write(got)
 
-        print('{} does not match expected {}'.format(got_filename,
-                                                     expected_filename),
-              file=sys.stderr)
+        print(
+            '{begin}{got} does not match expected {expected}{end}'.format(
+                begin=RED,
+                got=got_filename,
+                expected=expected_filename,
+                end=END),
+            file=sys.stdout)
+
         return False
 
 
@@ -78,10 +93,12 @@ def suite():
     for filename in os.listdir(path):
         filename = os.path.join(path, filename)
 
-        print(filename, file=sys.stderr)
-
         if filename.endswith('.py'):
+            print(filename, file=sys.stderr)
             result = run(filename) and result
+
+    if result:
+        print(GREEN + 'Okay' + END)
 
     return result
 
