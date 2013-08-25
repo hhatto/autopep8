@@ -65,7 +65,7 @@ def run(filename):
     """Test against a specific file.
 
     Return True on success.
-    
+
     Expected output should have the same base filename, but live in an "out"
     directory:
 
