@@ -218,17 +218,17 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
             elif hang == 4 or (indent_next and rel_indent[row] == 8):
                 # hanging indent is verified
                 if close_bracket:
-                    yield (start, "E123 {0}".format(rel_indent[open_row]))
+                    yield (start, "E123 {0}".format(indent_level + rel_indent[open_row]))
             else:
                 # indent is broken
                 if hang <= 0:
-                    error = "E122", rel_indent[open_row]
+                    error = "E122", indent_level + rel_indent[open_row] + 4
                 elif indent[depth]:
                     error = "E127", indent[depth]
                 elif hang % 4:
-                    error = "E121", rel_indent[open_row]
+                    error = "E121", indent_level + rel_indent[open_row] + 4
                 else:
-                    error = "E126", rel_indent[open_row]
+                    error = "E126", indent_level + rel_indent[open_row] + 4
                 yield start, "%s %d" % error
 
         # look for visual indenting
@@ -279,10 +279,8 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
 
         last_token_multiline = (start[0] != end[0])
 
-    # TODO
-    #f indent_next and pep8.expand_indent(line) == indent_level + 4:
-    #   yield (last_indent, "E125 continuation line does not distinguish "
-    #          "itself from next logical line")
+    if indent_next and pep8.expand_indent(line) == indent_level + 4:
+        yield (last_indent, "E125 {0}".format(indent_level + 8))
 del pep8._checks['logical_line'][pep8.continued_indentation]
 pep8.register_check(continued_indentation)
 

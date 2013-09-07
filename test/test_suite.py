@@ -10,6 +10,9 @@ from __future__ import unicode_literals
 import os
 import sys
 
+ROOT_DIR = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+
+sys.path.insert(0, ROOT_DIR)
 import autopep8
 
 
