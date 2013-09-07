@@ -165,7 +165,7 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
     last_indent = tokens[0][2]
     indent = [last_indent[1]]
     if verbose >= 3:
-        print(">>> " + tokens[0][4].rstrip())
+        print('>>> ' + tokens[0][4].rstrip())
 
     last_token_multiline = None
     for token_type, text, start, end, line in tokens:
@@ -180,7 +180,7 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
             # this is the beginning of a continuation line.
             last_indent = start
             if verbose >= 3:
-                print("... " + line.rstrip())
+                print('... ' + line.rstrip())
 
             # record the initial indent.
             rel_indent[row] = pep8.expand_indent(line) - indent_level
@@ -202,7 +202,7 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
             if close_bracket and indent[depth]:
                 # closing bracket for visual indent
                 if start[1] != indent[depth]:
-                    yield (start, "E124 {0}".format(indent[depth]))
+                    yield (start, 'E124 {0}'.format(indent[depth]))
             elif close_bracket and not hang:
                 pass
             elif visual_indent is True:
@@ -214,22 +214,23 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
                 pass
             elif indent[depth] and start[1] < indent[depth]:
                 # visual indent is broken
-                yield (start, "E128 {0}".format(indent[depth]))
+                yield (start, 'E128 {0}'.format(indent[depth]))
             elif hang == 4 or (indent_next and rel_indent[row] == 8):
                 # hanging indent is verified
                 if close_bracket:
-                    yield (start, "E123 {0}".format(indent_level + rel_indent[open_row]))
+                    yield (start, 'E123 {0}'.format(indent_level +
+                                                    rel_indent[open_row]))
             else:
                 # indent is broken
                 if hang <= 0:
-                    error = "E122", indent_level + rel_indent[open_row] + 4
+                    error = 'E122', indent_level + rel_indent[open_row] + 4
                 elif indent[depth]:
-                    error = "E127", indent[depth]
+                    error = 'E127', indent[depth]
                 elif hang % 4:
-                    error = "E121", indent_level + rel_indent[open_row] + 4
+                    error = 'E121', indent_level + rel_indent[open_row] + 4
                 else:
-                    error = "E126", indent_level + rel_indent[open_row] + 4
-                yield start, "%s %d" % error
+                    error = 'E126', indent_level + rel_indent[open_row] + 4
+                yield start, '%s %d' % error
 
         # look for visual indenting
         if (parens[row] and token_type not in (tokenize.NL, tokenize.COMMENT)
@@ -237,7 +238,7 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
             indent[depth] = start[1]
             indent_chances[start[1]] = True
             if verbose >= 4:
-                print("bracket depth %s indent to %s" % (depth, start[1]))
+                print('bracket depth %s indent to %s' % (depth, start[1]))
         # deal with implicit string concatenation
         elif (token_type in (tokenize.STRING, tokenize.COMMENT) or
               text in ('u', 'ur', 'b', 'br')):
@@ -253,7 +254,7 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
                 indent.append(0)
                 parens[row] += 1
                 if verbose >= 4:
-                    print("bracket depth %s seen, col %s, visual min = %s" %
+                    print('bracket depth %s seen, col %s, visual min = %s' %
                           (depth, start[1], indent[depth]))
             elif text in ')]}' and depth > 0:
                 # parent indents should not be more than this one
@@ -280,7 +281,7 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
         last_token_multiline = (start[0] != end[0])
 
     if indent_next and pep8.expand_indent(line) == indent_level + 4:
-        yield (last_indent, "E125 {0}".format(indent_level + 8))
+        yield (last_indent, 'E125 {0}'.format(indent_level + 8))
 del pep8._checks['logical_line'][pep8.continued_indentation]
 pep8.register_check(continued_indentation)
 
@@ -1075,8 +1076,8 @@ def get_diff_text(old, new, filename):
 def _priority_key(pep8_result):
     """Key for sorting PEP8 results.
 
-    Global fixes should be done first. This is important for things
-    like indentation.
+    Global fixes should be done first. This is important for things like
+    indentation.
 
     """
     priority = [
@@ -1293,8 +1294,8 @@ def _execute_pep8(pep8_options, source):
         def full_error_results(self):
             """Return error results in detail.
 
-            Results are in the form of a list of dictionaries. Each dictionary
-            contains 'id', 'line', 'column', and 'info'.
+            Results are in the form of a list of dictionaries. Each
+            dictionary contains 'id', 'line', 'column', and 'info'.
 
             """
             return self.__full_error_results
@@ -2069,8 +2070,8 @@ def global_fixes():
 def apply_global_fixes(source, options):
     """Run global fixes on source code.
 
-    These are fixes that only need be done once (unlike those in FixPEP8,
-    which are dependent on pep8).
+    These are fixes that only need be done once (unlike those in
+    FixPEP8, which are dependent on pep8).
 
     """
     for (code, function) in global_fixes():
@@ -2225,7 +2226,8 @@ def decode_filename(filename):
 def supported_fixes():
     """Yield pep8 error codes that autopep8 fixes.
 
-    Each item we yield is a tuple of the code followed by its description.
+    Each item we yield is a tuple of the code followed by its
+    description.
 
     """
     instance = FixPEP8(filename=None, options=None, contents='')
