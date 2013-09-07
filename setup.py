@@ -3,6 +3,7 @@
 """Setup for autopep8."""
 
 import ast
+
 from setuptools import setup
 
 
