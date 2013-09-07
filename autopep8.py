@@ -800,6 +800,7 @@ class FixPEP8(object):
                         _get_indentation(target) + self.indent_word +
                         target[c:].lstrip('\n\r \t\\'))
         self.source[result['line'] - 1] = fixed_source
+        return [result['line'], result['line'] + 1]
 
     def fix_e702(self, result, logical):
         """Put semicolon-separated compound statement on separate lines."""
