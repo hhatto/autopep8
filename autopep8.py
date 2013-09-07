@@ -146,6 +146,7 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
     r"""Override pep8's function to provide indentation information."""
     # This parameter is unsued, but is here to match pep8's original function.
     del hang_closing
+    del verbose
 
     first_row = tokens[0][2][0]
     nrows = 1 + tokens[-1][2][0] - first_row
@@ -167,8 +168,6 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
     indent_chances = {}
     last_indent = tokens[0][2]
     indent = [last_indent[1]]
-    if verbose >= 3:
-        print('>>> ' + tokens[0][4].rstrip())
 
     last_token_multiline = None
     line = None
@@ -183,8 +182,6 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
         if newline:
             # this is the beginning of a continuation line.
             last_indent = start
-            if verbose >= 3:
-                print('... ' + line.rstrip())
 
             # record the initial indent.
             rel_indent[row] = pep8.expand_indent(line) - indent_level
@@ -241,8 +238,6 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
                 and not indent[depth]):
             indent[depth] = start[1]
             indent_chances[start[1]] = True
-            if verbose >= 4:
-                print('bracket depth %s indent to %s' % (depth, start[1]))
         # deal with implicit string concatenation
         elif (token_type in (tokenize.STRING, tokenize.COMMENT) or
               text in ('u', 'ur', 'b', 'br')):
@@ -257,9 +252,6 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
                 depth += 1
                 indent.append(0)
                 parens[row] += 1
-                if verbose >= 4:
-                    print('bracket depth %s seen, col %s, visual min = %s' %
-                          (depth, start[1], indent[depth]))
             elif text in ')]}' and depth > 0:
                 # parent indents should not be more than this one
                 prev_indent = indent.pop() or last_indent[1]
