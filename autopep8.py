@@ -524,9 +524,20 @@ class FixPEP8(object):
         """
         num_indent = int(result['info'].split()[1])
         line_index = result['line'] - 1
+        target = self.source[line_index]
+
+        # When multiline strings are involved, pep8 reports the error as
+        # being at the start of the multiline string, which doesn't work
+        # for us.
+        if (
+            '"""' in target or
+            "'''" in target or
+            target.rstrip().endswith('\\')
+        ):
+            return []
 
         self.source[line_index] = (
-            ' ' * num_indent + self.source[line_index].lstrip())
+            ' ' * num_indent + target.lstrip())
 
     def fix_e201(self, result):
         """Remove extraneous whitespace."""
