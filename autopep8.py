@@ -534,11 +534,7 @@ class FixPEP8(object):
         # When multiline strings are involved, pep8 reports the error as
         # being at the start of the multiline string, which doesn't work
         # for us.
-        if (
-            '"""' in target or
-            "'''" in target or
-            target.rstrip().endswith('\\')
-        ):
+        if ('"""' in target or "'''" in target):
             return []
 
         self.source[line_index] = (
