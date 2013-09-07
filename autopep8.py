@@ -144,6 +144,9 @@ pep8.register_check(extended_blank_lines)
 def continued_indentation(logical_line, tokens, indent_level, hang_closing,
                           noqa, verbose):
     r"""Override pep8's function to provide indentation information."""
+    # This parameter is unsued, but is here to match pep8's original function.
+    del hang_closing
+
     first_row = tokens[0][2][0]
     nrows = 1 + tokens[-1][2][0] - first_row
     if noqa or nrows == 1:
@@ -168,6 +171,7 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
         print('>>> ' + tokens[0][4].rstrip())
 
     last_token_multiline = None
+    line = None
     for token_type, text, start, end, line in tokens:
 
         newline = row < start[0] - first_row
