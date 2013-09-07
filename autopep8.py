@@ -375,10 +375,6 @@ class FixPEP8(object):
                 line_index = result['line'] - 1
                 original_line = self.source[line_index]
 
-                # TODO: Make below logical fix stuff more efficient. Can we
-                # salvage things such that we can still apply logical fixes
-                # even though there are modified lines?
-
                 is_logical_fix = len(inspect.getargspec(fix).args) > 2
                 if is_logical_fix:
                     # Do not run logical fix if any lines have been modified.
