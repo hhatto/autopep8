@@ -141,6 +141,152 @@ def extended_blank_lines(logical_line,
 pep8.register_check(extended_blank_lines)
 
 
+def continued_indentation(logical_line, tokens, indent_level, hang_closing,
+                          noqa, verbose):
+    r"""Override pep8's function to provide indentation information."""
+    first_row = tokens[0][2][0]
+    nrows = 1 + tokens[-1][2][0] - first_row
+    if noqa or nrows == 1:
+        return
+
+    # indent_next tells us whether the next block is indented; assuming
+    # that it is indented by 4 spaces, then we should not allow 4-space
+    # indents on the final continuation line; in turn, some other
+    # indents are allowed to have an extra 4 spaces.
+    indent_next = logical_line.endswith(':')
+
+    row = depth = 0
+    # remember how many brackets were opened on each line
+    parens = [0] * nrows
+    # relative indents of physical lines
+    rel_indent = [0] * nrows
+    # visual indents
+    indent_chances = {}
+    last_indent = tokens[0][2]
+    indent = [last_indent[1]]
+    if verbose >= 3:
+        print(">>> " + tokens[0][4].rstrip())
+
+    last_token_multiline = None
+    for token_type, text, start, end, line in tokens:
+
+        newline = row < start[0] - first_row
+        if newline:
+            row = start[0] - first_row
+            newline = (not last_token_multiline and
+                       token_type not in (tokenize.NL, tokenize.NEWLINE))
+
+        if newline:
+            # this is the beginning of a continuation line.
+            last_indent = start
+            if verbose >= 3:
+                print("... " + line.rstrip())
+
+            # record the initial indent.
+            rel_indent[row] = pep8.expand_indent(line) - indent_level
+
+            if depth:
+                # a bracket expression in a continuation line.
+                # find the line that it was opened on
+                for open_row in range(row - 1, -1, -1):
+                    if parens[open_row]:
+                        break
+            else:
+                # an unbracketed continuation line (ie, backslash)
+                open_row = 0
+            hang = rel_indent[row] - rel_indent[open_row]
+            close_bracket = (token_type == tokenize.OP and text in ']})')
+            visual_indent = (not close_bracket and hang > 0 and
+                             indent_chances.get(start[1]))
+
+            if close_bracket and indent[depth]:
+                # closing bracket for visual indent
+                if start[1] != indent[depth]:
+                    yield (start, "E124 {0}".format(indent[depth]))
+            elif close_bracket and not hang:
+                pass
+            elif visual_indent is True:
+                # visual indent is verified
+                if not indent[depth]:
+                    indent[depth] = start[1]
+            elif visual_indent in (text, str):
+                # ignore token lined up with matching one from a previous line
+                pass
+            elif indent[depth] and start[1] < indent[depth]:
+                # visual indent is broken
+                yield (start, "E128 {0}".format(indent[depth]))
+            elif hang == 4 or (indent_next and rel_indent[row] == 8):
+                # hanging indent is verified
+                if close_bracket:
+                    yield (start, "E123 {0}".format(rel_indent[open_row]))
+            else:
+                # indent is broken
+                if hang <= 0:
+                    error = "E122", rel_indent[open_row]
+                elif indent[depth]:
+                    error = "E127", indent[depth]
+                elif hang % 4:
+                    error = "E121", rel_indent[open_row]
+                else:
+                    error = "E126", rel_indent[open_row]
+                yield start, "%s %d" % error
+
+        # look for visual indenting
+        if (parens[row] and token_type not in (tokenize.NL, tokenize.COMMENT)
+                and not indent[depth]):
+            indent[depth] = start[1]
+            indent_chances[start[1]] = True
+            if verbose >= 4:
+                print("bracket depth %s indent to %s" % (depth, start[1]))
+        # deal with implicit string concatenation
+        elif (token_type in (tokenize.STRING, tokenize.COMMENT) or
+              text in ('u', 'ur', 'b', 'br')):
+            indent_chances[start[1]] = str
+        # special case for the "if" statement because len("if (") == 4
+        elif not indent_chances and not row and not depth and text == 'if':
+            indent_chances[end[1] + 1] = True
+
+        # keep track of bracket depth
+        if token_type == tokenize.OP:
+            if text in '([{':
+                depth += 1
+                indent.append(0)
+                parens[row] += 1
+                if verbose >= 4:
+                    print("bracket depth %s seen, col %s, visual min = %s" %
+                          (depth, start[1], indent[depth]))
+            elif text in ')]}' and depth > 0:
+                # parent indents should not be more than this one
+                prev_indent = indent.pop() or last_indent[1]
+                for d in range(depth):
+                    if indent[d] > prev_indent:
+                        indent[d] = 0
+                for ind in list(indent_chances):
+                    if ind >= prev_indent:
+                        del indent_chances[ind]
+                depth -= 1
+                if depth:
+                    indent_chances[indent[depth]] = True
+                for idx in range(row, -1, -1):
+                    if parens[idx]:
+                        parens[idx] -= 1
+                        rel_indent[row] = rel_indent[idx]
+                        break
+            assert len(indent) == depth + 1
+            if start[1] not in indent_chances:
+                # allow to line up tokens
+                indent_chances[start[1]] = text
+
+        last_token_multiline = (start[0] != end[0])
+
+    # TODO
+    #f indent_next and pep8.expand_indent(line) == indent_level + 4:
+    #   yield (last_indent, "E125 continuation line does not distinguish "
+    #          "itself from next logical line")
+del pep8._checks['logical_line'][pep8.continued_indentation]
+pep8.register_check(continued_indentation)
+
+
 class FixPEP8(object):
 
     """Fix invalid code.
@@ -192,8 +338,15 @@ class FixPEP8(object):
 
         # method definition
         self.fix_e111 = self.fix_e101
-        self.fix_e128 = self.fix_e127
-        self.fix_e129 = self.fix_e125
+        self.fix_e121 = self._fix_reindent
+        self.fix_e122 = self._fix_reindent
+        self.fix_e123 = self._fix_reindent
+        self.fix_e124 = self._fix_reindent
+        self.fix_e125 = self._fix_reindent
+        self.fix_e126 = self._fix_reindent
+        self.fix_e127 = self._fix_reindent
+        self.fix_e128 = self._fix_reindent
+        self.fix_e129 = self._fix_reindent
         self.fix_e202 = self.fix_e201
         self.fix_e203 = self.fix_e201
         self.fix_e211 = self.fix_e201
@@ -365,145 +518,17 @@ class FixPEP8(object):
         original = self.source[ls[0]:le[0] + 1]
         return ls, le, original
 
-    def _fix_reindent(self, result, logical):
+    def _fix_reindent(self, result):
         """Fix a badly indented line.
 
         This is done by adding or removing from its initial indent only.
 
         """
-        assert logical
-        ls, _, original = logical
-
-        rewrapper = Wrapper(original)
-        valid_indents = rewrapper.pep8_expected()
-        if not rewrapper.rel_indent:
-            return []  # pragma: no cover
-        if result['line'] > ls[0]:
-            # got a valid continuation line number from pep8
-            row = result['line'] - ls[0] - 1
-            # always pick the first option for this
-            valid = valid_indents[row]
-            got = rewrapper.rel_indent[row]
-        else:
-            return []  # pragma: no cover
-        line = ls[0] + row
-        # always pick the expected indent, for now.
-        indent_to = valid[0]
-
-        if got != indent_to:
-            orig_line = self.source[line]
-            new_line = ' ' * (indent_to) + orig_line.lstrip()
-            if new_line == orig_line:
-                return []
-            else:
-                self.source[line] = new_line
-                return [line + 1]  # Line indexed at 1
-        else:
-            return []  # pragma: no cover
-
-    def fix_e121(self, result, logical):
-        """Fix indentation to be a multiple of four."""
-        # Fix by adjusting initial indent level.
-        return self._fix_reindent(result, logical)
-
-    def fix_e122(self, result, logical):
-        """Add absent indentation for hanging indentation."""
-        # Fix by adding an initial indent.
-        modified_lines = self._fix_reindent(result, logical)
-        if modified_lines:
-            return modified_lines
-        else:
-            # Fallback
-            line_index = result['line'] - 1
-            original_line = self.source[line_index]
-            indentation = _get_indentation(original_line)
-            self.source[line_index] = (indentation + self.indent_word +
-                                       original_line.lstrip())
-
-    def fix_e123(self, result, logical):
-        """Align closing bracket to match opening bracket."""
-        # Fix by deleting whitespace to the correct level.
-        assert logical
-        logical_lines = logical[2]
+        num_indent = int(result['info'].split()[1])
         line_index = result['line'] - 1
-        original_line = self.source[line_index]
 
-        fixed_line = (_get_indentation(logical_lines[0]) +
-                      original_line.lstrip())
-        if fixed_line == original_line:
-            # Fall back to slower method.
-            return self._fix_reindent(result, logical)
-        else:
-            self.source[line_index] = fixed_line
-
-    def fix_e124(self, result, logical):
-        """Align closing bracket to match visual indentation."""
-        # Fix by inserting whitespace before the closing bracket.
-        return self._fix_reindent(result, logical)
-
-    def fix_e125(self, result, logical):
-        """Indent to distinguish line from next logical line."""
-        # Fix by indenting the line in error to the next stop.
-        return self._fix_reindent(result, logical)
-
-    def fix_e126(self, result, logical):
-        """Fix over-indented hanging indentation."""
-        # fix by deleting whitespace to the left
-        assert logical
-        logical_lines = logical[2]
-        line_index = result['line'] - 1
-        original = self.source[line_index]
-
-        fixed = (_get_indentation(logical_lines[0]) +
-                 self.indent_word + original.lstrip())
-        if fixed == original:
-            # Fall back to slower method.
-            return self._fix_reindent(result, logical)  # pragma: no cover
-        else:
-            self.source[line_index] = fixed
-
-    def fix_e127(self, result, logical):
-        """Fix visual indentation."""
-        # Fix by inserting/deleting whitespace to the correct level.
-        modified_lines = self._align_visual_indent(result, logical)
-        if modified_lines != []:
-            return modified_lines
-        else:
-            # Fall back to slower method.
-            return self._fix_reindent(result, logical)
-
-    def _align_visual_indent(self, result, logical):
-        """Correct visual indent.
-
-        This includes over (E127) and under (E128) indented lines.
-
-        """
-        assert logical
-        logical_lines = logical[2]
-        line_index = result['line'] - 1
-        original = self.source[line_index]
-        fixed = original
-
-        if logical_lines[0].rstrip().endswith('\\'):
-            fixed = (_get_indentation(logical_lines[0]) +
-                     self.indent_word + original.lstrip())
-        else:
-            start_index = None
-            for symbol in '([{':
-                if symbol in logical_lines[0]:
-                    found_index = logical_lines[0].find(symbol)
-                    if start_index is None:
-                        start_index = found_index
-                    else:
-                        start_index = min(start_index, found_index)
-
-            if start_index is not None:
-                fixed = start_index * ' ' + original.lstrip()
-
-        if fixed == original:
-            return []
-        else:
-            self.source[line_index] = fixed
+        self.source[line_index] = (
+            ' ' * num_indent + self.source[line_index].lstrip())
 
     def fix_e201(self, result):
         """Remove extraneous whitespace."""
