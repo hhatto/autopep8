@@ -1166,8 +1166,21 @@ def baz():
 
     pass
 """
+        fixed = r"""
+
+
+def bar():
+    foo(1,
+        2)
+
+
+def baz():
+     pass
+
+    pass
+"""
         with autopep8_context(line, options=['--select=E12']) as result:
-            self.assertEqual(line, result)
+            self.assertEqual(fixed, result)
 
     def test_e121_with_stupid_fallback(self):
         line = """\
@@ -1181,7 +1194,7 @@ list(''.join([
         fixed = """\
 list(''.join([
     '%d'
-             % 1,
+    % 1,
     list(''),
     ''
 ]))
