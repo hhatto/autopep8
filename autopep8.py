@@ -222,16 +222,17 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
                     yield (start, 'E123 {0}'.format(indent_level +
                                                     rel_indent[open_row]))
             else:
+                one_indented = indent_level + rel_indent[open_row] + 4
                 # indent is broken
                 if hang <= 0:
-                    error = 'E122', indent_level + rel_indent[open_row] + 4
+                    error = 'E122', one_indented
                 elif indent[depth]:
                     error = 'E127', indent[depth]
                 elif hang % 4:
-                    error = 'E121', indent_level + rel_indent[open_row] + 4
+                    error = 'E121', one_indented
                 else:
-                    error = 'E126', indent_level + rel_indent[open_row] + 4
-                yield start, '%s %d' % error
+                    error = 'E126', one_indented
+                yield (start, '{0} {1}'.format(*error))
 
         # look for visual indenting
         if (parens[row] and token_type not in (tokenize.NL, tokenize.COMMENT)
