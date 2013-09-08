@@ -2023,7 +2023,7 @@ def line_shortening_rank(candidate, newline, indent_word):
             for symbol in '([{':
                 offset = max(offset, 1 + lines[0].find(symbol))
 
-        max_length = max([offset + len(x.strip()) for x in lines])
+        max_length = max(offset + len(x.strip()) for x in lines)
         rank += max_length
         rank += len(lines)
 
