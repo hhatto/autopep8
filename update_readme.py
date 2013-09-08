@@ -30,7 +30,7 @@ def indent_line(line):
 
 def indent(text):
     """Indent text by four spaces."""
-    return '\n'.join([indent_line(line) for line in text.split('\n')])
+    return '\n'.join(indent_line(line) for line in text.split('\n'))
 
 
 def main():
