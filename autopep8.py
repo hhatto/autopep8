@@ -141,13 +141,8 @@ def extended_blank_lines(logical_line,
 pep8.register_check(extended_blank_lines)
 
 
-def continued_indentation(logical_line, tokens, indent_level, hang_closing,
-                          noqa, verbose):
+def continued_indentation(logical_line, tokens, indent_level, noqa):
     r"""Override pep8's function to provide indentation information."""
-    # This parameter is unsued, but is here to match pep8's original function.
-    del hang_closing
-    del verbose
-
     first_row = tokens[0][2][0]
     nrows = 1 + tokens[-1][2][0] - first_row
     if noqa or nrows == 1:
