@@ -7,12 +7,12 @@ if not isinstance(res, type("")):
 #: E721
 import types
 
-if res == int:
+if res == types.IntType:
     pass
 #: E721
 import types
 
-if not isinstance(res, list):
+if not isinstance(res, types.ListType):
     pass
 #: E721
 assert isinstance(res, type(False)) or isinstance(res, type(None))
