@@ -991,7 +991,6 @@ def fix_w6(source, aggressive=True):
                      'sys_exc',
                      'throw',
                      'tuple_params',
-                     'types',
                      'xreadlines'])
 
 
