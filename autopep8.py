@@ -1074,6 +1074,8 @@ def _priority_key(pep8_result):
         'e225', 'e231',
         # Remove extraneous whitespace before breaking lines.
         'e201',
+        # Shorten whitespace in comment before resorting to wrapping.
+        'e262'
     ]
     key = pep8_result['id'].lower()
     if key in priority:
