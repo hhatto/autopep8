@@ -1909,7 +1909,7 @@ if True:
     # Long inline comments should be moved above.
     '                                                          '
 """
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_with_inline_comments_should_skip_edge_cases(self):

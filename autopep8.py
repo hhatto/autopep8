@@ -1128,6 +1128,7 @@ def _shorten_line(tokens, source, indentation, indent_word, newline,
         token_string = tkn[1]
 
         if (
+            aggressive and
             token_type == tokenize.COMMENT and
             not previous_line.rstrip().endswith('\\')
         ):
