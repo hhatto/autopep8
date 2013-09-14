@@ -1886,7 +1886,7 @@ def parse_args(args):
                                          '[filename [filename ...]]'
                                          '\nUse filename \'-\'  for stdin.',
                                    version='%prog {0}'.format(__version__),
-                                   description=__doc__.split('\n')[0],
+                                   description=docstring_summary(__doc__),
                                    prog='autopep8')
     parser.add_option('-v', '--verbose', action='count', dest='verbose',
                       default=0,
@@ -2013,13 +2013,20 @@ def supported_fixes():
     for attribute in dir(instance):
         code = re.match('fix_([ew][0-9][0-9][0-9])', attribute)
         if code:
-            yield (code.group(1).upper(),
-                   re.sub(r'\s+', ' ',
-                          getattr(instance, attribute).__doc__))
+            yield (
+                code.group(1).upper(),
+                re.sub(r'\s+', ' ',
+                       docstring_summary(getattr(instance, attribute).__doc__))
+            )
 
     for (code, function) in sorted(global_fixes()):
         yield (code.upper() + (4 - len(code)) * ' ',
-               re.sub(r'\s+', ' ', function.__doc__))
+               re.sub(r'\s+', ' ', docstring_summary(function.__doc__)))
+
+
+def docstring_summary(docstring):
+    """Return summary of docstring."""
+    return docstring.split('\n')[0]
 
 
 def line_shortening_rank(candidate, newline, indent_word):
