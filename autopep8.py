@@ -1598,8 +1598,12 @@ def filter_results(source, results, aggressive=False):
         if issue_id == 'e101' and '\t' not in split_source[r['line']]:
             continue
 
-        if not aggressive:
-            if issue_id.startswith(('e711', 'e712', 'w6')):
+        if aggressive <= 0:
+            if issue_id.startswith(('e711', 'w6')):
+                continue
+
+        if aggressive <= 1:
+            if issue_id.startswith(('e712', )):
                 continue
 
         if r['line'] in commented_out_code_line_numbers:

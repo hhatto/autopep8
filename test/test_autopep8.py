@@ -2588,30 +2588,33 @@ raise IOError('abc '
     def test_e712(self):
         line = 'foo == True\n'
         fixed = 'foo\n'
-        with autopep8_context(line, options=['--aggressive', '--select=E712']) as result:
+        with autopep8_context(line, options=['-aa',
+                                             '--select=E712']) as result:
             self.assertEqual(fixed, result)
 
     def test_e712_in_conditional_with_multiple_instances(self):
         line = 'if foo == True and bar == True:\npass\n'
         fixed = 'if foo and bar:\npass\n'
-        with autopep8_context(line, options=['--aggressive', '--select=E712']) as result:
+        with autopep8_context(line, options=['-aa',
+                                             '--select=E712']) as result:
             self.assertEqual(fixed, result)
 
     def test_e712_with_false(self):
         line = 'foo != False\n'
         fixed = 'foo\n'
-        with autopep8_context(line, options=['--aggressive', '--select=E712']) as result:
+        with autopep8_context(line, options=['-aa',
+                                             '--select=E712']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e712_only_if_aggressive(self):
+    def test_e712_only_if_aggressive_level_2(self):
         line = 'foo == True\n'
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['-a']) as result:
             self.assertEqual(line, result)
 
     def test_e711_and_e712(self):
         line = 'if (foo == None and bar == True) or (foo != False and bar != None):\npass\n'
         fixed = 'if (foo is None and bar) or (foo and bar is not None):\npass\n'
-        with autopep8_context(line, options=['--aggressive']) as result:
+        with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
     def test_e721(self):
