@@ -40,7 +40,7 @@ def colored(text, color):
 def run(filename, command, max_line_length=79,
         ignore='', check_ignore='', verbose=False,
         comparison_function=None,
-        aggressive=False):
+        aggressive=0):
     """Run autopep8 on file at filename.
 
     Return True on success.
@@ -49,7 +49,7 @@ def run(filename, command, max_line_length=79,
     command = (shlex.split(command) + (['--verbose'] if verbose else []) +
                ['--max-line-length={0}'.format(max_line_length),
                 '--ignore=' + ignore, filename] +
-               (['--aggressive'] if aggressive else []))
+               aggressive * ['--aggressive'])
 
     with tempfile.NamedTemporaryFile(suffix='.py') as tmp_file:
         if 0 != subprocess.call(command, stdout=tmp_file):
@@ -119,7 +119,7 @@ def process_args():
     parser.add_option('--compare-bytecode', action='store_true',
                       help='compare bytecode before and after fixes; '
                            'sets default --ignore=' + compare_bytecode_ignore)
-    parser.add_option('--aggressive', action='store_true',
+    parser.add_option('-a', '--aggressive', action='count', default=0,
                       help='run autopep8 in aggressive mode')
 
     parser.add_option(
