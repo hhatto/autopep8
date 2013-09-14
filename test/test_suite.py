@@ -34,7 +34,7 @@ def check(expected_filename, input_filename):
     """
     got = autopep8.fix_file(
         input_filename,
-        options=autopep8.parse_args(['', '--aggressive'])[0])
+        options=autopep8.parse_args(['', '-aa'])[0])
 
     try:
         with autopep8.open_with_encoding(expected_filename) as expected_file:
