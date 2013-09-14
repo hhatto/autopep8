@@ -1988,7 +1988,9 @@ parser.add_argument(
     def test_e501_with_shorter_length(self):
         line = "foooooooooooooooooo('abcdefghijklmnopqrstuvwxyz')\n"
         fixed = "foooooooooooooooooo(\n    'abcdefghijklmnopqrstuvwxyz')\n"
-        with autopep8_context(line, options=['--max-line-length=40']) as result:
+
+        with autopep8_context(line,
+                              options=['--max-line-length=40']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_with_indent(self):
@@ -2402,7 +2404,7 @@ def foo(
         sdfsdfdsf):
     pass
 """
-        with autopep8_context(line, options=['--aggressive', '--aggressive']) as result:
+        with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
     def test_e502(self):
@@ -2588,36 +2590,36 @@ raise IOError('abc '
     def test_e712(self):
         line = 'foo == True\n'
         fixed = 'foo\n'
-        with autopep8_context(line, options=['-aa',
-                                             '--select=E712']) as result:
+        with autopep8_context(line,
+                              options=['-aa', '--select=E712']) as result:
             self.assertEqual(fixed, result)
 
     def test_e712_in_conditional_with_multiple_instances(self):
         line = 'if foo == True and bar == True:\npass\n'
         fixed = 'if foo and bar:\npass\n'
-        with autopep8_context(line, options=['-aa',
-                                             '--select=E712']) as result:
+        with autopep8_context(line,
+                              options=['-aa', '--select=E712']) as result:
             self.assertEqual(fixed, result)
 
     def test_e712_with_false(self):
         line = 'foo != False\n'
         fixed = 'foo\n'
-        with autopep8_context(line, options=['-aa',
-                                             '--select=E712']) as result:
+        with autopep8_context(line,
+                              options=['-aa', '--select=E712']) as result:
             self.assertEqual(fixed, result)
 
     def test_e712_with_special_case_equal_not_true(self):
         line = 'if foo != True:\n    pass\n'
         fixed = 'if not foo:\n    pass\n'
-        with autopep8_context(line, options=['-aa',
-                                             '--select=E712']) as result:
+        with autopep8_context(line,
+                              options=['-aa', '--select=E712']) as result:
             self.assertEqual(fixed, result)
 
     def test_e712_with_special_case_equal_false(self):
         line = 'if foo == False:\n    pass\n'
         fixed = 'if not foo:\n    pass\n'
-        with autopep8_context(line, options=['-aa',
-                                             '--select=E712']) as result:
+        with autopep8_context(line,
+                              options=['-aa', '--select=E712']) as result:
             self.assertEqual(fixed, result)
 
     def test_e712_only_if_aggressive_level_2(self):
