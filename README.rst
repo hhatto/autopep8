@@ -227,6 +227,10 @@ more aggressive fixes, use the ``--aggressive`` option::
 
     $ autopep8 --aggressive <filename>
 
+Use multiple ``--aggressive`` to increase the aggressiveness level. For
+example, ``E712`` requires aggressiveness level 2 (since ``x == True`` could be
+changed to either ``x`` or ``x is True``, but autopep8 chooses the former).
+
 ``--aggressive`` will also shorten lines more aggressively. It will also remove
 trailing whitespace more aggressively. (Usually, we don't touch trailing
 whitespace in docstrings and other multiline strings. And to do even more
