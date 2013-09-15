@@ -858,11 +858,9 @@ class FixPEP8(object):
         if re.match(r'^\s*if \w+ == False:$', target):
             self.source[line_index] = re.sub(r'if (\w+) == False:',
                                              r'if not \1:', target, count=1)
-            return
         elif re.match(r'^\s*if \w+ != True:$', target):
             self.source[line_index] = re.sub(r'if (\w+) != True:',
                                              r'if not \1:', target, count=1)
-            return
         else:
             right_offset = offset + 2
             if right_offset >= len(target):
