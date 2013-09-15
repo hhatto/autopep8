@@ -1435,7 +1435,7 @@ class Reindenter(object):
 
 
 def _reindent_stats(tokens):
-    """Return list  of (lineno, indentlevel) pairs.
+    """Return list of (lineno, indentlevel) pairs.
 
     One for each stmt and comment line. indentlevel is -1 for comment lines, as
     a signal that tokenize doesn't know what to do about them; indeed, they're
