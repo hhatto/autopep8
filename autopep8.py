@@ -1343,7 +1343,7 @@ class Reindenter(object):
 
         """
         try:
-            stats = reindent_stats(tokenize.generate_tokens(self.getline))
+            stats = _reindent_stats(tokenize.generate_tokens(self.getline))
         except (SyntaxError, tokenize.TokenError):
             return set()
         # Remove trailing empty lines.
@@ -1434,7 +1434,7 @@ class Reindenter(object):
         return line
 
 
-def reindent_stats(tokens):
+def _reindent_stats(tokens):
     """Return list  of (lineno, indentlevel) pairs.
 
     One for each stmt and comment line. indentlevel is -1 for comment lines, as
