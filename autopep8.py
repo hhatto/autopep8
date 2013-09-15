@@ -863,31 +863,31 @@ class FixPEP8(object):
             self.source[line_index] = re.sub(r'if (\w+) != True:',
                                              r'if not \1:', target, count=1)
             return
+        else:
+            right_offset = offset + 2
+            if right_offset >= len(target):
+                return []
 
-        right_offset = offset + 2
-        if right_offset >= len(target):
-            return []
+            left = target[:offset].rstrip()
+            center = target[offset:right_offset]
+            right = target[right_offset:].lstrip()
 
-        left = target[:offset].rstrip()
-        center = target[offset:right_offset]
-        right = target[right_offset:].lstrip()
+            # Handle simple cases only.
+            new_right = None
+            if center.strip() == '==':
+                if re.match(r'\bTrue\b', right):
+                    new_right = re.sub(r'\bTrue\b *', '', right, count=1)
+            elif center.strip() == '!=':
+                if re.match(r'\bFalse\b', right):
+                    new_right = re.sub(r'\bFalse\b *', '', right, count=1)
 
-        # Handle simple cases only.
-        new_right = None
-        if center.strip() == '==':
-            if re.match(r'\bTrue\b', right):
-                new_right = re.sub(r'\bTrue\b *', '', right, count=1)
-        elif center.strip() == '!=':
-            if re.match(r'\bFalse\b', right):
-                new_right = re.sub(r'\bFalse\b *', '', right, count=1)
+            if new_right is None:
+                return []
 
-        if new_right is None:
-            return []
+            if new_right[0].isalnum():
+                new_right = ' ' + new_right
 
-        if new_right[0].isalnum():
-            new_right = ' ' + new_right
-
-        self.source[line_index] = left + new_right
+            self.source[line_index] = left + new_right
 
     def fix_w291(self, result):
         """Remove trailing whitespace."""
