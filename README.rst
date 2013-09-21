@@ -151,12 +151,14 @@ Options::
                             infinite)
       -a, --aggressive      enable non-whitespace changes; multiple -a result in
                             more aggressive changes
-      --exclude=globs       exclude files/directories that match these comma-
-                            separated globs
+      --exclude=globs       exclude files that match these comma-separated globs
       --list-fixes          list codes for fixes; used by --ignore and --select
-      --ignore=errors       do not fix these errors/warnings (default: E24,W6)
+      --ignore=errors       do not fix these errors/warnings (default: E24)
       --select=errors       fix only these errors/warnings (e.g. E4,W)
       --max-line-length=n   set maximum allowed line length (default: 79)
+      --range=start end     only fix errors found within this inclusive range of
+                            line numbers (e.g. 1 99); line numbers are indexed at
+                            1
 
 
 Features

@@ -1878,8 +1878,8 @@ def extract_code_from_function(function):
     return code
 
 
-def parse_args(args):
-    """Parse command-line options."""
+def create_parser():
+    """Return command-line parser."""
     parser = optparse.OptionParser(usage='Usage: %prog [options] '
                                          '[filename [filename ...]]'
                                          '\nUse filename \'-\'  for stdin.',
@@ -1926,6 +1926,13 @@ def parse_args(args):
                       help='only fix errors found within this inclusive '
                            'range of line numbers (e.g. 1 99); '
                            'line numbers are indexed at 1')
+
+    return parser
+
+
+def parse_args(args):
+    """Parse command-line options."""
+    parser = create_parser()
     options, args = parser.parse_args(args)
 
     if not len(args) and not options.list_fixes:

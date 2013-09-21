@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 """Update example in readme."""
 
+import io
 import textwrap
 
 import autopep8
 
 
-def split_readme(readme_path, before_key, after_key, end_key):
+def split_readme(readme_path, before_key, after_key, options_key, end_key):
     """Return split readme."""
     with open(readme_path) as readme_file:
         readme = readme_file.read()
 
     top, rest = readme.split(before_key)
     before, rest = rest.split(after_key)
+    _, rest = rest.split(options_key)
     _, bottom = rest.split(end_key)
 
     return (top.rstrip('\n'),
@@ -33,15 +35,25 @@ def indent(text):
     return '\n'.join(indent_line(line) for line in text.split('\n'))
 
 
+def help_message():
+    """Return help output."""
+    parser = autopep8.create_parser()
+    string_io = io.StringIO()
+    parser.print_help(string_io)
+    return string_io.getvalue()
+
+
 def main():
     readme_path = 'README.rst'
     before_key = 'Before running autopep8.\n\n.. code-block:: python'
     after_key = 'After running autopep8.\n\n.. code-block:: python'
+    options_key = 'Options::'
 
     (top, before, bottom) = split_readme(readme_path,
                                          before_key=before_key,
                                          after_key=after_key,
-                                         end_key='Options::')
+                                         options_key=options_key,
+                                         end_key='Features\n========')
 
     input_code = textwrap.dedent(before)
 
@@ -54,6 +66,7 @@ def main():
         top,
         before_key, before,
         after_key, indent(output_code),
+        options_key, indent(help_message()),
         bottom])
 
     with open(readme_path, 'w') as output_file:
