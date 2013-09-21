@@ -1908,8 +1908,8 @@ def parse_args(args):
                       help='enable non-whitespace changes; '
                            'multiple -a result in more aggressive changes')
     parser.add_option('--exclude', metavar='globs',
-                      help='exclude files/directories that match these '
-                           'comma-separated globs')
+                      help='exclude files that match these comma-separated '
+                           'globs')
     parser.add_option('--list-fixes', action='store_true',
                       help='list codes for fixes; '
                            'used by --ignore and --select')
