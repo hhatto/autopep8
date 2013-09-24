@@ -76,7 +76,7 @@ check:
 		--max-module-lines=2500 \
 		--disable=C0102,C0103,C0111,C0301,C0302,E1101,F0401,R0801,R0904,R0912,R0913,W0212 \
 		--rcfile=/dev/null \
-		--dummy-variables-rgx='_+' \
+		--dummy-variables-rgx='^_+$$' \
 		test/acid.py test/acid_github.py test/acid_pypi.py test/test_autopep8.py
 	./autopep8.py --diff autopep8.py setup.py test/test_autopep8.py update_readme.py
 
