@@ -6,10 +6,6 @@ autopep8
    :target: https://travis-ci.org/hhatto/autopep8
    :alt: Build status
 
-.. image:: https://coveralls.io/repos/hhatto/autopep8/badge.png?branch=master
-   :target: https://coveralls.io/r/hhatto/autopep8
-   :alt: Test coverage status
-
 
 About
 =====
