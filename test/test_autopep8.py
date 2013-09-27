@@ -2431,6 +2431,18 @@ def foo(
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e701_group_of_classes(self):
+        line = 'class Foo(object): pass\nclass Bar(object): pass\n'
+        fixed = 'class Foo(object): pass\nclass Bar(object): pass\n'
+        with autopep8_context(line, options=['--select=E701']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e701_group_of_defs(self):
+        line = 'def foo(): pass\ndef bar(): pass\n'
+        fixed = 'def foo(): pass\ndef bar(): pass\n'
+        with autopep8_context(line, options=['--select=E701']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e702(self):
         line = 'print 1; print 2\n'
         fixed = 'print 1\nprint 2\n'

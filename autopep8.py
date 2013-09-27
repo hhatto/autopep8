@@ -788,15 +788,37 @@ class FixPEP8(object):
 
     def fix_e701(self, result):
         """Put colon-separated compound statement on separate lines."""
+
         line_index = result['line'] - 1
         target = self.source[line_index]
         c = result['column']
 
-        fixed_source = (target[:c] + self.newline +
-                        _get_indentation(target) + self.indent_word +
-                        target[c:].lstrip('\n\r \t\\'))
-        self.source[result['line'] - 1] = fixed_source
-        return [result['line'], result['line'] + 1]
+        # Check if we should leave this line intact or not.
+
+        def startswith(line_number, with_):
+            try:
+                return self.source[line_number].strip().startswith(with_)
+            except IndexError: # line_number out of bound
+                return False
+
+        def is_target_surrounded_by(obj):
+            return (startswith(line_index-1, obj) or
+                    startswith(line_index+1, obj))
+
+        leave_intact = (
+            startswith(line_index, 'class') and is_target_surrounded_by('class') or
+            startswith(line_index, 'def') and is_target_surrounded_by('def'))
+
+        # Perform split
+
+        if leave_intact:
+            return []
+        else:
+            fixed_source = (target[:c] + self.newline +
+                            _get_indentation(target) + self.indent_word +
+                            target[c:].lstrip('\n\r \t\\'))
+            self.source[result['line'] - 1] = fixed_source
+            return [result['line'], result['line'] + 1]
 
     def fix_e702(self, result, logical):
         """Put semicolon-separated compound statement on separate lines."""
