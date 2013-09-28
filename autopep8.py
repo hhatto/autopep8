@@ -131,7 +131,7 @@ def extended_blank_lines(logical_line,
         if blank_lines and pep8.DOCSTRING_REGEX.match(logical_line):
             yield (0, 'E303 too many blank lines ({0})'.format(blank_lines))
     elif pep8.DOCSTRING_REGEX.match(previous_logical):
-        # Missing blank line between class docstring and method definition
+        # Missing blank line between class docstring and method declaration.
         if (
             indent_level and
             not blank_lines and
