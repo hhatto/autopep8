@@ -187,6 +187,7 @@ autopep8 fixes the following issues_ reported by pep8_::
     E302 - Add missing 2 blank lines.
     E303 - Remove extra blank lines.
     E304 - Remove blank line following function decorator.
+    E309 - Add missing blank line (after class declaration).
     E401 - Put imports on separate lines.
     E501 - Try to make lines fit within --max-line-length characters.
     E502 - Remove extraneous escape of newline.
