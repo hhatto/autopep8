@@ -1764,12 +1764,6 @@ bar[zap[0][0]:zig[0][0], :]
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    def test_e301_extended(self):
-        line = 'class Foo:\n    def bar():\n        print 1\n'
-        fixed = 'class Foo:\n\n    def bar():\n        print 1\n'
-        with autopep8_context(line) as result:
-            self.assertEqual(fixed, result)
-
     def test_e301_extended_with_docstring(self):
         line = '''\
 class Foo(object):
@@ -1829,6 +1823,12 @@ def foo():
     def test_e304_with_comment(self):
         line = '@contextmanager\n# comment\n\ndef f():\n    print 1\n'
         fixed = '@contextmanager\n# comment\ndef f():\n    print 1\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e309(self):
+        line = 'class Foo:\n    def bar():\n        print 1\n'
+        fixed = 'class Foo:\n\n    def bar():\n        print 1\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 

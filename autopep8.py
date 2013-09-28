@@ -126,11 +126,13 @@ def extended_blank_lines(logical_line,
         if (logical_line.startswith(('def ', 'class ', '@')) or
                 pep8.DOCSTRING_REGEX.match(logical_line)):
             if indent_level and not blank_lines:
-                yield (0, 'E301 expected 1 blank line, found 0')
+                yield (0, 'E309 expected a blank line '
+                          'after class/def definition')
     elif previous_logical.startswith('def '):
         if blank_lines and pep8.DOCSTRING_REGEX.match(logical_line):
             yield (0, 'E303 too many blank lines ({0})'.format(blank_lines))
     elif pep8.DOCSTRING_REGEX.match(previous_logical):
+        # Missing blank line between class docstring and method definition
         if (
             indent_level and
             not blank_lines and
@@ -353,6 +355,7 @@ class FixPEP8(object):
         self.fix_e272 = self.fix_e271
         self.fix_e273 = self.fix_e271
         self.fix_e274 = self.fix_e271
+        self.fix_e309 = self.fix_e301
         self.fix_e703 = self.fix_e702
         self.fix_w191 = self.fix_e101
 
