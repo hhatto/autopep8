@@ -122,9 +122,11 @@ def extended_blank_lines(logical_line,
                          indent_level,
                          previous_logical):
     """Check for missing blank lines after class declaration."""
-    if (previous_logical.startswith('class ')):
-        if (logical_line.startswith(('def ', 'class ', '@')) or
-                pep8.DOCSTRING_REGEX.match(logical_line)):
+    if previous_logical.startswith('class '):
+        if (
+            logical_line.startswith(('def ', 'class ', '@')) or
+            pep8.DOCSTRING_REGEX.match(logical_line)
+        ):
             if indent_level and not blank_lines:
                 yield (0, 'E309 expected 1 blank line after class declaration')
     elif previous_logical.startswith('def '):
@@ -540,9 +542,11 @@ class FixPEP8(object):
         # When multiline strings are involved, pep8 reports the error as
         # being at the start of the multiline string, which doesn't work
         # for us.
-        if ('"""' in target or
+        if (
+            '"""' in target or
             "'''" in target or
-                target.rstrip().endswith('\\')):
+            target.rstrip().endswith('\\')
+        ):
             return []
 
         fixed = fix_whitespace(target,
@@ -566,8 +570,10 @@ class FixPEP8(object):
 
         # Only proceed if non-whitespace characters match.
         # And make sure we don't break the indentation.
-        if (fixed.replace(' ', '') == target.replace(' ', '') and
-                _get_indentation(fixed) == _get_indentation(target)):
+        if (
+            fixed.replace(' ', '') == target.replace(' ', '') and
+            _get_indentation(fixed) == _get_indentation(target)
+        ):
             self.source[result['line'] - 1] = fixed
         else:
             return []
@@ -932,9 +938,10 @@ def fix_e26(source, _=False):
     fixed_lines = []
     sio = io.StringIO(source)
     for (line_number, line) in enumerate(sio.readlines(), start=1):
-        if (line.lstrip().startswith('#') and
-                line_number not in ignored_line_numbers):
-
+        if (
+            line.lstrip().startswith('#') and
+            line_number not in ignored_line_numbers
+        ):
             indentation = _get_indentation(line)
             line = line.lstrip()
 
@@ -1645,7 +1652,7 @@ def multiline_string_lines(source, include_docstrings=False):
             start_row = t[2][0]
             end_row = t[3][0]
 
-            if (token_type == tokenize.STRING and start_row != end_row):
+            if token_type == tokenize.STRING and start_row != end_row:
                 if (
                     include_docstrings or
                     previous_token_type != tokenize.INDENT
@@ -1706,8 +1713,10 @@ def shorten_comment(line, newline, max_line_length, last_comment=False):
                           len(indentation) + 72)
 
     MIN_CHARACTER_REPEAT = 5
-    if (len(line) - len(line.rstrip(line[-1])) >= MIN_CHARACTER_REPEAT and
-            not line[-1].isalnum()):
+    if (
+        len(line) - len(line.rstrip(line[-1])) >= MIN_CHARACTER_REPEAT and
+        not line[-1].isalnum()
+    ):
         # Trim comments that end with things like ---------
         return line[:max_line_length] + newline
     elif last_comment and re.match(r'\s*#+\s*\w+', line):
@@ -2066,8 +2075,10 @@ def line_shortening_rank(candidate, newline, indent_word):
             '{': '}'}.get(lines[0][-1], None)
 
         if len(lines) > 1:
-            if (bad_staring_symbol and
-                    lines[1].lstrip().startswith(bad_staring_symbol)):
+            if (
+                bad_staring_symbol and
+                lines[1].lstrip().startswith(bad_staring_symbol)
+            ):
                 rank += 20
 
         if re.match(r'.*[+\-\*/] \($', lines[0]):
@@ -2081,8 +2092,10 @@ def line_shortening_rank(candidate, newline, indent_word):
 
             for ending in '([{':
                 # Avoid lonely opening. They result in longer lines.
-                if (current_line.endswith(ending) and
-                        len(current_line.strip()) <= len(indent_word)):
+                if (
+                    current_line.endswith(ending) and
+                    len(current_line.strip()) <= len(indent_word)
+                ):
                     rank += 100
 
             if current_line.endswith('%'):
