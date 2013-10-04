@@ -208,8 +208,8 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                 if not indent[depth]:
                     indent[depth] = start[1]
             elif (
-                visual_indent in (text, str) and
-                not last_line.strip().endswith(',')
+                visual_indent in (text, unicode) and
+                not last_line.rstrip().endswith(',')
             ):
                 # ignore token lined up with matching one from a previous line
                 pass
@@ -242,7 +242,7 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
         # deal with implicit string concatenation
         elif (token_type in (tokenize.STRING, tokenize.COMMENT) or
               text in ('u', 'ur', 'b', 'br')):
-            indent_chances[start[1]] = str
+            indent_chances[start[1]] = unicode
         # special case for the "if" statement because len("if (") == 4
         elif not indent_chances and not row and not depth and text == 'if':
             indent_chances[end[1] + 1] = True
@@ -2183,7 +2183,7 @@ def _fix_file(parameters):
     try:
         fix_file(*parameters)
     except IOError as error:
-        print(str(error), file=sys.stderr)
+        print(unicode(error), file=sys.stderr)
 
 
 def fix_multiple_files(filenames, options, output=None):
