@@ -167,6 +167,7 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
 
     last_token_multiline = None
     line = None
+    last_line = ''
     for token_type, text, start, end, line in tokens:
 
         newline = row < start[0] - first_row
@@ -206,7 +207,10 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                 # visual indent is verified
                 if not indent[depth]:
                     indent[depth] = start[1]
-            elif visual_indent in (text, str):
+            elif (
+                visual_indent in (text, str) and
+                not last_line.strip().endswith(',')
+            ):
                 # ignore token lined up with matching one from a previous line
                 pass
             elif indent[depth] and start[1] < indent[depth]:
@@ -272,6 +276,7 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                 indent_chances[start[1]] = text
 
         last_token_multiline = (start[0] != end[0])
+        last_line = line
 
     if indent_next and pep8.expand_indent(line) == indent_level + 4:
         yield (last_indent, 'E125 {0}'.format(indent_level + 8))
