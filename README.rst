@@ -48,13 +48,6 @@ Before running autopep8.
 
     import sys, os;
 
-    def someone_likes_semicolons(                             foo  = None            ,\
-    bar='bar'):
-
-
-        """Hello; bye.""";
-        print('A'<>foo<>134342<>23434<>3!=3<>5!=3)# <> is a deprecated form of !=
-        return 0;
     def func11():
         a=(   1,2, 3,"a"  );
         ####This is a long comment. This should be wrapped to fit within 72 characters.
@@ -79,14 +72,6 @@ After running autopep8.
 
     import sys
     import os
-
-
-    def someone_likes_semicolons(foo=None,
-                                 bar='bar'):
-        """Hello; bye."""
-        # <> is a deprecated form of !=
-        print('A' != foo != 134342 != 23434 != 3 != 3 != 5 != 3)
-        return 0
 
 
     def func11():
