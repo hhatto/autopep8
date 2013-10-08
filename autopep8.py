@@ -1912,7 +1912,7 @@ def create_parser():
                       help='make changes to files in place')
     parser.add_option('-r', '--recursive', action='store_true',
                       help='run recursively; must be used with --in-place or '
-                           '--diff')
+                           '--diff, filename should be a foldername')
     parser.add_option('-j', '--jobs', type=int, metavar='n', default=1,
                       help='number of parallel jobs; '
                            'match CPU count if value is less than 1')
