@@ -1911,8 +1911,8 @@ def create_parser():
     parser.add_option('-i', '--in-place', action='store_true',
                       help='make changes to files in place')
     parser.add_option('-r', '--recursive', action='store_true',
-                      help='run recursively; must be used with --in-place or '
-                           '--diff')
+                      help='run recursively over directories; '
+                           'must be used with --in-place or --diff')
     parser.add_option('-j', '--jobs', type=int, metavar='n', default=1,
                       help='number of parallel jobs; '
                            'match CPU count if value is less than 1')

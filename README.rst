@@ -123,8 +123,8 @@ Options::
                             verbose messages
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
-      -r, --recursive       run recursively; must be used with --in-place or
-                            --diff
+      -r, --recursive       run recursively over directories; must be used with
+                            --in-place or --diff
       -j n, --jobs=n        number of parallel jobs; match CPU count if value is
                             less than 1
       -p n, --pep8-passes=n
