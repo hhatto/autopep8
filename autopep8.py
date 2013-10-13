@@ -2081,23 +2081,18 @@ def line_shortening_rank(candidate, newline, indent_word):
             ):
                 rank += 20
 
-        if (
-            has_arithmetic_operator(lines[0]) and
-            lines[0].endswith(('(', '[', '{'))
-        ):
-            rank += 100
-
         for current_line in lines:
             for bad_start in ['.', '%', '+', '-', '/']:
                 if current_line.startswith(bad_start):
                     rank += 100
 
-            # Avoid lonely opening. They result in longer lines.
-            if (
-                current_line.endswith(('(', '[', '{')) and
-                len(current_line.strip()) <= len(indent_word)
-            ):
-                rank += 100
+            if current_line.endswith(('(', '[', '{')):
+                # Avoid lonely opening. They result in longer lines.
+                if len(current_line.strip()) <= len(indent_word):
+                    rank += 100
+
+                if has_arithmetic_operator(current_line):
+                    rank += 100
 
             if current_line.endswith('%'):
                 rank -= 20
