@@ -2061,7 +2061,10 @@ def line_shortening_rank(candidate, newline, indent_word):
         lines = candidate.split(newline)
 
         offset = 0
-        if lines[0].rstrip()[-1] not in '([{':
+        if (
+            not lines[0].lstrip().startswith('#') and
+            lines[0].rstrip()[-1] not in '([{'
+        ):
             for symbol in '([{':
                 offset = max(offset, 1 + lines[0].find(symbol))
 
@@ -2082,6 +2085,9 @@ def line_shortening_rank(candidate, newline, indent_word):
                 rank += 20
 
         for current_line in lines:
+            if current_line.lstrip().startswith('#'):
+                continue
+
             for bad_start in ['.', '%', '+', '-', '/']:
                 if current_line.startswith(bad_start):
                     rank += 100
