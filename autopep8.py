@@ -1178,7 +1178,10 @@ def _shorten_line(tokens, source, indentation, indent_word, newline,
                 second_indent += indent_word
 
             second = (second_indent + source[offset:].lstrip())
-            if not second.strip():
+            if (
+                not second.strip() or
+                second.lstrip().startswith('#')
+            ):
                 continue
 
             # Do not begin a line with a comma
