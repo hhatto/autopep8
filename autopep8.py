@@ -2091,6 +2091,10 @@ def line_shortening_rank(candidate, newline, indent_word):
                 if len(current_line.strip()) <= len(indent_word):
                     rank += 100
 
+                # Avoid ugliness of ", (\n".
+                if current_line[:-1].rstrip().endswith(','):
+                    rank += 100
+
                 if has_arithmetic_operator(current_line):
                     rank += 100
 

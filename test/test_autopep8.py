@@ -2318,8 +2318,8 @@ models = {
 models = {
     'auth.group': {
         'Meta': {'object_name': 'Group'},
-        'permissions': ('django.db.models.fields.related.ManyToManyField', [], {
-                        'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
+        'permissions': ('django.db.models.fields.related.ManyToManyField',
+                        [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
     },
     'auth.permission': {
         'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
