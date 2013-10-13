@@ -2081,10 +2081,6 @@ def line_shortening_rank(candidate, newline, indent_word):
             ):
                 rank += 20
 
-        if re.match(r'.*[+\-\*/] \($', lines[0]):
-            # "1 * (\n" is ugly as hell.
-            rank += 100
-
         if (
             has_arithmetic_operator(lines[0]) and
             lines[0].endswith(('(', '[', '{'))
