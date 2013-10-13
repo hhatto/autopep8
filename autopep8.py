@@ -2092,13 +2092,12 @@ def line_shortening_rank(candidate, newline, indent_word):
                 if current_line.startswith(bad_start):
                     rank += 100
 
-            for ending in '([{':
-                # Avoid lonely opening. They result in longer lines.
-                if (
-                    current_line.endswith(ending) and
-                    len(current_line.strip()) <= len(indent_word)
-                ):
-                    rank += 100
+            # Avoid lonely opening. They result in longer lines.
+            if (
+                current_line.endswith(('(', '[', '{')) and
+                len(current_line.strip()) <= len(indent_word)
+            ):
+                rank += 100
 
             if current_line.endswith('%'):
                 rank -= 20
