@@ -2085,6 +2085,12 @@ def line_shortening_rank(candidate, newline, indent_word):
             # "1 * (\n" is ugly as hell.
             rank += 100
 
+        if (
+            has_arithmetic_operator(lines[0]) and
+            lines[0].endswith(('(', '[', '{'))
+        ):
+            rank += 100
+
         for current_line in lines:
             for bad_start in ['.', '%', '+', '-', '/']:
                 if current_line.startswith(bad_start):
@@ -2110,6 +2116,15 @@ def line_shortening_rank(candidate, newline, indent_word):
         rank = 100000
 
     return max(0, rank)
+
+
+def has_arithmetic_operator(line):
+    """Return True if line contains any arithmetic operators."""
+    for operator in pep8.ARITHMETIC_OP:
+        if operator in line:
+            return True
+
+    return False
 
 
 def count_unbalanced_brackets(line):
