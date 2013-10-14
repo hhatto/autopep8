@@ -665,6 +665,14 @@ sys.maxint
 #html_use_index = True
 """))
 
+    def test_standard_deviation(self):
+        self.assertAlmostEqual(
+            2, autopep8.standard_deviation([2, 4, 4, 4, 5, 5, 7, 9]))
+
+        self.assertAlmostEqual(0, autopep8.standard_deviation([]))
+        self.assertAlmostEqual(0, autopep8.standard_deviation([1]))
+        self.assertAlmostEqual(.5, autopep8.standard_deviation([1, 2]))
+
 
 class SystemTests(unittest.TestCase):
 
@@ -1002,8 +1010,8 @@ sql = 'update %s set %s %s' % (from_table,
         fixed = """
 
 sql = 'update %s set %s %s' % (from_table,
-                               ','.join(
-                                   ['%s=%s' % (col, col) for col in cols]),
+                               ','.join(['%s=%s' % (col, col)
+                                        for col in cols]),
                                where_clause)
 """
         with autopep8_context(line) as result:
@@ -2030,8 +2038,15 @@ fooooooooooooooooooooooooooooooo000000000000000000000000 = [1,
                                                             ('TransferTime', 'FLOAT')
                                                            ]
 """
+        fixed = """
+
+fooooooooooooooooooooooooooooooo000000000000000000000000 = [1,
+                                                            ('TransferTime',
+                                                             'FLOAT')
+                                                           ]
+"""
         with autopep8_context(line, options=['--select=E501']) as result:
-            self.assertEqual(line, result)
+            self.assertEqual(fixed, result)
 
     def test_e501_should_avoid_making_things_ugly(self):
         line = """\
@@ -2193,7 +2208,8 @@ def dummy():
         if True:
             if True:
                 object = ModifyAction(
-                    [MODIFY70.text, OBJECTBINDING71.text, COLON72.text], MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
+                    [MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
+                    MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)

@@ -2074,6 +2074,9 @@ def line_shortening_rank(candidate, newline, indent_word):
         rank += max_length
         rank += len(lines)
 
+        # Too much variation in line length is ugly.
+        rank += 2 * standard_deviation(len(line) for line in lines)
+
         bad_staring_symbol = {
             '(': ')',
             '[': ']',
@@ -2118,6 +2121,16 @@ def line_shortening_rank(candidate, newline, indent_word):
         rank = 100000
 
     return max(0, rank)
+
+
+def standard_deviation(numbers):
+    """Return standard devation."""
+    numbers = list(numbers)
+    if not numbers:
+        return 0
+    mean = sum(numbers) / len(numbers)
+    return (sum((n - mean) ** 2 for n in numbers) /
+            len(numbers)) ** .5
 
 
 def has_arithmetic_operator(line):
