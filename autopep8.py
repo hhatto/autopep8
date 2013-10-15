@@ -781,7 +781,8 @@ class FixPEP8(object):
             set(candidates).union([target]),
             key=lambda x: line_shortening_rank(x,
                                                self.newline,
-                                               self.indent_word)))
+                                               self.indent_word,
+                                               self.options.max_line_length)))
 
         if self.options.verbose >= 4:
             print(('-' * 79 + '\n').join([''] + candidates + ['']),
@@ -2052,7 +2053,7 @@ def docstring_summary(docstring):
     return docstring.split('\n')[0]
 
 
-def line_shortening_rank(candidate, newline, indent_word):
+def line_shortening_rank(candidate, newline, indent_word, max_line_length):
     """Return rank of candidate.
 
     This is for sorting candidates.
@@ -2070,8 +2071,10 @@ def line_shortening_rank(candidate, newline, indent_word):
             for symbol in '([{':
                 offset = max(offset, 1 + lines[0].find(symbol))
 
-        max_length = max(offset + len(x.strip()) for x in lines)
-        rank += max_length
+        current_longest = max(offset + len(x.strip()) for x in lines)
+
+        rank += max(0, current_longest - max_line_length)
+
         rank += len(lines)
 
         # Too much variation in line length is ugly.

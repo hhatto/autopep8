@@ -420,27 +420,35 @@ sys.maxint
     def test_line_shortening_rank(self):
         self.assertGreater(
             autopep8.line_shortening_rank('(1\n+1)\n',
-                                          newline='\n', indent_word='    '),
+                                          newline='\n', indent_word='    ',
+                                          max_line_length=79),
             autopep8.line_shortening_rank('(1+\n1)\n',
-                                          newline='\n', indent_word='    '))
+                                          newline='\n', indent_word='    ',
+                                          max_line_length=79))
 
         self.assertGreaterEqual(
             autopep8.line_shortening_rank('(1+\n1)\n',
-                                          newline='\n', indent_word='    '),
+                                          newline='\n', indent_word='    ',
+                                          max_line_length=79),
             autopep8.line_shortening_rank('(1+1)\n',
-                                          newline='\n', indent_word='    '))
+                                          newline='\n', indent_word='    ',
+                                          max_line_length=79))
 
         self.assertGreater(
             autopep8.line_shortening_rank('\n',
-                                          newline='\n', indent_word='    '),
+                                          newline='\n', indent_word='    ',
+                                          max_line_length=79),
             autopep8.line_shortening_rank('x\n',
-                                          newline='\n', indent_word='    '))
+                                          newline='\n', indent_word='    ',
+                                          max_line_length=79))
 
         self.assertGreater(
             autopep8.line_shortening_rank('[foo(\nx) for x in y]\n',
-                                          newline='\n', indent_word='    '),
+                                          newline='\n', indent_word='    ',
+                                          max_line_length=79),
             autopep8.line_shortening_rank('[foo(x)\nfor x in y]\n',
-                                          newline='\n', indent_word='    '))
+                                          newline='\n', indent_word='    ',
+                                          max_line_length=79))
 
     def test_extract_code_from_function(self):
         def fix_e123():
@@ -1957,22 +1965,21 @@ if True:
 x = [3244234243234, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243]
 """
         fixed = """\
-x = [
-    3244234243234,
-    234234234324,
-    234234324,
-    23424234,
-    234234234,
-    234234,
-    234243,
-    234243,
-    234234234324,
-    234234324,
-    23424234,
-    234234234,
-    234234,
-    234243,
-    234243]
+x = [3244234243234,
+     234234234324,
+     234234324,
+     23424234,
+     234234234,
+     234234,
+     234243,
+     234243,
+     234234234324,
+     234234324,
+     23424234,
+     234234234,
+     234234,
+     234243,
+     234243]
 """
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
@@ -2010,8 +2017,8 @@ def d():
         fixed = """
 
 def d():
-    print(111, 111, 111, 111, 222, 222, 222, 222,
-          222, 222, 222, 222, 222, 333, 333, 333, 333)
+    print(111, 111, 111, 111, 222, 222, 222, 222, 222,
+          222, 222, 222, 222, 333, 333, 333, 333)
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -2025,8 +2032,8 @@ if True:
         fixed = """
 
 if True:
-    print(111, 111, 111, 111, 222, 222, 222, 222,
-          222, 222, 222, 222, 222, 333, 333, 333, 333)
+    print(111, 111, 111, 111, 222, 222, 222, 222, 222,
+          222, 222, 222, 222, 333, 333, 333, 333)
 """
         with autopep8_context(line, options=['--select=E501']) as result:
             self.assertEqual(fixed, result)
@@ -2119,8 +2126,8 @@ looooooooooooooong = foo(one, two, three, four, five, six, seven, eight, nine, t
 """
         fixed = """
 
-looooooooooooooong = foo(
-    one, two, three, four, five, six, seven, eight, nine, ten)
+looooooooooooooong = foo(one, two, three, four, five,
+                         six, seven, eight, nine, ten)
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -2393,8 +2400,8 @@ def foo(sldfkjlsdfsdf, kksdfsdfsf,sdfsdfsdf, sdfsdfkdk, szdfsdfsdf, sdfsdfsdfsdl
     pass
 """
         fixed = """\
-def foo(sldfkjlsdfsdf, kksdfsdfsf, sdfsdfsdf, sdfsdfkdk,
-        szdfsdfsdf, sdfsdfsdfsdlkfjsdlf, sdfsdfddf, sdfsdfsfd, sdfsdfdsf):
+def foo(sldfkjlsdfsdf, kksdfsdfsf, sdfsdfsdf, sdfsdfkdk, szdfsdfsdf,
+        sdfsdfsdfsdlkfjsdlf, sdfsdfddf, sdfsdfsfd, sdfsdfdsf):
     pass
 """
         with autopep8_context(line, options=['--aggressive']) as result:
