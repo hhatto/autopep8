@@ -777,8 +777,9 @@ class FixPEP8(object):
             previous_line=(
                 self.source[line_index - 1] if line_index >= 1 else ''))
 
+        # Also sort alphabetically as a tie breaker (for determinism).
         candidates = list(sorted(
-            set(candidates).union([target]),
+            sorted(set(candidates).union([target])),
             key=lambda x: line_shortening_rank(x,
                                                self.newline,
                                                self.indent_word,

@@ -2017,8 +2017,8 @@ def d():
         fixed = """
 
 def d():
-    print(111, 111, 111, 111, 222, 222, 222, 222, 222,
-          222, 222, 222, 222, 333, 333, 333, 333)
+    print(111, 111, 111, 111, 222, 222, 222, 222,
+          222, 222, 222, 222, 222, 333, 333, 333, 333)
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -2032,8 +2032,8 @@ if True:
         fixed = """
 
 if True:
-    print(111, 111, 111, 111, 222, 222, 222, 222, 222,
-          222, 222, 222, 222, 333, 333, 333, 333)
+    print(111, 111, 111, 111, 222, 222, 222, 222,
+          222, 222, 222, 222, 222, 333, 333, 333, 333)
 """
         with autopep8_context(line, options=['--select=E501']) as result:
             self.assertEqual(fixed, result)
