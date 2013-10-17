@@ -1765,7 +1765,7 @@ def code_match(code, select, ignore):
     return True
 
 
-def fix_string(source, options=None):
+def fix_code(source, options=None):
     """Return fixed source code."""
     if not options:
         options = parse_args([''])[0]
@@ -1775,6 +1775,11 @@ def fix_string(source, options=None):
 
     sio = io.StringIO(source)
     return fix_lines(sio.readlines(), options=options)
+
+
+def fix_string(source, options=None):
+    """Deprecated."""
+    return fix_code(source, options)
 
 
 def fix_lines(source_lines, options, filename=''):
@@ -2290,7 +2295,7 @@ def main():
 
             # LineEndingWrapper is unnecessary here due to the symmetry between
             # standard in and standard out.
-            sys.stdout.write(fix_string(sys.stdin.read(), options))
+            sys.stdout.write(fix_code(sys.stdin.read(), options))
         else:
             if options.in_place or options.diff:
                 filenames = list(set(args))

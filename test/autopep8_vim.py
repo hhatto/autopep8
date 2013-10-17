@@ -16,7 +16,7 @@ if vim.eval('&syntax') == 'python':
                                    str(1 + vim.current.range.end),
                                    ''])[0]
 
-    formatted = autopep8.fix_string(source, options=options)
+    formatted = autopep8.fix_code(source, options=options)
 
     if source != formatted:
         if formatted.endswith('\n'):

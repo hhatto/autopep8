@@ -297,20 +297,20 @@ def foo():
             autopep8.fix_lines(['print( 123 )\n'],
                                options=autopep8.parse_args([''])[0]))
 
-    def test_fix_string(self):
+    def test_fix_code(self):
         self.assertEqual(
             'print(123)\n',
-            autopep8.fix_string('print( 123 )\n'))
+            autopep8.fix_code('print( 123 )\n'))
 
-    def test_fix_string_with_empty_string(self):
+    def test_fix_code_with_empty_string(self):
         self.assertEqual(
             '',
-            autopep8.fix_string(''))
+            autopep8.fix_code(''))
 
-    def test_fix_string_with_multiple_lines(self):
+    def test_fix_code_with_multiple_lines(self):
         self.assertEqual(
             'print(123)\nx = 4\n',
-            autopep8.fix_string('print( 123 )\nx   =4'))
+            autopep8.fix_code('print( 123 )\nx   =4'))
 
     def test_normalize_line_endings(self):
         self.assertEqual(

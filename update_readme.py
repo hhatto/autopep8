@@ -57,7 +57,7 @@ def main():
 
     input_code = textwrap.dedent(before)
 
-    output_code = autopep8.fix_string(
+    output_code = autopep8.fix_code(
         input_code,
         options=autopep8.parse_args(['', '--aggressive'])[0])
     compile(output_code, '<string>', 'exec', dont_inherit=True)

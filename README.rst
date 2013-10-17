@@ -245,13 +245,13 @@ messages::
 Use as a module
 ===============
 
-The simplest way of using autopep8 as a module is via the ``fix_string()``
+The simplest way of using autopep8 as a module is via the ``fix_code()``
 function.
 
 .. code-block:: python
 
     >>> import autopep8
-    >>> autopep8.fix_string('x=       123\n')
+    >>> autopep8.fix_code('x=       123\n')
     'x = 123\n'
 
 
