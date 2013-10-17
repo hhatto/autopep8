@@ -304,7 +304,7 @@ def foo():
 
     def test_fix_string(self):
         """This is deprecated, but we will test it anyway."""
-        with warnings.catch_warnings():
+        with warnings.catch_warnings(record=True):
             self.assertEqual(
                 'print(123)\n',
                 autopep8.fix_string('print( 123 )\n'))
