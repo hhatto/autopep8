@@ -14,6 +14,7 @@ else:
 import contextlib
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
+import warnings
 
 try:
     from StringIO import StringIO
@@ -82,7 +83,6 @@ class UnitTests(unittest.TestCase):
     def test_read_from_filename_with_bad_encoding2(self):
         """Bad encoding should not cause an exception."""
         # This causes a warning on Python 3.
-        import warnings
         with warnings.catch_warnings(record=True):
             self.assertTrue(autopep8.read_from_filename(
                 os.path.join(ROOT_DIR, 'test', 'bad_encoding2.py')))
@@ -301,6 +301,13 @@ def foo():
         self.assertEqual(
             'print(123)\n',
             autopep8.fix_code('print( 123 )\n'))
+
+    def test_fix_string(self):
+        """This is deprecated, but we will test it anyway."""
+        with warnings.catch_warnings():
+            self.assertEqual(
+                'print(123)\n',
+                autopep8.fix_string('print( 123 )\n'))
 
     def test_fix_code_with_empty_string(self):
         self.assertEqual(

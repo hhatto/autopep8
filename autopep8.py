@@ -53,6 +53,7 @@ import signal
 import sys
 import token
 import tokenize
+import warnings
 
 import pep8
 
@@ -1779,6 +1780,8 @@ def fix_code(source, options=None):
 
 def fix_string(source, options=None):
     """Deprecated."""
+    warnings.warn('fix_string() is deprecated; use fix_code() instead',
+                  DeprecationWarning)
     return fix_code(source, options)
 
 
