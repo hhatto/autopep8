@@ -993,7 +993,7 @@ def fix_w602(source, aggressive=True):
                     ignore='with_traceback')
 
 
-def fix_w6(source, aggressive=True):
+def fix_w690(source, aggressive=True):
     """Fix various deprecated code (via lib2to3)."""
     if not aggressive:
         return source
