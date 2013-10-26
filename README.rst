@@ -191,7 +191,8 @@ autopep8 fixes the following issues_ reported by pep8_::
 
 autopep8 also fixes some issues not found by pep8_.
 
-- Correct deprecated or non-idiomatic Python code (via ``lib2to3``). (This is
+- Correct deprecated or non-idiomatic Python code (via ``lib2to3``). Use this
+  for making Python 2.6 and 2.7 code more compatible with Python 3. (This is
   triggered if ``W6`` is enabled.)
 - Format block comments. (This is triggered if ``E26`` is enabled.)
 - Normalize files with mixed line endings.
