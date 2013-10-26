@@ -132,7 +132,8 @@ Options::
                             infinite)
       -a, --aggressive      enable non-whitespace changes; multiple -a result in
                             more aggressive changes
-      --exclude=globs       exclude files that match these comma-separated globs
+      --exclude=globs       exclude file/directory names that match these comma-
+                            separated globs
       --list-fixes          list codes for fixes; used by --ignore and --select
       --ignore=errors       do not fix these errors/warnings (default: E24)
       --select=errors       fix only these errors/warnings (e.g. E4,W)

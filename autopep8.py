@@ -1936,8 +1936,8 @@ def create_parser():
                       help='enable non-whitespace changes; '
                            'multiple -a result in more aggressive changes')
     parser.add_option('--exclude', metavar='globs',
-                      help='exclude files that match these comma-separated '
-                           'globs')
+                      help='exclude file/directory names that match these '
+                           'comma-separated globs')
     parser.add_option('--list-fixes', action='store_true',
                       help='list codes for fixes; '
                            'used by --ignore and --select')
@@ -2204,14 +2204,16 @@ class LineEndingWrapper(object):
 
 def match_file(filename, exclude):
     """Return True if file is okay for modifying/recursing."""
-    if os.path.basename(filename).startswith('.'):
+    base_name = os.path.basename(filename)
+
+    if base_name.startswith('.'):
         return False
 
     for pattern in exclude:
-        if fnmatch.fnmatch(filename, pattern):
+        if fnmatch.fnmatch(base_name, pattern):
             return False
 
-    if not is_python_file(filename):
+    if not os.path.isdir(filename) and not is_python_file(filename):
         return False
 
     return True
@@ -2226,7 +2228,8 @@ def find_files(filenames, recursive, exclude):
                 filenames += [os.path.join(root, f) for f in children
                               if match_file(f, exclude)]
                 directories[:] = [d for d in directories
-                                  if not d.startswith('.')]
+                                  if match_file(os.path.join(root, d),
+                                                exclude)]
         else:
             yield name
 
