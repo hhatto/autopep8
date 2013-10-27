@@ -87,6 +87,28 @@ SHORTEN_OPERATOR_GROUPS = frozenset([
 DEFAULT_IGNORE = 'E24'
 
 
+# W602 is handled separately due to the need to avoid "with_traceback".
+CODE_TO_2TO3 = {
+    'W601': ['has_key'],
+    'W603': ['ne'],
+    'W604': ['repr'],
+    'W690': ['apply',
+             'except',
+             'exitfunc',
+             'idioms',
+             'import',
+             'numliterals',
+             'operator',
+             'paren',
+             'reduce',
+             'renames',
+             'standarderror',
+             'sys_exc',
+             'throw',
+             'tuple_params',
+             'xreadlines']}
+
+
 def open_with_encoding(filename, encoding=None, mode='r'):
     """Return opened file with a specific encoding."""
     if not encoding:
@@ -928,7 +950,7 @@ class FixPEP8(object):
         return range(1, 1 + original_length)
 
 
-def fix_e26(source, _=False):
+def fix_e26(source, aggressive=False, select='', ignore=''):
     """Format block comments."""
     if '#' not in source:
         # Optimization.
@@ -984,39 +1006,31 @@ def refactor(source, fixer_names, ignore=None):
     return new_text
 
 
-def fix_w602(source, aggressive=True):
+def code_to_2to3(select, ignore):
+    fixes = set()
+    for code, fix in CODE_TO_2TO3.items():
+        if code_match(code, select=select, ignore=ignore):
+            fixes |= set(fix)
+    return fixes
+
+
+def fix_w6(source, aggressive=True, select='', ignore=''):
+    """Fix various deprecated code (via lib2to3)."""
+    if not aggressive:
+        return source
+
+    return refactor(source,
+                    code_to_2to3(select=select,
+                                 ignore=ignore))
+
+
+def fix_w602(source, aggressive=True, select='', ignore=''):
     """Fix deprecated form of raising exception."""
     if not aggressive:
         return source
 
     return refactor(source, ['raise'],
                     ignore='with_traceback')
-
-
-def fix_w6(source, aggressive=True):
-    """Fix various deprecated code (via lib2to3)."""
-    if not aggressive:
-        return source
-
-    return refactor(source,
-                    ['apply',
-                     'except',
-                     'exitfunc',
-                     'has_key',
-                     'idioms',
-                     'import',
-                     'ne',
-                     'numliterals',
-                     'operator',
-                     'paren',
-                     'reduce',
-                     'renames',
-                     'repr',
-                     'standarderror',
-                     'sys_exc',
-                     'throw',
-                     'tuple_params',
-                     'xreadlines'])
 
 
 def find_newline(source):
@@ -1884,7 +1898,10 @@ def apply_global_fixes(source, options):
             if options.verbose:
                 print('--->  Applying global fix for {0}'.format(code.upper()),
                       file=sys.stderr)
-            source = function(source, options.aggressive)
+            source = function(source,
+                              aggressive=options.aggressive,
+                              select=options.select,
+                              ignore=options.ignore)
 
     return source
 
