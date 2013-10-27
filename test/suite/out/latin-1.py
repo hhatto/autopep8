@@ -1,6 +1,1 @@
-# -*- coding: latin-1 -*-
-# Test non-UTF8 encoding
-latin1 = ('‗אבגדהוזחטיךכלםמןנסעףפץצרשתûü‎‏ÿ'
-          'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞ')
-
-c = ("wו")
+../latin-1.py

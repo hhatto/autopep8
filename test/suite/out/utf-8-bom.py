@@ -1,6 +1,1 @@
-﻿#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-hello = 'こんにちわ'
-
-# EOF
+../utf-8-bom.py
