@@ -1275,6 +1275,26 @@ x = \
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e125(self):
+        line = """
+if (a and
+    b in [
+        'foo',
+    ] or
+    c):
+    pass
+"""
+        fixed = """
+if (a and
+        b in [
+            'foo',
+        ] or
+        c):
+    pass
+"""
+        with autopep8_context(line, options=['--select=E125']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e125_with_multiline_string(self):
         line = """
 for foo in '''
@@ -2416,21 +2436,21 @@ def foo(sldfkjlsdfsdf, kksdfsdfsf, sdfsdfsdf, sdfsdfkdk, szdfsdfsdf,
 
     def test_e501_more_aggressive_with_def(self):
         line = """\
-def foo(sldfkjlsdfsdf, kksdfsdfsf,sdfsdfsdf, sdfsdfkdk, szdfsdfsdf, sdfsdfsdfsdlkfjsdlf, sdfsdfddf,sdfsdfsfd, sdfsdfdsf):
+def foobar(sldfkjlsdfsdf, kksdfsdfsf,sdfsdfsdf, sdfsdfkdk, szdfsdfsdf, sdfsdfsdfsdlkfjsdlf, sdfsdfddf,sdfsdfsfd, sdfsdfdsf):
     pass
 """
         fixed = """\
 
 
-def foo(
-    sldfkjlsdfsdf,
-    kksdfsdfsf,
-    sdfsdfsdf,
-    sdfsdfkdk,
-    szdfsdfsdf,
-    sdfsdfsdfsdlkfjsdlf,
-    sdfsdfddf,
-    sdfsdfsfd,
+def foobar(
+        sldfkjlsdfsdf,
+        kksdfsdfsf,
+        sdfsdfsdf,
+        sdfsdfkdk,
+        szdfsdfsdf,
+        sdfsdfsdfsdlkfjsdlf,
+        sdfsdfddf,
+        sdfsdfsfd,
         sdfsdfdsf):
     pass
 """

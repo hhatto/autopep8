@@ -364,7 +364,6 @@ class FixPEP8(object):
         self.fix_e122 = self._fix_reindent
         self.fix_e123 = self._fix_reindent
         self.fix_e124 = self._fix_reindent
-        self.fix_e125 = self._fix_reindent
         self.fix_e126 = self._fix_reindent
         self.fix_e127 = self._fix_reindent
         self.fix_e128 = self._fix_reindent
@@ -555,6 +554,28 @@ class FixPEP8(object):
 
         self.source[line_index] = (
             ' ' * num_indent + target.lstrip())
+
+    def fix_e125(self, result):
+        """ Fix badly indented continuation lines when they don't distinguish
+        from the next logical line. """
+
+        num_indent = int(result['info'].split()[1])
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+
+        # When multiline strings are involved, pep8 reports the error as
+        # being at the start of the multiline string, which doesn't work
+        # for us.
+        if ('"""' in target or "'''" in target):
+            return []
+
+        spaces_to_add = num_indent - len(_get_indentation(target))
+        indent = len(_get_indentation(target))
+        i = line_index
+        while len(_get_indentation(self.source[i])) >= indent:
+            self.source[i] = ' ' * spaces_to_add + self.source[i]
+            i -= 1
+        return list(range(line_index, i, -1))
 
     def fix_e201(self, result):
         """Remove extraneous whitespace."""
