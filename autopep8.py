@@ -1816,8 +1816,7 @@ def fix_code(source, options=None):
 
 def fix_string(source, options=None):
     """Deprecated."""
-    warnings.warn('fix_string() is deprecated; use fix_code() instead',
-                  DeprecationWarning)
+    warnings.warn('fix_string() is deprecated; use fix_code() instead')
     return fix_code(source, options)
 
 
