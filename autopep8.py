@@ -542,7 +542,7 @@ class FixPEP8(object):
         This is done by adding or removing from its initial indent only.
 
         """
-        num_indent = int(result['info'].split()[1])
+        num_indent_spaces = int(result['info'].split()[1])
         line_index = result['line'] - 1
         target = self.source[line_index]
 
@@ -552,12 +552,11 @@ class FixPEP8(object):
         if ('"""' in target or "'''" in target):
             return []
 
-        self.source[line_index] = (
-            ' ' * num_indent + target.lstrip())
+        self.source[line_index] =  ' ' * num_indent_spaces + target.lstrip()
 
     def fix_e125(self, result):
         """Fix indentation undistinguish from the next logical line."""
-        num_indent = int(result['info'].split()[1])
+        num_indent_spaces = int(result['info'].split()[1])
         line_index = result['line'] - 1
         target = self.source[line_index]
 
@@ -567,7 +566,7 @@ class FixPEP8(object):
         if ('"""' in target or "'''" in target):
             return []
 
-        spaces_to_add = num_indent - len(_get_indentation(target))
+        spaces_to_add = num_indent_spaces - len(_get_indentation(target))
         indent = len(_get_indentation(target))
         modified_lines = []
 
