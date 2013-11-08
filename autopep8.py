@@ -569,13 +569,13 @@ class FixPEP8(object):
 
         spaces_to_add = num_indent - len(_get_indentation(target))
         indent = len(_get_indentation(target))
-        i = line_index
         modified_lines = []
 
-        while len(_get_indentation(self.source[i])) >= indent:
-            self.source[i] = ' ' * spaces_to_add + self.source[i]
+        while len(_get_indentation(self.source[line_index])) >= indent:
+            self.source[line_index] = (' ' * spaces_to_add +
+                                       self.source[line_index])
             modified_lines.append(1 + line_index)  # Line indexed at 1.
-            i -= 1
+            line_index -= 1
 
         return modified_lines
 
