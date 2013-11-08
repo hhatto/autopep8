@@ -184,7 +184,7 @@ if foo is None and bar is "frop" and \
 
 
 def long_function_name(
-    var_one, var_two, var_three,
+        var_one, var_two, var_three,
         var_four):
     print(var_one)
 #
@@ -192,12 +192,12 @@ def long_function_name(
 
 
 def qualify_by_address(
-    self, cr, uid, ids, context=None,
+        self, cr, uid, ids, context=None,
         params_to_check=frozenset(QUALIF_BY_ADDRESS_PARAM)):
     """ This gets called by the web server """
 #: E125
 if (a == 2 or
-    b == "abc def ghi"
+        b == "abc def ghi"
         "jkl mno"):
     return True
 #:
