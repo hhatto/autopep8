@@ -571,10 +571,12 @@ class FixPEP8(object):
         indent = len(_get_indentation(target))
         i = line_index
         modified_lines = []
+
         while len(_get_indentation(self.source[i])) >= indent:
             self.source[i] = ' ' * spaces_to_add + self.source[i]
             modified_lines.append(1 + line_index)  # Line indexed at 1.
             i -= 1
+
         return modified_lines
 
     def fix_e201(self, result):
