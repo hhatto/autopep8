@@ -552,7 +552,7 @@ class FixPEP8(object):
         if ('"""' in target or "'''" in target):
             return []
 
-        self.source[line_index] =  ' ' * num_indent_spaces + target.lstrip()
+        self.source[line_index] = ' ' * num_indent_spaces + target.lstrip()
 
     def fix_e125(self, result):
         """Fix indentation undistinguish from the next logical line."""
