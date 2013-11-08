@@ -556,9 +556,7 @@ class FixPEP8(object):
             ' ' * num_indent + target.lstrip())
 
     def fix_e125(self, result):
-        """ Fix badly indented continuation lines when they don't distinguish
-        from the next logical line. """
-
+        """Fix indentation undistinguish from the next logical line."""
         num_indent = int(result['info'].split()[1])
         line_index = result['line'] - 1
         target = self.source[line_index]
@@ -572,10 +570,12 @@ class FixPEP8(object):
         spaces_to_add = num_indent - len(_get_indentation(target))
         indent = len(_get_indentation(target))
         i = line_index
+        modified_lines = []
         while len(_get_indentation(self.source[i])) >= indent:
             self.source[i] = ' ' * spaces_to_add + self.source[i]
+            modified_lines.append(1 + line_index)  # Line indexed at 1.
             i -= 1
-        return list(range(line_index, i, -1))
+        return modified_lines
 
     def fix_e201(self, result):
         """Remove extraneous whitespace."""
