@@ -177,22 +177,22 @@ autopep8 fixes the following issues_ reported by pep8_::
     E70  - Put semicolon-separated compound statement on separate lines.
     E711 - Fix comparison with None.
     E712 - Fix comparison with boolean.
-    E721 - Fix various deprecated code (via lib2to3).
+    E721 - Use "isinstance()" instead of comparing types directly.
     W191 - Reindent all lines.
     W291 - Remove trailing whitespace.
     W293 - Remove trailing whitespace on blank line.
     W391 - Remove trailing blank lines.
-    W601 - Fix various deprecated code (via lib2to3).
+    W601 - Use "in" rather than "has_key()".
     W602 - Fix deprecated form of raising exception.
-    W603 - Fix various deprecated code (via lib2to3).
-    W604 - Fix various deprecated code (via lib2to3).
+    W603 - Use "!=" instead of "<>"
+    W604 - Use "repr()" instead of backticks.
     W690 - Fix various deprecated code (via lib2to3).
 
 autopep8 also fixes some issues not found by pep8_.
 
 - Correct deprecated or non-idiomatic Python code (via ``lib2to3``). Use this
   for making Python 2.6 and 2.7 code more compatible with Python 3. (This is
-  triggered if ``W6`` is enabled.)
+  triggered if ``W690`` is enabled.)
 - Format block comments. (This is triggered if ``E26`` is enabled.)
 - Normalize files with mixed line endings.
 - Put a blank line between a class declaration and its first method
