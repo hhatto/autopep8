@@ -1018,10 +1018,13 @@ def code_to_2to3(select, ignore):
     return fixes
 
 
-def fix_2to3(source, aggressive=True, select='', ignore=''):
+def fix_2to3(source, aggressive=True, select=None, ignore=None):
     """Fix various deprecated code (via lib2to3)."""
     if not aggressive:
         return source
+
+    select = select or []
+    ignore = ignore or []
 
     return refactor(source,
                     code_to_2to3(select=select,
@@ -1771,11 +1774,13 @@ def mutual_startswith(a, b):
 
 def code_match(code, select, ignore):
     if ignore:
+        assert not isinstance(ignore, str)
         for ignored_code in [c.strip() for c in ignore]:
             if mutual_startswith(code.lower(), ignored_code.lower()):
                 return False
 
     if select:
+        assert not isinstance(select, str)
         for selected_code in [c.strip() for c in select]:
             if mutual_startswith(code.lower(), selected_code.lower()):
                 return True

@@ -332,14 +332,17 @@ def foo():
                 ['abc\n', 'def\r\n', '123\r\n', 'hello\r\n', 'world\r']))
 
     def test_code_match(self):
-        self.assertTrue(autopep8.code_match('E2', select='E2,E3', ignore=''))
-        self.assertTrue(autopep8.code_match('E26', select='E2,E3', ignore=''))
+        self.assertTrue(autopep8.code_match('E2', select=['E2', 'E3'],
+                                            ignore=[]))
+        self.assertTrue(autopep8.code_match('E26', select=['E2', 'E3'],
+                                            ignore=[]))
 
-        self.assertFalse(autopep8.code_match('E26', select='', ignore='E'))
-        self.assertFalse(
-            autopep8.code_match('E2', select='E2,E3', ignore='E2'))
-        self.assertFalse(autopep8.code_match('E26', select='W', ignore=''))
-        self.assertFalse(autopep8.code_match('E26', select='W', ignore='E1'))
+        self.assertFalse(autopep8.code_match('E26', select=[], ignore=['E']))
+        self.assertFalse(autopep8.code_match('E2', select=['E2', 'E3'],
+                                             ignore=['E2']))
+        self.assertFalse(autopep8.code_match('E26', select=['W'], ignore=['']))
+        self.assertFalse(autopep8.code_match('E26', select=['W'],
+                                             ignore=['E1']))
 
     def test_split_at_offsets(self):
         self.assertEqual([''], autopep8.split_at_offsets('', [0]))
@@ -396,11 +399,12 @@ sys.maxint
         fixed = 'isinstance(res, type(42))\n'
 
         self.assertEqual(fixed, autopep8.fix_2to3(line))
-        self.assertEqual(fixed, autopep8.fix_2to3(line, select='E721'))
-        self.assertEqual(fixed, autopep8.fix_2to3(line, select='E7'))
+        self.assertEqual(fixed, autopep8.fix_2to3(line, select=['E721']))
+        self.assertEqual(fixed, autopep8.fix_2to3(line, select=['E7']))
 
-        self.assertEqual(line, autopep8.fix_2to3(line, select='W'))
-        self.assertEqual(line, autopep8.fix_2to3(line, ignore='E721'))
+        self.assertEqual(line, autopep8.fix_2to3(line, select=['W']))
+        self.assertEqual(line, autopep8.fix_2to3(line, select=['E999']))
+        self.assertEqual(line, autopep8.fix_2to3(line, ignore=['E721']))
 
     def test_is_python_file(self):
         self.assertTrue(autopep8.is_python_file(
