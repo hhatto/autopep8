@@ -372,24 +372,35 @@ def foo():
         self.assertFalse(autopep8.is_probably_inside_string_or_comment(
             ' "abc"', 0))
 
-    def test_fix_w6(self):
+    def test_fix_2to3(self):
         self.assertEqual(
             'try: pass\nexcept ValueError as e: pass\n',
-            autopep8.fix_w6('try: pass\nexcept ValueError, e: pass\n'))
+            autopep8.fix_2to3('try: pass\nexcept ValueError, e: pass\n'))
 
         self.assertEqual(
             'while True: pass\n',
-            autopep8.fix_w6('while 1: pass\n'))
+            autopep8.fix_2to3('while 1: pass\n'))
 
         self.assertEqual(
             """\
 import sys
 sys.maxsize
 """,
-            autopep8.fix_w6("""\
+            autopep8.fix_2to3("""\
 import sys
 sys.maxint
 """))
+
+    def test_fix_2to3_subset(self):
+        line = 'type(res) == type(42)\n'
+        fixed = 'isinstance(res, type(42))\n'
+
+        self.assertEqual(fixed, autopep8.fix_2to3(line))
+        self.assertEqual(fixed, autopep8.fix_2to3(line, select='E721'))
+        self.assertEqual(fixed, autopep8.fix_2to3(line, select='E7'))
+
+        #self.assertEqual(line, autopep8.fix_2to3(line, select='E722'))
+        self.assertEqual(line, autopep8.fix_2to3(line, ignore='E721'))
 
     def test_is_python_file(self):
         self.assertTrue(autopep8.is_python_file(

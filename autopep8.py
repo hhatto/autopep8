@@ -954,7 +954,7 @@ class FixPEP8(object):
         return range(1, 1 + original_length)
 
 
-def fix_e26(source, aggressive=False, select='', ignore=''):
+def fix_e26(source, aggressive=False):
     """Format block comments."""
     if '#' not in source:
         # Optimization.
@@ -1018,7 +1018,7 @@ def code_to_2to3(select, ignore):
     return fixes
 
 
-def fix_w6(source, aggressive=True, select='', ignore=''):
+def fix_2to3(source, aggressive=True, select='', ignore=''):
     """Fix various deprecated code (via lib2to3)."""
     if not aggressive:
         return source
@@ -1028,7 +1028,7 @@ def fix_w6(source, aggressive=True, select='', ignore=''):
                                  ignore=ignore))
 
 
-def fix_w602(source, aggressive=True, select='', ignore=''):
+def fix_w602(source, aggressive=True):
     """Fix deprecated form of raising exception."""
     if not aggressive:
         return source
@@ -1902,9 +1902,12 @@ def apply_global_fixes(source, options):
                 print('--->  Applying global fix for {0}'.format(code.upper()),
                       file=sys.stderr)
             source = function(source,
-                              aggressive=options.aggressive,
-                              select=options.select,
-                              ignore=options.ignore)
+                              aggressive=options.aggressive)
+
+    source = fix_2to3(source,
+                      aggressive=options.aggressive,
+                      select=options.select,
+                      ignore=options.ignore)
 
     return source
 
