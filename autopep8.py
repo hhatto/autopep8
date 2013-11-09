@@ -89,13 +89,13 @@ DEFAULT_IGNORE = 'E24'
 
 # W602 is handled separately due to the need to avoid "with_traceback".
 CODE_TO_2TO3 = {
+    'E721': ['idioms'],
     'W601': ['has_key'],
     'W603': ['ne'],
     'W604': ['repr'],
     'W690': ['apply',
              'except',
              'exitfunc',
-             'idioms',
              'import',
              'numliterals',
              'operator',
