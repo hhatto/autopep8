@@ -2301,11 +2301,11 @@ def is_python_file(filename):
 
 def is_probably_part_of_multiline(line):
     """Return True if line is likely part of a multiline string.
-    
+
     When multiline strings are involved, pep8 reports the error as
     being at the start of the multiline string, which doesn't work for
     us.
-    
+
     """
     return (
         '"""' in line or
