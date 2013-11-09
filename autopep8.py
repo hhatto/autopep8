@@ -954,7 +954,7 @@ class FixPEP8(object):
         return range(1, 1 + original_length)
 
 
-def fix_e26(source, aggressive=False):
+def fix_e269(source, aggressive=False):
     """Format block comments."""
     if '#' not in source:
         # Optimization.

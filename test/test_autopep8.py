@@ -228,15 +228,15 @@ def foo():
     def test_format_block_comments(self):
         self.assertEqual(
             '# abc',
-            autopep8.fix_e26('#abc'))
+            autopep8.fix_e269('#abc'))
 
         self.assertEqual(
             '# abc',
-            autopep8.fix_e26('####abc'))
+            autopep8.fix_e269('####abc'))
 
         self.assertEqual(
             '# abc',
-            autopep8.fix_e26('##   #   ##abc'))
+            autopep8.fix_e269('##   #   ##abc'))
 
     def test_format_block_comments_with_multiple_lines(self):
         self.assertEqual(
@@ -250,7 +250,7 @@ def foo():
 #do not modify strings'''
 #
 """.lstrip(),
-            autopep8.fix_e26("""
+            autopep8.fix_e269("""
 # abc
   #blah blah
     #four space indentation
@@ -264,17 +264,17 @@ def foo():
     def test_format_block_comments_should_not_corrupt_special_comments(self):
         self.assertEqual(
             '#: abc',
-            autopep8.fix_e26('#: abc'))
+            autopep8.fix_e269('#: abc'))
 
         self.assertEqual(
             '#!/bin/bash\n',
-            autopep8.fix_e26('#!/bin/bash\n'))
+            autopep8.fix_e269('#!/bin/bash\n'))
 
     def test_format_block_comments_should_only_touch_real_comments(self):
         commented_out_code = '#x = 1'
         self.assertEqual(
             commented_out_code,
-            autopep8.fix_e26(commented_out_code))
+            autopep8.fix_e269(commented_out_code))
 
     def test_fix_file(self):
         self.assertIn(
