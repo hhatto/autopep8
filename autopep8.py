@@ -202,15 +202,15 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                        token_type not in (tokenize.NL, tokenize.NEWLINE))
 
         if newline:
-            # this is the beginning of a continuation line.
+            # This is the beginning of a continuation line.
             last_indent = start
 
-            # record the initial indent.
+            # Record the initial indent.
             rel_indent[row] = pep8.expand_indent(line) - indent_level
 
             if depth:
-                # a bracket expression in a continuation line.
-                # find the line that it was opened on
+                # A bracket expression in a continuation line.
+                # Find the line that it was opened on.
                 for open_row in range(row - 1, -1, -1):
                     if parens[open_row]:
                         break
@@ -303,7 +303,11 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
         last_token_multiline = (start[0] != end[0])
         last_line = line
 
-    if indent_next and pep8.expand_indent(line) == indent_level + 4:
+    if (
+        indent_next and
+        not ('"""' in last_line or "'''" in last_line) and
+        pep8.expand_indent(line) == indent_level + 4
+    ):
         yield (last_indent, 'E125 {0}'.format(indent_level + 8))
 del pep8._checks['logical_line'][pep8.continued_indentation]
 pep8.register_check(continued_indentation)
@@ -553,12 +557,6 @@ class FixPEP8(object):
         num_indent_spaces = int(result['info'].split()[1])
         line_index = result['line'] - 1
         target = self.source[line_index]
-
-        # When multiline strings are involved, pep8 reports the error as
-        # being at the start of the multiline string, which doesn't work
-        # for us.
-        if ('"""' in target or "'''" in target):
-            return []
 
         spaces_to_add = num_indent_spaces - len(_get_indentation(target))
         indent = len(_get_indentation(target))

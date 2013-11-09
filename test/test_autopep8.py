@@ -1320,6 +1320,21 @@ for foo in '''
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(line, result)
 
+    @unittest.skip('Not implemented yet')
+    def test_e125_with_multiline_string_okay(self):
+        line = """
+def bar(
+    a='''a'''):
+    print(foo)
+"""
+        fixed = """
+def bar(
+        a='''a'''):
+        print(foo)
+"""
+        with autopep8_context(line, options=['--select=E12']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e126(self):
         line = """
 if True:
