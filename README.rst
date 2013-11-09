@@ -182,9 +182,8 @@ autopep8 fixes the following issues_ reported by pep8_::
     W291 - Remove trailing whitespace.
     W293 - Remove trailing whitespace on blank line.
     W391 - Remove trailing blank lines.
-    E26  - Format block comments.
-    W602 - Fix deprecated form of raising exception.
     W601 - Fix various deprecated code (via lib2to3).
+    W602 - Fix deprecated form of raising exception.
     W603 - Fix various deprecated code (via lib2to3).
     W604 - Fix various deprecated code (via lib2to3).
     W690 - Fix various deprecated code (via lib2to3).
