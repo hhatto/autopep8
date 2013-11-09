@@ -399,7 +399,7 @@ sys.maxint
         self.assertEqual(fixed, autopep8.fix_2to3(line, select='E721'))
         self.assertEqual(fixed, autopep8.fix_2to3(line, select='E7'))
 
-        #self.assertEqual(line, autopep8.fix_2to3(line, select='E722'))
+        self.assertEqual(line, autopep8.fix_2to3(line, select='W'))
         self.assertEqual(line, autopep8.fix_2to3(line, ignore='E721'))
 
     def test_is_python_file(self):
