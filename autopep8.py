@@ -2084,6 +2084,10 @@ def supported_fixes():
         yield (code.upper() + (4 - len(code)) * ' ',
                re.sub(r'\s+', ' ', docstring_summary(function.__doc__)))
 
+    for code in sorted(CODE_TO_2TO3):
+        yield (code.upper() + (4 - len(code)) * ' ',
+               re.sub(r'\s+', ' ', docstring_summary(fix_2to3.__doc__)))
+
 
 def docstring_summary(docstring):
     """Return summary of docstring."""
