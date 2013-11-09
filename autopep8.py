@@ -546,12 +546,6 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
 
-        # When multiline strings are involved, pep8 reports the error as
-        # being at the start of the multiline string, which doesn't work
-        # for us.
-        if ('"""' in target or "'''" in target):
-            return []
-
         self.source[line_index] = ' ' * num_indent_spaces + target.lstrip()
 
     def fix_e125(self, result):

@@ -1205,6 +1205,20 @@ def baz():
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e121_with_multiline_string(self):
+        line = """\
+testing = \\
+'''inputs: d c b a
+'''
+"""
+        fixed = """\
+testing = \\
+    '''inputs: d c b a
+'''
+"""
+        with autopep8_context(line, options=['--select=E12']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e121_with_stupid_fallback(self):
         line = """\
 list(''.join([
