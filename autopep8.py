@@ -193,6 +193,7 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
     last_token_multiline = None
     line = None
     last_line = ''
+    last_line_begins_with_multiline = False
     for token_type, text, start, end, line in tokens:
 
         newline = row < start[0] - first_row
@@ -200,6 +201,7 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
             row = start[0] - first_row
             newline = (not last_token_multiline and
                        token_type not in (tokenize.NL, tokenize.NEWLINE))
+            last_line_begins_with_multiline = last_token_multiline
 
         if newline:
             # This is the beginning of a continuation line.
@@ -305,7 +307,7 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
 
     if (
         indent_next and
-        not ('"""' in last_line or "'''" in last_line) and
+        not last_line_begins_with_multiline and
         pep8.expand_indent(line) == indent_level + 4
     ):
         yield (last_indent, 'E125 {0}'.format(indent_level + 8))
