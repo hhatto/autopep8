@@ -238,6 +238,21 @@ def foo():
             '# abc',
             autopep8.fix_e269('##   #   ##abc'))
 
+    def test_format_block_comments_should_leave_outline_alone(self):
+        line = """\
+###################################################################
+##   Some people like these crazy things. So leave them alone.   ##
+###################################################################
+"""
+        self.assertEqual(line, autopep8.fix_e269(line))
+
+        line = """\
+#################################################################
+#   Some people like these crazy things. So leave them alone.   #
+#################################################################
+"""
+        self.assertEqual(line, autopep8.fix_e269(line))
+
     def test_format_block_comments_with_multiple_lines(self):
         self.assertEqual(
             """

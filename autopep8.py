@@ -976,8 +976,12 @@ def fix_e269(source, aggressive=False):
 
             # Normalize beginning if not a shebang.
             if len(line) > 1:
-                # Leave multiple spaces like '#    ' alone.
-                if line.count('#') > 1 or line[1].isalnum():
+                if (
+                    # Leave multiple spaces like '#    ' alone.
+                    (line.count('#') > 1 or line[1].isalnum())
+                    # Leave stylistic outlined blocks alone.
+                    and not line.rstrip().endswith('#')
+                ):
                     line = '# ' + line.lstrip('# \t')
 
             fixed_lines.append(indentation + line)
