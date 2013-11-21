@@ -10,9 +10,9 @@ Issues
 
 When submitting a bug report, please provide the following:
 
-1. ``python --version``
+1. ``autopep8 --version``
 2. ``pep8 --version``
-3. ``autopep8 --version``
+3. ``python --version``
 4. ``uname -a`` if on Unix.
 5. The example input that causes the bug.
 6. The ``autopep8`` command-line options used to cause the bug.
