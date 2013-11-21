@@ -123,7 +123,11 @@ def detect_encoding(filename):
     try:
         with open(filename, 'rb') as input_file:
             from lib2to3.pgen2 import tokenize as lib2to3_tokenize
-            encoding = lib2to3_tokenize.detect_encoding(input_file.readline)[0]
+            try:
+                encoding = lib2to3_tokenize.detect_encoding(input_file.readline)[0]
+            except AttributeError:
+                import chardet
+                encoding = chardet.detect(input_file.read())['encoding']
 
         # Check for correctness of encoding
         with open_with_encoding(filename, encoding) as test_file:
@@ -1340,8 +1344,16 @@ def _execute_pep8(pep8_options, source):
             """
             return self.__full_error_results
 
-    checker = pep8.Checker('', lines=source,
-                           reporter=QuietReport, **pep8_options)
+    
+    try:
+        checker = pep8.Checker('', lines=source,
+                               reporter=QuietReport, **pep8_options)
+    except TypeError:
+        newopts = {}
+        for k, v in pep8_options.iteritems():
+            newopts[str(k)] = v
+        checker = pep8.Checker('', lines=source,
+                               reporter=QuietReport, **newopts)
     checker.check_all()
     return checker.report.full_error_results()
 
