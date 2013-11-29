@@ -40,6 +40,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import codecs
+import collections
 import copy
 import difflib
 import fnmatch
@@ -1046,19 +1047,17 @@ def fix_w602(source, aggressive=True):
 
 def find_newline(source):
     """Return type of newline used in source."""
-    cr, lf, crlf = 0, 0, 0
-    for s in source:
-        if s.endswith(CRLF):
-            crlf += 1
-        elif s.endswith(CR):
-            cr += 1
-        elif s.endswith(LF):
-            lf += 1
-    _max = max(lf, cr, crlf)
-    if _max == lf:
-        return LF
-    elif _max == crlf:
-        return CRLF
+    counter = collections.Counter()
+    for line in source:
+        if line.endswith(CRLF):
+            counter[CRLF] += 1
+        elif line.endswith(CR):
+            counter[CR] += 1
+        elif line.endswith(LF):
+            counter[LF] += 1
+
+    if counter:
+        return counter.most_common()[0][0]
     else:
         return CR
 
