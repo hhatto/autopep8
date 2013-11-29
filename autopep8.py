@@ -1047,7 +1047,7 @@ def fix_w602(source, aggressive=True):
 
 def find_newline(source):
     """Return type of newline used in source."""
-    counter = collections.Counter()
+    counter = collections.defaultdict(int)
     for line in source:
         if line.endswith(CRLF):
             counter[CRLF] += 1
@@ -1057,7 +1057,7 @@ def find_newline(source):
             counter[LF] += 1
 
     if counter:
-        return counter.most_common()[0][0]
+        return sorted(counter, key=counter.get, reverse=True)[0]
     else:
         return CR
 
