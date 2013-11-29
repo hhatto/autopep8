@@ -1056,7 +1056,7 @@ def find_newline(source):
         elif line.endswith(LF):
             counter[LF] += 1
 
-    return sorted(counter, key=counter.get, reverse=True)[0] if counter else LF
+    return (sorted(counter, key=counter.get, reverse=True) or [LF])[0]
 
 
 def _get_indentword(source):
