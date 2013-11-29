@@ -61,6 +61,10 @@ class UnitTests(unittest.TestCase):
         source = ['print 1\r\n', 'print 2\r', 'print3\r\n']
         self.assertEqual(autopep8.CRLF, autopep8.find_newline(source))
 
+    def test_find_newline_should_default_to_lf(self):
+        self.assertEqual(autopep8.LF, autopep8.find_newline([]))
+        self.assertEqual(autopep8.LF, autopep8.find_newline(['', '']))
+
     def test_detect_encoding(self):
         self.assertEqual(
             'utf-8',
@@ -338,7 +342,7 @@ def foo():
         self.assertEqual(
             ['abc\n', 'def\n', '123\n', 'hello\n', 'world\n'],
             autopep8.normalize_line_endings(
-                ['abc\n', 'def\n', '123\r', 'hello\r\n', 'world\r']))
+                ['abc\n', 'def\n', '123\n', 'hello\r\n', 'world\r']))
 
     def test_normalize_line_endings_with_crlf(self):
         self.assertEqual(
@@ -3034,8 +3038,8 @@ correct = 'good syntax ?' in dict()
             self.assertEqual(fixed, result)
 
     def test_w602_escaped_crlf(self):
-        line = 'raise ValueError, \\\r\n"hello"\n'
-        fixed = 'raise ValueError("hello")\n'
+        line = 'raise ValueError, \\\r\n"hello"\r\n'
+        fixed = 'raise ValueError("hello")\r\n'
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
@@ -3046,7 +3050,7 @@ correct = 'good syntax ?' in dict()
             self.assertEqual(fixed, result)
 
     def test_w602_escaped_cr(self):
-        line = 'raise ValueError, \\\r"hello"\n'
+        line = 'raise ValueError, \\\r"hello"\n\n'
         fixed = 'raise ValueError("hello")\n'
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
