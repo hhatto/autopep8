@@ -1059,7 +1059,7 @@ def find_newline(source):
     if counter:
         return sorted(counter, key=counter.get, reverse=True)[0]
     else:
-        return CR
+        return LF
 
 
 def _get_indentword(source):
