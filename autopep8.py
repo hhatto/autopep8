@@ -806,12 +806,12 @@ class FixPEP8(object):
                 self.source[line_index - 1] if line_index >= 1 else ''))
 
         # Also sort alphabetically as a tie breaker (for determinism).
-        candidates = list(sorted(
+        candidates = sorted(
             sorted(set(candidates).union([target])),
             key=lambda x: line_shortening_rank(x,
                                                self.newline,
                                                self.indent_word,
-                                               self.options.max_line_length)))
+                                               self.options.max_line_length))
 
         if self.options.verbose >= 4:
             print(('-' * 79 + '\n').join([''] + candidates + ['']),
