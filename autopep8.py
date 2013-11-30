@@ -1812,7 +1812,7 @@ def fix_lines(source_lines, options, filename=''):
     tmp_source = ''.join(normalize_line_endings(source_lines))
 
     # Keep a history to break out of cycles.
-    previous_hashes = set([hash(tmp_source)])
+    previous_hashes = set()
 
     if options.line_range:
         fixed_source = tmp_source
@@ -1821,20 +1821,17 @@ def fix_lines(source_lines, options, filename=''):
         fixed_source = apply_global_fixes(tmp_source, options)
 
     passes = 0
-    while True:
+    while hash(fixed_source) not in previous_hashes:
         if options.pep8_passes >= 0 and passes > options.pep8_passes:
             break
         passes += 1
+
+        previous_hashes.add(hash(fixed_source))
 
         tmp_source = copy.copy(fixed_source)
 
         fix = FixPEP8(filename, options, contents=tmp_source)
         fixed_source = fix.fix()
-
-        if hash(fixed_source) in previous_hashes:
-            break
-        else:
-            previous_hashes.add(hash(fixed_source))
 
     return fixed_source
 
