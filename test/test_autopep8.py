@@ -722,6 +722,12 @@ sys.maxint
         self.assertAlmostEqual(0, autopep8.standard_deviation([1]))
         self.assertAlmostEqual(.5, autopep8.standard_deviation([1, 2]))
 
+    def test_priority_key_with_non_existent_key(self):
+        pep8_result = {'id': 'foobar'}
+        self.assertGreater(autopep8._priority_key(pep8_result), 1)
+        self.assertLessEqual(autopep8._priority_key(pep8_result),
+                             len(set(autopep8.supported_fixes())))
+
 
 class SystemTests(unittest.TestCase):
 

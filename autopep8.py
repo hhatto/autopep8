@@ -1124,10 +1124,10 @@ def _priority_key(pep8_result):
         'e262'
     ]
     key = pep8_result['id'].lower()
-    if key in priority:
+    try:
         return priority.index(key)
-    else:
-        # Lowest priority
+    except ValueError:
+        # Lowest priority.
         return len(priority)
 
 
