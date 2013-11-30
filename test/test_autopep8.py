@@ -77,18 +77,18 @@ class UnitTests(unittest.TestCase):
             autopep8.detect_encoding(
                 os.path.join(ROOT_DIR, 'test', 'iso_8859_1.py')))
 
-    def test_read_from_filename_with_bad_encoding(self):
+    def test_readlines_from_file_with_bad_encoding(self):
         """Bad encoding should not cause an exception."""
         self.assertEqual(
-            '# -*- coding: zlatin-1 -*-\n',
-            autopep8.read_from_filename(
+            ['# -*- coding: zlatin-1 -*-\n'],
+            autopep8.readlines_from_file(
                 os.path.join(ROOT_DIR, 'test', 'bad_encoding.py')))
 
-    def test_read_from_filename_with_bad_encoding2(self):
+    def test_readlines_from_file_with_bad_encoding2(self):
         """Bad encoding should not cause an exception."""
         # This causes a warning on Python 3.
         with warnings.catch_warnings(record=True):
-            self.assertTrue(autopep8.read_from_filename(
+            self.assertTrue(autopep8.readlines_from_file(
                 os.path.join(ROOT_DIR, 'test', 'bad_encoding2.py')))
 
     def test_fix_whitespace(self):

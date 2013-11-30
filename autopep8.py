@@ -135,10 +135,10 @@ def detect_encoding(filename):
         return 'latin-1'
 
 
-def read_from_filename(filename, readlines=False):
+def readlines_from_file(filename):
     """Return contents of file."""
     with open_with_encoding(filename) as input_file:
-        return input_file.readlines() if readlines else input_file.read()
+        return input_file.readlines()
 
 
 def extended_blank_lines(logical_line,
@@ -357,7 +357,7 @@ class FixPEP8(object):
     def __init__(self, filename, options, contents=None):
         self.filename = filename
         if contents is None:
-            self.source = read_from_filename(filename, readlines=True)
+            self.source = readlines_from_file(filename)
         else:
             sio = io.StringIO(contents)
             self.source = sio.readlines()
@@ -1843,7 +1843,7 @@ def fix_file(filename, options=None, output=None):
     if not options:
         options = parse_args([filename])[0]
 
-    original_source = read_from_filename(filename, readlines=True)
+    original_source = readlines_from_file(filename)
 
     fixed_source = original_source
 
