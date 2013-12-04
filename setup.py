@@ -19,7 +19,7 @@ def version():
 
 INSTALL_REQUIRES = (
     ['pep8 >= 1.4.6'] +
-    ['argparse'] if sys.version_info < (2, 7) else []
+    (['argparse'] if sys.version_info < (2, 7) else [])
 )
 
 
