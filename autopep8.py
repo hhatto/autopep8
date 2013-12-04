@@ -39,7 +39,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import argparse
 import codecs
 import collections
 import copy
@@ -1926,6 +1925,10 @@ def extract_code_from_function(function):
 
 def create_parser():
     """Return command-line parser."""
+    # Do import locally to be friendly to those who use autopep8 as a library
+    # and are supporting Python 2.6.
+    import argparse
+
     parser = argparse.ArgumentParser(usage='Usage: %(prog)s [options] '
                                            '[filename [filename ...]]'
                                            '\nUse filename \'-\'  for stdin.',
