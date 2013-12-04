@@ -9,18 +9,18 @@ import sys
 from setuptools import setup
 
 
+INSTALL_REQUIRES = (
+    ['pep8 >= 1.4.6'] +
+    (['argparse'] if sys.version_info < (2, 7) else [])
+)
+
+
 def version():
     """Return version string."""
     with open('autopep8.py') as input_file:
         for line in input_file:
             if line.startswith('__version__'):
                 return ast.parse(line).body[0].value.s
-
-
-INSTALL_REQUIRES = (
-    ['pep8 >= 1.4.6'] +
-    (['argparse'] if sys.version_info < (2, 7) else [])
-)
 
 
 with open('README.rst') as readme:
