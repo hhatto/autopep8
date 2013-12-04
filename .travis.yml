@@ -8,7 +8,7 @@ python:
     - "3.3"
 
 install:
-    - if [ "$TRAVIS_PYTHON_VERSION" == "2.6" ]; then pip --quiet install unittest2; fi
+    - if [ "$TRAVIS_PYTHON_VERSION" == "2.6" ]; then pip --quiet install argparse unittest2; fi
     - python setup.py --quiet build --build-base=".build-$TRAVIS_PYTHON_VERSION" install
 
 before_script:

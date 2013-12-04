@@ -308,25 +308,18 @@ def foo():
             '@@',
             autopep8.fix_file(
                 filename=filename,
-                options=autopep8.parse_args(['--diff', filename])[0]))
+                options=autopep8.parse_args(['--diff', filename])))
 
     def test_fix_lines(self):
         self.assertEqual(
             'print(123)\n',
             autopep8.fix_lines(['print( 123 )\n'],
-                               options=autopep8.parse_args([''])[0]))
+                               options=autopep8.parse_args([''])))
 
     def test_fix_code(self):
         self.assertEqual(
             'print(123)\n',
             autopep8.fix_code('print( 123 )\n'))
-
-    def test_fix_string(self):
-        """This is deprecated, but we will test it anyway."""
-        with warnings.catch_warnings(record=True):
-            self.assertEqual(
-                'print(123)\n',
-                autopep8.fix_string('print( 123 )\n'))
 
     def test_fix_code_with_empty_string(self):
         self.assertEqual(
@@ -3420,7 +3413,7 @@ def autopep8_context(line, options=None):
         options = []
 
     with temporary_file_context(line) as filename:
-        options, _ = autopep8.parse_args([filename] + list(options))
+        options = autopep8.parse_args([filename] + list(options))
         yield autopep8.fix_file(filename=filename, options=options)
 
 

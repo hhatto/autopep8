@@ -14,7 +14,7 @@ if vim.eval('&syntax') == 'python':
     options = autopep8.parse_args(['--range',
                                    str(1 + vim.current.range.start),
                                    str(1 + vim.current.range.end),
-                                   ''])[0]
+                                   ''])
 
     formatted = autopep8.fix_code(source, options=options)
 

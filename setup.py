@@ -4,6 +4,7 @@
 """Setup for autopep8."""
 
 import ast
+import sys
 
 from setuptools import setup
 
@@ -14,6 +15,12 @@ def version():
         for line in input_file:
             if line.startswith('__version__'):
                 return ast.parse(line).body[0].value.s
+
+
+INSTALL_REQUIRES = (
+    ['pep8 >= 1.4.6'] +
+    ['argparse'] if sys.version_info < (2, 7) else []
+)
 
 
 with open('README.rst') as readme:
@@ -45,7 +52,7 @@ with open('README.rst') as readme:
             'Topic :: Software Development :: Quality Assurance',
         ],
         keywords='automation, pep8, format',
-        install_requires=['pep8 >= 1.4.6'],
+        install_requires=INSTALL_REQUIRES,
         test_suite='test.test_autopep8',
         py_modules=['autopep8'],
         zip_safe=False,

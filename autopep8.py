@@ -47,14 +47,13 @@ import fnmatch
 import inspect
 import io
 import locale
-import optparse
+import argparse
 import os
 import re
 import signal
 import sys
 import token
 import tokenize
-import warnings
 
 import pep8
 
@@ -65,7 +64,7 @@ except NameError:
     unicode = str
 
 
-__version__ = '0.9.8a0'
+__version__ = '1.0a0'
 
 
 CR = '\r'
@@ -1792,19 +1791,13 @@ def code_match(code, select, ignore):
 def fix_code(source, options=None):
     """Return fixed source code."""
     if not options:
-        options = parse_args([''])[0]
+        options = parse_args([''])
 
     if not isinstance(source, unicode):
         source = source.decode(locale.getpreferredencoding(False))
 
     sio = io.StringIO(source)
     return fix_lines(sio.readlines(), options=options)
-
-
-def fix_string(source, options=None):
-    """Deprecated."""
-    warnings.warn('fix_string() is deprecated; use fix_code() instead')
-    return fix_code(source, options)
 
 
 def fix_lines(source_lines, options, filename=''):
@@ -1838,7 +1831,7 @@ def fix_lines(source_lines, options, filename=''):
 
 def fix_file(filename, options=None, output=None):
     if not options:
-        options = parse_args([filename])[0]
+        options = parse_args([filename])
 
     original_source = readlines_from_file(filename)
 
@@ -1933,123 +1926,125 @@ def extract_code_from_function(function):
 
 def create_parser():
     """Return command-line parser."""
-    parser = optparse.OptionParser(usage='Usage: %prog [options] '
-                                         '[filename [filename ...]]'
-                                         '\nUse filename \'-\'  for stdin.',
-                                   version='%prog {0}'.format(__version__),
-                                   description=docstring_summary(__doc__),
-                                   prog='autopep8')
-    parser.add_option('-v', '--verbose', action='count', dest='verbose',
-                      default=0,
-                      help='print verbose messages; '
-                           'multiple -v result in more verbose messages')
-    parser.add_option('-d', '--diff', action='store_true', dest='diff',
-                      help='print the diff for the fixed source')
-    parser.add_option('-i', '--in-place', action='store_true',
-                      help='make changes to files in place')
-    parser.add_option('-r', '--recursive', action='store_true',
-                      help='run recursively over directories; '
-                           'must be used with --in-place or --diff')
-    parser.add_option('-j', '--jobs', type=int, metavar='n', default=1,
-                      help='number of parallel jobs; '
-                           'match CPU count if value is less than 1')
-    parser.add_option('-p', '--pep8-passes', metavar='n',
-                      default=-1, type=int,
-                      help='maximum number of additional pep8 passes '
-                           '(default: infinite)')
-    parser.add_option('-a', '--aggressive', action='count', default=0,
-                      help='enable non-whitespace changes; '
-                           'multiple -a result in more aggressive changes')
-    parser.add_option('--exclude', metavar='globs',
-                      help='exclude file/directory names that match these '
-                           'comma-separated globs')
-    parser.add_option('--list-fixes', action='store_true',
-                      help='list codes for fixes; '
-                           'used by --ignore and --select')
-    parser.add_option('--ignore', metavar='errors', default='',
-                      help='do not fix these errors/warnings '
-                           '(default: {0})'.format(DEFAULT_IGNORE))
-    parser.add_option('--select', metavar='errors', default='',
-                      help='fix only these errors/warnings (e.g. E4,W)')
-    parser.add_option('--max-line-length', metavar='n', default=79, type=int,
-                      help='set maximum allowed line length '
-                           '(default: %default)')
-    parser.add_option('--range', metavar='start end', dest='line_range',
-                      default=None, type=int, nargs=2,
-                      help='only fix errors found within this inclusive '
-                           'range of line numbers (e.g. 1 99); '
-                           'line numbers are indexed at 1')
+    parser = argparse.ArgumentParser(usage='Usage: %(prog)s [options] '
+                                     '[filename [filename ...]]'
+                                     '\nUse filename \'-\'  for stdin.',
+                                     description=docstring_summary(__doc__),
+                                     prog='autopep8')
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s ' + __version__)
+    parser.add_argument('-v', '--verbose', action='count', dest='verbose',
+                        default=0,
+                        help='print verbose messages; '
+                        'multiple -v result in more verbose messages')
+    parser.add_argument('-d', '--diff', action='store_true', dest='diff',
+                        help='print the diff for the fixed source')
+    parser.add_argument('-i', '--in-place', action='store_true',
+                        help='make changes to files in place')
+    parser.add_argument('-r', '--recursive', action='store_true',
+                        help='run recursively over directories; '
+                        'must be used with --in-place or --diff')
+    parser.add_argument('-j', '--jobs', type=int, metavar='n', default=1,
+                        help='number of parallel jobs; '
+                        'match CPU count if value is less than 1')
+    parser.add_argument('-p', '--pep8-passes', metavar='n',
+                        default=-1, type=int,
+                        help='maximum number of additional pep8 passes '
+                        '(default: infinite)')
+    parser.add_argument('-a', '--aggressive', action='count', default=0,
+                        help='enable non-whitespace changes; '
+                        'multiple -a result in more aggressive changes')
+    parser.add_argument('--exclude', metavar='globs',
+                        help='exclude file/directory names that match these '
+                        'comma-separated globs')
+    parser.add_argument('--list-fixes', action='store_true',
+                        help='list codes for fixes; '
+                        'used by --ignore and --select')
+    parser.add_argument('--ignore', metavar='errors', default='',
+                        help='do not fix these errors/warnings '
+                        '(default: {0})'.format(DEFAULT_IGNORE))
+    parser.add_argument('--select', metavar='errors', default='',
+                        help='fix only these errors/warnings (e.g. E4,W)')
+    parser.add_argument('--max-line-length', metavar='n', default=79, type=int,
+                        help='set maximum allowed line length '
+                        '(default: %(default)s)')
+    parser.add_argument('--range', metavar='start end', dest='line_range',
+                        default=None, type=int, nargs=2,
+                        help='only fix errors found within this inclusive '
+                        'range of line numbers (e.g. 1 99); '
+                        'line numbers are indexed at 1')
+    parser.add_argument('files', nargs='*', help='files to format')
 
     return parser
 
 
-def parse_args(args):
+def parse_args(arguments):
     """Parse command-line options."""
     parser = create_parser()
-    options, args = parser.parse_args(args)
+    args = parser.parse_args(arguments)
 
-    if not len(args) and not options.list_fixes:
+    if not args.files and not args.list_fixes:
         parser.error('incorrect number of arguments')
 
-    args = [decode_filename(name) for name in args]
+    args.files = [decode_filename(name) for name in args.files]
 
-    if '-' in args:
-        if len(args) > 1:
+    if '-' in args.files:
+        if len(args.files) > 1:
             parser.error('cannot mix stdin and regular files')
 
-        if options.diff:
+        if args.diff:
             parser.error('--diff cannot be used with standard input')
 
-        if options.in_place:
+        if args.in_place:
             parser.error('--in-place cannot be used with standard input')
 
-        if options.recursive:
+        if args.recursive:
             parser.error('--recursive cannot be used with standard input')
 
-    if len(args) > 1 and not (options.in_place or options.diff):
+    if len(args.files) > 1 and not (args.in_place or args.diff):
         parser.error('autopep8 only takes one filename as argument '
-                     'unless the "--in-place" or "--diff" options are '
+                     'unless the "--in-place" or "--diff" args are '
                      'used')
 
-    if options.recursive and not (options.in_place or options.diff):
+    if args.recursive and not (args.in_place or args.diff):
         parser.error('--recursive must be used with --in-place or --diff')
 
-    if options.exclude and not options.recursive:
+    if args.exclude and not args.recursive:
         parser.error('--exclude is only relevant when used with --recursive')
 
-    if options.in_place and options.diff:
+    if args.in_place and args.diff:
         parser.error('--in-place and --diff are mutually exclusive')
 
-    if options.max_line_length <= 0:
+    if args.max_line_length <= 0:
         parser.error('--max-line-length must be greater than 0')
 
-    if options.select:
-        options.select = options.select.split(',')
+    if args.select:
+        args.select = args.select.split(',')
 
-    if options.ignore:
-        options.ignore = options.ignore.split(',')
-    elif not options.select:
-        if options.aggressive:
+    if args.ignore:
+        args.ignore = args.ignore.split(',')
+    elif not args.select:
+        if args.aggressive:
             # Enable everything by default if aggressive.
-            options.select = ['E', 'W']
+            args.select = ['E', 'W']
         else:
-            options.ignore = DEFAULT_IGNORE.split(',')
+            args.ignore = DEFAULT_IGNORE.split(',')
 
-    if options.exclude:
-        options.exclude = options.exclude.split(',')
+    if args.exclude:
+        args.exclude = args.exclude.split(',')
     else:
-        options.exclude = []
+        args.exclude = []
 
-    if options.jobs < 1:
+    if args.jobs < 1:
         # Do not import multiprocessing globally in case it is not supported
         # on the platform.
         import multiprocessing
-        options.jobs = multiprocessing.cpu_count()
+        args.jobs = multiprocessing.cpu_count()
 
-    if options.jobs > 1 and not options.in_place:
+    if args.jobs > 1 and not args.in_place:
         parser.error('parallel jobs requires --in-place')
 
-    return options, args
+    return args
 
 
 def decode_filename(filename):
@@ -2333,30 +2328,28 @@ def main():
         pass
 
     try:
-        options, args = parse_args(sys.argv[1:])
+        args = parse_args(sys.argv[1:])
 
-        if options.list_fixes:
+        if args.list_fixes:
             for code, description in supported_fixes():
                 print('{code} - {description}'.format(
                     code=code, description=description))
             return 0
 
-        if args == ['-']:
-            assert not options.in_place
+        if args.files == ['-']:
+            assert not args.in_place
 
             # LineEndingWrapper is unnecessary here due to the symmetry between
             # standard in and standard out.
-            sys.stdout.write(fix_code(sys.stdin.read(), options))
+            sys.stdout.write(fix_code(sys.stdin.read(), args))
         else:
-            if options.in_place or options.diff:
-                filenames = list(set(args))
+            if args.in_place or args.diff:
+                args.files = list(set(args.files))
             else:
-                assert len(args) == 1
-                assert not options.recursive
+                assert len(args.files) == 1
+                assert not args.recursive
 
-                filenames = args[:1]
-
-            fix_multiple_files(filenames, options, sys.stdout)
+            fix_multiple_files(args.files, args, sys.stdout)
     except KeyboardInterrupt:
         return 1  # pragma: no cover
 
