@@ -167,7 +167,7 @@ pep8.register_check(extended_blank_lines)
 
 
 def continued_indentation(logical_line, tokens, indent_level, noqa):
-    r"""Override pep8's function to provide indentation information."""
+    """Override pep8's function to provide indentation information."""
     first_row = tokens[0][2][0]
     nrows = 1 + tokens[-1][2][0] - first_row
     if noqa or nrows == 1:
