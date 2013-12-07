@@ -2334,7 +2334,7 @@ def main():
         args = parse_args(sys.argv[1:])
 
         if args.list_fixes:
-            for code, description in supported_fixes():
+            for code, description in sorted(supported_fixes()):
                 print('{code} - {description}'.format(
                     code=code, description=description))
             return 0
