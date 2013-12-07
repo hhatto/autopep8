@@ -1936,7 +1936,7 @@ def create_parser():
     # and are supporting Python 2.6.
     import argparse
 
-    parser = argparse.ArgumentParser(usage='Usage: %(prog)s [options] '
+    parser = argparse.ArgumentParser(usage='%(prog)s [options] '
                                            '[filename [filename ...]]'
                                            '\nUse filename \'-\'  for stdin.',
                                      description=docstring_summary(__doc__),
@@ -1978,7 +1978,7 @@ def create_parser():
     parser.add_argument('--max-line-length', metavar='n', default=79, type=int,
                         help='set maximum allowed line length '
                         '(default: %(default)s)')
-    parser.add_argument('--range', metavar='start end', dest='line_range',
+    parser.add_argument('--range', metavar='line', dest='line_range',
                         default=None, type=int, nargs=2,
                         help='only fix errors found within this inclusive '
                         'range of line numbers (e.g. 1 99); '

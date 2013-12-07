@@ -107,34 +107,37 @@ After running autopep8.
 
 Options::
 
-    Usage: autopep8 [options] [filename [filename ...]]
+    usage: autopep8 [options] [filename [filename ...]]
     Use filename '-'  for stdin.
 
     Automatically formats Python code to conform to the PEP 8 style guide.
 
-    Options:
-      --version             show program's version number and exit
+    positional arguments:
+      files                 files to format
+
+    optional arguments:
       -h, --help            show this help message and exit
+      --version             show program's version number and exit
       -v, --verbose         print verbose messages; multiple -v result in more
                             verbose messages
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
       -r, --recursive       run recursively over directories; must be used with
                             --in-place or --diff
-      -j n, --jobs=n        number of parallel jobs; match CPU count if value is
+      -j n, --jobs n        number of parallel jobs; match CPU count if value is
                             less than 1
-      -p n, --pep8-passes=n
+      -p n, --pep8-passes n
                             maximum number of additional pep8 passes (default:
                             infinite)
       -a, --aggressive      enable non-whitespace changes; multiple -a result in
                             more aggressive changes
-      --exclude=globs       exclude file/directory names that match these comma-
+      --exclude globs       exclude file/directory names that match these comma-
                             separated globs
       --list-fixes          list codes for fixes; used by --ignore and --select
-      --ignore=errors       do not fix these errors/warnings (default: E24)
-      --select=errors       fix only these errors/warnings (e.g. E4,W)
-      --max-line-length=n   set maximum allowed line length (default: 79)
-      --range=start end     only fix errors found within this inclusive range of
+      --ignore errors       do not fix these errors/warnings (default: E24)
+      --select errors       fix only these errors/warnings (e.g. E4,W)
+      --max-line-length n   set maximum allowed line length (default: 79)
+      --range line line     only fix errors found within this inclusive range of
                             line numbers (e.g. 1 99); line numbers are indexed at
                             1
 
