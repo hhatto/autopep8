@@ -3174,7 +3174,7 @@ class CommandLineTests(unittest.TestCase):
     def test_help(self):
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['-h'],
                   stdout=PIPE)
-        self.assertIn('Usage:', p.communicate()[0].decode('utf-8'))
+        self.assertIn('usage:', p.communicate()[0].decode('utf-8').lower())
 
     def test_verbose(self):
         line = 'bad_syntax)'
