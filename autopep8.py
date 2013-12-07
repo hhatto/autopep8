@@ -364,7 +364,6 @@ class FixPEP8(object):
         self.indent_word = _get_indentword(''.join(self.source))
 
         # method definition
-        self.fix_e111 = self.fix_e101
         self.fix_e121 = self._fix_reindent
         self.fix_e122 = self._fix_reindent
         self.fix_e123 = self._fix_reindent
@@ -479,7 +478,7 @@ class FixPEP8(object):
                                         aggressive=self.options.aggressive))
         return ''.join(self.source)
 
-    def fix_e101(self, _):
+    def _reindent_indentation_levels(self):
         """Reindent all lines."""
         reindenter = Reindenter(self.source, self.newline)
         modified_line_numbers = reindenter.run()
@@ -488,6 +487,14 @@ class FixPEP8(object):
             return modified_line_numbers
         else:
             return []
+
+    def fix_e101(self, _):
+        """Reindent to use spaces."""
+        return self._reindent_indentation_levels()
+
+    def fix_e111(self, _):
+        """Reindent to use four-space indentation."""
+        return self._reindent_indentation_levels()
 
     def _find_logical(self):
         # make a variable which is the index of all the starts of lines
