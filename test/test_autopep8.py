@@ -331,6 +331,12 @@ def foo():
             'print(123)\nx = 4\n',
             autopep8.fix_code('print( 123 )\nx   =4'))
 
+    def test_fix_code_byte_string(self):
+        """This feature is here for friendliness to Python 2."""
+        self.assertEqual(
+            'print(123)\n',
+            autopep8.fix_code(b'print( 123 )\n'))
+
     def test_normalize_line_endings(self):
         self.assertEqual(
             ['abc\n', 'def\n', '123\n', 'hello\n', 'world\n'],
@@ -720,6 +726,9 @@ sys.maxint
         self.assertGreater(autopep8._priority_key(pep8_result), 1)
         self.assertLessEqual(autopep8._priority_key(pep8_result),
                              len(set(autopep8.supported_fixes())))
+
+    def test_decode_filename(self):
+        self.assertEqual('foo.py', autopep8.decode_filename(b'foo.py'))
 
 
 class SystemTests(unittest.TestCase):
@@ -3159,6 +3168,12 @@ class CommandLineTests(unittest.TestCase):
                   stdout=PIPE, stderr=PIPE)
         error = p.communicate()[1].decode('utf-8')
         self.assertIn('non_existent_file', error)
+
+    def test_diff_with_standard_in(self):
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['--diff', '-'],
+                  stdout=PIPE, stderr=PIPE)
+        error = p.communicate()[1].decode('utf-8')
+        self.assertIn('cannot', error)
 
     def test_pep8_passes(self):
         line = "'abc'  \n"
