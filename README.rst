@@ -107,8 +107,10 @@ After running autopep8.
 
 Options::
 
-    usage: autopep8 [options] [filename [filename ...]]
-    Use filename '-'  for stdin.
+    usage: autopep8 [-h] [--version] [-v] [-d] [-i] [-r] [-j n] [-p n] [-a]
+                    [--exclude globs] [--list-fixes] [--ignore errors]
+                    [--select errors] [--max-line-length n] [--range line line]
+                    [files [files ...]]
 
     Automatically formats Python code to conform to the PEP 8 style guide.
 

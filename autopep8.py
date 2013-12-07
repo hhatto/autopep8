@@ -1936,10 +1936,7 @@ def create_parser():
     # and are supporting Python 2.6.
     import argparse
 
-    parser = argparse.ArgumentParser(usage='%(prog)s [options] '
-                                           '[filename [filename ...]]'
-                                           '\nUse filename \'-\'  for stdin.',
-                                     description=docstring_summary(__doc__),
+    parser = argparse.ArgumentParser(description=docstring_summary(__doc__),
                                      prog='autopep8')
     parser.add_argument('--version', action='version',
                         version='%(prog)s ' + __version__)
