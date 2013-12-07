@@ -414,7 +414,7 @@ class FixPEP8(object):
 
                     logical = self._get_logical(result)
                     if not logical:
-                        continue
+                        continue  # pragma: no cover
 
                     modified_lines = fix(result, logical)
                 else:
@@ -530,8 +530,8 @@ class FixPEP8(object):
         """
         try:
             (logical_start, logical_end) = self._find_logical()
-        except (SyntaxError, tokenize.TokenError):
-            return None
+        except (SyntaxError, tokenize.TokenError):  # pragma: no cover
+            return None  # pragma: no cover
 
         row = result['line'] - 1
         col = result['column'] - 1

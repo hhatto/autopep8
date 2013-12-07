@@ -2031,8 +2031,21 @@ if True:
 if True:
     '                                                          '  # pylint: disable-msgs=E0001
     '                                                          '  # pragma: no cover
+    '                                                          '  # pragma: no cover
 """
         with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(line, result)
+
+    def test_e501_with_inline_comments_should_skip_keywords_without_aggressive(
+            self):
+        line = """\
+'                                                          '  # noqa Long inline comments should be moved above.
+if True:
+    '                                                          '  # pylint: disable-msgs=E0001
+    '                                                          '  # pragma: no cover
+    '                                                          '  # pragma: no cover
+"""
+        with autopep8_context(line) as result:
             self.assertEqual(line, result)
 
     def test_e501_with_inline_comments_should_skip_edge_cases(self):
