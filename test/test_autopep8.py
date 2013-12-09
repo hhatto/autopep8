@@ -193,7 +193,7 @@ def foo():
 """.lstrip()))
 
     def test_supported_fixes(self):
-        self.assertIn('E101', [f[0] for f in autopep8.supported_fixes()])
+        self.assertIn('E121', [f[0] for f in autopep8.supported_fixes()])
 
     def test_shorten_comment(self):
         self.assertEqual('# ' + '=' * 72 + '\n',
@@ -512,35 +512,32 @@ sys.maxint
         self.assertEqual(None, autopep8.extract_code_from_function(fix_))
 
     def test_reindenter(self):
-        reindenter = autopep8.Reindenter(['if True:\n', '  pass\n'],
-                                         '\n')
+        reindenter = autopep8.Reindenter('if True:\n  pass\n')
 
-        self.assertEqual(set([1, 2]), reindenter.run())
+        self.assertEqual('if True:\n    pass\n',
+                         reindenter.run())
 
-        self.assertEqual(['if True:\n', '    pass\n'],
-                         reindenter.fixed_lines())
+    def test_reindenter_with_non_standard_indent_size(self):
+        reindenter = autopep8.Reindenter('if True:\n  pass\n')
+
+        self.assertEqual('if True:\n   pass\n',
+                         reindenter.run(3))
 
     def test_reindenter_with_good_input(self):
-        lines = ['if True:\n', '    pass\n']
+        lines = 'if True:\n    pass\n'
 
-        reindenter = autopep8.Reindenter(lines,
-                                         '\n')
-
-        self.assertEqual(set(), reindenter.run())
+        reindenter = autopep8.Reindenter(lines)
 
         self.assertEqual(lines,
-                         reindenter.fixed_lines())
+                         reindenter.run())
 
     def test_reindenter_should_leave_stray_comment_alone(self):
-        lines = ['  #\n', 'if True:\n', '  pass\n']
+        lines = '  #\nif True:\n  pass\n'
 
-        reindenter = autopep8.Reindenter(lines,
-                                         '\n')
+        reindenter = autopep8.Reindenter(lines)
 
-        self.assertEqual(set([1, 2, 3]), reindenter.run())
-
-        self.assertEqual(['  #\n', 'if True:\n', '    pass\n'],
-                         reindenter.fixed_lines())
+        self.assertEqual('  #\nif True:\n    pass\n',
+                         reindenter.run())
 
     def test_fix_e225_avoid_failure(self):
         fix_pep8 = autopep8.FixPEP8(filename='',
@@ -745,6 +742,57 @@ while True:
         1
 """.lstrip()
         with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e101_with_indent_size_0(self):
+        line = """
+while True:
+    if True:
+    \t1
+""".lstrip()
+        with autopep8_context(line, options=['--indent-size=0']) as result:
+            self.assertEqual(line, result)
+
+    def test_e101_with_indent_size_1(self):
+        line = """
+while True:
+    if True:
+    \t1
+""".lstrip()
+        fixed = """
+while True:
+ if True:
+  1
+""".lstrip()
+        with autopep8_context(line, options=['--indent-size=1']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e101_with_indent_size_2(self):
+        line = """
+while True:
+    if True:
+    \t1
+""".lstrip()
+        fixed = """
+while True:
+  if True:
+    1
+""".lstrip()
+        with autopep8_context(line, options=['--indent-size=2']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e101_with_indent_size_3(self):
+        line = """
+while True:
+    if True:
+    \t1
+""".lstrip()
+        fixed = """
+while True:
+   if True:
+      1
+""".lstrip()
+        with autopep8_context(line, options=['--indent-size=3']) as result:
             self.assertEqual(fixed, result)
 
     def test_e101_should_not_expand_non_indentation_tabs(self):
@@ -1575,8 +1623,8 @@ c
 
     def test_e221_should_skip_multiline(self):
         line = '''
-    def javascript(self):
-        return u"""
+def javascript(self):
+    return u"""
 <script type="text/javascript" src="++resource++ptg.shufflegallery/jquery.promptu-menu.js"></script>
 <script type="text/javascript">
 $(function(){
@@ -1589,8 +1637,8 @@ $(function(){
     });
 });
 </script>
-        """  % {
-        }
+    """  % {
+    }
 '''.lstrip()
         with autopep8_context(line) as result:
             self.assertEqual(line, result)
@@ -1626,7 +1674,7 @@ class Foo():
 \tdef __init__(self):
 \t\tx = 1 + 3
 """.lstrip()
-        with autopep8_context(line, options=['--ignore=W191']) as result:
+        with autopep8_context(line, options=['--ignore=E1,W191']) as result:
             self.assertEqual(fixed, result)
 
     def test_e224(self):
@@ -1654,7 +1702,7 @@ class Foo():
 \tdef __init__(self):
 \t\tx = 3
 """.lstrip()
-        with autopep8_context(line, options=['--ignore=W191']) as result:
+        with autopep8_context(line, options=['--ignore=E1,W191']) as result:
             self.assertEqual(fixed, result)
 
     def test_e225(self):
@@ -3385,7 +3433,7 @@ class CommandLineTests(unittest.TestCase):
 
     def test_list_fixes(self):
         with autopep8_subprocess('', options=['--list-fixes']) as result:
-            self.assertIn('E101', result)
+            self.assertIn('E121', result)
 
     def test_fixpep8_class_constructor(self):
         line = 'print 1\nprint 2\n'

@@ -389,7 +389,6 @@ class FixPEP8(object):
         self.fix_e274 = self.fix_e271
         self.fix_e309 = self.fix_e301
         self.fix_e703 = self.fix_e702
-        self.fix_w191 = self.fix_e101
 
         self._ws_comma_done = False
 
@@ -477,24 +476,6 @@ class FixPEP8(object):
                                         results=results,
                                         aggressive=self.options.aggressive))
         return ''.join(self.source)
-
-    def _reindent_indentation_levels(self):
-        """Reindent all lines."""
-        reindenter = Reindenter(self.source, self.newline)
-        modified_line_numbers = reindenter.run()
-        if modified_line_numbers:
-            self.source = reindenter.fixed_lines()
-            return modified_line_numbers
-        else:
-            return []
-
-    def fix_e101(self, _):
-        """Reindent to use spaces."""
-        return self._reindent_indentation_levels()
-
-    def fix_e111(self, _):
-        """Reindent to use four-space indentation."""
-        return self._reindent_indentation_levels()
 
     def _find_logical(self):
         # make a variable which is the index of all the starts of lines
@@ -960,6 +941,12 @@ class FixPEP8(object):
         return range(1, 1 + original_length)
 
 
+def reindent(source, indent_size):
+    """Reindent all lines."""
+    reindenter = Reindenter(source)
+    return reindenter.run(indent_size)
+
+
 def fix_e269(source, aggressive=False):
     """Format block comments."""
     if '#' not in source:
@@ -1051,7 +1038,13 @@ def fix_w602(source, aggressive=True):
 
 
 def find_newline(source):
-    """Return type of newline used in source."""
+    """Return type of newline used in source.
+
+    Input is a list of lines.
+
+    """
+    assert not isinstance(source, str)
+
     counter = collections.defaultdict(int)
     for line in source:
         if line.endswith(CRLF):
@@ -1115,8 +1108,6 @@ def _priority_key(pep8_result):
 
     """
     priority = [
-        # Global fixes.
-        'e101', 'e111', 'w191',
         # Fix multiline colon-based before semicolon based.
         'e701',
         # Break multiline statements early.
@@ -1355,42 +1346,43 @@ class Reindenter(object):
 
     """
 
-    def __init__(self, input_text, newline):
-        self.newline = newline
+    def __init__(self, input_text):
+        sio = io.StringIO(input_text)
+        source_lines = sio.readlines()
 
-        # Raw file lines.
-        self.raw = input_text
-        self.after = None
-
-        self.string_content_line_numbers = multiline_string_lines(
-            ''.join(self.raw))
+        self.newline = find_newline(source_lines)
+        self.string_content_line_numbers = multiline_string_lines(input_text)
 
         # File lines, rstripped & tab-expanded. Dummy at start is so
         # that we can use tokenize's 1-based line numbering easily.
         # Note that a line is all-blank iff it is a newline.
         self.lines = []
-        for line_number, line in enumerate(self.raw, start=1):
+        for line_number, line in enumerate(source_lines, start=1):
             # Do not modify if inside a multiline string.
             if line_number in self.string_content_line_numbers:
                 self.lines.append(line)
             else:
                 # Only expand leading tabs.
                 self.lines.append(_get_indentation(line).expandtabs() +
-                                  line.strip() + newline)
+                                  line.strip() + self.newline)
 
         self.lines.insert(0, None)
         self.index = 1  # index into self.lines of next line
+        self.input_text = input_text
 
-    def run(self):
+    def run(self, indent_size=4):
         """Fix indentation and return modified line numbers.
 
         Line numbers are indexed at 1.
 
         """
+        if not indent_size:
+            return self.input_text
+
         try:
             stats = _reindent_stats(tokenize.generate_tokens(self.getline))
         except (SyntaxError, tokenize.TokenError):
-            return set()
+            return self.input_text
         # Remove trailing empty lines.
         lines = self.lines
         while lines and lines[-1] == self.newline:
@@ -1400,7 +1392,7 @@ class Reindenter(object):
         # Map count of leading spaces to # we want.
         have2want = {}
         # Program after transformation.
-        after = self.after = []
+        after = []
         # Copy over initial empty lines -- there's nothing to do until
         # we see a line with *something* on it.
         i = stats[0][0]
@@ -1409,7 +1401,7 @@ class Reindenter(object):
             thisstmt, thislevel = stats[i]
             nextstmt = stats[i + 1][0]
             have = _leading_space_count(lines[thisstmt])
-            want = thislevel * 4
+            want = thislevel * indent_size
             if want < 0:
                 # A comment line.
                 if have:
@@ -1423,7 +1415,7 @@ class Reindenter(object):
                             jline, jlevel = stats[j]
                             if jlevel >= 0:
                                 if have == _leading_space_count(lines[jline]):
-                                    want = jlevel * 4
+                                    want = jlevel * indent_size
                                 break
                     if want < 0:           # Maybe it's a hanging
                                            # comment like this one,
@@ -1460,14 +1452,7 @@ class Reindenter(object):
                         remove = min(_leading_space_count(line), -diff)
                         after.append(line[remove:])
 
-        if self.raw == self.after:
-            return set()
-        else:
-            return (set(range(1, 1 + len(self.raw))) -
-                    self.string_content_line_numbers)
-
-    def fixed_lines(self):
-        return self.after
+        return ''.join(after)
 
     def getline(self):
         """Line-getter for tokenize."""
@@ -1897,6 +1882,10 @@ def apply_global_fixes(source, options):
     FixPEP8, which are dependent on pep8).
 
     """
+    if code_match('E101', select=options.select, ignore=options.ignore):
+        source = reindent(source,
+                          indent_size=options.indent_size)
+
     for (code, function) in global_fixes():
         if code_match(code, select=options.select, ignore=options.ignore):
             if options.verbose:
@@ -1980,6 +1969,7 @@ def create_parser():
                         help='only fix errors found within this inclusive '
                         'range of line numbers (e.g. 1 99); '
                         'line numbers are indexed at 1')
+    parser.add_argument('--indent-size', default=4, type=int)
     parser.add_argument('files', nargs='*', help='files to format')
 
     return parser
@@ -2041,6 +2031,9 @@ def parse_args(arguments):
         args.exclude = args.exclude.split(',')
     else:
         args.exclude = []
+
+    if args.indent_size != 4:
+        args.exclude += ['E12']
 
     if args.jobs < 1:
         # Do not import multiprocessing globally in case it is not supported
