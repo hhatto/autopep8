@@ -1974,7 +1974,9 @@ def create_parser():
                         help='only fix errors found within this inclusive '
                         'range of line numbers (e.g. 1 99); '
                         'line numbers are indexed at 1')
-    parser.add_argument('--indent-size', default=4, type=int)
+    parser.add_argument('--indent-size', default=4, type=int, metavar='n',
+                        help='number of spaces per indent level '
+                             '(default %(default)s)')
     parser.add_argument('files', nargs='*', help='files to format')
 
     return parser

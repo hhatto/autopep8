@@ -110,7 +110,7 @@ Options::
     usage: autopep8 [-h] [--version] [-v] [-d] [-i] [-r] [-j n] [-p n] [-a]
                     [--exclude globs] [--list-fixes] [--ignore errors]
                     [--select errors] [--max-line-length n] [--range line line]
-                    [--indent-size INDENT_SIZE]
+                    [--indent-size n]
                     [files [files ...]]
 
     Automatically formats Python code to conform to the PEP 8 style guide.
@@ -143,7 +143,7 @@ Options::
       --range line line     only fix errors found within this inclusive range of
                             line numbers (e.g. 1 99); line numbers are indexed at
                             1
-      --indent-size INDENT_SIZE
+      --indent-size n       number of spaces per indent level (default 4)
 
 
 Features
