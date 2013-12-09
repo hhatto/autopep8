@@ -2062,6 +2062,8 @@ def supported_fixes():
     description.
 
     """
+    yield ('E101', docstring_summary(reindent.__doc__))
+
     instance = FixPEP8(filename=None, options=None, contents='')
     for attribute in dir(instance):
         code = re.match('fix_([ew][0-9][0-9][0-9])', attribute)
