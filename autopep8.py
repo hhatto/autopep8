@@ -1338,6 +1338,10 @@ def _execute_pep8(pep8_options, source):
     return checker.report.full_error_results()
 
 
+def _remove_leading_and_normalize(line, newline):
+    return line.lstrip().rstrip(CR + LF) + newline
+
+
 class Reindenter(object):
 
     """Reindents badly-indented code to uniformly use four-space indentation.
@@ -1364,7 +1368,8 @@ class Reindenter(object):
             else:
                 # Only expand leading tabs.
                 self.lines.append(_get_indentation(line).expandtabs() +
-                                  line.strip() + self.newline)
+                                  _remove_leading_and_normalize(line,
+                                                                self.newline))
 
         self.lines.insert(0, None)
         self.index = 1  # index into self.lines of next line
