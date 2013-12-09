@@ -333,7 +333,6 @@ class FixPEP8(object):
     with the line number reported in the pep8 error information.
 
     [fixed method list]
-        - e111
         - e121,e122,e123,e124,e125,e126,e127,e128,e129
         - e201,e202,e203
         - e211
@@ -1634,12 +1633,6 @@ def filter_results(source, results, aggressive=False):
             # trailing whitespace could break doctests.
             if issue_id.startswith(('w29', 'w39')):
                 continue
-
-        # Filter out incorrect E101 reports when there are no tabs.
-        # pep8 will complain about this even if the tab indentation found
-        # elsewhere is in a multiline string.
-        if issue_id == 'e101' and '\t' not in split_source[r['line']]:
-            continue
 
         if aggressive <= 0:
             if issue_id.startswith(('e711', 'w6')):

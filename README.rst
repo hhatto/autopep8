@@ -152,7 +152,6 @@ Features
 autopep8 fixes the following issues_ reported by pep8_::
 
     E101 - Reindent all lines.
-    E111 - Reindent all lines.
     E121 - Fix indentation to be a multiple of four.
     E122 - Add absent indentation for hanging indentation.
     E123 - Align closing bracket to match opening bracket.
