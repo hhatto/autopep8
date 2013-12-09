@@ -1613,8 +1613,6 @@ def filter_results(source, results, aggressive=False):
 
     commented_out_code_line_numbers = commented_out_code_lines(source)
 
-    split_source = [None] + source.splitlines()
-
     for r in results:
         issue_id = r['id'].lower()
 
