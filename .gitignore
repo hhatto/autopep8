@@ -2,6 +2,7 @@
 *.egg-info/
 *.egg/
 *.pyc
+*.swo
 *.swp
 .tox
 .travis-solo/
