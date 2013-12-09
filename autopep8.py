@@ -1387,7 +1387,7 @@ class Reindenter(object):
         Line numbers are indexed at 1.
 
         """
-        if not indent_size:
+        if indent_size < 1:
             return self.input_text
 
         try:
