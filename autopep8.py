@@ -84,6 +84,7 @@ SHORTEN_OPERATOR_GROUPS = frozenset([
 
 
 DEFAULT_IGNORE = 'E24'
+DEFAULT_INDENT_SIZE = 4
 
 
 # W602 is handled separately due to the need to avoid "with_traceback".
@@ -242,19 +243,22 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
             elif indent[depth] and start[1] < indent[depth]:
                 # visual indent is broken
                 yield (start, 'E128 {0}'.format(indent[depth]))
-            elif hang == 4 or (indent_next and rel_indent[row] == 8):
+            elif (hang == DEFAULT_INDENT_SIZE or
+                  (indent_next and
+                   rel_indent[row] == 2 * DEFAULT_INDENT_SIZE)):
                 # hanging indent is verified
                 if close_bracket:
                     yield (start, 'E123 {0}'.format(indent_level +
                                                     rel_indent[open_row]))
             else:
-                one_indented = indent_level + rel_indent[open_row] + 4
+                one_indented = (indent_level + rel_indent[open_row] +
+                                DEFAULT_INDENT_SIZE)
                 # indent is broken
                 if hang <= 0:
                     error = ('E122', one_indented)
                 elif indent[depth]:
                     error = ('E127', indent[depth])
-                elif hang % 4:
+                elif hang % DEFAULT_INDENT_SIZE:
                     error = ('E121', one_indented)
                 else:
                     error = ('E126', one_indented)
@@ -269,7 +273,8 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
         elif (token_type in (tokenize.STRING, tokenize.COMMENT) or
               text in ('u', 'ur', 'b', 'br')):
             indent_chances[start[1]] = unicode
-        # special case for the "if" statement because len("if (") == 4
+        # special case for the "if" statement because
+        # len("if (") is equal to DEFAULT_INDENT_SIZE
         elif not indent_chances and not row and not depth and text == 'if':
             indent_chances[end[1] + 1] = True
 
@@ -307,9 +312,10 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
     if (
         indent_next and
         not last_line_begins_with_multiline and
-        pep8.expand_indent(line) == indent_level + 4
+        pep8.expand_indent(line) == indent_level + DEFAULT_INDENT_SIZE
     ):
-        yield (last_indent, 'E125 {0}'.format(indent_level + 8))
+        yield (last_indent, 'E125 {0}'.format(indent_level +
+                                              2 * DEFAULT_INDENT_SIZE))
 del pep8._checks['logical_line'][pep8.continued_indentation]
 pep8.register_check(continued_indentation)
 
@@ -473,7 +479,8 @@ class FixPEP8(object):
 
         self._fix_source(filter_results(source=''.join(self.source),
                                         results=results,
-                                        aggressive=self.options.aggressive))
+                                        aggressive=self.options.aggressive,
+                                        indent_size=self.options.indent_size))
         return ''.join(self.source)
 
     def _find_logical(self):
@@ -1374,7 +1381,7 @@ class Reindenter(object):
         self.index = 1  # index into self.lines of next line
         self.input_text = input_text
 
-    def run(self, indent_size=4):
+    def run(self, indent_size=DEFAULT_INDENT_SIZE):
         """Fix indentation and return modified line numbers.
 
         Line numbers are indexed at 1.
@@ -1600,7 +1607,7 @@ def check_syntax(code):
         return False
 
 
-def filter_results(source, results, aggressive=False):
+def filter_results(source, results, aggressive, indent_size):
     """Filter out spurious reports from pep8.
 
     If aggressive is True, we allow possibly unsafe fixes (E711, E712).
@@ -1642,6 +1649,10 @@ def filter_results(source, results, aggressive=False):
 
         if r['line'] in commented_out_code_line_numbers:
             if issue_id.startswith(('e26', 'e501')):
+                continue
+
+        if indent_size != DEFAULT_INDENT_SIZE:
+            if issue_id.startswith('e12'):
                 continue
 
         yield r
@@ -1965,7 +1976,8 @@ def create_parser():
                         help='only fix errors found within this inclusive '
                         'range of line numbers (e.g. 1 99); '
                         'line numbers are indexed at 1')
-    parser.add_argument('--indent-size', default=4, type=int, metavar='n',
+    parser.add_argument('--indent-size', default=DEFAULT_INDENT_SIZE,
+                        type=int, metavar='n',
                         help='number of spaces per indent level '
                              '(default %(default)s)')
     parser.add_argument('files', nargs='*', help='files to format')
@@ -2029,9 +2041,6 @@ def parse_args(arguments):
         args.exclude = args.exclude.split(',')
     else:
         args.exclude = []
-
-    if args.indent_size != 4:
-        args.exclude += ['E12']
 
     if args.jobs < 1:
         # Do not import multiprocessing globally in case it is not supported
