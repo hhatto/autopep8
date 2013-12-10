@@ -1049,7 +1049,7 @@ def find_newline(source):
     Input is a list of lines.
 
     """
-    assert not isinstance(source, str)
+    assert not isinstance(source, unicode)
 
     counter = collections.defaultdict(int)
     for line in source:
@@ -1771,13 +1771,13 @@ def mutual_startswith(a, b):
 
 def code_match(code, select, ignore):
     if ignore:
-        assert not isinstance(ignore, str)
+        assert not isinstance(ignore, unicode)
         for ignored_code in [c.strip() for c in ignore]:
             if mutual_startswith(code.lower(), ignored_code.lower()):
                 return False
 
     if select:
-        assert not isinstance(select, str)
+        assert not isinstance(select, unicode)
         for selected_code in [c.strip() for c in select]:
             if mutual_startswith(code.lower(), selected_code.lower()):
                 return True
