@@ -1651,10 +1651,6 @@ def filter_results(source, results, aggressive, indent_size):
             if issue_id.startswith(('e26', 'e501')):
                 continue
 
-        if indent_size != DEFAULT_INDENT_SIZE:
-            if issue_id.startswith('e12'):
-                continue
-
         yield r
 
 
