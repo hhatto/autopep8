@@ -101,49 +101,6 @@ class UnitTests(unittest.TestCase):
             'a b',
             autopep8.fix_whitespace('a\t  \t  b', offset=1, replacement=' '))
 
-    def test_break_multiline(self):
-        self.assertEqual(
-            'foo_bar_zap_bing_bang_boom(\n    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
-            autopep8.break_multiline(
-                'foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
-                newline='\n', indent_word='    '))
-
-    def test_break_multiline_with_percent(self):
-        self.assertEqual(
-            'foo_bar_zap_bing_bang_boom(\n    "                                                                         %s" %\n',
-            autopep8.break_multiline(
-                'foo_bar_zap_bing_bang_boom("                                                                         %s" %\n',
-                newline='\n', indent_word='    '))
-
-    def test_break_multiline_with_long_function(self):
-        self.assertEqual(
-            'foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom(\n'
-            '    333,\n',
-            autopep8.break_multiline(
-                'foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom_foo_bar_zap_bing_bang_boom(333,\n',
-                newline='\n', indent_word='    '))
-
-    def test_break_multiline_should_not_break_too_short_line(self):
-        self.assertEqual(
-            None,
-            autopep8.break_multiline(
-                'fo(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333,\n',
-                newline='\n', indent_word='    '))
-
-    def test_break_multiline_should_not_modify_comment(self):
-        self.assertEqual(
-            None,
-            autopep8.break_multiline(
-                '# foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,\n',
-                newline='\n', indent_word='    '))
-
-    def test_break_multiline_should_not_modify_lonely_brace(self):
-        self.assertEqual(
-            None,
-            autopep8.break_multiline(
-                '(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 222, 222, 222, 222, 333,\n',
-                newline='\n', indent_word='    '))
-
     def test_multiline_string_lines(self):
         self.assertEqual(
             set([2]),
@@ -373,25 +330,6 @@ def foo():
     def test_split_at_offsets_with_out_of_order(self):
         self.assertEqual(['12', '3', '4'],
                          autopep8.split_at_offsets('1234', [3, 2]))
-
-    def test_is_probably_inside_string_or_comment(self):
-        self.assertTrue(autopep8.is_probably_inside_string_or_comment(
-            '# abc', 1))
-
-        self.assertFalse(autopep8.is_probably_inside_string_or_comment(
-            'hello # abc', 1))
-
-        self.assertTrue(autopep8.is_probably_inside_string_or_comment(
-            '"abc"', 1))
-
-        self.assertFalse(autopep8.is_probably_inside_string_or_comment(
-            'hello "abc"', 1))
-
-        self.assertTrue(autopep8.is_probably_inside_string_or_comment(
-            '"abc"', 0))
-
-        self.assertFalse(autopep8.is_probably_inside_string_or_comment(
-            ' "abc"', 0))
 
     def test_fix_2to3(self):
         self.assertEqual(
@@ -2041,22 +1979,6 @@ print(111, 111, 111, 111, 222, 222, 222, 222,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_with_return(self):
-        line = """\
-def foo():
-    return bar('                                  ', '                 ', 1234353423243)
-"""
-        fixed = """\
-def foo():
-    return (
-        bar('                                  ',
-            '                 ', 1234353423243)
-    )
-"""
-        with autopep8_context(line, options=['--aggressive',
-                                             '--select=E501']) as result:
-            self.assertEqual(fixed, result)
-
     def test_e501_with_inline_comments(self):
         line = """\
 '                                                          '  # Long inline comments should be moved above.
@@ -2310,10 +2232,38 @@ foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222
         fixed = """
 
 foo_bar_zap_bing_bang_boom(
-    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,
-    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333)
+    111,
+    111,
+    111,
+    111,
+    222,
+    222,
+    222,
+    222,
+    222,
+    222,
+    222,
+    222,
+    222,
+    333,
+    333,
+    111,
+    111,
+    111,
+    111,
+    222,
+    222,
+    222,
+    222,
+    222,
+    222,
+    222,
+    222,
+    222,
+    333,
+    333)
 """
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_with_multiple_lines_and_quotes(self):
@@ -2329,12 +2279,14 @@ if True:
 
 if True:
     xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(
-        xxxxxxxxxxx, xxxxxxxxxxxxxxxx={'xxxxxxxxxxxx': 'xxxxx',
-                                       'xxxxxxxxxxx': xx,
-                                       'xxxxxxxx': False,
-                                       })
+        xxxxxxxxxxx,
+        xxxxxxxxxxxxxxxx={
+            'xxxxxxxxxxxx': 'xxxxx',
+            'xxxxxxxxxxx': xx,
+            'xxxxxxxx': False,
+        })
 """
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_do_not_break_on_keyword(self):
@@ -2372,9 +2324,8 @@ def dummy():
     if True:
         if True:
             if True:
-                object = ModifyAction(
-                    [MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
-                    MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
+                object = ModifyAction([MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
+                                      MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -2483,6 +2434,7 @@ class Useless(object):
             self.assertEqual(line, result)
 
     def test_e501_with_aggressive(self):
+        self.maxDiff = None
         line = """\
 models = {
     'auth.group': {
@@ -2496,20 +2448,22 @@ models = {
 }
 """
         fixed = """\
-models = {
-    'auth.group': {
-        'Meta': {'object_name': 'Group'},
-        'permissions': ('django.db.models.fields.related.ManyToManyField',
-                        [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-    },
-    'auth.permission': {
-        'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
-                 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-        'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-    },
-}
+models = {'auth.group': {'Meta': {'object_name': 'Group'},
+                         'permissions': (
+         'django.db.models.fields.related.ManyToManyField',
+         [],
+         {'to': "orm['auth.Permission']",
+          'symmetrical': 'False',
+          'blank': 'True'})},
+    'auth.permission': {'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
+                                      'unique_together': "(('content_type', 'codename'),)",
+                                      'object_name': 'Permission'},
+                             'name': ('django.db.models.fields.CharField',
+                  [],
+             {'max_length': '50'}) },
+    }
 """
-        with autopep8_context(line, options=['--aggressive']) as result:
+        with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_with_multiple_keys_and_aggressive(self):
@@ -2523,7 +2477,7 @@ one_two_three_four_five_six = {
     'asdfsdflsdkfjl sdflkjsdkfkjsfjsdlkfj sdlkfjlsfjs': '343',
     1: 1}
 """
-        with autopep8_context(line, options=['--aggressive']) as result:
+        with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_should_ignore_imports(self):

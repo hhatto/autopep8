@@ -393,6 +393,10 @@ class FixPEP8(object):
         self.fix_e273 = self.fix_e271
         self.fix_e274 = self.fix_e271
         self.fix_e309 = self.fix_e301
+        self.fix_e501 = (
+            self.fix_long_line_logically if
+            options and options.aggressive >= 2 else
+            self.fix_long_line_physically)
         self.fix_e703 = self.fix_e702
 
         self._ws_comma_done = False
@@ -737,69 +741,117 @@ class FixPEP8(object):
                  indentation + 'import ' + target[offset:].lstrip('\t ,'))
         self.source[line_index] = fixed
 
-    def fix_e501(self, result):
+    def fix_long_line_logically(self, result, logical):
+        """Try to make lines fit within --max-line-length characters."""
+        start_line_index = logical[0][0]
+        end_line_index = logical[1][0]
+        logical_lines = logical[2]
+
+        if len(logical_lines) == 1:
+            return self.fix_long_line_physically(result)
+
+        try:
+            previous_line = self.source[start_line_index - 1]
+        except IndexError:
+            previous_line = ''
+
+        try:
+            next_line = self.source[end_line_index + 1]
+        except IndexError:
+            next_line = ''
+
+        indentation = _get_indentation(logical_lines[0])
+
+        single_line = indentation + ' '.join(
+            line.strip() for line in logical_lines if line.strip()
+        ) + self.newline
+
+        fixed = self.fix_long_line(
+            target=single_line,
+            previous_line=previous_line,
+            next_line=next_line,
+            original=''.join(logical_lines))
+
+        if fixed:
+            for line_index in range(start_line_index, end_line_index + 1):
+                self.source[line_index] = ''
+            self.source[start_line_index] = fixed
+            return range(start_line_index + 1, end_line_index + 1)
+        else:
+            return []
+
+    def fix_long_line_physically(self, result):
         """Try to make lines fit within --max-line-length characters."""
         line_index = result['line'] - 1
         target = self.source[line_index]
 
+        try:
+            previous_line = self.source[line_index - 1]
+        except IndexError:
+            previous_line = ''
+
+        try:
+            next_line = self.source[line_index + 1]
+        except IndexError:
+            next_line = ''
+
+        fixed = self.fix_long_line(
+            target=target,
+            previous_line=previous_line,
+            next_line=next_line,
+            original=target)
+
+        if fixed:
+            self.source[line_index] = fixed
+        else:
+            return []
+
+    def fix_long_line(self, target, previous_line,
+                      next_line, original):
         if target.lstrip().startswith('#'):
             last_comment = True
             try:
-                if self.source[line_index + 1].lstrip().startswith('#'):
+                if next_line.lstrip().startswith('#'):
                     last_comment = False
             except IndexError:
                 pass
 
             # Wrap commented lines.
-            fixed = shorten_comment(
+            return shorten_comment(
                 line=target,
                 newline=self.newline,
                 max_line_length=self.options.max_line_length,
                 last_comment=last_comment)
-            self.source[line_index] = fixed
-            return
 
+        fixed = self.get_fixed_long_line(
+            target=target,
+            previous_line=previous_line,
+            original=original)
+
+        if fixed and fixed != original:
+            return fixed
+
+    def get_fixed_long_line(self, target, previous_line, original):
         indent = _get_indentation(target)
         source = target[len(indent):]
         assert source.lstrip() == source
         sio = io.StringIO(source)
 
-        # Check for multiline string.
+        # Check for partial multiline.
         try:
             tokens = list(tokenize.generate_tokens(sio.readline))
         except (SyntaxError, tokenize.TokenError):
-            multiline_candidate = break_multiline(
-                target, newline=self.newline,
-                indent_word=self.indent_word)
-
-            if multiline_candidate:
-                self.source[line_index] = multiline_candidate
-                return
-            else:
-                return []
-
-        # Handle statements by putting the right hand side on a line by itself.
-        # This should let the next pass shorten it.
-        if self.options.aggressive and source.startswith('return '):
-            self.source[line_index] = (
-                indent +
-                'return (' +
-                self.newline +
-                indent + self.indent_word + re.sub('^return ', '', source) +
-                indent + ')' + self.newline
-            )
             return
 
         candidates = shorten_line(
             tokens, source, indent,
             self.indent_word, newline=self.newline,
             aggressive=self.options.aggressive,
-            previous_line=(
-                self.source[line_index - 1] if line_index >= 1 else ''))
+            previous_line=previous_line)
 
         # Also sort alphabetically as a tie breaker (for determinism).
         candidates = sorted(
-            sorted(set(candidates).union([target])),
+            sorted(set(candidates).union([target, original])),
             key=lambda x: line_shortening_rank(x,
                                                self.newline,
                                                self.indent_word,
@@ -813,7 +865,7 @@ class FixPEP8(object):
                                                  else sys.stderr))
 
         if candidates:
-            self.source[line_index] = candidates[0]
+            return candidates[0]
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""
@@ -1551,54 +1603,6 @@ def refactor_with_2to3(source_text, fixer_names):
         return source_text
 
 
-def break_multiline(source_text, newline, indent_word):
-    """Break first line of multiline code.
-
-    Return None if a break is not possible.
-
-    """
-    indentation = _get_indentation(source_text)
-
-    # Handle special case only.
-    for symbol in '([{':
-        # Only valid if symbol is not on a line by itself.
-        if (
-            symbol in source_text and
-            source_text.strip() != symbol and
-            source_text.rstrip().endswith((',', '%'))
-        ):
-            index = 1 + source_text.find(symbol)
-
-            if index <= len(indent_word) + len(indentation):
-                continue
-
-            if is_probably_inside_string_or_comment(source_text, index - 1):
-                continue
-
-            return (
-                source_text[:index].rstrip() + newline +
-                indentation + indent_word +
-                source_text[index:].lstrip())
-
-    return None
-
-
-def is_probably_inside_string_or_comment(line, index):
-    """Return True if index may be inside a string or comment."""
-    # Make sure we are not in a string.
-    for quote in ['"', "'"]:
-        if quote in line:
-            if line.find(quote) <= index:
-                return True
-
-    # Make sure we are not in a comment.
-    if '#' in line:
-        if line.find('#') <= index:
-            return True
-
-    return False
-
-
 def check_syntax(code):
     """Return True if syntax is okay."""
     try:
@@ -2156,6 +2160,9 @@ def line_shortening_rank(candidate, newline, indent_word, max_line_length):
             # Try to break list comprehensions at the "for".
             if current_line.lstrip().startswith('for'):
                 rank -= 50
+
+            if current_line.rstrip().endswith('\\'):
+                rank += 1
 
             rank += 10 * count_unbalanced_brackets(current_line)
     else:
