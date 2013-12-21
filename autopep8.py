@@ -1327,13 +1327,6 @@ def normalize_multiline(line, newline):
     This is for purposes of checking syntax.
 
     """
-    for quote in '\'"':
-        dict_pattern = r'^{q}[^{q}]*{q} *: *'.format(q=quote)
-        if re.match(dict_pattern, line):
-            if not line.strip().endswith('}'):
-                line += '}'
-            return '{' + line
-
     if line.startswith('def ') and line.rstrip().endswith(':'):
         # Do not allow ':' to be alone. That is invalid.
         split_line = [item.strip() for item in line.split(newline)]
