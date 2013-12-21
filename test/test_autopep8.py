@@ -2223,6 +2223,21 @@ someverylongindenttionwhatnot().foo().bar().baz(
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_logical_fix(self):
+        line = """\
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx(aaaaaaaaaaaaaaaaaaaaaaa,
+                             bbbbbbbbbbbbbbbbbbbbbbbbbbbb, cccccccccccccccccccccccccccc, dddddddddddddddddddddddd)
+"""
+        fixed = """\
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx(
+    aaaaaaaaaaaaaaaaaaaaaaa,
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbb,
+    cccccccccccccccccccccccccccc,
+    dddddddddddddddddddddddd)
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_multiple_lines(self):
         line = """
 
