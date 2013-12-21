@@ -750,15 +750,8 @@ class FixPEP8(object):
         if len(logical_lines) == 1:
             return self.fix_long_line_physically(result)
 
-        try:
-            previous_line = self.source[start_line_index - 1]
-        except IndexError:
-            previous_line = ''
-
-        try:
-            next_line = self.source[end_line_index + 1]
-        except IndexError:
-            next_line = ''
+        previous_line = get_line(self.source, start_line_index - 1)
+        next_line = get_line(self.source, end_line_index + 1)
 
         indentation = _get_indentation(logical_lines[0])
 
@@ -785,15 +778,8 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
 
-        try:
-            previous_line = self.source[line_index - 1]
-        except IndexError:
-            previous_line = ''
-
-        try:
-            next_line = self.source[line_index + 1]
-        except IndexError:
-            next_line = ''
+        previous_line = get_line(self.source, line_index - 1)
+        next_line = get_line(self.source, line_index + 1)
 
         fixed = self.fix_long_line(
             target=target,
@@ -997,6 +983,13 @@ class FixPEP8(object):
         original_length = len(self.source)
         self.source = self.source[:original_length - blank_count]
         return range(1, 1 + original_length)
+
+
+def get_line(source_lines, index, default=''):
+    if 0 <= index < len(source_lines):
+        return source_lines[index]
+    else:
+        return default
 
 
 def reindent(source, indent_size):
