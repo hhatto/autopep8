@@ -80,6 +80,7 @@ SHORTEN_OPERATOR_GROUPS = frozenset([
     frozenset(['%']),
     frozenset([',', '(', '[', '{']),
     frozenset([',', '(', '[', '{', '%', '+', '-', '*', '/', '//']),
+    frozenset(['%', '+', '-', '*', '/', '//']),
 ])
 
 
