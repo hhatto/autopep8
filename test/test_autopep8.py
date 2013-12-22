@@ -2565,6 +2565,16 @@ models = {'auth.group': {'Meta': {'object_name': 'Group'},
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_shorten_comment_with_aggressive(self):
+        line = """\
+# --------------------------------------------------------------------------------
+"""
+        fixed = """\
+# ------------------------------------------------------------------------
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_multiple_keys_and_aggressive(self):
         line = """\
 one_two_three_four_five_six = {'one two three four five': 12345, 'asdfsdflsdkfjl sdflkjsdkfkjsfjsdlkfj sdlkfjlsfjs': '343',

@@ -420,11 +420,7 @@ class FixPEP8(object):
                     if completed_lines:
                         continue
 
-                    logical = self._get_logical(result)
-                    if not logical:
-                        continue  # pragma: no cover
-
-                    modified_lines = fix(result, logical)
+                    modified_lines = fix(result, self._get_logical(result))
                 else:
                     modified_lines = fix(result)
 
@@ -743,12 +739,12 @@ class FixPEP8(object):
 
     def fix_long_line_logically(self, result, logical):
         """Try to make lines fit within --max-line-length characters."""
+        if not logical or len(logical[2]) == 1:
+            return self.fix_long_line_physically(result)
+
         start_line_index = logical[0][0]
         end_line_index = logical[1][0]
         logical_lines = logical[2]
-
-        if len(logical_lines) == 1:
-            return self.fix_long_line_physically(result)
 
         previous_line = get_line(self.source, start_line_index - 1)
         next_line = get_line(self.source, end_line_index + 1)
@@ -872,6 +868,8 @@ class FixPEP8(object):
 
     def fix_e702(self, result, logical):
         """Put semicolon-separated compound statement on separate lines."""
+        if not logical:
+            return []  # pragma: no cover
         logical_lines = logical[2]
 
         line_index = result['line'] - 1
