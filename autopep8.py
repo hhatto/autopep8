@@ -791,19 +791,12 @@ class FixPEP8(object):
     def fix_long_line(self, target, previous_line,
                       next_line, original):
         if target.lstrip().startswith('#'):
-            last_comment = True
-            try:
-                if next_line.lstrip().startswith('#'):
-                    last_comment = False
-            except IndexError:
-                pass
-
             # Wrap commented lines.
             return shorten_comment(
                 line=target,
                 newline=self.newline,
                 max_line_length=self.options.max_line_length,
-                last_comment=last_comment)
+                last_comment=not next_line.lstrip().startswith('#'))
 
         fixed = self.get_fixed_long_line(
             target=target,
@@ -1745,7 +1738,13 @@ def commented_out_code_lines(source):
 
 
 def shorten_comment(line, newline, max_line_length, last_comment=False):
-    """Return trimmed or split long comment line."""
+    """Return trimmed or split long comment line.
+
+    If there are no comments immediately following it, do a text wrap.
+    Doing this wrapping on all comments in general would lead to jagged
+    comment text.
+
+    """
     assert len(line) > max_line_length
     line = line.rstrip()
 
@@ -2337,9 +2336,8 @@ def is_python_file(filename):
 def is_probably_part_of_multiline(line):
     """Return True if line is likely part of a multiline string.
 
-    When multiline strings are involved, pep8 reports the error as
-    being at the start of the multiline string, which doesn't work for
-    us.
+    When multiline strings are involved, pep8 reports the error as being
+    at the start of the multiline string, which doesn't work for us.
 
     """
     return (
