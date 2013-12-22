@@ -659,8 +659,6 @@ sys.maxint
     def test_priority_key_with_non_existent_key(self):
         pep8_result = {'id': 'foobar'}
         self.assertGreater(autopep8._priority_key(pep8_result), 1)
-        self.assertLessEqual(autopep8._priority_key(pep8_result),
-                             len(set(autopep8.supported_fixes())))
 
     def test_decode_filename(self):
         self.assertEqual('foo.py', autopep8.decode_filename(b'foo.py'))
