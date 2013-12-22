@@ -1170,12 +1170,20 @@ def _priority_key(pep8_result):
         # Shorten whitespace in comment before resorting to wrapping.
         'e262'
     ]
+    middle_index = 10000
+    lowest_priority = [
+        # We need to shorten lines last since the logical fixer can get in a
+        # loop, which causes us to exit early.
+        'e501'
+    ]
     key = pep8_result['id'].lower()
     try:
         return priority.index(key)
     except ValueError:
-        # Lowest priority.
-        return len(priority)
+        try:
+            return middle_index + lowest_priority.index(key) + 1
+        except ValueError:
+            return middle_index
 
 
 def shorten_line(tokens, source, indentation, indent_word, newline,

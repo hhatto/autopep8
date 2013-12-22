@@ -2465,18 +2465,18 @@ models = {
         fixed = """\
 models = {'auth.group': {'Meta': {'object_name': 'Group'},
                          'permissions': (
-         'django.db.models.fields.related.ManyToManyField',
-         [],
-         {'to': "orm['auth.Permission']",
-          'symmetrical': 'False',
-          'blank': 'True'})},
-    'auth.permission': {'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
-                                      'unique_together': "(('content_type', 'codename'),)",
-                                      'object_name': 'Permission'},
-                             'name': ('django.db.models.fields.CharField',
-                  [],
-             {'max_length': '50'}) },
-    }
+                             'django.db.models.fields.related.ManyToManyField',
+                             [],
+                             {'to': "orm['auth.Permission']",
+                              'symmetrical': 'False',
+                              'blank': 'True'})},
+          'auth.permission': {'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
+                                       'unique_together': "(('content_type', 'codename'),)",
+                                       'object_name': 'Permission'},
+                              'name': ('django.db.models.fields.CharField',
+                                       [],
+                                       {'max_length': '50'})},
+          }
 """
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
