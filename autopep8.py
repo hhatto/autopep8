@@ -813,8 +813,7 @@ class FixPEP8(object):
             target=target,
             previous_line=previous_line,
             original=original)
-
-        if fixed and fixed != original:
+        if fixed and not code_almost_equal(original, fixed):
             return fixed
 
     def get_fixed_long_line(self, target, previous_line, original):
@@ -996,6 +995,25 @@ def reindent(source, indent_size):
     """Reindent all lines."""
     reindenter = Reindenter(source)
     return reindenter.run(indent_size)
+
+
+def code_almost_equal(a, b):
+    """Return True if code is similar.
+
+    Ignore leading/trailing whitespace.
+
+    """
+    return (split_and_strip_non_empty_lines(a) ==
+            split_and_strip_non_empty_lines(b))
+
+
+def split_and_strip_non_empty_lines(text):
+    """Return lines split by newline.
+
+    Ignore empty lines.
+
+    """
+    return [line.strip() for line in text.splitlines() if line.strip()]
 
 
 def fix_e269(source, aggressive=False):
