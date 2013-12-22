@@ -1000,11 +1000,20 @@ def reindent(source, indent_size):
 def code_almost_equal(a, b):
     """Return True if code is similar.
 
-    Ignore leading/trailing whitespace.
+    Ignore whitespace when comparing specific line.
 
     """
-    return (split_and_strip_non_empty_lines(a) ==
-            split_and_strip_non_empty_lines(b))
+    split_a = split_and_strip_non_empty_lines(a)
+    split_b = split_and_strip_non_empty_lines(b)
+
+    if len(split_a) != len(split_b):
+        return False
+
+    for index in range(len(split_a)):
+        if ''.join(split_a[index].split()) != ''.join(split_b[index].split()):
+            return False
+
+    return True
 
 
 def split_and_strip_non_empty_lines(text):

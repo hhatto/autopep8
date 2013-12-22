@@ -663,6 +663,37 @@ sys.maxint
     def test_decode_filename(self):
         self.assertEqual('foo.py', autopep8.decode_filename(b'foo.py'))
 
+    def test_almost_equal(self):
+        self.assertTrue(autopep8.code_almost_equal(
+            """\
+[1, 2, 3
+    4, 5]
+""",
+            """\
+[1, 2, 3
+4, 5]
+"""))
+
+        self.assertTrue(autopep8.code_almost_equal(
+            """\
+[1,2,3
+    4,5]
+""",
+            """\
+[1, 2, 3
+4,5]
+"""))
+
+        self.assertFalse(autopep8.code_almost_equal(
+            """\
+[1, 2, 3
+    4, 5]
+""",
+            """\
+[1, 2, 3, 4,
+    5]
+"""))
+
 
 class SystemTests(unittest.TestCase):
 
