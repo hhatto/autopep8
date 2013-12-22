@@ -1307,7 +1307,6 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
 
     """
     offsets = []
-    first_paren = True
     for tkn in tokens:
         token_type = tkn[0]
         token_string = tkn[1]
@@ -1315,14 +1314,10 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
 
         assert token_type != token.INDENT
 
-        if token_string in key_token_strings or (first_paren and
-                                                 token_string == '('):
+        if token_string in key_token_strings:
             # Don't split right before newline.
             if next_offset < len(source) - 1:
                 offsets.append(next_offset)
-
-            if token_string == '(':
-                first_paren = False
 
     current_indent = None
     fixed = None

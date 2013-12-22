@@ -2492,12 +2492,11 @@ models = {
 """
         fixed = """\
 models = {'auth.group': {'Meta': {'object_name': 'Group'},
-                         'permissions': (
-                             'django.db.models.fields.related.ManyToManyField',
-                             [],
-                             {'to': "orm['auth.Permission']",
-                              'symmetrical': 'False',
-                              'blank': 'True'})},
+                         'permissions': ('django.db.models.fields.related.ManyToManyField',
+                                         [],
+                                         {'to': "orm['auth.Permission']",
+                                          'symmetrical': 'False',
+                                          'blank': 'True'})},
           'auth.permission': {'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
                                        'unique_together': "(('content_type', 'codename'),)",
                                        'object_name': 'Permission'},
@@ -2534,12 +2533,11 @@ models = {
 """
         fixed = """\
 models = {'auth.group': {'Meta': {'object_name': 'Group'},
-                         'permissions': (
-                             'django.db.models.fields.related.ManyToManyField',
-                             [],
-                             {'to': "orm['auth.Permission']",
-                              'symmetrical': 'False',
-                              'blank': 'True'})},
+                         'permissions': ('django.db.models.fields.related.ManyToManyField',
+                                         [],
+                                         {'to': "orm['auth.Permission']",
+                                          'symmetrical': 'False',
+                                          'blank': 'True'})},
           'auth.permission': {'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
                                        'unique_together': "(('content_type', 'codename'),)",
                                        'object_name': 'Permission'},
@@ -2548,12 +2546,11 @@ models = {'auth.group': {'Meta': {'object_name': 'Group'},
                                        {'max_length': '50'})},
           }
 models = {'auth.group': {'Meta': {'object_name': 'Group'},
-                         'permissions': (
-                             'django.db.models.fields.related.ManyToManyField',
-                             [],
-                             {'to': "orm['auth.Permission']",
-                              'symmetrical': 'False',
-                              'blank': 'True'})},
+                         'permissions': ('django.db.models.fields.related.ManyToManyField',
+                                         [],
+                                         {'to': "orm['auth.Permission']",
+                                          'symmetrical': 'False',
+                                          'blank': 'True'})},
           'auth.permission': {'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
                                        'unique_together': "(('content_type', 'codename'),)",
                                        'object_name': 'Permission'},
@@ -2608,9 +2605,8 @@ foo('                                                                           
 raise MultiProjectException("Ambiguous workspace: %s=%s, %s" % ( varname, varname_path, os.path.abspath(config_filename)))
 """
         fixed = """\
-raise MultiProjectException(
-    "Ambiguous workspace: %s=%s, %s" %
-    (varname, varname_path, os.path.abspath(config_filename)))
+raise MultiProjectException("Ambiguous workspace: %s=%s, %s" %
+                            (varname, varname_path, os.path.abspath(config_filename)))
 """
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
