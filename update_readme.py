@@ -2,7 +2,12 @@
 """Update example in readme."""
 
 import io
+import sys
 import textwrap
+
+import pyflakes.api
+import pyflakes.messages
+import pyflakes.reporter
 
 import autopep8
 
@@ -43,6 +48,13 @@ def help_message():
     return string_io.getvalue()
 
 
+def check(source):
+    """Check code."""
+    compile(source, '<string>', 'exec', dont_inherit=True)
+    reporter = pyflakes.reporter.Reporter(sys.stderr, sys.stderr)
+    pyflakes.api.check(source, filename='<string>', reporter=reporter)
+
+
 def main():
     readme_path = 'README.rst'
     before_key = 'Before running autopep8.\n\n.. code-block:: python'
@@ -60,7 +72,8 @@ def main():
     output_code = autopep8.fix_code(
         input_code,
         options=autopep8.parse_args(['', '-aa']))
-    compile(output_code, '<string>', 'exec', dont_inherit=True)
+
+    check(output_code)
 
     new_readme = '\n\n'.join([
         top,
