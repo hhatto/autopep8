@@ -1323,8 +1323,8 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
             if unwanted_next_token:
                 if (
                     get_item(tokens,
-                            index + 1,
-                            default=[None])[1] == unwanted_next_token or
+                             index + 1,
+                             default=[None])[1] == unwanted_next_token or
                     get_item(tokens,
                              index + 2,
                              default=[None])[1] == unwanted_next_token
