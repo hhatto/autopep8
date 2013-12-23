@@ -403,6 +403,12 @@ class FixPEP8(object):
         self._ws_comma_done = False
 
     def _fix_source(self, results):
+        try:
+            (logical_start, logical_end) = self._find_logical()
+            logical_support = True
+        except (SyntaxError, tokenize.TokenError):  # pragma: no cover
+            logical_support = False
+
         completed_lines = set()
         for result in sorted(results, key=_priority_key):
             if result['line'] in completed_lines:
@@ -416,20 +422,25 @@ class FixPEP8(object):
                 original_line = self.source[line_index]
 
                 is_logical_fix = len(inspect.getargspec(fix).args) > 2
-                if is_logical_fix:
-                    # Do not run logical fix if any lines have been modified.
-                    if completed_lines:
+                if is_logical_fix and logical_support:
+                    logical = self._get_logical(result,
+                                                logical_start,
+                                                logical_end)
+                    if logical and set(range(
+                        logical[0][0],
+                        logical[1][0] + 1)).intersection(
+                            completed_lines):
                         continue
-
-                    modified_lines = fix(result, self._get_logical(result))
+                    modified_lines = fix(result, logical)
                 else:
                     modified_lines = fix(result)
 
-                if (
-                    modified_lines is None and
-                    self.source[line_index] == original_line
-                ):
-                    modified_lines = []
+                if modified_lines is None:
+                    # Force logical fixes to report what they modified.
+                    assert not is_logical_fix
+
+                    if self.source[line_index] == original_line:
+                        modified_lines = []
 
                 if modified_lines:
                     completed_lines.update(modified_lines)
@@ -510,17 +521,12 @@ class FixPEP8(object):
                     parens -= 1
         return (logical_start, logical_end)
 
-    def _get_logical(self, result):
+    def _get_logical(self, result, logical_start, logical_end):
         """Return the logical line corresponding to the result.
 
         Assumes input is already E702-clean.
 
         """
-        try:
-            (logical_start, logical_end) = self._find_logical()
-        except (SyntaxError, tokenize.TokenError):  # pragma: no cover
-            return None  # pragma: no cover
-
         row = result['line'] - 1
         col = result['column'] - 1
         ls = None
@@ -786,6 +792,7 @@ class FixPEP8(object):
 
         if fixed:
             self.source[line_index] = fixed
+            return [line_index + 1]
         else:
             return []
 
@@ -877,7 +884,7 @@ class FixPEP8(object):
 
         if target.rstrip().endswith(';'):
             self.source[line_index] = target.rstrip('\n \r\t;') + self.newline
-            return
+            return [line_index + 1]
 
         offset = result['column'] - 1
         first = target[:offset].rstrip(';').rstrip()
@@ -885,6 +892,7 @@ class FixPEP8(object):
                   target[offset:].lstrip(';').lstrip())
 
         self.source[line_index] = first + self.newline + second
+        return [line_index + 1]
 
     def fix_e711(self, result):
         """Fix comparison with None."""

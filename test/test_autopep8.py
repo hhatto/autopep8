@@ -574,15 +574,6 @@ sys.maxint
             fix_pep8.fix_e712({'line': 1,
                                'column': 3}))
 
-    def test_get_logical_with_empty_string(self):
-        fix_pep8 = autopep8.FixPEP8(filename='',
-                                    options=autopep8.parse_args(['']),
-                                    contents='')
-
-        self.assertEqual(None,
-                         fix_pep8._get_logical({'line': 1,
-                                                'column': 1}))
-
     def test_get_diff_text(self):
         # We ignore the first two lines since it differs on Python 2.6.
         self.assertEqual(
