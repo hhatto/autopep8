@@ -47,9 +47,9 @@ Before running autopep8.
     def example1():
         a=(   1,2, 3,'a'  );
         ####This is a long comment. This should be wrapped to fit within 72 characters.
-        some_variable = {'long': 'Long code lines should be wrapped witihn 79 characters.',
+        some_variable={'long':'Long code lines should be wrapped witihn 79 characters.',
         'other':[100,200,300,9876543210,'This is a long string that goes on'],'more':
-        {'inner':'This whole logical line should be wrapped.','another':[1,
+        {'inner':'This whole logical line should be wrapped.',a:[1,
         20,300,40000,500000000,60000000000000000]}}
     def example2(): return {'has_key() is deprecated':True}.has_key({'f':2}.has_key(''));
     class Example3(   object ):
@@ -86,7 +86,7 @@ After running autopep8.
                 'This is a long string that goes on'],
             'more': {
                 'inner': 'This whole logical line should be wrapped.',
-                'another': [
+                a: [
                     1,
                     20,
                     300,
