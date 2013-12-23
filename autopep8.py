@@ -777,9 +777,6 @@ class FixPEP8(object):
             line.strip() for line in logical_lines if line.strip()
         ) + self.newline
 
-        if single_line in self.long_line_ignore_cache:
-            return []
-
         fixed = self.fix_long_line(
             target=single_line,
             previous_line=previous_line,
@@ -792,16 +789,12 @@ class FixPEP8(object):
             self.source[start_line_index] = fixed
             return range(start_line_index + 1, end_line_index + 1)
         else:
-            self.long_line_ignore_cache.add(single_line)
             return []
 
     def fix_long_line_physically(self, result):
         """Try to make lines fit within --max-line-length characters."""
         line_index = result['line'] - 1
         target = self.source[line_index]
-
-        if target in self.long_line_ignore_cache:
-            return []
 
         previous_line = get_item(self.source, line_index - 1, default='')
         next_line = get_item(self.source, line_index + 1, default='')
@@ -816,11 +809,13 @@ class FixPEP8(object):
             self.source[line_index] = fixed
             return [line_index + 1]
         else:
-            self.long_line_ignore_cache.add(target)
             return []
 
     def fix_long_line(self, target, previous_line,
                       next_line, original):
+        if target in self.long_line_ignore_cache:
+            return []
+
         if target.lstrip().startswith('#'):
             # Wrap commented lines.
             return shorten_comment(
@@ -835,6 +830,9 @@ class FixPEP8(object):
             original=original)
         if fixed and not code_almost_equal(original, fixed):
             return fixed
+        else:
+            self.long_line_ignore_cache.add(target)
+            return None
 
     def get_fixed_long_line(self, target, previous_line, original):
         indent = _get_indentation(target)
