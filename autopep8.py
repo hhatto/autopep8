@@ -746,7 +746,11 @@ class FixPEP8(object):
 
     def fix_long_line_logically(self, result, logical):
         """Try to make lines fit within --max-line-length characters."""
-        if not logical or len(logical[2]) == 1:
+        if (
+            not logical or
+            len(logical[2]) == 1 or
+            self.source[result['line'] - 1].lstrip().startswith('#')
+        ):
             return self.fix_long_line_physically(result)
 
         start_line_index = logical[0][0]
