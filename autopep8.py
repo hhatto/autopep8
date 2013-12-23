@@ -109,8 +109,6 @@ CODE_TO_2TO3 = {
              'tuple_params',
              'xreadlines']}
 
-LOGICAL_LONG_LINE_IGNORE_CACHE = set()
-
 
 def open_with_encoding(filename, encoding=None, mode='r'):
     """Return opened file with a specific encoding."""
@@ -360,7 +358,10 @@ class FixPEP8(object):
 
     """
 
-    def __init__(self, filename, options, contents=None):
+    def __init__(self, filename,
+                 options,
+                 contents=None,
+                 logical_long_line_ignore_cache=None):
         self.filename = filename
         if contents is None:
             self.source = readlines_from_file(filename)
@@ -370,6 +371,10 @@ class FixPEP8(object):
         self.newline = find_newline(self.source)
         self.options = options
         self.indent_word = _get_indentword(''.join(self.source))
+
+        self.logical_long_line_ignore_cache = (
+            set() if logical_long_line_ignore_cache is None
+            else logical_long_line_ignore_cache)
 
         # method definition
         self.fix_e121 = self._fix_reindent
@@ -772,7 +777,7 @@ class FixPEP8(object):
             line.strip() for line in logical_lines if line.strip()
         ) + self.newline
 
-        if single_line in LOGICAL_LONG_LINE_IGNORE_CACHE:
+        if single_line in self.logical_long_line_ignore_cache:
             return []
 
         fixed = self.fix_long_line(
@@ -787,7 +792,7 @@ class FixPEP8(object):
             self.source[start_line_index] = fixed
             return range(start_line_index + 1, end_line_index + 1)
         else:
-            LOGICAL_LONG_LINE_IGNORE_CACHE.add(single_line)
+            self.logical_long_line_ignore_cache.add(single_line)
             return []
 
     def fix_long_line_physically(self, result):
@@ -1864,6 +1869,7 @@ def fix_lines(source_lines, options, filename=''):
         fixed_source = apply_global_fixes(tmp_source, options)
 
     passes = 0
+    logical_long_line_ignore_cache = set()
     while hash(fixed_source) not in previous_hashes:
         if options.pep8_passes >= 0 and passes > options.pep8_passes:
             break
@@ -1873,7 +1879,12 @@ def fix_lines(source_lines, options, filename=''):
 
         tmp_source = copy.copy(fixed_source)
 
-        fix = FixPEP8(filename, options, contents=tmp_source)
+        fix = FixPEP8(
+            filename,
+            options,
+            contents=tmp_source,
+            logical_long_line_ignore_cache=logical_long_line_ignore_cache)
+
         fixed_source = fix.fix()
 
     return fixed_source
