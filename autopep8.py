@@ -422,15 +422,19 @@ class FixPEP8(object):
                 original_line = self.source[line_index]
 
                 is_logical_fix = len(inspect.getargspec(fix).args) > 2
-                if is_logical_fix and logical_support:
-                    logical = self._get_logical(result,
-                                                logical_start,
-                                                logical_end)
-                    if logical and set(range(
-                        logical[0][0],
-                        logical[1][0] + 1)).intersection(
-                            completed_lines):
-                        continue
+                if is_logical_fix:
+                    if logical_support:
+                        logical = self._get_logical(result,
+                                                    logical_start,
+                                                    logical_end)
+                        if logical and set(range(
+                            logical[0][0],
+                            logical[1][0] + 1)).intersection(
+                                completed_lines):
+                            continue
+                    else:
+                        logical = None
+
                     modified_lines = fix(result, logical)
                 else:
                     modified_lines = fix(result)
