@@ -747,8 +747,8 @@ class FixPEP8(object):
         end_line_index = logical[1][0]
         logical_lines = logical[2]
 
-        previous_line = get_line(self.source, start_line_index - 1)
-        next_line = get_line(self.source, end_line_index + 1)
+        previous_line = get_item(self.source, start_line_index - 1, default='')
+        next_line = get_item(self.source, end_line_index + 1, default='')
 
         indentation = _get_indentation(logical_lines[0])
 
@@ -775,8 +775,8 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
 
-        previous_line = get_line(self.source, line_index - 1)
-        next_line = get_line(self.source, line_index + 1)
+        previous_line = get_item(self.source, line_index - 1, default='')
+        next_line = get_item(self.source, line_index + 1, default='')
 
         fixed = self.fix_long_line(
             target=target,
@@ -976,9 +976,9 @@ class FixPEP8(object):
         return range(1, 1 + original_length)
 
 
-def get_line(source_lines, index, default=''):
-    if 0 <= index < len(source_lines):
-        return source_lines[index]
+def get_item(items, index, default=None):
+    if 0 <= index < len(items):
+        return items[index]
     else:
         return default
 
@@ -1315,16 +1315,21 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
         assert token_type != token.INDENT
 
         if token_string in key_token_strings:
-            # Do not break with empty contents.
+            # Do not break in containers with zero or one items.
             unwanted_next_token = {
                 '(': ')',
                 '[': ']',
                 '{': '}'}.get(token_string)
-            if (
-                unwanted_next_token and
-                tokens[index + 1][1] == unwanted_next_token
-            ):
-                continue
+            if unwanted_next_token:
+                if (
+                    get_item(tokens,
+                            index + 1,
+                            default=[None])[1] == unwanted_next_token or
+                    get_item(tokens,
+                             index + 2,
+                             default=[None])[1] == unwanted_next_token
+                ):
+                    continue
 
             # Don't split right before newline.
             if next_offset < len(source) - 1:

@@ -2580,8 +2580,7 @@ raise MultiProjectException(
     "Ambiguous workspace: %s=%s, %s" % (
         varname,
         varname_path,
-        os.path.abspath(
-            config_filename)))
+        os.path.abspath(config_filename)))
 """
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
