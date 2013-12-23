@@ -34,9 +34,9 @@ autopep8 requires pep8_.
 Usage
 =====
 
-To modify a file in place (with all fixes enabled)::
+To modify a file in place (with aggressive level 2)::
 
-    $ autopep8 --in-place --aggressive <filename>
+    $ autopep8 --in-place --aggressive --aggressive <filename>
 
 Before running autopep8.
 
