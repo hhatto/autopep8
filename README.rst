@@ -45,8 +45,8 @@ Before running autopep8.
     import sys, os;
 
     def example1():
-        some_tuple=(   1,2, 3,'a'  );
         ####This is a long comment. This should be wrapped to fit within 72 characters.
+        some_tuple=(   1,2, 3,'a'  );
         some_variable={'long':'Long code lines should be wrapped witihn 79 characters.',
         'other':[100,200,300,9876543210,'This is a long string that goes on'],'more':
         {'inner':'This whole logical line should be wrapped.',some_tuple:[1,
@@ -57,9 +57,9 @@ Before running autopep8.
          #Comments should have a space after the hash.
          if bar : bar+=1;  bar=bar* bar   ; return bar
          else:
-                        indentation_in_strings_should_not_be_touched = """
-    		           hello
-    world
+                        some_string = """
+    		           Indentation in multiline strings should not be touched.
+    Only actual code should be reindented.
     """
                         raise ValueError, indentation_in_strings_should_not_be_touched
         def my_method(self):
@@ -74,8 +74,9 @@ After running autopep8.
 
 
     def example1():
+        # This is a long comment. This should be wrapped to fit within 72
+        # characters.
         some_tuple = (1, 2, 3, 'a')
-        # This is a long comment. This should be wrapped to fit within 72 characters.
         some_variable = {
             'long': 'Long code lines should be wrapped witihn 79 characters.',
             'other': [
@@ -108,9 +109,9 @@ After running autopep8.
                 bar = bar * bar
                 return bar
             else:
-                indentation_in_strings_should_not_be_touched = """
-    		           hello
-    world
+                some_string = """
+    		           Indentation in multiline strings should not be touched.
+    Only actual code should be reindented.
     """
                 raise ValueError(indentation_in_strings_should_not_be_touched)
 
