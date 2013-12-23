@@ -109,6 +109,8 @@ CODE_TO_2TO3 = {
              'tuple_params',
              'xreadlines']}
 
+LOGICAL_LONG_LINE_IGNORE_CACHE = set()
+
 
 def open_with_encoding(filename, encoding=None, mode='r'):
     """Return opened file with a specific encoding."""
@@ -770,6 +772,9 @@ class FixPEP8(object):
             line.strip() for line in logical_lines if line.strip()
         ) + self.newline
 
+        if single_line in LOGICAL_LONG_LINE_IGNORE_CACHE:
+            return []
+
         fixed = self.fix_long_line(
             target=single_line,
             previous_line=previous_line,
@@ -782,6 +787,7 @@ class FixPEP8(object):
             self.source[start_line_index] = fixed
             return range(start_line_index + 1, end_line_index + 1)
         else:
+            LOGICAL_LONG_LINE_IGNORE_CACHE.add(single_line)
             return []
 
     def fix_long_line_physically(self, result):
