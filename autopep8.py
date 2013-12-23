@@ -813,7 +813,8 @@ class FixPEP8(object):
 
     def fix_long_line(self, target, previous_line,
                       next_line, original):
-        if target in self.long_line_ignore_cache:
+        cache_entry = (target, previous_line, next_line)
+        if cache_entry in self.long_line_ignore_cache:
             return []
 
         if target.lstrip().startswith('#'):
@@ -831,7 +832,7 @@ class FixPEP8(object):
         if fixed and not code_almost_equal(original, fixed):
             return fixed
         else:
-            self.long_line_ignore_cache.add(target)
+            self.long_line_ignore_cache.add(cache_entry)
             return None
 
     def get_fixed_long_line(self, target, previous_line, original):
