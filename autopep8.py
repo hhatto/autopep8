@@ -1307,7 +1307,7 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
 
     """
     offsets = []
-    for tkn in tokens:
+    for (index, tkn) in enumerate(tokens):
         token_type = tkn[0]
         token_string = tkn[1]
         next_offset = tkn[2][1] + 1
@@ -1315,6 +1315,17 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
         assert token_type != token.INDENT
 
         if token_string in key_token_strings:
+            # Do not break with empty contents.
+            unwanted_next_token = {
+                '(': ')',
+                '[': ']',
+                '{': '}'}.get(token_string)
+            if (
+                unwanted_next_token and
+                tokens[index + 1][1] == unwanted_next_token
+            ):
+                continue
+
             # Don't split right before newline.
             if next_offset < len(source) - 1:
                 offsets.append(next_offset)
@@ -2129,7 +2140,7 @@ def line_shortening_rank(candidate, newline, indent_word, max_line_length):
 
         current_longest = max(offset + len(x.strip()) for x in lines)
 
-        rank += max(0, current_longest - max_line_length)
+        rank += 2 * max(0, current_longest - max_line_length)
 
         rank += len(lines)
 
@@ -2168,7 +2179,7 @@ def line_shortening_rank(candidate, newline, indent_word, max_line_length):
                 if has_arithmetic_operator(current_line):
                     rank += 100
 
-            if current_line.endswith('%'):
+            if current_line.endswith(('%', '(', '[', '{')):
                 rank -= 20
 
             # Try to break list comprehensions at the "for".

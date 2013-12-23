@@ -2074,21 +2074,22 @@ if True:
 x = [3244234243234, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243, 234234234324, 234234324, 23424234, 234234234, 234234, 234243, 234243]
 """
         fixed = """\
-x = [3244234243234,
-     234234234324,
-     234234324,
-     23424234,
-     234234234,
-     234234,
-     234243,
-     234243,
-     234234234324,
-     234234324,
-     23424234,
-     234234234,
-     234234,
-     234243,
-     234243]
+x = [
+    3244234243234,
+    234234234324,
+    234234324,
+    23424234,
+    234234234,
+    234234,
+    234243,
+    234243,
+    234234234324,
+    234234324,
+    23424234,
+    234234234,
+    234234,
+    234243,
+    234243]
 """
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
@@ -2164,13 +2165,6 @@ fooooooooooooooooooooooooooooooo000000000000000000000000 = [1,
         with autopep8_context(line, options=['--select=E501']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_should_avoid_making_things_ugly(self):
-        line = """\
-x = ('                                                                                             ')
-"""
-        with autopep8_context(line, options=['--select=E501']) as result:
-            self.assertEqual(line, result)
-
     def test_e501_should_not_try_to_break_at_every_paren_in_arithmetic(self):
         line = """\
 term3 = w6 * c5 * (8.0 * psi4 * (11.0 - 24.0 * t2) - 28 * psi3 * (1 - 6.0 * t2) + psi2 * (1 - 32 * t2) - psi * (2.0 * t2) + t4) / 720.0
@@ -2235,8 +2229,8 @@ looooooooooooooong = foo(one, two, three, four, five, six, seven, eight, nine, t
 """
         fixed = """
 
-looooooooooooooong = foo(one, two, three, four, five,
-                         six, seven, eight, nine, ten)
+looooooooooooooong = foo(
+    one, two, three, four, five, six, seven, eight, nine, ten)
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -2368,8 +2362,8 @@ def dummy():
     if True:
         if True:
             if True:
-                object = ModifyAction([MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
-                                      MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
+                object = ModifyAction([MODIFY70.text, OBJECTBINDING71.text, COLON72.text], MODIFY70.getLine(
+                ), MODIFY70.getCharPositionInLine())
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -2491,73 +2485,50 @@ models = {
 }
 """
         fixed = """\
-models = {'auth.group': {'Meta': {'object_name': 'Group'},
-                         'permissions': ('django.db.models.fields.related.ManyToManyField',
-                                         [],
-                                         {'to': "orm['auth.Permission']",
-                                          'symmetrical': 'False',
-                                          'blank': 'True'})},
-          'auth.permission': {'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
-                                       'unique_together': "(('content_type', 'codename'),)",
-                                       'object_name': 'Permission'},
-                              'name': ('django.db.models.fields.CharField',
-                                       [],
-                                       {'max_length': '50'})},
-          }
+models = {
+    'auth.group': {
+        'Meta': {
+            'object_name': 'Group'},
+        'permissions': (
+            'django.db.models.fields.related.ManyToManyField',
+            [],
+            {
+                'to': "orm['auth.Permission']",
+                'symmetrical': 'False',
+                'blank': 'True'})},
+    'auth.permission': {
+        'Meta': {
+            'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
+            'unique_together': "(('content_type', 'codename'),)",
+            'object_name': 'Permission'},
+        'name': (
+            'django.db.models.fields.CharField',
+            [],
+            {
+                'max_length': '50'})},
+}
 """
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_with_aggressive_and_multiple_logical_lines(self):
         line = """\
-models = {
-    'auth.group': {
-        'Meta': {'object_name': 'Group'},
-        'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-    },
-    'auth.permission': {
-        'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-        'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-    },
-}
-models = {
-    'auth.group': {
-        'Meta': {'object_name': 'Group'},
-        'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-    },
-    'auth.permission': {
-        'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-        'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-    },
-}
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx(aaaaaaaaaaaaaaaaaaaaaaa,
+                             bbbbbbbbbbbbbbbbbbbbbbbbbbbb, cccccccccccccccccccccccccccc, dddddddddddddddddddddddd)
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx(aaaaaaaaaaaaaaaaaaaaaaa,
+                             bbbbbbbbbbbbbbbbbbbbbbbbbbbb, cccccccccccccccccccccccccccc, dddddddddddddddddddddddd)
 """
         fixed = """\
-models = {'auth.group': {'Meta': {'object_name': 'Group'},
-                         'permissions': ('django.db.models.fields.related.ManyToManyField',
-                                         [],
-                                         {'to': "orm['auth.Permission']",
-                                          'symmetrical': 'False',
-                                          'blank': 'True'})},
-          'auth.permission': {'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
-                                       'unique_together': "(('content_type', 'codename'),)",
-                                       'object_name': 'Permission'},
-                              'name': ('django.db.models.fields.CharField',
-                                       [],
-                                       {'max_length': '50'})},
-          }
-models = {'auth.group': {'Meta': {'object_name': 'Group'},
-                         'permissions': ('django.db.models.fields.related.ManyToManyField',
-                                         [],
-                                         {'to': "orm['auth.Permission']",
-                                          'symmetrical': 'False',
-                                          'blank': 'True'})},
-          'auth.permission': {'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')",
-                                       'unique_together': "(('content_type', 'codename'),)",
-                                       'object_name': 'Permission'},
-                              'name': ('django.db.models.fields.CharField',
-                                       [],
-                                       {'max_length': '50'})},
-          }
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx(
+    aaaaaaaaaaaaaaaaaaaaaaa,
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbb,
+    cccccccccccccccccccccccccccc,
+    dddddddddddddddddddddddd)
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx(
+    aaaaaaaaaaaaaaaaaaaaaaa,
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbb,
+    cccccccccccccccccccccccccccc,
+    dddddddddddddddddddddddd)
 """
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
@@ -2605,8 +2576,12 @@ foo('                                                                           
 raise MultiProjectException("Ambiguous workspace: %s=%s, %s" % ( varname, varname_path, os.path.abspath(config_filename)))
 """
         fixed = """\
-raise MultiProjectException("Ambiguous workspace: %s=%s, %s" %
-                            (varname, varname_path, os.path.abspath(config_filename)))
+raise MultiProjectException(
+    "Ambiguous workspace: %s=%s, %s" % (
+        varname,
+        varname_path,
+        os.path.abspath(
+            config_filename)))
 """
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
