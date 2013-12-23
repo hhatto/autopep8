@@ -361,7 +361,7 @@ class FixPEP8(object):
     def __init__(self, filename,
                  options,
                  contents=None,
-                 logical_long_line_ignore_cache=None):
+                 long_line_ignore_cache=None):
         self.filename = filename
         if contents is None:
             self.source = readlines_from_file(filename)
@@ -372,9 +372,9 @@ class FixPEP8(object):
         self.options = options
         self.indent_word = _get_indentword(''.join(self.source))
 
-        self.logical_long_line_ignore_cache = (
-            set() if logical_long_line_ignore_cache is None
-            else logical_long_line_ignore_cache)
+        self.long_line_ignore_cache = (
+            set() if long_line_ignore_cache is None
+            else long_line_ignore_cache)
 
         # method definition
         self.fix_e121 = self._fix_reindent
@@ -777,7 +777,7 @@ class FixPEP8(object):
             line.strip() for line in logical_lines if line.strip()
         ) + self.newline
 
-        if single_line in self.logical_long_line_ignore_cache:
+        if single_line in self.long_line_ignore_cache:
             return []
 
         fixed = self.fix_long_line(
@@ -792,13 +792,16 @@ class FixPEP8(object):
             self.source[start_line_index] = fixed
             return range(start_line_index + 1, end_line_index + 1)
         else:
-            self.logical_long_line_ignore_cache.add(single_line)
+            self.long_line_ignore_cache.add(single_line)
             return []
 
     def fix_long_line_physically(self, result):
         """Try to make lines fit within --max-line-length characters."""
         line_index = result['line'] - 1
         target = self.source[line_index]
+
+        if target in self.long_line_ignore_cache:
+            return []
 
         previous_line = get_item(self.source, line_index - 1, default='')
         next_line = get_item(self.source, line_index + 1, default='')
@@ -813,6 +816,7 @@ class FixPEP8(object):
             self.source[line_index] = fixed
             return [line_index + 1]
         else:
+            self.long_line_ignore_cache.add(target)
             return []
 
     def fix_long_line(self, target, previous_line,
@@ -1869,7 +1873,7 @@ def fix_lines(source_lines, options, filename=''):
         fixed_source = apply_global_fixes(tmp_source, options)
 
     passes = 0
-    logical_long_line_ignore_cache = set()
+    long_line_ignore_cache = set()
     while hash(fixed_source) not in previous_hashes:
         if options.pep8_passes >= 0 and passes > options.pep8_passes:
             break
@@ -1883,7 +1887,7 @@ def fix_lines(source_lines, options, filename=''):
             filename,
             options,
             contents=tmp_source,
-            logical_long_line_ignore_cache=logical_long_line_ignore_cache)
+            long_line_ignore_cache=long_line_ignore_cache)
 
         fixed_source = fix.fix()
 
