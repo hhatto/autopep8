@@ -2731,6 +2731,20 @@ one_two_three_four_five_six = {
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_aggressive_and_carriage_returns_only(self):
+        """Make sure _find_logical() does not crash."""
+        line = """\
+if True:\r    from aaaaaaaaaaaaaaaa import bbbbbbbbbbbbbbbbbbb\r    \r    ccccccccccc = None\r
+"""
+        fixed = """\
+if True:
+    from aaaaaaaaaaaaaaaa import bbbbbbbbbbbbbbbbbbb
+
+    ccccccccccc = None
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_should_ignore_imports(self):
         line = """\
 import logging, os, bleach, commonware, urllib2, json, time, requests, urlparse, re
