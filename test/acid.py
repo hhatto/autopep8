@@ -3,7 +3,6 @@
 
 from __future__ import print_function
 
-import contextlib
 import os
 import shlex
 import sys
@@ -122,13 +121,6 @@ def process_args():
     parser.add_option('-a', '--aggressive', action='count', default=0,
                       help='run autopep8 in aggressive mode')
 
-    parser.add_option(
-        '--timeout',
-        help='stop testing additional files after this amount of time '
-             '(default: %default)',
-        default=-1,
-        type=float)
-
     parser.add_option('-v', '--verbose', action='store_true',
                       help='print verbose messages')
 
@@ -175,72 +167,48 @@ def check(opts, args):
     else:
         comparison_function = None
 
-    with timeout(opts.timeout):
-        while filenames:
-            try:
-                name = os.path.realpath(filenames.pop(0))
-                if not os.path.exists(name):
-                    # Invalid symlink.
-                    continue
-
-                if name in completed_filenames:
-                    sys.stderr.write(
-                        colored(
-                            '--->  Skipping previously tested ' + name + '\n',
-                            YELLOW))
-                    continue
-                else:
-                    completed_filenames.update(name)
-                if os.path.isdir(name):
-                    for root, directories, children in os.walk(name):
-                        filenames += [os.path.join(root, f) for f in children
-                                      if f.endswith('.py') and
-                                      not f.startswith('.')]
-
-                        directories[:] = [d for d in directories
-                                          if not d.startswith('.')]
-                else:
-                    verbose_message = '--->  Testing with ' + name
-                    sys.stderr.write(colored(verbose_message + '\n', YELLOW))
-
-                    if not run(os.path.join(name),
-                               command=opts.command,
-                               max_line_length=opts.max_line_length,
-                               ignore=opts.ignore,
-                               check_ignore=opts.check_ignore,
-                               verbose=opts.verbose,
-                               comparison_function=comparison_function,
-                               aggressive=opts.aggressive):
-                        return False
-            except (UnicodeDecodeError, UnicodeEncodeError) as exception:
-                # Ignore annoying codec problems on Python 2.
-                print(exception)
+    while filenames:
+        try:
+            name = os.path.realpath(filenames.pop(0))
+            if not os.path.exists(name):
+                # Invalid symlink.
                 continue
 
+            if name in completed_filenames:
+                sys.stderr.write(
+                    colored(
+                        '--->  Skipping previously tested ' + name + '\n',
+                        YELLOW))
+                continue
+            else:
+                completed_filenames.update(name)
+            if os.path.isdir(name):
+                for root, directories, children in os.walk(name):
+                    filenames += [os.path.join(root, f) for f in children
+                                  if f.endswith('.py') and
+                                  not f.startswith('.')]
+
+                    directories[:] = [d for d in directories
+                                      if not d.startswith('.')]
+            else:
+                verbose_message = '--->  Testing with ' + name
+                sys.stderr.write(colored(verbose_message + '\n', YELLOW))
+
+                if not run(os.path.join(name),
+                           command=opts.command,
+                           max_line_length=opts.max_line_length,
+                           ignore=opts.ignore,
+                           check_ignore=opts.check_ignore,
+                           verbose=opts.verbose,
+                           comparison_function=comparison_function,
+                           aggressive=opts.aggressive):
+                    return False
+        except (UnicodeDecodeError, UnicodeEncodeError) as exception:
+            # Ignore annoying codec problems on Python 2.
+            print(exception)
+            continue
+
     return True
-
-
-@contextlib.contextmanager
-def timeout(seconds):
-    if seconds > 0:
-        try:
-            import signal
-            signal.signal(signal.SIGALRM, _timeout)
-            signal.alarm(int(seconds))
-            yield
-        finally:
-            signal.alarm(0)
-    else:
-        yield
-
-
-class TimeoutException(Exception):
-
-    """Timeout exception."""
-
-
-def _timeout(_, __):
-    raise TimeoutException()
 
 
 def main():
@@ -251,7 +219,5 @@ def main():
 if __name__ == '__main__':
     try:
         sys.exit(main())
-    except TimeoutException:
-        sys.stderr.write('Timed out\n')
     except KeyboardInterrupt:
         sys.exit(1)
