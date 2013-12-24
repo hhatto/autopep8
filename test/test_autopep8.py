@@ -2256,6 +2256,21 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx(
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_logical_fix_and_adjacent_strings(self):
+        line = """\
+print('a-----------------------' 'b-----------------------' 'c-----------------------'
+      'd-----------------------')
+"""
+        fixed = """\
+print(
+    'a-----------------------'
+    'b-----------------------'
+    'c-----------------------'
+    'd-----------------------')
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_multiple_lines(self):
         line = """
 

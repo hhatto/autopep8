@@ -1326,16 +1326,25 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                 if (
                     get_item(tokens,
                              index + 1,
-                             default=[None])[1] == unwanted_next_token or
+                             default=[None, None])[1] == unwanted_next_token or
                     get_item(tokens,
                              index + 2,
-                             default=[None])[1] == unwanted_next_token
+                             default=[None, None])[1] == unwanted_next_token
                 ):
                     continue
 
             # Don't split right before newline.
             if next_offset < len(source) - 1:
                 offsets.append(next_offset)
+        else:
+            # Break at adjacent strings. These were probably meant to be on
+            # separate lines in the first place.
+            previous_token = get_item(tokens, index - 1)
+            if (
+                token_type == tokenize.STRING and
+                previous_token and previous_token[0] == tokenize.STRING
+            ):
+                offsets.append(tkn[2][1])
 
     current_indent = None
     fixed = None
