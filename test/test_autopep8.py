@@ -155,35 +155,30 @@ def foo():
     def test_shorten_comment(self):
         self.assertEqual('# ' + '=' * 72 + '\n',
                          autopep8.shorten_comment('# ' + '=' * 100 + '\n',
-                                                  '\n',
                                                   max_line_length=79))
 
     def test_shorten_comment_should_not_split_numbers(self):
         line = '# ' + '0' * 100 + '\n'
         self.assertEqual(line,
                          autopep8.shorten_comment(line,
-                                                  newline='\n',
                                                   max_line_length=79))
 
     def test_shorten_comment_should_not_split_words(self):
         line = '# ' + 'a' * 100 + '\n'
         self.assertEqual(line,
                          autopep8.shorten_comment(line,
-                                                  newline='\n',
                                                   max_line_length=79))
 
     def test_shorten_comment_should_not_split_urls(self):
         line = '# http://foo.bar/' + 'abc-' * 100 + '\n'
         self.assertEqual(line,
                          autopep8.shorten_comment(line,
-                                                  newline='\n',
                                                   max_line_length=79))
 
     def test_shorten_comment_should_not_modify_special_comments(self):
         line = '#!/bin/blah ' + ' x' * 90 + '\n'
         self.assertEqual(line,
                          autopep8.shorten_comment(line,
-                                                  newline='\n',
                                                   max_line_length=79))
 
     def test_format_block_comments(self):
@@ -400,34 +395,34 @@ sys.maxint
     def test_line_shortening_rank(self):
         self.assertGreater(
             autopep8.line_shortening_rank('(1\n+1)\n',
-                                          newline='\n', indent_word='    ',
+                                          indent_word='    ',
                                           max_line_length=79),
             autopep8.line_shortening_rank('(1+\n1)\n',
-                                          newline='\n', indent_word='    ',
+                                          indent_word='    ',
                                           max_line_length=79))
 
         self.assertGreaterEqual(
             autopep8.line_shortening_rank('(1+\n1)\n',
-                                          newline='\n', indent_word='    ',
+                                          indent_word='    ',
                                           max_line_length=79),
             autopep8.line_shortening_rank('(1+1)\n',
-                                          newline='\n', indent_word='    ',
+                                          indent_word='    ',
                                           max_line_length=79))
 
         self.assertGreater(
             autopep8.line_shortening_rank('\n',
-                                          newline='\n', indent_word='    ',
+                                          indent_word='    ',
                                           max_line_length=79),
             autopep8.line_shortening_rank('x\n',
-                                          newline='\n', indent_word='    ',
+                                          indent_word='    ',
                                           max_line_length=79))
 
         self.assertGreater(
             autopep8.line_shortening_rank('[foo(\nx) for x in y]\n',
-                                          newline='\n', indent_word='    ',
+                                          indent_word='    ',
                                           max_line_length=79),
             autopep8.line_shortening_rank('[foo(x)\nfor x in y]\n',
-                                          newline='\n', indent_word='    ',
+                                          indent_word='    ',
                                           max_line_length=79))
 
     def test_extract_code_from_function(self):

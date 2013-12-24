@@ -368,7 +368,6 @@ class FixPEP8(object):
         else:
             sio = io.StringIO(contents)
             self.source = sio.readlines()
-        self.newline = find_newline(self.source)
         self.options = options
         self.indent_word = _get_indentword(''.join(self.source))
 
@@ -629,8 +628,7 @@ class FixPEP8(object):
         code = target[:offset].rstrip(' \t#')
         comment = target[offset:].lstrip(' \t#')
 
-        fixed = code + ('  # ' + comment if comment.strip()
-                        else self.newline)
+        fixed = code + ('  # ' + comment if comment.strip() else '\n')
 
         self.source[result['line'] - 1] = fixed
 
@@ -654,13 +652,13 @@ class FixPEP8(object):
 
     def fix_e301(self, result):
         """Add missing blank line."""
-        cr = self.newline
+        cr = '\n'
         self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
 
     def fix_e302(self, result):
         """Add missing 2 blank lines."""
         add_linenum = 2 - int(result['info'].split()[-1])
-        cr = self.newline * add_linenum
+        cr = '\n' * add_linenum
         self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
 
     def fix_e303(self, result):
@@ -705,7 +703,7 @@ class FixPEP8(object):
 
         indentation = re.split(pattern=r'\bimport\b',
                                string=target, maxsplit=1)[0]
-        fixed = (target[:offset].rstrip('\t ,') + self.newline +
+        fixed = (target[:offset].rstrip('\t ,') + '\n' +
                  indentation + 'import ' + target[offset:].lstrip('\t ,'))
         self.source[line_index] = fixed
 
@@ -729,7 +727,7 @@ class FixPEP8(object):
 
         single_line = indentation + ' '.join(
             line.strip() for line in logical_lines if line.strip()
-        ) + self.newline
+        ) + '\n'
 
         fixed = self.fix_long_line(
             target=single_line,
@@ -775,7 +773,6 @@ class FixPEP8(object):
             # Wrap commented lines.
             return shorten_comment(
                 line=target,
-                newline=self.newline,
                 max_line_length=self.options.max_line_length,
                 last_comment=not next_line.lstrip().startswith('#'))
 
@@ -803,7 +800,7 @@ class FixPEP8(object):
 
         candidates = shorten_line(
             tokens, source, indent,
-            self.indent_word, newline=self.newline,
+            self.indent_word,
             aggressive=self.options.aggressive,
             previous_line=previous_line)
 
@@ -811,7 +808,6 @@ class FixPEP8(object):
         candidates = sorted(
             sorted(set(candidates).union([target, original])),
             key=lambda x: line_shortening_rank(x,
-                                               self.newline,
                                                self.indent_word,
                                                self.options.max_line_length))
 
@@ -829,7 +825,7 @@ class FixPEP8(object):
         """Remove extraneous escape of newline."""
         line_index = result['line'] - 1
         target = self.source[line_index]
-        self.source[line_index] = target.rstrip('\n\r \t\\') + self.newline
+        self.source[line_index] = target.rstrip('\n\r \t\\') + '\n'
 
     def fix_e701(self, result):
         """Put colon-separated compound statement on separate lines."""
@@ -837,7 +833,7 @@ class FixPEP8(object):
         target = self.source[line_index]
         c = result['column']
 
-        fixed_source = (target[:c] + self.newline +
+        fixed_source = (target[:c] + '\n' +
                         _get_indentation(target) + self.indent_word +
                         target[c:].lstrip('\n\r \t\\'))
         self.source[result['line'] - 1] = fixed_source
@@ -859,7 +855,7 @@ class FixPEP8(object):
             return [line_index + 1, line_index + 2]
 
         if target.rstrip().endswith(';'):
-            self.source[line_index] = target.rstrip('\n \r\t;') + self.newline
+            self.source[line_index] = target.rstrip('\n \r\t;') + '\n'
             return [line_index + 1]
 
         offset = result['column'] - 1
@@ -867,7 +863,7 @@ class FixPEP8(object):
         second = (_get_indentation(logical_lines[0]) +
                   target[offset:].lstrip(';').lstrip())
 
-        self.source[line_index] = first + self.newline + second
+        self.source[line_index] = first + '\n' + second
         return [line_index + 1]
 
     def fix_e711(self, result):
@@ -938,12 +934,12 @@ class FixPEP8(object):
     def fix_w291(self, result):
         """Remove trailing whitespace."""
         fixed_line = self.source[result['line'] - 1].rstrip()
-        self.source[result['line'] - 1] = fixed_line + self.newline
+        self.source[result['line'] - 1] = fixed_line + '\n'
 
     def fix_w293(self, result):
         """Remove trailing whitespace on blank line."""
         assert not self.source[result['line'] - 1].strip()
-        self.source[result['line'] - 1] = self.newline
+        self.source[result['line'] - 1] = '\n'
 
     def fix_w391(self, _):
         """Remove trailing blank lines."""
@@ -1239,7 +1235,7 @@ def _priority_key(pep8_result):
             return middle_index
 
 
-def shorten_line(tokens, source, indentation, indent_word, newline,
+def shorten_line(tokens, source, indentation, indent_word,
                  aggressive=False, previous_line=''):
     """Separate line at OPERATOR.
 
@@ -1250,7 +1246,6 @@ def shorten_line(tokens, source, indentation, indent_word, newline,
                                    source=source,
                                    indentation=indentation,
                                    indent_word=indent_word,
-                                   newline=newline,
                                    aggressive=aggressive,
                                    previous_line=previous_line):
         yield candidate
@@ -1262,7 +1257,6 @@ def shorten_line(tokens, source, indentation, indent_word, newline,
                 source=source,
                 indentation=indentation,
                 indent_word=indent_word,
-                newline=newline,
                 key_token_strings=key_token_strings,
                 aggressive=aggressive)
 
@@ -1270,7 +1264,7 @@ def shorten_line(tokens, source, indentation, indent_word, newline,
                 yield shortened
 
 
-def _shorten_line(tokens, source, indentation, indent_word, newline,
+def _shorten_line(tokens, source, indentation, indent_word,
                   aggressive=False, previous_line=''):
     """Separate line at OPERATOR.
 
@@ -1291,8 +1285,8 @@ def _shorten_line(tokens, source, indentation, indent_word, newline,
             offset = tkn[2][1]
             first = source[:offset]
             second = source[offset:]
-            yield (indentation + second.strip() + newline +
-                   indentation + first.strip() + newline)
+            yield (indentation + second.strip() + '\n' +
+                   indentation + first.strip() + '\n')
         elif token_type == token.OP and token_string != '=':
             # Don't break on '=' after keyword as this violates PEP 8.
 
@@ -1323,17 +1317,17 @@ def _shorten_line(tokens, source, indentation, indent_word, newline,
             if first.rstrip().endswith('.'):
                 continue
             if token_string in '+-*/':
-                fixed = first + ' \\' + newline + second
+                fixed = first + ' \\' + '\n' + second
             else:
-                fixed = first + newline + second
+                fixed = first + '\n' + second
 
             # Only fix if syntax is okay.
-            if check_syntax(normalize_multiline(fixed, newline=newline)
+            if check_syntax(normalize_multiline(fixed)
                             if aggressive else fixed):
                 yield indentation + fixed
 
 
-def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
+def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                             key_token_strings, aggressive):
     """Separate line by breaking at tokens in key_token_strings.
 
@@ -1373,7 +1367,7 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
     fixed = None
     for line in split_at_offsets(source, offsets):
         if fixed:
-            fixed += newline + current_indent + line
+            fixed += '\n' + current_indent + line
 
             for symbol in '([{':
                 if line.endswith(symbol):
@@ -1386,14 +1380,14 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word, newline,
 
     assert fixed is not None
 
-    if check_syntax(normalize_multiline(fixed, newline=newline)
+    if check_syntax(normalize_multiline(fixed)
                     if aggressive > 1 else fixed):
         return indentation + fixed
     else:
         return None
 
 
-def normalize_multiline(line, newline):
+def normalize_multiline(line):
     """Remove multiline-related code that will cause syntax error.
 
     This is for purposes of checking syntax.
@@ -1401,7 +1395,7 @@ def normalize_multiline(line, newline):
     """
     if line.startswith('def ') and line.rstrip().endswith(':'):
         # Do not allow ':' to be alone. That is invalid.
-        split_line = [item.strip() for item in line.split(newline)]
+        split_line = [item.strip() for item in line.split('\n')]
         if ':' not in split_line and 'def' not in split_line:
             return line[len('def'):].strip().rstrip(':')
 
@@ -1454,8 +1448,8 @@ def _execute_pep8(pep8_options, source):
     return checker.report.full_error_results()
 
 
-def _remove_leading_and_normalize(line, newline):
-    return line.lstrip().rstrip(CR + LF) + newline
+def _remove_leading_and_normalize(line):
+    return line.lstrip().rstrip(CR + LF) + '\n'
 
 
 class Reindenter(object):
@@ -1470,7 +1464,6 @@ class Reindenter(object):
         sio = io.StringIO(input_text)
         source_lines = sio.readlines()
 
-        self.newline = find_newline(source_lines)
         self.string_content_line_numbers = multiline_string_lines(input_text)
 
         # File lines, rstripped & tab-expanded. Dummy at start is so
@@ -1484,8 +1477,7 @@ class Reindenter(object):
             else:
                 # Only expand leading tabs.
                 self.lines.append(_get_indentation(line).expandtabs() +
-                                  _remove_leading_and_normalize(line,
-                                                                self.newline))
+                                  _remove_leading_and_normalize(line))
 
         self.lines.insert(0, None)
         self.index = 1  # index into self.lines of next line
@@ -1506,7 +1498,7 @@ class Reindenter(object):
             return self.input_text
         # Remove trailing empty lines.
         lines = self.lines
-        while lines and lines[-1] == self.newline:
+        while lines and lines[-1] == '\n':
             lines.pop()
         # Sentinel.
         stats.append((len(lines), 0))
@@ -1565,7 +1557,7 @@ class Reindenter(object):
                     if line_number in self.string_content_line_numbers:
                         after.append(line)
                     elif diff > 0:
-                        if line == self.newline:
+                        if line == '\n':
                             after.append(line)
                         else:
                             after.append(' ' * diff + line)
@@ -1783,7 +1775,7 @@ def commented_out_code_lines(source):
     return line_numbers
 
 
-def shorten_comment(line, newline, max_line_length, last_comment=False):
+def shorten_comment(line, max_line_length, last_comment=False):
     """Return trimmed or split long comment line.
 
     If there are no comments immediately following it, do a text wrap.
@@ -1805,7 +1797,7 @@ def shorten_comment(line, newline, max_line_length, last_comment=False):
         not line[-1].isalnum()
     ):
         # Trim comments that end with things like ---------
-        return line[:max_line_length] + newline
+        return line[:max_line_length] + '\n'
     elif last_comment and re.match(r'\s*#+\s*\w+', line):
         import textwrap
         split_lines = textwrap.wrap(line.lstrip(' \t#'),
@@ -1814,9 +1806,9 @@ def shorten_comment(line, newline, max_line_length, last_comment=False):
                                     width=max_line_length,
                                     break_long_words=False,
                                     break_on_hyphens=False)
-        return newline.join(split_lines) + newline
+        return '\n'.join(split_lines) + '\n'
     else:
-        return line + newline
+        return line + '\n'
 
 
 def normalize_line_endings(lines, newline):
@@ -2168,7 +2160,7 @@ def docstring_summary(docstring):
     return docstring.split('\n')[0]
 
 
-def line_shortening_rank(candidate, newline, indent_word, max_line_length):
+def line_shortening_rank(candidate, indent_word, max_line_length):
     """Return rank of candidate.
 
     This is for sorting candidates.
@@ -2176,7 +2168,7 @@ def line_shortening_rank(candidate, newline, indent_word, max_line_length):
     """
     rank = 0
     if candidate.strip():
-        lines = candidate.split(newline)
+        lines = candidate.split('\n')
 
         offset = 0
         if (
