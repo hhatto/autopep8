@@ -2259,14 +2259,17 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx(
     def test_e501_with_logical_fix_and_adjacent_strings(self):
         line = """\
 print('a-----------------------' 'b-----------------------' 'c-----------------------'
-      'd-----------------------')
+      'd-----------------------''e'"f"r"g")
 """
         fixed = """\
 print(
     'a-----------------------'
     'b-----------------------'
     'c-----------------------'
-    'd-----------------------')
+    'd-----------------------'
+    'e'
+    "f"
+    r"g")
 """
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
