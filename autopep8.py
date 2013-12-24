@@ -543,6 +543,7 @@ class FixPEP8(object):
         ls = None
         le = None
         for i in range(0, len(logical_start), 1):
+            assert logical_end
             x = logical_end[i]
             if x[0] > row or (x[0] == row and x[1] > col):
                 le = x
@@ -1822,6 +1823,12 @@ def normalize_line_endings(lines):
 
     """
     newline = find_newline(lines)
+
+    # Python, at least on Unix, does not seem to like carriage return only.
+    # So we ignore that and replace it with line feed.
+    if newline == CR:
+        newline = LF
+
     return [line.rstrip('\n\r') + newline for line in lines]
 
 
