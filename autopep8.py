@@ -1254,7 +1254,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
         if (
             token_type == tokenize.COMMENT and
             not previous_line.rstrip().endswith('\\') and
-            not source[t[2][1] + 1:].strip().lower().startswith(
+            not source[start_column + 1:].strip().lower().startswith(
                 ('noqa', 'pragma:', 'pylint:'))
         ):
             # Move inline comments to previous line.
