@@ -133,7 +133,5 @@ def main():
 if __name__ == '__main__':
     try:
         sys.exit(main())
-    except acid.TimeoutException:
-        sys.stderr.write('Timed out\n')
     except KeyboardInterrupt:
         sys.exit(1)
