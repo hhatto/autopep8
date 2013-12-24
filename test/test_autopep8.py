@@ -298,13 +298,15 @@ def foo():
         self.assertEqual(
             ['abc\n', 'def\n', '123\n', 'hello\n', 'world\n'],
             autopep8.normalize_line_endings(
-                ['abc\n', 'def\n', '123\n', 'hello\r\n', 'world\r']))
+                ['abc\n', 'def\n', '123\n', 'hello\r\n', 'world\r'],
+                '\n'))
 
     def test_normalize_line_endings_with_crlf(self):
         self.assertEqual(
             ['abc\r\n', 'def\r\n', '123\r\n', 'hello\r\n', 'world\r\n'],
             autopep8.normalize_line_endings(
-                ['abc\n', 'def\r\n', '123\r\n', 'hello\r\n', 'world\r']))
+                ['abc\n', 'def\r\n', '123\r\n', 'hello\r\n', 'world\r'],
+                '\r\n'))
 
     def test_code_match(self):
         self.assertTrue(autopep8.code_match('E2', select=['E2', 'E3'],
@@ -2733,15 +2735,8 @@ one_two_three_four_five_six = {
 
     def test_e501_with_aggressive_and_carriage_returns_only(self):
         """Make sure _find_logical() does not crash."""
-        line = """\
-if True:\r    from aaaaaaaaaaaaaaaa import bbbbbbbbbbbbbbbbbbb\r    \r    ccccccccccc = None\r
-"""
-        fixed = """\
-if True:
-    from aaaaaaaaaaaaaaaa import bbbbbbbbbbbbbbbbbbb
-
-    ccccccccccc = None
-"""
+        line = 'if True:\r    from aaaaaaaaaaaaaaaa import bbbbbbbbbbbbbbbbbbb\r    \r    ccccccccccc = None\r'
+        fixed = 'if True:\r    from aaaaaaaaaaaaaaaa import bbbbbbbbbbbbbbbbbbb\r\r    ccccccccccc = None\r'
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 

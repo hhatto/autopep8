@@ -1819,19 +1819,12 @@ def shorten_comment(line, newline, max_line_length, last_comment=False):
         return line + newline
 
 
-def normalize_line_endings(lines):
+def normalize_line_endings(lines, newline):
     """Return fixed line endings.
 
     All lines will be modified to use the most common line ending.
 
     """
-    newline = find_newline(lines)
-
-    # Python, at least on Unix, does not seem to like carriage return only.
-    # So we ignore that and replace it with line feed.
-    if newline == CR:
-        newline = LF
-
     return [line.rstrip('\n\r') + newline for line in lines]
 
 
@@ -1870,7 +1863,10 @@ def fix_code(source, options=None):
 
 def fix_lines(source_lines, options, filename=''):
     """Return fixed source code."""
-    tmp_source = ''.join(normalize_line_endings(source_lines))
+    # Transform everything to line feed. Then change them back to original
+    # before returning fixed source code.
+    original_newline = find_newline(source_lines)
+    tmp_source = ''.join(normalize_line_endings(source_lines, '\n'))
 
     # Keep a history to break out of cycles.
     previous_hashes = set()
@@ -1900,7 +1896,8 @@ def fix_lines(source_lines, options, filename=''):
 
         fixed_source = fix.fix()
 
-    return fixed_source
+    sio = io.StringIO(fixed_source)
+    return ''.join(normalize_line_endings(sio.readlines(), original_newline))
 
 
 def fix_file(filename, options=None, output=None):
