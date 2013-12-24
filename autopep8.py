@@ -411,7 +411,7 @@ class FixPEP8(object):
 
     def _fix_source(self, results):
         try:
-            (logical_start, logical_end) = self._find_logical()
+            (logical_start, logical_end) = _find_logical(self.source)
             logical_support = True
         except (SyntaxError, tokenize.TokenError):  # pragma: no cover
             logical_support = False
@@ -431,9 +431,10 @@ class FixPEP8(object):
                 is_logical_fix = len(inspect.getargspec(fix).args) > 2
                 if is_logical_fix:
                     if logical_support:
-                        logical = self._get_logical(result,
-                                                    logical_start,
-                                                    logical_end)
+                        logical = _get_logical(self.source,
+                                               result,
+                                               logical_start,
+                                               logical_end)
                         if logical and set(range(
                             logical[0][0],
                             logical[1][0] + 1)).intersection(
@@ -505,54 +506,6 @@ class FixPEP8(object):
                                         aggressive=self.options.aggressive,
                                         indent_size=self.options.indent_size))
         return ''.join(self.source)
-
-    def _find_logical(self):
-        # make a variable which is the index of all the starts of lines
-        logical_start = []
-        logical_end = []
-        last_newline = True
-        sio = io.StringIO(''.join(self.source))
-        parens = 0
-        for t in tokenize.generate_tokens(sio.readline):
-            if t[0] in [tokenize.COMMENT, tokenize.DEDENT,
-                        tokenize.INDENT, tokenize.NL,
-                        tokenize.ENDMARKER]:
-                continue
-            if not parens and t[0] in [tokenize.NEWLINE, tokenize.SEMI]:
-                last_newline = True
-                logical_end.append((t[3][0] - 1, t[2][1]))
-                continue
-            if last_newline and not parens:
-                logical_start.append((t[2][0] - 1, t[2][1]))
-                last_newline = False
-            if t[0] == tokenize.OP:
-                if t[1] in '([{':
-                    parens += 1
-                elif t[1] in '}])':
-                    parens -= 1
-        return (logical_start, logical_end)
-
-    def _get_logical(self, result, logical_start, logical_end):
-        """Return the logical line corresponding to the result.
-
-        Assumes input is already E702-clean.
-
-        """
-        row = result['line'] - 1
-        col = result['column'] - 1
-        ls = None
-        le = None
-        for i in range(0, len(logical_start), 1):
-            assert logical_end
-            x = logical_end[i]
-            if x[0] > row or (x[0] == row and x[1] > col):
-                le = x
-                ls = logical_start[i]
-                break
-        if ls is None:
-            return None
-        original = self.source[ls[0]:le[0] + 1]
-        return ls, le, original
 
     def _fix_reindent(self, result):
         """Fix a badly indented line.
@@ -1005,6 +958,56 @@ class FixPEP8(object):
         original_length = len(self.source)
         self.source = self.source[:original_length - blank_count]
         return range(1, 1 + original_length)
+
+
+def _find_logical(source_lines):
+    # make a variable which is the index of all the starts of lines
+    logical_start = []
+    logical_end = []
+    last_newline = True
+    sio = io.StringIO(''.join(source_lines))
+    parens = 0
+    for t in tokenize.generate_tokens(sio.readline):
+        if t[0] in [tokenize.COMMENT, tokenize.DEDENT,
+                    tokenize.INDENT, tokenize.NL,
+                    tokenize.ENDMARKER]:
+            continue
+        if not parens and t[0] in [tokenize.NEWLINE, tokenize.SEMI]:
+            last_newline = True
+            logical_end.append((t[3][0] - 1, t[2][1]))
+            continue
+        if last_newline and not parens:
+            logical_start.append((t[2][0] - 1, t[2][1]))
+            last_newline = False
+        if t[0] == tokenize.OP:
+            if t[1] in '([{':
+                parens += 1
+            elif t[1] in '}])':
+                parens -= 1
+    return (logical_start, logical_end)
+
+
+def _get_logical(source_lines, result, logical_start, logical_end):
+    """Return the logical line corresponding to the result.
+
+    Assumes input is already E702-clean.
+
+    """
+    row = result['line'] - 1
+    col = result['column'] - 1
+    ls = None
+    le = None
+    for i in range(0, len(logical_start), 1):
+        assert logical_end
+        x = logical_end[i]
+        if x[0] > row or (x[0] == row and x[1] > col):
+            le = x
+            ls = logical_start[i]
+            break
+    if ls is None:
+        return None
+    original = source_lines[ls[0]:le[0] + 1]
+    return ls, le, original
 
 
 def get_item(items, index, default=None):
