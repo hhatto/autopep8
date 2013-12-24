@@ -80,60 +80,59 @@ def main():
     checked_repositories = []
     skipped_repositories = []
     interesting_repositories = []
-    with acid.timeout(opts.timeout):
-        while True:
-            if args:
+    while True:
+        if args:
+            if not names:
+                break
+        else:
+            while not names:
+                # Continually populate if user did not specify a repository
+                # explicitly.
+                names = [p for p in latest_repositories()
+                         if p not in checked_repositories and
+                         p not in skipped_repositories]
+
                 if not names:
-                    break
-            else:
-                while not names:
-                    # Continually populate if user did not specify a repository
-                    # explicitly.
-                    names = [p for p in latest_repositories()
-                             if p not in checked_repositories and
-                             p not in skipped_repositories]
+                    import time
+                    time.sleep(1)
 
-                    if not names:
-                        import time
-                        time.sleep(1)
+        repository_name = names.pop(0)
+        print(repository_name)
 
-            repository_name = names.pop(0)
-            print(repository_name)
+        user_tmp_dir = os.path.join(
+            TMP_DIR,
+            os.path.basename(os.path.split(repository_name)[0]))
+        try:
+            os.mkdir(user_tmp_dir)
+        except OSError:
+            pass
 
-            user_tmp_dir = os.path.join(
-                TMP_DIR,
-                os.path.basename(os.path.split(repository_name)[0]))
-            try:
-                os.mkdir(user_tmp_dir)
-            except OSError:
-                pass
+        repository_tmp_dir = os.path.join(
+            user_tmp_dir,
+            os.path.basename(repository_name))
+        try:
+            os.mkdir(repository_tmp_dir)
+        except OSError:
+            print('Skipping already checked repository')
+            skipped_repositories.append(repository_name)
+            continue
 
-            repository_tmp_dir = os.path.join(
-                user_tmp_dir,
-                os.path.basename(repository_name))
-            try:
-                os.mkdir(repository_tmp_dir)
-            except OSError:
-                print('Skipping already checked repository')
-                skipped_repositories.append(repository_name)
-                continue
+        try:
+            download_repository(repository_name,
+                                output_directory=repository_tmp_dir)
+        except subprocess.CalledProcessError:
+            print('ERROR: git clone failed')
+            continue
 
-            try:
-                download_repository(repository_name,
-                                    output_directory=repository_tmp_dir)
-            except subprocess.CalledProcessError:
-                print('ERROR: git clone failed')
-                continue
+        if acid.check(opts, [repository_tmp_dir]):
+            checked_repositories.append(repository_name)
 
-            if acid.check(opts, [repository_tmp_dir]):
-                checked_repositories.append(repository_name)
-
-                if interesting(
-                    os.path.join(repository_tmp_dir,
-                                 os.path.basename(repository_name))):
-                    interesting_repositories.append(repository_name)
-            else:
-                return 1
+            if interesting(
+                os.path.join(repository_tmp_dir,
+                             os.path.basename(repository_name))):
+                interesting_repositories.append(repository_name)
+        else:
+            return 1
 
     if checked_repositories:
         print('\nTested repositories:')
