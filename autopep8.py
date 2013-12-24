@@ -1245,20 +1245,21 @@ def _shorten_line(tokens, source, indentation, indent_word,
     Multiple candidates will be yielded.
 
     """
-    for tkn in tokens:
-        token_type = tkn[0]
-        token_string = tkn[1]
+    for t in tokens:
+        token_type = t[0]
+        token_string = t[1]
+        start_column = t[2][1]
+        end_column = t[3][1]
 
         if (
             token_type == tokenize.COMMENT and
             not previous_line.rstrip().endswith('\\') and
-            not source[tkn[2][1] + 1:].strip().lower().startswith(
+            not source[t[2][1] + 1:].strip().lower().startswith(
                 ('noqa', 'pragma:', 'pylint:'))
         ):
             # Move inline comments to previous line.
-            offset = tkn[2][1]
-            first = source[:offset]
-            second = source[offset:]
+            first = source[:start_column]
+            second = source[start_column:]
             yield (indentation + second.strip() + '\n' +
                    indentation + first.strip() + '\n')
         elif token_type == token.OP and token_string != '=':
@@ -1266,8 +1267,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
 
             assert token_type != token.INDENT
 
-            offset = tkn[2][1] + 1
-            first = source[:offset]
+            first = source[:end_column]
 
             second_indent = indentation
             if first.rstrip().endswith('('):
@@ -1277,7 +1277,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
             else:
                 second_indent += indent_word
 
-            second = (second_indent + source[offset:].lstrip())
+            second = (second_indent + source[end_column:].lstrip())
             if (
                 not second.strip() or
                 second.lstrip().startswith('#')
