@@ -1309,10 +1309,11 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
 
     """
     offsets = []
-    for (index, tkn) in enumerate(tokens):
-        token_type = tkn[0]
-        token_string = tkn[1]
-        next_offset = tkn[2][1] + 1
+    for (index, t) in enumerate(tokens):
+        token_type = t[0]
+        token_string = t[1]
+        start_column = t[2][1]
+        end_column = t[3][1]
 
         assert token_type != token.INDENT
 
@@ -1334,8 +1335,8 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                     continue
 
             # Don't split right before newline.
-            if next_offset < len(source) - 1:
-                offsets.append(next_offset)
+            if end_column < len(source) - 1:
+                offsets.append(end_column)
         else:
             # Break at adjacent strings. These were probably meant to be on
             # separate lines in the first place.
@@ -1344,7 +1345,7 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                 token_type == tokenize.STRING and
                 previous_token and previous_token[0] == tokenize.STRING
             ):
-                offsets.append(tkn[2][1])
+                offsets.append(start_column)
 
     current_indent = None
     fixed = None
