@@ -1290,7 +1290,8 @@ def _shorten_line(tokens, source, indentation, indent_word,
 
         if (
             token_type == tokenize.COMMENT and
-            not previous_line.rstrip().endswith('\\') and
+            not is_probably_part_of_multiline(previous_line) and
+            not is_probably_part_of_multiline(source) and
             not source[start_column + 1:].strip().lower().startswith(
                 ('noqa', 'pragma:', 'pylint:'))
         ):

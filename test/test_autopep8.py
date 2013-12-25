@@ -1999,6 +1999,26 @@ if True:
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_inline_comments_should_skip_multiline(self):
+        line = """\
+'''This should be left alone. -----------------------------------------------------
+
+'''  # foo
+
+'''This should be left alone. -----------------------------------------------------
+
+''' \\
+# foo
+
+'''This should be left alone. -----------------------------------------------------
+
+''' \\
+\\
+# foo
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(line, result)
+
     def test_e501_with_inline_comments_should_skip_keywords(self):
         line = """\
 '                                                          '  # noqa Long inline comments should be moved above.
