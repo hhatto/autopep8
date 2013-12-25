@@ -2571,10 +2571,7 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx([-1 +
 """
         fixed = """\
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(
-    [
-        -1 + 5 / 10,
-        100,
-        -3 - 4])
+    [-1 + 5 / 10, 100, -3 - 4])
 """
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)

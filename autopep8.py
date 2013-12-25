@@ -941,16 +941,15 @@ def untokenize_without_newlines(tokens):
     last_row = 0
     last_column = -1
 
-    for (_, token_string, start, end, line) in tokens:
+    for t in tokens:
+        token_string = t[1]
+        (start_row, start_column) = t[2]
+        (end_row, end_column) = t[3]
 
-        (start_row, start_column) = start
-        (end_row, end_column) = end
-
-        # Preserve spacing.
         if start_row > last_row:
             last_column = 0
-        if start_column > last_column:
-            text += line[last_column:start_column]
+        if start_column > last_column or token_string == '\n':
+            text += ' '
 
         if token_string != '\n':
             text += token_string
