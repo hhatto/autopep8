@@ -2746,7 +2746,7 @@ print('---------------------------------------------------------------------',
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(line, result)
 
-    def test_e501_with_aggressive_and_multiline_string_and_indentation(self):
+    def test_e501_with_aggressive_and_indentation(self):
         line = """\
 if True:
     # comment here
