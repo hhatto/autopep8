@@ -716,9 +716,7 @@ class FixPEP8(object):
         previous_line = get_item(self.source, start_line_index - 1, default='')
         next_line = get_item(self.source, end_line_index + 1, default='')
 
-        single_line = join_logical_lines(logical_lines)
-        if is_probably_part_of_multiline(single_line):
-            return self.fix_long_line_physically(result)
+        single_line = join_logical_line(''.join(logical_lines))
 
         fixed = self.fix_long_line(
             target=single_line,
@@ -928,14 +926,39 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed_line + '\n'
 
 
-def join_logical_lines(logical_lines):
+def join_logical_line(logical_line):
     """Return single line based on logical line input."""
-    indentation = _get_indentation(logical_lines[0])
+    indentation = _get_indentation(logical_line)
 
-    return indentation + ' '.join(
-        line.strip().rstrip(' \t\\')
-        for line in logical_lines if line.strip()
-    ) + '\n'
+    string_io = io.StringIO(logical_line.lstrip())
+    return indentation + untokenize_without_newlines(
+        tokenize.generate_tokens(string_io.readline)) + '\n'
+
+
+def untokenize_without_newlines(tokens):
+    """Return source code based on tokens."""
+    text = ''
+    last_row = 0
+    last_column = -1
+
+    for (_, token_string, start, end, line) in tokens:
+
+        (start_row, start_column) = start
+        (end_row, end_column) = end
+
+        # Preserve spacing.
+        if start_row > last_row:
+            last_column = 0
+        if start_column > last_column:
+            text += line[last_column:start_column]
+
+        if token_string != '\n':
+            text += token_string
+
+        last_row = end_row
+        last_column = end_column
+
+    return text
 
 
 def _find_logical(source_lines):
