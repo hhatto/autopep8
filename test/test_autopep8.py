@@ -409,13 +409,10 @@ sys.maxint
                                           indent_word='    ',
                                           max_line_length=79))
 
-        self.assertGreater(
-            autopep8.line_shortening_rank('\n',
-                                          indent_word='    ',
-                                          max_line_length=79),
-            autopep8.line_shortening_rank('x\n',
-                                          indent_word='    ',
-                                          max_line_length=79))
+        # Do not crash.
+        autopep8.line_shortening_rank('\n',
+                                      indent_word='    ',
+                                      max_line_length=79)
 
         self.assertGreater(
             autopep8.line_shortening_rank('[foo(\nx) for x in y]\n',

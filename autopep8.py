@@ -2181,76 +2181,76 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
     This is for sorting candidates.
 
     """
+    if not candidate.strip():
+        return 0
+
     rank = 0
-    if candidate.strip():
-        lines = candidate.split('\n')
+    lines = candidate.split('\n')
 
-        offset = 0
+    offset = 0
+    if (
+        not lines[0].lstrip().startswith('#') and
+        lines[0].rstrip()[-1] not in '([{'
+    ):
+        for symbol in '([{':
+            offset = max(offset, 1 + lines[0].find(symbol))
+
+    current_longest = max(offset + len(x.strip()) for x in lines)
+
+    rank += 2 * max(0, current_longest - max_line_length)
+
+    rank += len(lines)
+
+    # Too much variation in line length is ugly.
+    rank += 2 * standard_deviation(len(line) for line in lines)
+
+    bad_staring_symbol = {
+        '(': ')',
+        '[': ']',
+        '{': '}'}.get(lines[0][-1], None)
+
+    if len(lines) > 1:
         if (
-            not lines[0].lstrip().startswith('#') and
-            lines[0].rstrip()[-1] not in '([{'
+            bad_staring_symbol and
+            lines[1].lstrip().startswith(bad_staring_symbol)
         ):
-            for symbol in '([{':
-                offset = max(offset, 1 + lines[0].find(symbol))
+            rank += 20
 
-        current_longest = max(offset + len(x.strip()) for x in lines)
+    for current_line in lines:
+        if current_line.lstrip().startswith('#'):
+            continue
 
-        rank += 2 * max(0, current_longest - max_line_length)
+        for bad_start in ['.', '%', '+', '-', '/']:
+            if current_line.startswith(bad_start):
+                rank += 100
 
-        rank += len(lines)
+            # Do not tolerate operators on their own line.
+            if current_line.strip() == bad_start:
+                rank += 1000
 
-        # Too much variation in line length is ugly.
-        rank += 2 * standard_deviation(len(line) for line in lines)
+        if current_line.endswith(('(', '[', '{')):
+            # Avoid lonely opening. They result in longer lines.
+            if len(current_line.strip()) <= len(indent_word):
+                rank += 100
 
-        bad_staring_symbol = {
-            '(': ')',
-            '[': ']',
-            '{': '}'}.get(lines[0][-1], None)
+            # Avoid ugliness of ", (\n".
+            if current_line[:-1].rstrip().endswith(','):
+                rank += 100
 
-        if len(lines) > 1:
-            if (
-                bad_staring_symbol and
-                lines[1].lstrip().startswith(bad_staring_symbol)
-            ):
-                rank += 20
+            if has_arithmetic_operator(current_line):
+                rank += 100
 
-        for current_line in lines:
-            if current_line.lstrip().startswith('#'):
-                continue
+        if current_line.endswith(('%', '(', '[', '{')):
+            rank -= 20
 
-            for bad_start in ['.', '%', '+', '-', '/']:
-                if current_line.startswith(bad_start):
-                    rank += 100
+        # Try to break list comprehensions at the "for".
+        if current_line.lstrip().startswith('for '):
+            rank -= 50
 
-                # Do not tolerate operators on their own line.
-                if current_line.strip() == bad_start:
-                    rank += 1000
+        if current_line.rstrip().endswith('\\'):
+            rank += 1
 
-            if current_line.endswith(('(', '[', '{')):
-                # Avoid lonely opening. They result in longer lines.
-                if len(current_line.strip()) <= len(indent_word):
-                    rank += 100
-
-                # Avoid ugliness of ", (\n".
-                if current_line[:-1].rstrip().endswith(','):
-                    rank += 100
-
-                if has_arithmetic_operator(current_line):
-                    rank += 100
-
-            if current_line.endswith(('%', '(', '[', '{')):
-                rank -= 20
-
-            # Try to break list comprehensions at the "for".
-            if current_line.lstrip().startswith('for '):
-                rank -= 50
-
-            if current_line.rstrip().endswith('\\'):
-                rank += 1
-
-            rank += 10 * count_unbalanced_brackets(current_line)
-    else:
-        rank = 100000
+        rank += 10 * count_unbalanced_brackets(current_line)
 
     return max(0, rank)
 
