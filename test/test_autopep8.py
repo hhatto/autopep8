@@ -2722,6 +2722,20 @@ class Migration(SchemaMigration):
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_aggressive_and_escaped_newline(self):
+        line = """\
+if True or \\
+    False:  # test test test test test test test test test test test test test test
+    pass
+"""
+        fixed = """\
+# test test test test test test test test test test test test test test
+if True or False:
+    pass
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_multiple_keys_and_aggressive(self):
         line = """\
 one_two_three_four_five_six = {'one two three four five': 12345, 'asdfsdflsdkfjl sdflkjsdkfkjsfjsdlkfj sdlkfjlsfjs': '343',

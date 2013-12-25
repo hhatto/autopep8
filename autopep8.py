@@ -716,11 +716,7 @@ class FixPEP8(object):
         previous_line = get_item(self.source, start_line_index - 1, default='')
         next_line = get_item(self.source, end_line_index + 1, default='')
 
-        indentation = _get_indentation(logical_lines[0])
-
-        single_line = indentation + ' '.join(
-            line.strip() for line in logical_lines if line.strip()
-        ) + '\n'
+        single_line = join_logical_lines(logical_lines)
 
         fixed = self.fix_long_line(
             target=single_line,
@@ -928,6 +924,16 @@ class FixPEP8(object):
         """Remove trailing whitespace."""
         fixed_line = self.source[result['line'] - 1].rstrip()
         self.source[result['line'] - 1] = fixed_line + '\n'
+
+
+def join_logical_lines(logical_lines):
+    """Return single line based on logical line input."""
+    indentation = _get_indentation(logical_lines[0])
+
+    return indentation + ' '.join(
+        line.strip().rstrip(' \t\\')
+        for line in logical_lines if line.strip()
+    ) + '\n'
 
 
 def _find_logical(source_lines):
