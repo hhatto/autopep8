@@ -717,6 +717,8 @@ class FixPEP8(object):
         next_line = get_item(self.source, end_line_index + 1, default='')
 
         single_line = join_logical_lines(logical_lines)
+        if is_probably_part_of_multiline(single_line):
+            return []
 
         fixed = self.fix_long_line(
             target=single_line,

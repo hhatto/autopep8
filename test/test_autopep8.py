@@ -2736,6 +2736,15 @@ if True or False:
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_aggressive_and_multiline_string(self):
+        line = """\
+print('---------------------------------------------------------------------',
+      '''--------------------------------------------------------------------------------
+      ''')
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(line, result)
+
     def test_e501_with_multiple_keys_and_aggressive(self):
         line = """\
 one_two_three_four_five_six = {'one two three four five': 12345, 'asdfsdflsdkfjl sdflkjsdkfkjsfjsdlkfj sdlkfjlsfjs': '343',
