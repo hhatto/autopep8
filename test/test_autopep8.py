@@ -2546,6 +2546,22 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx(
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_aggressive_and_multiple_logical_lines_with_math(self):
+        line = """\
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx([-1 + 5 / 10,
+                                                                            100,
+                                                                            -3 - 4])
+"""
+        fixed = """\
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(
+    [
+        -1 + 5 / 10,
+        100,
+        -3 - 4])
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_aggressive_and_massive_number_of_logical_lines(self):
         """We do not care about results here.
 

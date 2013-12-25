@@ -2222,6 +2222,10 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
                 if current_line.startswith(bad_start):
                     rank += 100
 
+                # Do not tolerate operators on their own line.
+                if current_line.strip() == bad_start:
+                    rank += 1000
+
             if current_line.endswith(('(', '[', '{')):
                 # Avoid lonely opening. They result in longer lines.
                 if len(current_line.strip()) <= len(indent_word):
