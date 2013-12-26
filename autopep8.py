@@ -235,9 +235,7 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                 # visual indent is verified
                 if not indent[depth]:
                     indent[depth] = start[1]
-            elif (
-                visual_indent in (text, unicode)
-            ):
+            elif visual_indent in (text, unicode):
                 # ignore token lined up with matching one from a previous line
                 pass
             elif indent[depth] and start[1] < indent[depth]:
