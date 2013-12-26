@@ -947,7 +947,10 @@ def untokenize_without_newlines(tokens):
 
         if start_row > last_row:
             last_column = 0
-        if start_column > last_column or token_string == '\n':
+        if (
+            (start_column > last_column or token_string == '\n') and
+            not text.endswith(' ')
+        ):
             text += ' '
 
         if token_string != '\n':
