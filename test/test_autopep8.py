@@ -105,16 +105,16 @@ class UnitTests(unittest.TestCase):
         self.assertEqual(
             set([2]),
             autopep8.multiline_string_lines(
-                """
+                """\
 '''
 '''
-""".lstrip()))
+"""))
 
     def test_multiline_string_lines_with_many(self):
         self.assertEqual(
             set([2, 7, 10, 11, 12]),
             autopep8.multiline_string_lines(
-                """
+                """\
 '''
 '''
 ''''''
@@ -127,27 +127,27 @@ class UnitTests(unittest.TestCase):
 
 
 '''
-""".lstrip()))
+"""))
 
     def test_multiline_string_should_not_report_single_line(self):
         self.assertEqual(
             set(),
             autopep8.multiline_string_lines(
-                """
+                """\
 '''abc'''
-""".lstrip()))
+"""))
 
     def test_multiline_string_should_not_report_docstrings(self):
         self.assertEqual(
             set([5]),
             autopep8.multiline_string_lines(
-                """
+                """\
 def foo():
     '''Foo.
     Bar.'''
     hello = '''
 '''
-""".lstrip()))
+"""))
 
     def test_supported_fixes(self):
         self.assertIn('E121', [f[0] for f in autopep8.supported_fixes()])
@@ -211,7 +211,7 @@ def foo():
 
     def test_format_block_comments_with_multiple_lines(self):
         self.assertEqual(
-            """
+            """\
 # abc
   # blah blah
     # four space indentation
@@ -220,8 +220,8 @@ def foo():
 #do not modify strings
 #do not modify strings'''
 #
-""".lstrip(),
-            autopep8.fix_e269("""
+""",
+            autopep8.fix_e269("""\
 # abc
   #blah blah
     #four space indentation
@@ -230,7 +230,7 @@ def foo():
 #do not modify strings
 #do not modify strings'''
 #
-""".lstrip()))
+"""))
 
     def test_format_block_comments_should_not_corrupt_special_comments(self):
         self.assertEqual(
@@ -673,162 +673,162 @@ sys.maxint
 class SystemTests(unittest.TestCase):
 
     def test_e101(self):
-        line = """
+        line = """\
 while True:
     if True:
     \t1
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 while True:
     if True:
         1
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e101_with_indent_size_0(self):
-        line = """
+        line = """\
 while True:
     if True:
     \t1
-""".lstrip()
+"""
         with autopep8_context(line, options=['--indent-size=0']) as result:
             self.assertEqual(line, result)
 
     def test_e101_with_indent_size_1(self):
-        line = """
+        line = """\
 while True:
     if True:
     \t1
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 while True:
  if True:
   1
-""".lstrip()
+"""
         with autopep8_context(line, options=['--indent-size=1']) as result:
             self.assertEqual(fixed, result)
 
     def test_e101_with_indent_size_2(self):
-        line = """
+        line = """\
 while True:
     if True:
     \t1
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 while True:
   if True:
     1
-""".lstrip()
+"""
         with autopep8_context(line, options=['--indent-size=2']) as result:
             self.assertEqual(fixed, result)
 
     def test_e101_with_indent_size_3(self):
-        line = """
+        line = """\
 while True:
     if True:
     \t1
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 while True:
    if True:
       1
-""".lstrip()
+"""
         with autopep8_context(line, options=['--indent-size=3']) as result:
             self.assertEqual(fixed, result)
 
     def test_e101_should_not_expand_non_indentation_tabs(self):
-        line = """
+        line = """\
 while True:
     if True:
     \t1 == '\t'
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 while True:
     if True:
         1 == '\t'
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e101_should_ignore_multiline_strings(self):
-        line = """
+        line = """\
 x = '''
 while True:
     if True:
     \t1
 '''
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 x = '''
 while True:
     if True:
     \t1
 '''
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e101_should_fix_docstrings(self):
-        line = """
+        line = """\
 class Bar(object):
 
     def foo():
         '''
 \tdocstring
         '''
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 class Bar(object):
 
     def foo():
         '''
         docstring
         '''
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e101_when_pep8_mistakes_first_tab_in_string(self):
         # pep8 will complain about this even if the tab indentation found
         # elsewhere is in a multiline string.
-        line = """
+        line = """\
 x = '''
 \tHello.
 '''
 if True:
     123
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 x = '''
 \tHello.
 '''
 if True:
     123
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e101_should_ignore_multiline_strings_complex(self):
-        line = """
+        line = """\
 print(3 <> 4, '''
 while True:
     if True:
     \t1
 \t''', 4 <> 5)
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 print(3 != 4, '''
 while True:
     if True:
     \t1
 \t''', 4 != 5)
-""".lstrip()
+"""
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e101_with_comments(self):
-        line = """
+        line = """\
 while True:  # My inline comment
              # with a hanging
              # comment.
@@ -837,8 +837,8 @@ while True:  # My inline comment
     \t# My comment
     \t1
     \t# My other comment
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 while True:  # My inline comment
              # with a hanging
              # comment.
@@ -847,17 +847,17 @@ while True:  # My inline comment
         # My comment
         1
         # My other comment
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e101_skip_if_bad_indentation(self):
-        line = """
+        line = """\
 try:
 \t    pass
     except:
         pass
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(line, result)
 
@@ -885,25 +885,25 @@ try:
             self.assertEqual(fixed, result)
 
     def test_e111_longer(self):
-        line = """
+        line = """\
 while True:
       if True:
             1
       elif True:
             2
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 while True:
     if True:
         1
     elif True:
         2
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e111_multiple_levels(self):
-        line = """
+        line = """\
 while True:
     if True:
        1
@@ -911,36 +911,36 @@ while True:
 # My comment
 print('abc')
 
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 while True:
     if True:
         1
 
 # My comment
 print('abc')
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e111_with_dedent(self):
-        line = """
+        line = """\
 def foo():
     if True:
          2
     1
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 def foo():
     if True:
         2
     1
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e111_with_other_errors(self):
-        line = """
+        line = """\
 def foo():
     if True:
          (2 , 1)
@@ -948,8 +948,8 @@ def foo():
     if True:
            print('hello')\t
     2
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 def foo():
     if True:
         (2, 1)
@@ -957,29 +957,28 @@ def foo():
     if True:
         print('hello')
     2
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e111_should_not_modify_string_contents(self):
-        line = """
+        line = """\
 if True:
  x = '''
  1
  '''
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 if True:
     x = '''
  1
  '''
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e12_reindent(self):
-        line = """
-
+        line = """\
 def foo_bar(baz, frop,
     fizz, bang):  # E128
     pass
@@ -1011,8 +1010,7 @@ print "E127", ("over-",
 print "E128", ("under-",
               "under-indent")
 """
-        fixed = """
-
+        fixed = """\
 def foo_bar(baz, frop,
             fizz, bang):  # E128
     pass
@@ -1048,13 +1046,13 @@ print "E128", ("under-",
             self.assertEqual(fixed, result)
 
     def test_e12_reindent_with_multiple_fixes(self):
-        line = """
+        line = """\
 
 sql = 'update %s set %s %s' % (from_table,
                                ','.join(['%s=%s' % (col, col) for col in cols]),
         where_clause)
 """
-        fixed = """
+        fixed = """\
 
 sql = 'update %s set %s %s' % (from_table,
                                ','.join(['%s=%s' % (col, col)
@@ -1065,7 +1063,7 @@ sql = 'update %s set %s %s' % (from_table,
             self.assertEqual(fixed, result)
 
     def test_e12_tricky(self):
-        line = """
+        line = """\
 #: E126
 if (
     x == (
@@ -1077,7 +1075,7 @@ if (
         y == 4):
     pass
 """
-        fixed = """
+        fixed = """\
 #: E126
 if (
     x == (
@@ -1093,7 +1091,7 @@ if (
             self.assertEqual(fixed, result)
 
     def test_e12_large(self):
-        line = """
+        line = """\
 class BogusController(controller.CementBaseController):
 
     class Meta:
@@ -1145,7 +1143,7 @@ class TestDuplicateController(controller.CementBaseController):
     def my_command(self):
         pass
 """
-        fixed = """
+        fixed = """\
 class BogusController(controller.CementBaseController):
 
     class Meta:
@@ -1294,12 +1292,12 @@ foooo('',
             self.assertEqual(fixed, result)
 
     def test_e123(self):
-        line = """
+        line = """\
 if True:
     foo = (
         )
 """
-        fixed = """
+        fixed = """\
 if True:
     foo = (
     )
@@ -1322,7 +1320,7 @@ x = \
             self.assertEqual(fixed, result)
 
     def test_e125(self):
-        line = """
+        line = """\
 if (a and
     b in [
         'foo',
@@ -1330,7 +1328,7 @@ if (a and
     c):
     pass
 """
-        fixed = """
+        fixed = """\
 if (a and
         b in [
             'foo',
@@ -1342,7 +1340,7 @@ if (a and
             self.assertEqual(fixed, result)
 
     def test_e125_with_multiline_string(self):
-        line = """
+        line = """\
 for foo in '''
     abc
     123
@@ -1353,12 +1351,12 @@ for foo in '''
             self.assertEqual(line, result)
 
     def test_e125_with_multiline_string_okay(self):
-        line = """
+        line = """\
 def bar(
     a='''a'''):
     print(foo)
 """
-        fixed = """
+        fixed = """\
 def bar(
         a='''a'''):
     print(foo)
@@ -1367,14 +1365,14 @@ def bar(
             self.assertEqual(fixed, result)
 
     def test_e126(self):
-        line = """
+        line = """\
 if True:
     posted = models.DateField(
             default=datetime.date.today,
             help_text="help"
     )
 """
-        fixed = """
+        fixed = """\
 if True:
     posted = models.DateField(
         default=datetime.date.today,
@@ -1401,13 +1399,13 @@ self.assertEqual('bottom 1',
             self.assertEqual(fixed, result)
 
     def test_e127(self):
-        line = """
+        line = """\
 if True:
     if True:
         chksum = (sum([int(value[i]) for i in xrange(0, 9, 2)]) * 7 -
                           sum([int(value[i]) for i in xrange(1, 9, 2)])) % 10
 """
-        fixed = """
+        fixed = """\
 if True:
     if True:
         chksum = (sum([int(value[i]) for i in xrange(0, 9, 2)]) * 7 -
@@ -1417,18 +1415,18 @@ if True:
             self.assertEqual(fixed, result)
 
     def test_e127_align_visual_indent(self):
-        line = """
+        line = """\
 def draw(self):
     color = [([0.2, 0.1, 0.3], [0.2, 0.1, 0.3], [0.2, 0.1, 0.3]),
                ([0.9, 0.3, 0.5], [0.5, 1.0, 0.5], [0.3, 0.3, 0.9])  ][self._p._colored ]
     self.draw_background(color)
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 def draw(self):
     color = [([0.2, 0.1, 0.3], [0.2, 0.1, 0.3], [0.2, 0.1, 0.3]),
              ([0.9, 0.3, 0.5], [0.5, 1.0, 0.5], [0.3, 0.3, 0.9])][self._p._colored]
     self.draw_background(color)
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -1449,14 +1447,14 @@ if True:
         self.date = meta.session.query(schedule.Appointment)\
             .filter(schedule.Appointment.id ==
                                       appointment_id).one().agenda.endtime
-""".lstrip()
+"""
         fixed = r"""
 if True:
     if True:
         self.date = meta.session.query(schedule.Appointment)\
             .filter(schedule.Appointment.id ==
                     appointment_id).one().agenda.endtime
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -1465,12 +1463,12 @@ if True:
 if True:
     foo = [food(1)
                for bar in bars]
-""".lstrip()
+"""
         fixed = r"""
 if True:
     foo = [food(1)
            for bar in bars]
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -1489,16 +1487,16 @@ if True:
             self.assertEqual(fixed, result)
 
     def test_w191(self):
-        line = """
+        line = """\
 while True:
 \tif True:
 \t\t1
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 while True:
     if True:
         1
-""".lstrip()
+"""
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
@@ -1516,7 +1514,7 @@ while True:
 
     def test_e202_skip_multiline(self):
         """We skip this since pep8 reports the error as being on line 1."""
-        line = """
+        line = """\
 
 ('''
 a
@@ -1574,7 +1572,7 @@ c
             self.assertEqual(fixed, result)
 
     def test_e221_should_skip_multiline(self):
-        line = '''
+        line = '''\
 def javascript(self):
     return u"""
 <script type="text/javascript" src="++resource++ptg.shufflegallery/jquery.promptu-menu.js"></script>
@@ -1591,7 +1589,7 @@ $(function(){
 </script>
     """  % {
     }
-'''.lstrip()
+'''
         with autopep8_context(line) as result:
             self.assertEqual(line, result)
 
@@ -1614,18 +1612,18 @@ $(function(){
             self.assertEqual(fixed, result)
 
     def test_e223_with_tab_indentation(self):
-        line = """
+        line = """\
 class Foo():
 
 \tdef __init__(self):
 \t\tx= 1\t+ 3
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 class Foo():
 
 \tdef __init__(self):
 \t\tx = 1 + 3
-""".lstrip()
+"""
         with autopep8_context(line, options=['--ignore=E1,W191']) as result:
             self.assertEqual(fixed, result)
 
@@ -1642,18 +1640,18 @@ class Foo():
             self.assertEqual(fixed, result)
 
     def test_e224_with_tab_indentation(self):
-        line = """
+        line = """\
 class Foo():
 
 \tdef __init__(self):
 \t\tx= \t3
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 class Foo():
 
 \tdef __init__(self):
 \t\tx = 3
-""".lstrip()
+"""
         with autopep8_context(line, options=['--ignore=E1,W191']) as result:
             self.assertEqual(fixed, result)
 
@@ -1664,18 +1662,18 @@ class Foo():
             self.assertEqual(fixed, result)
 
     def test_e225_with_indentation_fix(self):
-        line = """
+        line = """\
 class Foo(object):
 
   def bar(self):
     return self.elephant is not None
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 class Foo(object):
 
     def bar(self):
         return self.elephant is not None
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -1981,11 +1979,11 @@ def foo():
             self.assertEqual(fixed, result)
 
     def test_e501_basic(self):
-        line = """
+        line = """\
 
 print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
 """
-        fixed = """
+        fixed = """\
 
 print(111, 111, 111, 111, 222, 222, 222, 222,
       222, 222, 222, 222, 222, 333, 333, 333, 333)
@@ -2124,12 +2122,12 @@ parser.add_argument(
             self.assertEqual(fixed, result)
 
     def test_e501_with_indent(self):
-        line = """
+        line = """\
 
 def d():
     print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
 """
-        fixed = """
+        fixed = """\
 
 def d():
     print(111, 111, 111, 111, 222, 222, 222, 222,
@@ -2139,12 +2137,12 @@ def d():
             self.assertEqual(fixed, result)
 
     def test_e501_alone_with_indentation(self):
-        line = """
+        line = """\
 
 if True:
     print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
 """
-        fixed = """
+        fixed = """\
 
 if True:
     print(111, 111, 111, 111, 222, 222, 222, 222,
@@ -2154,13 +2152,13 @@ if True:
             self.assertEqual(fixed, result)
 
     def test_e501_alone_with_tuple(self):
-        line = """
+        line = """\
 
 fooooooooooooooooooooooooooooooo000000000000000000000000 = [1,
                                                             ('TransferTime', 'FLOAT')
                                                            ]
 """
-        fixed = """
+        fixed = """\
 
 fooooooooooooooooooooooooooooooo000000000000000000000000 = [1,
                                                             ('TransferTime',
@@ -2186,14 +2184,11 @@ this_should_be_shortened = (
             self.assertEqual(fixed, result)
 
     def test_e501_arithmetic_operator_with_indent(self):
-        line = """
-
+        line = """\
 def d():
     111 + 111 + 111 + 111 + 111 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 333 + 333 + 333 + 333
 """
-        fixed = r"""
-
-def d():
+        fixed = r"""def d():
     111 + 111 + 111 + 111 + 111 + 222 + 222 + 222 + 222 + \
         222 + 222 + 222 + 222 + 222 + 333 + 333 + 333 + 333
 """
@@ -2201,11 +2196,11 @@ def d():
             self.assertEqual(fixed, result)
 
     def test_e501_more_complicated(self):
-        line = """
+        line = """\
 
 blahblah = os.environ.get('blahblah') or os.environ.get('blahblahblah') or os.environ.get('blahblahblahblah')
 """
-        fixed = """
+        fixed = """\
 
 blahblah = os.environ.get('blahblah') or os.environ.get(
     'blahblahblah') or os.environ.get('blahblahblahblah')
@@ -2214,7 +2209,7 @@ blahblah = os.environ.get('blahblah') or os.environ.get(
             self.assertEqual(fixed, result)
 
     def test_e501_skip_even_more_complicated(self):
-        line = """
+        line = """\
 
 if True:
     if True:
@@ -2228,11 +2223,11 @@ if True:
 
     def test_e501_prefer_to_break_at_begnning(self):
         """We prefer not to leave part of the arguments hanging."""
-        line = """
+        line = """\
 
 looooooooooooooong = foo(one, two, three, four, five, six, seven, eight, nine, ten)
 """
-        fixed = """
+        fixed = """\
 
 looooooooooooooong = foo(
     one, two, three, four, five, six, seven, eight, nine, ten)
@@ -2302,12 +2297,12 @@ print(
             self.assertEqual(fixed, result)
 
     def test_e501_with_multiple_lines(self):
-        line = """
+        line = """\
 
 foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,
                            111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333)
 """
-        fixed = """
+        fixed = """\
 
 foo_bar_zap_bing_bang_boom(
     111,
@@ -2345,7 +2340,7 @@ foo_bar_zap_bing_bang_boom(
             self.assertEqual(fixed, result)
 
     def test_e501_with_multiple_lines_and_quotes(self):
-        line = """
+        line = """\
 
 if True:
     xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(xxxxxxxxxxx, xxxxxxxxxxxxxxxx={'xxxxxxxxxxxx': 'xxxxx',
@@ -2353,7 +2348,7 @@ if True:
                                                                    'xxxxxxxx': False,
                                                                    })
 """
-        fixed = """
+        fixed = """\
 
 if True:
     xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(
@@ -2370,12 +2365,12 @@ if True:
     def test_e501_do_not_break_on_keyword(self):
         # We don't want to put a newline after equals for keywords as this
         # violates PEP 8.
-        line = """
+        line = """\
 
 if True:
     long_variable_name = tempfile.mkstemp(prefix='abcdefghijklmnopqrstuvwxyz0123456789')
 """
-        fixed = """
+        fixed = """\
 
 if True:
     long_variable_name = tempfile.mkstemp(
@@ -2388,7 +2383,7 @@ if True:
         # This fix is incomplete. (The line is still too long.) But it is here
         # just to confirm that we do not put a comma at the beginning of a
         # line.
-        line = """
+        line = """\
 
 def dummy():
     if True:
@@ -2396,7 +2391,7 @@ def dummy():
             if True:
                 object = ModifyAction( [MODIFY70.text, OBJECTBINDING71.text, COLON72.text], MODIFY70.getLine(), MODIFY70.getCharPositionInLine() )
 """
-        fixed = """
+        fixed = """\
 
 def dummy():
     if True:
@@ -2409,18 +2404,18 @@ def dummy():
             self.assertEqual(fixed, result)
 
     def test_e501_should_not_break_on_dot(self):
-        line = """
+        line = """\
 if True:
     if True:
         raise xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx('xxxxxxxxxxxxxxxxx "{d}" xxxxxxxxxxxxxx'.format(d='xxxxxxxxxxxxxxx'))
-""".lstrip()
+"""
 
-        fixed = """
+        fixed = """\
 if True:
     if True:
         raise xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(
             'xxxxxxxxxxxxxxxxx "{d}" xxxxxxxxxxxxxx'.format(d='xxxxxxxxxxxxxxx'))
-""".lstrip()
+"""
 
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -2447,12 +2442,12 @@ if True:
             self.assertEqual(fixed, result)
 
     def test_e501_with_comment_should_not_modify_docstring(self):
-        line = '''
+        line = '''\
 def foo():
     """
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
     """
-'''.lstrip()
+'''
         with autopep8_context(line) as result:
             self.assertEqual(line, result)
 
@@ -2506,7 +2501,7 @@ class Useless(object):
             return True
 
         return False
-""".lstrip()
+"""
 
         with autopep8_context(line) as result:
             self.assertEqual(line, result)
@@ -2951,7 +2946,7 @@ def foobar(
             self.assertEqual(fixed, result)
 
     def test_e702_with_non_ascii_file(self):
-        line = """
+        line = """\
 # -*- coding: utf-8 -*-
 # French comment with accent é
 # Un commentaire en français avec un accent é
@@ -2959,9 +2954,9 @@ def foobar(
 import time
 
 time.strftime('%d-%m-%Y');
-""".lstrip()
+"""
 
-        fixed = """
+        fixed = """\
 # -*- coding: utf-8 -*-
 # French comment with accent é
 # Un commentaire en français avec un accent é
@@ -2969,7 +2964,7 @@ time.strftime('%d-%m-%Y');
 import time
 
 time.strftime('%d-%m-%Y')
-""".lstrip()
+"""
 
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -3014,14 +3009,14 @@ def foo():
             self.assertEqual(fixed, result)
 
     def test_e702_indent_correctly(self):
-        line = """
+        line = """\
 
 (
     1,
     2,
     3); 4; 5; 5  # pyflakes
 """
-        fixed = """
+        fixed = """\
 
 (
     1,
@@ -3047,14 +3042,14 @@ def foo():
             self.assertEqual(fixed, result)
 
     def test_e702_with_semicolon_after_string(self):
-        line = """
+        line = """\
 raise IOError('abc '
               'def.');
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 raise IOError('abc '
               'def.')
-""".lstrip()
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -3147,18 +3142,18 @@ raise IOError('abc '
             self.assertEqual(fixed, result)
 
     def test_should_preserve_vertical_tab(self):
-        line = """
+        line = """\
 #Memory Bu\vffer Register:
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 # Memory Bu\vffer Register:
-""".lstrip()
+"""
 
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_w191_should_ignore_multiline_strings(self):
-        line = """
+        line = """\
 print(3 <> 4, '''
 while True:
     if True:
@@ -3166,8 +3161,8 @@ while True:
 \t''', 4 <> 5)
 if True:
 \t123
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 print(3 != 4, '''
 while True:
     if True:
@@ -3175,12 +3170,12 @@ while True:
 \t''', 4 != 5)
 if True:
     123
-""".lstrip()
+"""
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_w191_should_ignore_tabs_in_strings(self):
-        line = """
+        line = """\
 if True:
 \tx = '''
 \t\tblah
@@ -3191,8 +3186,8 @@ if True:
 \t123
 else:
 \t32
-""".lstrip()
-        fixed = """
+"""
+        fixed = """\
 if True:
     x = '''
 \t\tblah
@@ -3203,7 +3198,7 @@ if True:
     123
 else:
     32
-""".lstrip()
+"""
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
@@ -3304,12 +3299,11 @@ else:
             self.assertEqual(line, result)
 
     def test_w601_with_multiline(self):
-        line = """
-
+        line = """\
 a.has_key(
     0
 )
-""".lstrip()
+"""
         fixed = '0 in a\n'
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
@@ -3317,17 +3311,17 @@ a.has_key(
     @unittest.skipIf(sys.version_info < (2, 6, 4),
                      'older versions of 2.6 may be buggy')
     def test_w601_with_non_ascii(self):
-        line = """
+        line = """\
 # -*- coding: utf-8 -*-
 ## éはe
 correct = dict().has_key('good syntax ?')
-""".lstrip()
+"""
 
-        fixed = """
+        fixed = """\
 # -*- coding: utf-8 -*-
 # éはe
 correct = 'good syntax ?' in dict()
-""".lstrip()
+"""
 
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
