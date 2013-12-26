@@ -209,7 +209,8 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
             last_indent = start
 
             # Record the initial indent.
-            rel_indent[row] = pep8.expand_indent(line) - indent_level
+            absolute_indent = pep8.expand_indent(line)
+            rel_indent[row] = absolute_indent - indent_level
 
             if depth:
                 # A bracket expression in a continuation line.
@@ -253,18 +254,22 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                     yield (start, 'E123 {0}'.format(indent_level +
                                                     rel_indent[open_row]))
             else:
+                error = None
                 one_indented = (indent_level + rel_indent[open_row] +
                                 DEFAULT_INDENT_SIZE)
                 # indent is broken
                 if hang <= 0:
                     error = ('E122', one_indented)
                 elif indent[depth]:
-                    error = ('E127', indent[depth])
+                    if absolute_indent != indent[depth]:
+                        error = ('E127', indent[depth])
                 elif hang % DEFAULT_INDENT_SIZE:
                     error = ('E121', one_indented)
                 else:
                     error = ('E126', one_indented)
-                yield (start, '{0} {1}'.format(*error))
+
+                if error:
+                    yield (start, '{0} {1}'.format(*error))
 
         # look for visual indenting
         if (parens[row] and token_type not in (tokenize.NL, tokenize.COMMENT)
