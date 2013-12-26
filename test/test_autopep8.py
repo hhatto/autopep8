@@ -1432,6 +1432,16 @@ def draw(self):
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e127_align_visual_indent_okay(self):
+        """This is for code coverage."""
+        line = """\
+want = (have + _leading_space_count(
+        after[jline - 1]) -
+        _leading_space_count(lines[jline]))
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
     def test_e127_with_backslash(self):
         line = r"""
 if True:
