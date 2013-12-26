@@ -175,18 +175,21 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
     if noqa or nrows == 1:
         return
 
-    # indent_next tells us whether the next block is indented; assuming
+    # indent_next tells us whether the next block is indented. Assuming
     # that it is indented by 4 spaces, then we should not allow 4-space
-    # indents on the final continuation line; in turn, some other
+    # indents on the final continuation line. In turn, some other
     # indents are allowed to have an extra 4 spaces.
     indent_next = logical_line.endswith(':')
 
     row = depth = 0
-    # remember how many brackets were opened on each line
+
+    # Remember how many brackets were opened on each line.
     parens = [0] * nrows
-    # relative indents of physical lines
+
+    # Relative indents of physical lines.
     rel_indent = [0] * nrows
-    # visual indents
+
+    # Visual indents.
     indent_chances = {}
     last_indent = tokens[0][2]
     indent = [last_indent[1]]
@@ -218,7 +221,7 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                     if parens[open_row]:
                         break
             else:
-                # an unbracketed continuation line (ie, backslash)
+                # An unbracketed continuation line (ie, backslash).
                 open_row = 0
             hang = rel_indent[row] - rel_indent[open_row]
             close_bracket = (token_type == tokenize.OP and text in ']})')
@@ -226,32 +229,32 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                              indent_chances.get(start[1]))
 
             if close_bracket and indent[depth]:
-                # closing bracket for visual indent
+                # Closing bracket for visual indent.
                 if start[1] != indent[depth]:
                     yield (start, 'E124 {0}'.format(indent[depth]))
             elif close_bracket and not hang:
                 pass
             elif visual_indent is True:
-                # visual indent is verified
+                # Visual indent is verified.
                 if not indent[depth]:
                     indent[depth] = start[1]
             elif visual_indent in (text, unicode):
-                # ignore token lined up with matching one from a previous line
+                # Ignore token lined up with matching one from a previous line.
                 pass
             elif indent[depth] and start[1] < indent[depth]:
-                # visual indent is broken
+                # Visual indent is broken.
                 yield (start, 'E128 {0}'.format(indent[depth]))
             elif (hang == DEFAULT_INDENT_SIZE or
                   (indent_next and
                    rel_indent[row] == 2 * DEFAULT_INDENT_SIZE)):
-                # hanging indent is verified
+                # Hanging indent is verified.
                 if close_bracket:
                     yield (start, 'E123 {0}'.format(indent_level +
                                                     rel_indent[open_row]))
             else:
                 one_indented = (indent_level + rel_indent[open_row] +
                                 DEFAULT_INDENT_SIZE)
-                # indent is broken
+                # Indent is broken.
                 if hang <= 0:
                     error = ('E122', one_indented)
                 elif indent[depth]:
@@ -263,28 +266,28 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
 
                 yield (start, '{0} {1}'.format(*error))
 
-        # look for visual indenting
+        # Look for visual indenting.
         if (parens[row] and token_type not in (tokenize.NL, tokenize.COMMENT)
                 and not indent[depth]):
             indent[depth] = start[1]
             indent_chances[start[1]] = True
-        # deal with implicit string concatenation
+        # Deal with implicit string concatenation.
         elif (token_type in (tokenize.STRING, tokenize.COMMENT) or
               text in ('u', 'ur', 'b', 'br')):
             indent_chances[start[1]] = unicode
-        # special case for the "if" statement because
-        # len("if (") is equal to DEFAULT_INDENT_SIZE
+        # Special case for the "if" statement because len("if (") is equal to
+        # 4.
         elif not indent_chances and not row and not depth and text == 'if':
             indent_chances[end[1] + 1] = True
 
-        # keep track of bracket depth
+        # Keep track of bracket depth.
         if token_type == tokenize.OP:
             if text in '([{':
                 depth += 1
                 indent.append(0)
                 parens[row] += 1
             elif text in ')]}' and depth > 0:
-                # parent indents should not be more than this one
+                # Parent indents should not be more than this one.
                 prev_indent = indent.pop() or last_indent[1]
                 for d in range(depth):
                     if indent[d] > prev_indent:
@@ -306,7 +309,7 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                 # This is for purposes of speeding up E121 (GitHub #90).
                 not last_line.rstrip().endswith(',')
             ):
-                # allow to line up tokens
+                # Allow to line up tokens.
                 indent_chances[start[1]] = text
 
         last_token_multiline = (start[0] != end[0])
