@@ -3,6 +3,7 @@
 
 from __future__ import print_function
 
+import argparse
 import os
 import shlex
 import sys
@@ -100,36 +101,36 @@ def process_args():
     """Return processed arguments (options and positional arguments)."""
     compare_bytecode_ignore = 'E71,E721,W'
 
-    import optparse
-    parser = optparse.OptionParser()
-    parser.add_option('--command',
-                      default=os.path.join(ROOT_PATH, 'autopep8.py'),
-                      help='autopep8 command (default: %default)')
-    parser.add_option('--ignore',
-                      help='comma-separated errors to ignore',
-                      default='')
-    parser.add_option('--check-ignore',
-                      help='comma-separated errors to ignore when checking '
-                           'for completeness (default: %default)',
-                      default='')
-    parser.add_option('--max-line-length', metavar='n', default=79, type=int,
-                      help='set maximum allowed line length '
-                           '(default: %default)')
-    parser.add_option('--compare-bytecode', action='store_true',
-                      help='compare bytecode before and after fixes; '
-                           'sets default --ignore=' + compare_bytecode_ignore)
-    parser.add_option('-a', '--aggressive', action='count', default=0,
-                      help='run autopep8 in aggressive mode')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--command',
+                        default=os.path.join(ROOT_PATH, 'autopep8.py'),
+                        help='autopep8 command (default: %(default)s)')
+    parser.add_argument('--ignore',
+                        help='comma-separated errors to ignore',
+                        default='')
+    parser.add_argument('--check-ignore',
+                        help='comma-separated errors to ignore when checking '
+                        'for completeness (default: %(default)s)',
+                        default='')
+    parser.add_argument('--max-line-length', metavar='n', default=79, type=int,
+                        help='set maximum allowed line length '
+                        '(default: %(default)s)')
+    parser.add_argument('--compare-bytecode', action='store_true',
+                        help='compare bytecode before and after fixes; '
+                        'sets default --ignore=' + compare_bytecode_ignore)
+    parser.add_argument('-a', '--aggressive', action='count', default=0,
+                        help='run autopep8 in aggressive mode')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='print verbose messages')
+    parser.add_argument('paths', nargs='*',
+                        help='paths to use for testing')
 
-    parser.add_option('-v', '--verbose', action='store_true',
-                      help='print verbose messages')
+    args = parser.parse_args()
 
-    (opts, args) = parser.parse_args()
+    if args.compare_bytecode and not args.ignore:
+        args.ignore = compare_bytecode_ignore
 
-    if opts.compare_bytecode and not opts.ignore:
-        opts.ignore = compare_bytecode_ignore
-
-    return (opts, args)
+    return args
 
 
 def compare_bytecode(filename_a, filename_b):
@@ -147,14 +148,14 @@ def compare_bytecode(filename_a, filename_b):
     return not diff
 
 
-def check(opts, args):
+def check(paths, args):
     """Run recursively run autopep8 on directory of files.
 
     Return False if the fix results in broken syntax.
 
     """
-    if args:
-        dir_paths = args
+    if paths:
+        dir_paths = paths
     else:
         dir_paths = [path for path in sys.path
                      if os.path.isdir(path)]
@@ -162,7 +163,7 @@ def check(opts, args):
     filenames = dir_paths
     completed_filenames = set()
 
-    if opts.compare_bytecode:
+    if args.compare_bytecode:
         comparison_function = compare_bytecode
     else:
         comparison_function = None
@@ -195,13 +196,13 @@ def check(opts, args):
                 sys.stderr.write(colored(verbose_message + '\n', YELLOW))
 
                 if not run(os.path.join(name),
-                           command=opts.command,
-                           max_line_length=opts.max_line_length,
-                           ignore=opts.ignore,
-                           check_ignore=opts.check_ignore,
-                           verbose=opts.verbose,
+                           command=args.command,
+                           max_line_length=args.max_line_length,
+                           ignore=args.ignore,
+                           check_ignore=args.check_ignore,
+                           verbose=args.verbose,
                            comparison_function=comparison_function,
-                           aggressive=opts.aggressive):
+                           aggressive=args.aggressive):
                     return False
         except (UnicodeDecodeError, UnicodeEncodeError) as exception:
             # Ignore annoying codec problems on Python 2.
@@ -213,7 +214,8 @@ def check(opts, args):
 
 def main():
     """Run main."""
-    return 0 if check(*process_args()) else 1
+    args = process_args()
+    return 0 if check(args.paths, args) else 1
 
 
 if __name__ == '__main__':

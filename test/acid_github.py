@@ -71,9 +71,9 @@ def main():
     except OSError:
         pass
 
-    opts, args = acid.process_args()
-    if args:
-        names = [complete(a) for a in args]
+    args = acid.process_args()
+    if args.paths:
+        names = [complete(a) for a in args.paths]
     else:
         names = None
 
@@ -81,7 +81,7 @@ def main():
     skipped_repositories = []
     interesting_repositories = []
     while True:
-        if args:
+        if args.paths:
             if not names:
                 break
         else:
@@ -124,7 +124,7 @@ def main():
             print('ERROR: git clone failed')
             continue
 
-        if acid.check(opts, [repository_tmp_dir]):
+        if acid.check([repository_tmp_dir], args):
             checked_repositories.append(repository_name)
 
             if interesting(

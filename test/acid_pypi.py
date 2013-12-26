@@ -66,10 +66,10 @@ def main():
     except OSError:
         pass
 
-    opts, args = acid.process_args()
-    if args:
+    args = acid.process_args()
+    if args.paths:
         # Copy
-        names = list(args)
+        names = list(args.paths)
     else:
         names = None
 
@@ -77,7 +77,7 @@ def main():
     skipped_packages = []
     last_hours = 1
     while True:
-        if args:
+        if args.paths:
             if not names:
                 break
         else:
@@ -121,7 +121,7 @@ def main():
                 print('ERROR: Could not extract package')
                 continue
 
-            if acid.check(opts, [package_tmp_dir]):
+            if acid.check([package_tmp_dir], args):
                 checked_packages.append(package_name)
             else:
                 return 1
