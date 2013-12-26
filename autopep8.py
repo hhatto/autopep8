@@ -237,6 +237,7 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                     indent[depth] = start[1]
             elif (
                 visual_indent in (text, unicode) and
+                # This is for purposes of speeding up E121 (GitHub #90).
                 not last_line.rstrip().endswith(',')
             ):
                 # ignore token lined up with matching one from a previous line
