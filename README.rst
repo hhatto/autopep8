@@ -62,9 +62,7 @@ Before running autopep8.
     		           Indentation in multiline strings should not be touched.
     Only actual code should be reindented.
     """
-                        raise ValueError, some_string
-        def my_method(self):
-                                                  print(sys.path);
+                        return (sys.path, some_string)
 
 After running autopep8.
 
@@ -116,10 +114,7 @@ After running autopep8.
     		           Indentation in multiline strings should not be touched.
     Only actual code should be reindented.
     """
-                raise ValueError(some_string)
-
-        def my_method(self):
-            print(sys.path)
+                return (sys.path, some_string)
 
 
 Options::
