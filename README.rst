@@ -3,8 +3,8 @@ autopep8
 ========
 
 .. image:: https://travis-ci.org/hhatto/autopep8.png?branch=master
-   :target: https://travis-ci.org/hhatto/autopep8
-   :alt: Build status
+    :target: https://travis-ci.org/hhatto/autopep8
+    :alt: Build status
 
 autopep8 automatically formats Python code to conform to the `PEP 8`_ style
 guide. It uses the pep8_ utility to determine what parts of the code needs to
