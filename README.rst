@@ -116,7 +116,6 @@ After running autopep8.
     """
                 return (sys.path, some_string)
 
-
 Options::
 
     usage: autopep8 [-h] [--version] [-v] [-d] [-i] [-r] [-j n] [-p n] [-a]

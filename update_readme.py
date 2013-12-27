@@ -78,7 +78,7 @@ def main():
     new_readme = '\n\n'.join([
         top,
         before_key, before,
-        after_key, indent(output_code),
+        after_key, indent(output_code).rstrip(),
         options_key, indent(help_message()),
         bottom])
 
