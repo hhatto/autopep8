@@ -2214,7 +2214,7 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
     bad_staring_symbol = {
         '(': ')',
         '[': ']',
-        '{': '}'}.get(lines[0][-1], None)
+        '{': '}'}.get(lines[0][-1])
 
     if len(lines) > 1:
         if (
