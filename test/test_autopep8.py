@@ -2791,8 +2791,16 @@ print('---------------------------------------------------------------------',
       '''--------------------------------------------------------------------------------
       ''')
 """
+        fixed = """\
+print(
+    '---------------------------------------------------------------------',
+    ('================================================',
+     '====================='),
+    '''--------------------------------------------------------------------------------
+      ''')
+"""
         with autopep8_context(line, options=['-aa']) as result:
-            self.assertEqual(line, result)
+            self.assertEqual(fixed, result)
 
     def test_e501_with_aggressive_and_indentation(self):
         line = """\
@@ -2893,6 +2901,22 @@ def foobar(
         sdfsdfsfd,
         sdfsdfdsf):
     pass
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_aggressive_with_tuple(self):
+        line = """\
+def f():
+    man_this_is_a_very_long_function_name(an_extremely_long_variable_name,
+                                          ('a string that is long: %s'%'bork'))
+"""
+        fixed = """\
+def f():
+    man_this_is_a_very_long_function_name(
+        an_extremely_long_variable_name,
+        ('a string that is long: %s' %
+         'bork'))
 """
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)

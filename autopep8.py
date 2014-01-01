@@ -63,7 +63,7 @@ except NameError:
     unicode = str
 
 
-__version__ = '1.0a0'
+__version__ = '1.0a1'
 
 
 CR = '\r'
@@ -1371,9 +1371,13 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                              default=[None, None])[1] == unwanted_next_token
                 ):
                     continue
-
-            # Don't split right before newline.
-            if end_column < len(source) - 1:
+            if (
+                # Don't split right before newline.
+                end_column < len(source) - 1 and
+                # Don't split after a tuple start.
+                not (index > 2 and token_string == '(' and
+                     get_item(tokens, index - 1)[1] == ',')
+            ):
                 offsets.append(end_column)
         else:
             # Break at adjacent strings. These were probably meant to be on
@@ -2302,7 +2306,7 @@ def split_at_offsets(line, offsets):
     current_offset = 0
     for current_offset in sorted(offsets):
         if current_offset < len(line) and previous_offset != current_offset:
-            result.append(line[previous_offset:current_offset])
+            result.append(line[previous_offset:current_offset].strip())
         previous_offset = current_offset
 
     result.append(line[current_offset:])
