@@ -2909,14 +2909,14 @@ def foobar(
         line = """\
 def f():
     man_this_is_a_very_long_function_name(an_extremely_long_variable_name,
-                                          ('a string that is long: %s'%'foo'))
+                                          ('a string that is long: %s'%'bork'))
 """
         fixed = """\
 def f():
     man_this_is_a_very_long_function_name(
         an_extremely_long_variable_name,
         ('a string that is long: %s' %
-         'foo'))
+         'bork'))
 """
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
