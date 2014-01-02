@@ -63,7 +63,7 @@ except NameError:
     unicode = str
 
 
-__version__ = '1.0a1'
+__version__ = '1.0a2'
 
 
 CR = '\r'
@@ -783,11 +783,10 @@ class FixPEP8(object):
         indent = _get_indentation(target)
         source = target[len(indent):]
         assert source.lstrip() == source
-        sio = io.StringIO(source)
 
         # Check for partial multiline.
         try:
-            tokens = list(tokenize.generate_tokens(sio.readline))
+            tokens = list(generate_tokens(source))
         except (SyntaxError, tokenize.TokenError):
             return
 
@@ -934,9 +933,8 @@ def join_logical_line(logical_line):
     """Return single line based on logical line input."""
     indentation = _get_indentation(logical_line)
 
-    string_io = io.StringIO(logical_line.lstrip())
     return indentation + untokenize_without_newlines(
-        tokenize.generate_tokens(string_io.readline)) + '\n'
+        generate_tokens(logical_line.lstrip())) + '\n'
 
 
 def untokenize_without_newlines(tokens):
@@ -972,9 +970,8 @@ def _find_logical(source_lines):
     logical_start = []
     logical_end = []
     last_newline = True
-    sio = io.StringIO(''.join(source_lines))
     parens = 0
-    for t in tokenize.generate_tokens(sio.readline):
+    for t in generate_tokens(''.join(source_lines)):
         if t[0] in [tokenize.COMMENT, tokenize.DEDENT,
                     tokenize.INDENT, tokenize.NL,
                     tokenize.ENDMARKER]:
@@ -1170,10 +1167,9 @@ def find_newline(source):
 
 def _get_indentword(source):
     """Return indentation type."""
-    sio = io.StringIO(source)
     indent_word = '    '  # Default in case source has no indentation
     try:
-        for t in tokenize.generate_tokens(sio.readline):
+        for t in generate_tokens(source):
             if t[0] == token.INDENT:
                 indent_word = t[1]
                 break
@@ -1742,11 +1738,10 @@ def multiline_string_lines(source, include_docstrings=False):
     Docstrings are ignored.
 
     """
-    sio = io.StringIO(source)
     line_numbers = set()
     previous_token_type = ''
     try:
-        for t in tokenize.generate_tokens(sio.readline):
+        for t in generate_tokens(source):
             token_type = t[0]
             start_row = t[2][0]
             end_row = t[3][0]
@@ -1774,10 +1769,9 @@ def commented_out_code_lines(source):
     clutter.
 
     """
-    sio = io.StringIO(source)
     line_numbers = []
     try:
-        for t in tokenize.generate_tokens(sio.readline):
+        for t in generate_tokens(source):
             token_type = t[0]
             token_string = t[1]
             start_row = t[2][0]
@@ -2458,6 +2452,28 @@ def main():
             fix_multiple_files(args.files, args, sys.stdout)
     except KeyboardInterrupt:
         return 1  # pragma: no cover
+
+
+class CachedTokenizer(object):
+    """A one-element cache around tokenize.generate_tokens.
+
+    original code written by Ned Batchelder, in coverage.py.
+    """
+    def __init__(self):
+        self.last_text = None
+        self.last_tokens = None
+
+    def generate_tokens(self, text):
+        """A stand-in for `tokenize.generate_tokens`."""
+        if text != self.last_text:
+            self.last_tokens = list(
+                tokenize.generate_tokens(io.StringIO(text).readline)
+            )
+            self.last_text = text
+        return self.last_tokens
+
+# Create our generate_tokens cache as a callable replacement function.
+generate_tokens = CachedTokenizer().generate_tokens
 
 
 if __name__ == '__main__':
