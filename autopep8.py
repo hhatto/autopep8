@@ -1376,7 +1376,7 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                 end_column < len(source) - 1 and
                 # Don't split after a tuple start.
                 not (index > 2 and token_string == '(' and
-                     get_item(tokens, index - 1)[1] == ',')
+                     tokens[index - 1][1] == ',')
             ):
                 offsets.append(end_column)
         else:
