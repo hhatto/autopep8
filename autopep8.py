@@ -2455,10 +2455,13 @@ def main():
 
 
 class CachedTokenizer(object):
+
     """A one-element cache around tokenize.generate_tokens.
 
-    original code written by Ned Batchelder, in coverage.py.
+    Original code written by Ned Batchelder, in coverage.py.
+
     """
+
     def __init__(self):
         self.last_text = None
         self.last_tokens = None
@@ -2466,14 +2469,15 @@ class CachedTokenizer(object):
     def generate_tokens(self, text):
         """A stand-in for `tokenize.generate_tokens`."""
         if text != self.last_text:
+            string_io = io.StringIO(text)
             self.last_tokens = list(
-                tokenize.generate_tokens(io.StringIO(text).readline)
+                tokenize.generate_tokens(string_io.readline)
             )
             self.last_text = text
         return self.last_tokens
 
-# Create our generate_tokens cache as a callable replacement function.
-generate_tokens = CachedTokenizer().generate_tokens
+_cache_tokenizer = CachedTokenizer()
+generate_tokens = _cache_tokenizer.generate_tokens
 
 
 if __name__ == '__main__':
