@@ -131,11 +131,11 @@ def func_w602():
         """arg"""  # my comment
     raise ValueError, \
         """arg
-        
+
   """  # my comment
     raise ValueError, \
         '''multiline
-        
+
 '''  # my comment
 
     a = 'a'
