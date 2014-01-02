@@ -2476,8 +2476,8 @@ class CachedTokenizer(object):
             self.last_text = text
         return self.last_tokens
 
-_cache_tokenizer = CachedTokenizer()
-generate_tokens = _cache_tokenizer.generate_tokens
+_cached_tokenizer = CachedTokenizer()
+generate_tokens = _cached_tokenizer.generate_tokens
 
 
 if __name__ == '__main__':
