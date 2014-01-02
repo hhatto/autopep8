@@ -1,6 +1,7 @@
 all:
 	@echo "make test(test_basic, test_diff, test_unit)"
 	@echo "make fasttest"
+	@echo "make benchmark"
 	@echo "make pypireg"
 	@echo "make coverage"
 	@echo "make check"
@@ -53,6 +54,14 @@ coverage:
 open_coverage: coverage
 	@${COVERAGE} html
 	@python -m webbrowser -n "file://${PWD}/htmlcov/index.html"
+
+benchmark:
+	@echo '---> benchmark of autopep8.py test/example.py'
+	@time ${PYTHON} autopep8.py --aggressive test/example.py > /dev/null
+	@echo '---> benchmark of test_unit'
+	@time ${PYTHON} test/test_autopep8.py > /dev/null
+	@echo '---> benchmark of autopep8.py -d test/*.py'
+	@time ${PYTHON} autopep8.py -d test/*.py > /dev/null
 
 readme:
 	${PYTHON} update_readme.py
