@@ -76,9 +76,9 @@ check:
 	pylint \
 		--reports=no \
 		--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
-		--max-module-lines=2500 \
 		--disable=C0103,C0111,R0902,R0904,R0912,R0913,R0914,R0915,W0142,W0212,W0511 \
 		--disable=too-few-public-methods \
+		--disable=too-many-lines \
 		--disable=unused-argument \
 		--rcfile=/dev/null autopep8.py setup.py update_readme.py
 	pylint \
