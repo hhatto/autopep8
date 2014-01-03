@@ -1276,6 +1276,9 @@ def _shorten_line(tokens, source, indentation, indent_word,
                   aggressive=False, previous_line=''):
     """Separate line at OPERATOR.
 
+    The input is expected to be free of newlines except for inside multiline
+    strings and at the end.
+
     Multiple candidates will be yielded.
 
     """
@@ -1346,6 +1349,9 @@ def _shorten_line(tokens, source, indentation, indent_word,
 def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                             key_token_strings, aggressive):
     """Separate line by breaking at tokens in key_token_strings.
+
+    The input is expected to be free of newlines except for inside multiline
+    strings and at the end.
 
     This will always break the line at the first parenthesis.
 
