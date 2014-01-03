@@ -1353,8 +1353,6 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
     The input is expected to be free of newlines except for inside multiline
     strings and at the end.
 
-    This will always break the line at the first parenthesis.
-
     """
     offsets = []
     multiline_offset = 0
