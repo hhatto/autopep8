@@ -1287,7 +1287,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
 
         # Blacklist multiline cases.
         if start_row != end_row:
-            return None
+            break
 
         if (
             token_type == tokenize.COMMENT and
@@ -1356,7 +1356,7 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
 
         # Blacklist multiline cases.
         if start_row != end_row:
-            return None
+            break
 
         assert token_type != token.INDENT
 
