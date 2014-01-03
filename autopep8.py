@@ -63,7 +63,7 @@ except NameError:
     unicode = str
 
 
-__version__ = '1.0a1'
+__version__ = '1.0a2'
 
 
 CR = '\r'
@@ -79,6 +79,7 @@ SHORTEN_OPERATOR_GROUPS = frozenset([
     frozenset([',']),
     frozenset(['%']),
     frozenset([',', '(', '[', '{']),
+    frozenset(['%', '(', '[', '{']),
     frozenset([',', '(', '[', '{', '%', '+', '-', '*', '/', '//']),
     frozenset(['%', '+', '-', '*', '/', '//']),
 ])
@@ -1371,13 +1372,16 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                              default=[None, None])[1] == unwanted_next_token
                 ):
                     continue
+
             if (
-                # Don't split right before newline.
-                end_column < len(source) - 1 and
-                # Don't split after a tuple start.
-                not (index > 2 and token_string == '(' and
-                     get_item(tokens, index - 1)[1] == ',')
+                index > 2 and token_string == '(' and
+                get_item(tokens, index - 1)[1] in ',(%'
             ):
+                # Don't split after a tuple start.
+                continue
+
+            if end_column < len(source) - 1:
+                # Don't split right before newline.
                 offsets.append(end_column)
         else:
             # Break at adjacent strings. These were probably meant to be on
