@@ -2820,6 +2820,27 @@ def f():
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_aggressive_and_multiline_string_in_parens(self):
+        line = '''\
+def f():
+  email_text += ("""<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
+<b>Czar: </b>"""+despot["Nicholas"]+"""<br>
+</body>
+</html>""")
+'''
+        fixed = '''\
+def f():
+    email_text += (
+        """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
+<b>Czar: </b>""" +
+        despot["Nicholas"] +
+        """<br>
+</body>
+</html>""")
+'''
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_aggressive_and_indentation(self):
         line = """\
 if True:

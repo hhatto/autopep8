@@ -1361,9 +1361,8 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
         start_offset = multiline_offset + _start_column
         end_offset = multiline_offset + _end_column
 
-        # Blacklist multiline cases.
         if start_row != end_row:
-            break
+            multiline_offset += len(token_string)
 
         assert token_type != token.INDENT
 
