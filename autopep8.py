@@ -2244,7 +2244,9 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
             rank += 20
 
     for current_line in lines:
-        if current_line.lstrip().startswith('#'):
+        current_line = current_line.strip()
+
+        if current_line.startswith('#'):
             continue
 
         for bad_start in ['.', '%', '+', '-', '/']:
@@ -2252,16 +2254,16 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
                 rank += 100
 
             # Do not tolerate operators on their own line.
-            if current_line.strip() == bad_start:
+            if current_line == bad_start:
                 rank += 1000
 
         if current_line.endswith(('(', '[', '{')):
             # Avoid lonely opening. They result in longer lines.
-            if len(current_line.strip()) <= len(indent_word):
+            if len(current_line) <= len(indent_word):
                 rank += 100
 
             # Avoid ugliness of ", (\n".
-            if current_line[:-1].rstrip().endswith(','):
+            if current_line[:-1].endswith(','):
                 rank += 100
 
             if has_arithmetic_operator(current_line):
@@ -2271,14 +2273,14 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
             rank -= 20
 
         # Try to break list comprehensions at the "for".
-        if current_line.lstrip().startswith('for '):
+        if current_line.startswith('for '):
             rank -= 50
 
-        if current_line.rstrip().endswith('\\'):
+        if current_line.endswith('\\'):
             rank += 1
 
         # Prefer breaking at commas rather than colon.
-        if ',' in current_line and current_line.rstrip().endswith(':'):
+        if ',' in current_line and current_line.endswith(':'):
             rank += 10
 
         rank += 10 * count_unbalanced_brackets(current_line)
