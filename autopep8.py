@@ -1282,8 +1282,12 @@ def _shorten_line(tokens, source, indentation, indent_word,
     for t in tokens:
         token_type = t[0]
         token_string = t[1]
-        start_column = t[2][1]
-        end_column = t[3][1]
+        (start_row, start_column) = t[2]
+        (end_row, end_column) = t[3]
+
+        # Blacklist multiline cases.
+        if start_row != end_row:
+            return None
 
         if (
             token_type == tokenize.COMMENT and
@@ -1347,8 +1351,12 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
     for (index, t) in enumerate(tokens):
         token_type = t[0]
         token_string = t[1]
-        start_column = t[2][1]
-        end_column = t[3][1]
+        (start_row, start_column) = t[2]
+        (end_row, end_column) = t[3]
+
+        # Blacklist multiline cases.
+        if start_row != end_row:
+            return None
 
         assert token_type != token.INDENT
 
