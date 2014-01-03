@@ -2277,6 +2277,10 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
         if current_line.rstrip().endswith('\\'):
             rank += 1
 
+        # Prefer breaking at commas rather than colon.
+        if ',' in current_line and current_line.rstrip().endswith(':'):
+            rank += 10
+
         rank += 10 * count_unbalanced_brackets(current_line)
 
     return max(0, rank)

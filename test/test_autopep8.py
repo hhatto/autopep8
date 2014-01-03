@@ -1991,6 +1991,17 @@ print(111, 111, 111, 111, 222, 222, 222, 222,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_commas_and_colons(self):
+        line = """\
+foobar = {'aaaaaaaaaaaa': 'bbbbbbbbbbbbbbbb', 'dddddd': 'eeeeeeeeeeeeeeee', 'ffffffffffff': 'gggggggg'}
+"""
+        fixed = """\
+foobar = {'aaaaaaaaaaaa': 'bbbbbbbbbbbbbbbb',
+          'dddddd': 'eeeeeeeeeeeeeeee', 'ffffffffffff': 'gggggggg'}
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_inline_comments(self):
         line = """\
 '                                                          '  # Long inline comments should be moved above.
