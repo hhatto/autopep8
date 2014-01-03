@@ -2263,7 +2263,7 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
                 rank += 100
 
             # Avoid ugliness of ", (\n".
-            if current_line[:-1].endswith(','):
+            if current_line.endswith(','):
                 rank += 100
 
             if has_arithmetic_operator(current_line):
