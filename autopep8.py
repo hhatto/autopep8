@@ -1279,26 +1279,29 @@ def _shorten_line(tokens, source, indentation, indent_word,
     Multiple candidates will be yielded.
 
     """
+    multiline_offset = 0
     for t in tokens:
         token_type = t[0]
         token_string = t[1]
-        (start_row, start_column) = t[2]
-        (end_row, end_column) = t[3]
+        (start_row, _start_column) = t[2]
+        (end_row, _end_column) = t[3]
 
-        # Blacklist multiline cases.
+        start_offset = multiline_offset + _start_column
+        end_offset = multiline_offset + _end_column
+
         if start_row != end_row:
-            break
+            multiline_offset += len(token_string)
 
         if (
             token_type == tokenize.COMMENT and
             not is_probably_part_of_multiline(previous_line) and
             not is_probably_part_of_multiline(source) and
-            not source[start_column + 1:].strip().lower().startswith(
+            not source[start_offset + 1:].strip().lower().startswith(
                 ('noqa', 'pragma:', 'pylint:'))
         ):
             # Move inline comments to previous line.
-            first = source[:start_column]
-            second = source[start_column:]
+            first = source[:start_offset]
+            second = source[start_offset:]
             yield (indentation + second.strip() + '\n' +
                    indentation + first.strip() + '\n')
         elif token_type == token.OP and token_string != '=':
@@ -1306,7 +1309,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
 
             assert token_type != token.INDENT
 
-            first = source[:end_column]
+            first = source[:end_offset]
 
             second_indent = indentation
             if first.rstrip().endswith('('):
@@ -1316,7 +1319,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
             else:
                 second_indent += indent_word
 
-            second = (second_indent + source[end_column:].lstrip())
+            second = (second_indent + source[end_offset:].lstrip())
             if (
                 not second.strip() or
                 second.lstrip().startswith('#')
@@ -1348,11 +1351,15 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
 
     """
     offsets = []
+    multiline_offset = 0
     for (index, t) in enumerate(tokens):
         token_type = t[0]
         token_string = t[1]
-        (start_row, start_column) = t[2]
-        (end_row, end_column) = t[3]
+        (start_row, _start_column) = t[2]
+        (end_row, _end_column) = t[3]
+
+        start_offset = multiline_offset + _start_column
+        end_offset = multiline_offset + _end_column
 
         # Blacklist multiline cases.
         if start_row != end_row:
@@ -1384,9 +1391,9 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                 # Don't split after a tuple start.
                 continue
 
-            if end_column < len(source) - 1:
+            if end_offset < len(source) - 1:
                 # Don't split right before newline.
-                offsets.append(end_column)
+                offsets.append(end_offset)
         else:
             # Break at adjacent strings. These were probably meant to be on
             # separate lines in the first place.
@@ -1395,7 +1402,7 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                 token_type == tokenize.STRING and
                 previous_token and previous_token[0] == tokenize.STRING
             ):
-                offsets.append(start_column)
+                offsets.append(start_offset)
 
     current_indent = None
     fixed = None
