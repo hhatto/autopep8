@@ -12,8 +12,10 @@ else:
     import unittest
 
 import contextlib
+import io
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
+import tokenize
 import warnings
 
 try:
@@ -675,6 +677,50 @@ sys.maxint
 [1, 2, 3, 4,
     5]
 """))
+
+    def test_token_offsets(self):
+        text = """\
+1
+"""
+        string_io = io.StringIO(text)
+        self.assertEqual(
+            [(2, '1', 0, 1),
+             (4, '\n', 1, 2),
+             (0, '', 2, 2)],
+            list(autopep8.token_offsets(
+                tokenize.generate_tokens(string_io.readline))))
+
+    def test_token_offsets_with_multiline(self):
+        text = """\
+x = '''
+1
+2
+'''
+"""
+        string_io = io.StringIO(text)
+        self.assertEqual(
+            [(1, 'x', 0, 1),
+             (52, '=', 2, 3),
+             (3, "'''\n1\n2\n'''", 4, 15),
+             (4, '\n', 15, 16),
+             (0, '', 16, 16)],
+            list(autopep8.token_offsets(
+                tokenize.generate_tokens(string_io.readline))))
+
+    def test_token_offsets_with_escaped_newline(self):
+        text = """\
+True or \\
+    False
+"""
+        string_io = io.StringIO(text)
+        self.assertEqual(
+            [(1, 'True', 0, 4),
+             (1, 'or', 5, 7),
+             (1, 'False', 11, 16),
+             (4, '\n', 16, 17),
+             (0, '', 17, 17)],
+            list(autopep8.token_offsets(
+                tokenize.generate_tokens(string_io.readline))))
 
 
 class SystemTests(unittest.TestCase):
