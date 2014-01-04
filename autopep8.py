@@ -1282,28 +1282,10 @@ def _shorten_line(tokens, source, indentation, indent_word,
     Multiple candidates will be yielded.
 
     """
-    multiline_offset = 0
-    previous_end_row = 0
-    previous_end_column = 0
-    for t in tokens:
-        token_type = t[0]
-        token_string = t[1]
-        (start_row, _start_column) = t[2]
-        (end_row, _end_column) = t[3]
-
-        # Account for the whitespace between tokens.
-        multiline_offset += _start_column
-        if previous_end_row == start_row:
-            multiline_offset -= previous_end_column
-
-        # Record the start offset of the token.
-        start_offset = multiline_offset
-
-        # Account for the length of the token itself.
-        multiline_offset += len(token_string)
-
-        previous_end_row = end_row
-        previous_end_column = _end_column
+    for (token_type,
+         token_string,
+         start_offset,
+         multiline_offset) in token_offsets(tokens):
 
         if (
             token_type == tokenize.COMMENT and
@@ -1365,28 +1347,11 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
 
     """
     offsets = []
-    multiline_offset = 0
-    previous_end_row = 0
-    previous_end_column = 0
-    for (index, t) in enumerate(tokens):
-        token_type = t[0]
-        token_string = t[1]
-        (start_row, _start_column) = t[2]
-        (end_row, _end_column) = t[3]
-
-        # Account for the whitespace between tokens.
-        multiline_offset += _start_column
-        if previous_end_row == start_row:
-            multiline_offset -= previous_end_column
-
-        # Record the start offset of the token.
-        start_offset = multiline_offset
-
-        # Account for the length of the token itself.
-        multiline_offset += len(token_string)
-
-        previous_end_row = end_row
-        previous_end_column = _end_column
+    for (index, _t) in enumerate(token_offsets(tokens)):
+        (token_type,
+         token_string,
+         start_offset,
+         multiline_offset) = _t
 
         assert token_type != token.INDENT
 
@@ -1449,6 +1414,37 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
         return indentation + fixed
     else:
         return None
+
+
+def token_offsets(tokens):
+    """Yield tokens and offsets."""
+    multiline_offset = 0
+    previous_end_row = 0
+    previous_end_column = 0
+    for t in tokens:
+        token_type = t[0]
+        token_string = t[1]
+        (start_row, _start_column) = t[2]
+        (end_row, _end_column) = t[3]
+
+        # Account for the whitespace between tokens.
+        multiline_offset += _start_column
+        if previous_end_row == start_row:
+            multiline_offset -= previous_end_column
+
+        # Record the start offset of the token.
+        start_offset = multiline_offset
+
+        # Account for the length of the token itself.
+        multiline_offset += len(token_string)
+
+        yield (token_type,
+               token_string,
+               start_offset,
+               multiline_offset)
+
+        previous_end_row = end_row
+        previous_end_column = _end_column
 
 
 def normalize_multiline(line):
