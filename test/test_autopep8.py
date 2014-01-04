@@ -684,9 +684,9 @@ sys.maxint
 """
         string_io = io.StringIO(text)
         self.assertEqual(
-            [(2, '1', 0, 1),
-             (4, '\n', 1, 2),
-             (0, '', 2, 2)],
+            [(tokenize.NUMBER, '1', 0, 1),
+             (tokenize.NEWLINE, '\n', 1, 2),
+             (tokenize.ENDMARKER, '', 2, 2)],
             list(autopep8.token_offsets(
                 tokenize.generate_tokens(string_io.readline))))
 
@@ -699,11 +699,11 @@ x = '''
 """
         string_io = io.StringIO(text)
         self.assertEqual(
-            [(1, 'x', 0, 1),
-             (52, '=', 2, 3),
-             (3, "'''\n1\n2\n'''", 4, 15),
-             (4, '\n', 15, 16),
-             (0, '', 16, 16)],
+            [(tokenize.NAME, 'x', 0, 1),
+             (tokenize.OP, '=', 2, 3),
+             (tokenize.STRING, "'''\n1\n2\n'''", 4, 15),
+             (tokenize.NEWLINE, '\n', 15, 16),
+             (tokenize.ENDMARKER, '', 16, 16)],
             list(autopep8.token_offsets(
                 tokenize.generate_tokens(string_io.readline))))
 
@@ -714,11 +714,11 @@ True or \\
 """
         string_io = io.StringIO(text)
         self.assertEqual(
-            [(1, 'True', 0, 4),
-             (1, 'or', 5, 7),
-             (1, 'False', 11, 16),
-             (4, '\n', 16, 17),
-             (0, '', 17, 17)],
+            [(tokenize.NAME, 'True', 0, 4),
+             (tokenize.NAME, 'or', 5, 7),
+             (tokenize.NAME, 'False', 11, 16),
+             (tokenize.NEWLINE, '\n', 16, 17),
+             (tokenize.ENDMARKER, '', 17, 17)],
             list(autopep8.token_offsets(
                 tokenize.generate_tokens(string_io.readline))))
 
