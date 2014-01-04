@@ -1432,15 +1432,17 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
 
 
 def normalize_multiline(line):
-    """Remove multiline-related code that will cause syntax error.
+    """Normalize multiline-related code that will cause syntax error.
 
     This is for purposes of checking syntax.
 
     """
     if line.startswith('def ') and line.rstrip().endswith(':'):
-        return line + '\n    pass\n'
-
-    return line
+        return line + ' pass'
+    elif line.startswith('return '):
+        return 'def _(): ' + line
+    else:
+        return line
 
 
 def fix_whitespace(line, offset, replacement):

@@ -303,6 +303,13 @@ def foo():
                 ['abc\n', 'def\r\n', '123\r\n', 'hello\r\n', 'world\r'],
                 '\r\n'))
 
+    def test_normalize_multiline(self):
+        self.assertEqual('def foo(): pass',
+                         autopep8.normalize_multiline('def foo():'))
+
+        self.assertEqual('def _(): return 1',
+                         autopep8.normalize_multiline('return 1'))
+
     def test_code_match(self):
         self.assertTrue(autopep8.code_match('E2', select=['E2', 'E3'],
                                             ignore=[]))
