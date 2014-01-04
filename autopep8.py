@@ -63,7 +63,7 @@ except NameError:
     unicode = str
 
 
-__version__ = '1.0a3'
+__version__ = '1.0a4'
 
 
 CR = '\r'
@@ -1283,17 +1283,27 @@ def _shorten_line(tokens, source, indentation, indent_word,
 
     """
     multiline_offset = 0
+    previous_end_row = 0
+    previous_end_column = 0
     for t in tokens:
         token_type = t[0]
         token_string = t[1]
         (start_row, _start_column) = t[2]
         (end_row, _end_column) = t[3]
 
-        start_offset = multiline_offset + _start_column
-        end_offset = multiline_offset + _end_column
+        # Account for the whitespace between tokens.
+        multiline_offset += _start_column
+        if previous_end_row == start_row:
+            multiline_offset -= previous_end_column
 
-        if start_row != end_row:
-            multiline_offset += len(token_string)
+        # Record the start offset of the token.
+        start_offset = multiline_offset
+
+        # Account for the length of the token itself.
+        multiline_offset += len(token_string)
+
+        previous_end_row = end_row
+        previous_end_column = _end_column
 
         if (
             token_type == tokenize.COMMENT and
@@ -1312,7 +1322,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
 
             assert token_type != token.INDENT
 
-            first = source[:end_offset]
+            first = source[:multiline_offset]
 
             second_indent = indentation
             if first.rstrip().endswith('('):
@@ -1322,7 +1332,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
             else:
                 second_indent += indent_word
 
-            second = (second_indent + source[end_offset:].lstrip())
+            second = (second_indent + source[multiline_offset:].lstrip())
             if (
                 not second.strip() or
                 second.lstrip().startswith('#')
@@ -1356,17 +1366,27 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
     """
     offsets = []
     multiline_offset = 0
+    previous_end_row = 0
+    previous_end_column = 0
     for (index, t) in enumerate(tokens):
         token_type = t[0]
         token_string = t[1]
         (start_row, _start_column) = t[2]
         (end_row, _end_column) = t[3]
 
-        start_offset = multiline_offset + _start_column
-        end_offset = multiline_offset + _end_column
+        # Account for the whitespace between tokens.
+        multiline_offset += _start_column
+        if previous_end_row == start_row:
+            multiline_offset -= previous_end_column
 
-        if start_row != end_row:
-            multiline_offset += len(token_string)
+        # Record the start offset of the token.
+        start_offset = multiline_offset
+
+        # Account for the length of the token itself.
+        multiline_offset += len(token_string)
+
+        previous_end_row = end_row
+        previous_end_column = _end_column
 
         assert token_type != token.INDENT
 
@@ -1394,9 +1414,9 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                 # Don't split after a tuple start.
                 continue
 
-            if end_offset < len(source) - 1:
+            if multiline_offset < len(source) - 1:
                 # Don't split right before newline.
-                offsets.append(end_offset)
+                offsets.append(multiline_offset)
         else:
             # Break at adjacent strings. These were probably meant to be on
             # separate lines in the first place.

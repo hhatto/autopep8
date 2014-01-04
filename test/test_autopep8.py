@@ -2823,8 +2823,10 @@ print(
     def test_e501_with_aggressive_and_multiline_string_with_addition(self):
         line = '''\
 def f():
-  email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
+    email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
 <b>Czar: </b>"""+despot["Nicholas"]+"""<br>
+<b>Minion: </b>"""+serf["Dmitri"]+"""<br>
+<b>Residence: </b>"""+palace["Winter"]+"""<br>
 </body>
 </html>"""
 '''
@@ -2832,6 +2834,9 @@ def f():
 def f():
     email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
 <b>Czar: </b>""" + despot["Nicholas"] + """<br>
+<b>Minion: </b>""" + serf["Dmitri"] + """<br>
+<b>Residence: </b>""" + \\
+        palace["Winter"] + """<br>
 </body>
 </html>"""
 '''
@@ -2841,18 +2846,25 @@ def f():
     def test_e501_with_aggressive_and_multiline_string_in_parens(self):
         line = '''\
 def f():
-  email_text += ("""<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
+    email_text += ("""<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
 <b>Czar: </b>"""+despot["Nicholas"]+"""<br>
+<b>Minion: </b>"""+serf["Dmitri"]+"""<br>
+<b>Residence: </b>"""+palace["Winter"]+"""<br>
 </body>
 </html>""")
 '''
         fixed = '''\
 def f():
-    email_text += (
-        """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
+    email_text += ("""<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
 <b>Czar: </b>""" +
-        despot["Nicholas"] +
-        """<br>
+                   despot["Nicholas"] +
+                   """<br>
+<b>Minion: </b>""" +
+                   serf["Dmitri"] +
+                   """<br>
+<b>Residence: </b>""" +
+                   palace["Winter"] +
+                   """<br>
 </body>
 </html>""")
 '''
