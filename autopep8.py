@@ -1285,7 +1285,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
     for (token_type,
          token_string,
          start_offset,
-         multiline_offset) in token_offsets(tokens):
+         end_offset) in token_offsets(tokens):
 
         if (
             token_type == tokenize.COMMENT and
@@ -1304,7 +1304,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
 
             assert token_type != token.INDENT
 
-            first = source[:multiline_offset]
+            first = source[:end_offset]
 
             second_indent = indentation
             if first.rstrip().endswith('('):
@@ -1314,7 +1314,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
             else:
                 second_indent += indent_word
 
-            second = (second_indent + source[multiline_offset:].lstrip())
+            second = (second_indent + source[end_offset:].lstrip())
             if (
                 not second.strip() or
                 second.lstrip().startswith('#')
@@ -1351,7 +1351,7 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
         (token_type,
          token_string,
          start_offset,
-         multiline_offset) = _t
+         end_offset) = _t
 
         assert token_type != token.INDENT
 
@@ -1379,9 +1379,9 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                 # Don't split after a tuple start.
                 continue
 
-            if multiline_offset < len(source) - 1:
+            if end_offset < len(source) - 1:
                 # Don't split right before newline.
-                offsets.append(multiline_offset)
+                offsets.append(end_offset)
         else:
             # Break at adjacent strings. These were probably meant to be on
             # separate lines in the first place.
@@ -1418,33 +1418,33 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
 
 def token_offsets(tokens):
     """Yield tokens and offsets."""
-    multiline_offset = 0
+    end_offset = 0
     previous_end_row = 0
     previous_end_column = 0
     for t in tokens:
         token_type = t[0]
         token_string = t[1]
-        (start_row, _start_column) = t[2]
-        (end_row, _end_column) = t[3]
+        (start_row, start_column) = t[2]
+        (end_row, end_column) = t[3]
 
         # Account for the whitespace between tokens.
-        multiline_offset += _start_column
+        end_offset += start_column
         if previous_end_row == start_row:
-            multiline_offset -= previous_end_column
+            end_offset -= previous_end_column
 
         # Record the start offset of the token.
-        start_offset = multiline_offset
+        start_offset = end_offset
 
         # Account for the length of the token itself.
-        multiline_offset += len(token_string)
+        end_offset += len(token_string)
 
         yield (token_type,
                token_string,
                start_offset,
-               multiline_offset)
+               end_offset)
 
         previous_end_row = end_row
-        previous_end_column = _end_column
+        previous_end_column = end_column
 
 
 def normalize_multiline(line):
