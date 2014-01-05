@@ -1,6 +1,6 @@
 """Run autopep8 on the selected buffer in Vim.
 
-map <C-I> :pyfile <path_to>/autopep8_vim.py<CR>
+map <C-I> :pyfile <path_to>/vim_autopep8.py<CR>
 
 """
 
