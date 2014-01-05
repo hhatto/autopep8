@@ -2102,7 +2102,8 @@ def create_parser():
                         type=int, metavar='n',
                         help='number of spaces per indent level '
                              '(default %(default)s)')
-    parser.add_argument('files', nargs='*', help='files to format')
+    parser.add_argument('files', nargs='*',
+                        help="files to format or '-' for standard in")
 
     return parser
 
