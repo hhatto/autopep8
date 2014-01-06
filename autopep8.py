@@ -1374,9 +1374,10 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
 
             if (
                 index > 2 and token_string == '(' and
-                tokens[index - 1][1] in ',(%'
+                tokens[index - 1][1] in ',(%['
             ):
-                # Don't split after a tuple start.
+                # Don't split after a tuple start, or before a tuple start if
+                # the tuple is in a list.
                 continue
 
             if end_offset < len(source) - 1:

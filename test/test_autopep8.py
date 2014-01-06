@@ -3034,6 +3034,22 @@ def f():
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_aggressive_with_tuple_in_list(self):
+        line = """\
+def f(self):
+    self._xxxxxxxx(aaaaaa, bbbbbbbbb, cccccccccccccccccc,
+                   [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzz/_DDDDD)], eee, 'ff')
+"""
+        fixed = """\
+def f(self):
+    self._xxxxxxxx(
+        aaaaaa, bbbbbbbbb, cccccccccccccccccc, [
+            ('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzz / _DDDDD)], eee, 'ff')
+"""
+
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
