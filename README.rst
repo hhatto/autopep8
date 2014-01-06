@@ -127,7 +127,7 @@ Options::
     Automatically formats Python code to conform to the PEP 8 style guide.
 
     positional arguments:
-      files                 files to format
+      files                 files to format or '-' for standard in
 
     optional arguments:
       -h, --help            show this help message and exit
