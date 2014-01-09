@@ -1675,8 +1675,8 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length):
             for string in interior[i]:
                 string_list.append(current_indent + repr(string))
 
-            if len(lines[-1]) + len(string_list[0]) + 2 < max_line_length:
-                lines[-1] += string_list[0].lstrip()
+            if len(lines[-1]) + len(string_list[0]) + 3 < max_line_length:
+                lines[-1] += ' ' + string_list[0].lstrip()
                 lines += string_list[1:]
             else:
                 lines += string_list
