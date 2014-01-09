@@ -1274,10 +1274,10 @@ def shorten_line(tokens, source, indentation, indent_word, max_line_length,
 
     elif aggressive >= 3:
         for shortened in _shorten_line_at_tokens_new(
-                 tokens=tokens,
-                 indentation=indentation,
-                 indent_word=indent_word,
-                 max_line_length=max_line_length):
+                tokens=tokens,
+                indentation=indentation,
+                indent_word=indent_word,
+                max_line_length=max_line_length):
 
             yield shortened
 
@@ -1354,6 +1354,7 @@ Token = collections.namedtuple('Token', ['token_type', 'token_string',
 
 
 class Atom(object):
+
     """The smallest unbreakable unit for that can be reflowed."""
 
     def __init__(self, element):
@@ -1370,6 +1371,7 @@ class Atom(object):
 
 
 class Sequence(object):
+
     """A sequence of atoms which are manipulated as a whole."""
 
     def __init__(self, elements):
@@ -1397,7 +1399,8 @@ class Sequence(object):
 
     def is_string(self):
         """Return true only if all elements are strings."""
-        if not self.elements: return False
+        if not self.elements:
+            return False
         for elem in self.elements:
             if not elem.is_string():
                 return False
@@ -1409,6 +1412,7 @@ class Sequence(object):
 
 
 class Container(object):
+
     """The base class for the high-level representations of containers."""
 
     def __init__(self, elements):
@@ -1436,6 +1440,7 @@ class Container(object):
 
 
 class Tuple(Container):
+
     """A high-level representation of a tuple."""
 
     def __init__(self, elements):
@@ -1454,6 +1459,7 @@ class Tuple(Container):
 
 
 class List(Container):
+
     """A high-level representation of a list."""
 
     def __init__(self, elements):
@@ -1472,6 +1478,7 @@ class List(Container):
 
 
 class Dictionary(Container):
+
     """A high-level representation of a dictionary."""
 
     def __init__(self, elements):
@@ -1490,6 +1497,7 @@ class Dictionary(Container):
 
 
 class DictionaryItem(object):
+
     """An argument to a function call."""
 
     def __init__(self, key, value):
