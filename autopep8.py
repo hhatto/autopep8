@@ -1520,9 +1520,7 @@ class DictionaryItem(object):
 
 def _parse_container(tokens, index, is_dict=False):
     """Parse a high-level container, like a list, tuple, etc."""
-
     atoms = []
-    elements = []
     num_tokens = len(tokens)
     while index < num_tokens:
         tok = Token(*tokens[index])
@@ -1618,8 +1616,6 @@ def _parse_tokens(tokens):
         assert tok.token_type != token.INDENT
         if tok.token_type == tokenize.NEWLINE:
             break
-
-        next_token = Token(*get_item(tokens, index + 1))
 
         if tok.token_string in '([{':
             (interior, index) = _parse_container(tokens, index + 1,
@@ -1718,7 +1714,6 @@ def _reflow_lines(parsed_tokens, indentation, indent_word,
 
     reflowed_lines = []
 
-    first_time_through = True
     curr_starting_idx = 0
 
     if repr(parsed_tokens[0]) == 'def':
@@ -1770,7 +1765,6 @@ def _reflow_lines(parsed_tokens, indentation, indent_word,
         reflowed_lines[-1] += interior.close_bracket
 
         curr_starting_idx = len(reflowed_lines) - 1
-        first_time_through = False
         index += 1
 
     return '\n'.join(reflowed_lines) + '\n'
@@ -1784,9 +1778,6 @@ def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
     strings and at the end.
 
     """
-
-    prefix_list = []
-    interior_list = []
     postfix = tokens
 
     parsed_tokens = _parse_tokens(postfix)
