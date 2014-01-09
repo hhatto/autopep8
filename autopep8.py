@@ -1391,7 +1391,7 @@ class Sequence(object):
         for element in self.elements:
             yield element
 
-    def __getitem__(self):
+    def __getitem__(self, idx):
         return self.elements[idx]
 
     def __len__(self):
