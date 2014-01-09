@@ -7,6 +7,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import argparse
 import os
 import sys
 
@@ -26,7 +27,7 @@ else:
     END = ''
 
 
-def check(expected_filename, input_filename):
+def check(expected_filename, input_filename, aggressive):
     """Test and compare output.
 
     Return True on success.
@@ -34,7 +35,7 @@ def check(expected_filename, input_filename):
     """
     got = autopep8.fix_file(
         input_filename,
-        options=autopep8.parse_args(['', '-aa']))
+        options=autopep8.parse_args([''] + aggressive * ['--aggressive']))
 
     try:
         with autopep8.open_with_encoding(expected_filename) as expected_file:
@@ -64,7 +65,7 @@ def check(expected_filename, input_filename):
         return False
 
 
-def run(filename):
+def run(filename, aggressive):
     """Test against a specific file.
 
     Return True on success.
@@ -86,11 +87,12 @@ def run(filename):
             'out',
             os.path.basename(filename)
         ),
-        input_filename=filename
+        input_filename=filename,
+        aggressive=aggressive
     )
 
 
-def suite():
+def suite(aggressive):
     """Run against pep8 test suite."""
     result = True
     path = os.path.join(os.path.dirname(__file__), 'suite')
@@ -99,7 +101,7 @@ def suite():
 
         if filename.endswith('.py'):
             print(filename, file=sys.stderr)
-            result = run(filename) and result
+            result = run(filename, aggressive=aggressive) and result
 
     if result:
         print(GREEN + 'Okay' + END)
@@ -108,7 +110,12 @@ def suite():
 
 
 def main():
-    return int(not suite())
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--aggression-level', default=2, type=int,
+                        help='run autopep8 in aggression level')
+    args = parser.parse_args()
+
+    return int(not suite(aggressive=args.aggression_level))
 
 
 if __name__ == '__main__':
