@@ -1510,7 +1510,7 @@ class DictionaryItem(object):
         return len(self.__repr__())
 
 
-def _parse_container(tokens, index, is_dict=False):
+def _parse_container(tokens, index, open_bracket):
     """Parse a high-level container, like a list, tuple, etc."""
 
     atoms = []
@@ -1534,7 +1534,7 @@ def _parse_container(tokens, index, is_dict=False):
         if tok.token_string in '([{':
             # A sub-container is being defined.
             (atom, index) = _parse_container(tokens, index + 1,
-                                             tok.token_string == '{')
+                                             tok.token_string)
             atoms.append(atom)
 
         elif tok.token_string != ',':
@@ -1545,21 +1545,23 @@ def _parse_container(tokens, index, is_dict=False):
             while index < num_tokens:
                 k_tok = Token(*tokens[index])
 
-                if is_dict:
+                if open_bracket == '{':
                     if k_tok.token_string in ':,':
                         break
                     key_atoms.append(Atom(k_tok))
                 elif k_tok.token_string in ',)]}':
                     index -= 1
                     break
-                elif k_tok.token_string in '(':
-                    (atom, index) = _parse_container(tokens, index + 1)
+                elif k_tok.token_string in '([{':
+                    (atom, index) = _parse_container(tokens, index + 1,
+                                                     k_tok.token_string)
                     key_atoms.append(atom)
                 else:
                     key_atoms.append(Atom(k_tok))
+
                 index += 1
 
-            if is_dict:
+            if open_bracket == '{':
                 if tokens[index][1] == ':':
                     # We're parsing a dictionary. We have the key, now parse
                     # the value.
@@ -1567,9 +1569,8 @@ def _parse_container(tokens, index, is_dict=False):
                     value = []
                     tok = Token(*tokens[index])
                     if tok.token_string in '([{':
-                        dict_def = tok.token_string == '{'
                         (atom, index) = _parse_container(tokens, index + 1,
-                                                         dict_def)
+                                                         tok.token_string)
                         value.append(atom)
                     else:
                         while index < num_tokens:
@@ -1615,7 +1616,7 @@ def _parse_tokens(tokens):
 
         if tok.token_string in '([{':
             (interior, index) = _parse_container(tokens, index + 1,
-                                                 tok.token_string == '}')
+                                                 tok.token_string)
             parsed_tokens.append(interior)
         else:
             parsed_tokens.append(Atom(tok))
