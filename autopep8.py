@@ -1678,7 +1678,7 @@ def _get_as_string(atoms):
 
 
 def _reflow_lines_recursive(interior, current_indent, max_line_length,
-                            depth = 0):
+                            depth=0):
     """Recursively reflow the text so that it looks nice."""
 
     curr_idx = 0
