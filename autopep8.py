@@ -2984,7 +2984,7 @@ def main():
 
 class CachedTokenizer(object):
 
-    """A one-element cache around tokenize.generate_tokens.
+    """A one-element cache around tokenize.generate_tokens().
 
     Original code written by Ned Batchelder, in coverage.py.
 
@@ -2995,7 +2995,7 @@ class CachedTokenizer(object):
         self.last_tokens = None
 
     def generate_tokens(self, text):
-        """A stand-in for `tokenize.generate_tokens`."""
+        """A stand-in for tokenize.generate_tokens()."""
         if text != self.last_text:
             string_io = io.StringIO(text)
             self.last_tokens = list(
