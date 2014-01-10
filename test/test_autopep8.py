@@ -723,7 +723,6 @@ True or \\
             list(autopep8.token_offsets(
                 tokenize.generate_tokens(string_io.readline))))
 
-    @unittest.skip('not yet fixed')
     def test_get_fixed_long_line_with_experimental(self):
         text = """\
 [xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, y] = [1, 2]
