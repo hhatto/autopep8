@@ -1369,6 +1369,9 @@ class Atom(object):
     def is_string(self):
         return self.element.token_type == tokenize.STRING
 
+    @property
+    def size(self):
+        return len(self.__repr__())
 
 class Sequence(object):
 
@@ -1419,7 +1422,7 @@ class Container(object):
         self.elements = elements
 
     def __repr__(self):
-        return ', '.join(map(repr, self.elements))
+        return ' '.join(map(repr, self.elements))
 
     def __iter__(self):
         for element in self.elements:
@@ -1600,6 +1603,9 @@ def _parse_container(tokens, index, open_bracket):
             else:
                 atoms.append(Sequence(key_atoms))
 
+        if tokens[index][1] == ',':
+            atoms.append(Atom(Token(*tokens[index])))
+
         index += 1
 
 
@@ -1707,9 +1713,6 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length):
             lines.append(current_indent + repr(interior[i]))
             curr_idx += 1
 
-        if i < num_elements - 1:
-            lines[curr_idx] += ','
-
     return lines
 
 
@@ -1743,7 +1746,10 @@ def _reflow_lines(parsed_tokens, indentation, indent_word,
         prefix_str = _get_as_string(prefix)
         if prefix_str:
             if reflowed_lines:
-                if reflowed_lines[curr_starting_idx].strip():
+                if (
+                    reflowed_lines[curr_starting_idx].strip() and
+                    not prefix_str.startswith('.')
+                ):
                     reflowed_lines[curr_starting_idx] += ' '
                 reflowed_lines[curr_starting_idx] += prefix_str
             else:

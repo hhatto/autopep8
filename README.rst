@@ -175,7 +175,9 @@ autopep8 fixes the following issues_ reported by pep8_::
     E211 - Remove extraneous whitespace.
     E22  - Fix extraneous whitespace around keywords.
     E224 - Remove extraneous whitespace around operator.
-    E22  - Fix missing whitespace around operator.
+    E226 - Fix missing whitespace around arithmetic operator.
+    E227 - Fix missing whitespace around bitwise/shift operator.
+    E228 - Fix missing whitespace around modulo operator.
     E231 - Add missing whitespace.
     E241 - Fix extraneous whitespace around keywords.
     E242 - Remove extraneous whitespace around operator.
