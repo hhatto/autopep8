@@ -1432,7 +1432,14 @@ class Container(object):
         self.elements = elements
 
     def __repr__(self):
-        return ' '.join(map(repr, self.elements))
+        string = ''
+        for elem in map(repr, self.elements):
+            if elem == ',':
+                string += ', '
+            else:
+                string += elem
+
+        return string
 
     def __iter__(self):
         for element in self.elements:
@@ -1802,19 +1809,17 @@ def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
 
     parsed_tokens = _parse_tokens(tokens)
 
-    # TODO: Check syntax of candidates.
-
     if parsed_tokens:
         # Perform two reflows. The first one starts on the same line as the
         # prefix. The second starts on the line after the prefix.
         fixed = _reflow_lines(parsed_tokens, indentation, indent_word,
                               max_line_length, start_on_prefix_line=True)
-        if check_syntax(normalize_multiline(fixed)):
+        if check_syntax(normalize_multiline(fixed).lstrip()):
             yield fixed
 
         fixed = _reflow_lines(parsed_tokens, indentation, indent_word,
                               max_line_length, start_on_prefix_line=False)
-        if check_syntax(normalize_multiline(fixed)):
+        if check_syntax(normalize_multiline(fixed).lstrip()):
             yield fixed
 
 
