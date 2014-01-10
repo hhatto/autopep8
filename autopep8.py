@@ -1787,6 +1787,8 @@ def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
 
     parsed_tokens = _parse_tokens(postfix)
 
+    # TODO: Check syntax of candidates.
+
     if parsed_tokens:
         # Perform two reflows. The first one starts on the same line as the
         # prefix. The second starts on the line after the prefix.
