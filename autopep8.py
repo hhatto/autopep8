@@ -1800,11 +1800,15 @@ def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
     if parsed_tokens:
         # Perform two reflows. The first one starts on the same line as the
         # prefix. The second starts on the line after the prefix.
-        yield _reflow_lines(parsed_tokens, indentation, indent_word,
-                            max_line_length, start_on_prefix_line=True)
+        fixed = _reflow_lines(parsed_tokens, indentation, indent_word,
+                              max_line_length, start_on_prefix_line=True)
+        if check_syntax(normalize_multiline(fixed)):
+            yield fixed
 
-        yield _reflow_lines(parsed_tokens, indentation, indent_word,
-                            max_line_length, start_on_prefix_line=False)
+        fixed = _reflow_lines(parsed_tokens, indentation, indent_word,
+                              max_line_length, start_on_prefix_line=False)
+        if check_syntax(normalize_multiline(fixed)):
+            yield fixed
 
 
 def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
