@@ -1364,7 +1364,7 @@ Token = collections.namedtuple('Token', ['token_type', 'token_string',
 
 class Atom(object):
 
-    """The smallest unbreakable unit for that can be reflowed."""
+    """The smallest unbreakable unit that can be reflowed."""
 
     def __init__(self, element):
         self.element = element
@@ -1433,11 +1433,16 @@ class Container(object):
 
     def __repr__(self):
         string = ''
+        prev_val = None
         for elem in map(repr, self.elements):
             if elem == ',':
                 string += ', '
+            elif prev_val and prev_val.endswith(tuple(')]}')):
+                string += ' ' + elem
             else:
                 string += elem
+
+            prev_val = elem
 
         return string
 
@@ -1540,6 +1545,7 @@ class DictionaryItem(object):
 
 def _parse_container(tokens, index, open_bracket):
     """Parse a high-level container, like a list, tuple, etc."""
+
     atoms = []
     num_tokens = len(tokens)
     while index < num_tokens:
@@ -1671,7 +1677,8 @@ def _get_as_string(atoms):
     return string
 
 
-def _reflow_lines_recursive(interior, current_indent, max_line_length):
+def _reflow_lines_recursive(interior, current_indent, max_line_length,
+                            depth = 0):
     """Recursively reflow the text so that it looks nice."""
 
     curr_idx = 0
@@ -1679,9 +1686,10 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length):
 
     num_elements = len(interior)
     for i in range(num_elements):
+        line_extent = len(lines[curr_idx]) + depth
         if isinstance(interior[i], (Tuple, List, Dictionary)):
             # We're reflowing a container.
-            if len(lines[curr_idx]) + interior[i].size + 1 < max_line_length:
+            if line_extent + interior[i].size + 1 < max_line_length:
                 # The container fits on the current line. Go ahead and inline
                 # it.
                 if lines[curr_idx].endswith(','):
@@ -1692,7 +1700,8 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length):
                 # The container will go over multiple lines. Reflow the
                 # sub-container and then fold it into the parent container.
                 reflowed_lines = _reflow_lines_recursive(
-                    interior[i], current_indent + ' ', max_line_length)
+                    interior[i], current_indent + ' ', max_line_length,
+                    depth + 1)
                 first_line = current_indent + interior[i].open_bracket
                 reflowed_lines[0] = first_line + reflowed_lines[0].lstrip()
                 reflowed_lines[-1] += interior[i].close_bracket
@@ -1714,13 +1723,17 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length):
 
             curr_idx = len(lines) - 1
 
-        elif len(lines[curr_idx]) + interior[i].size + 1 < max_line_length:
+        elif (
+            line_extent + interior[i].size + 2 < max_line_length or
+            (line_extent + interior[i].size < max_line_length and
+             repr(interior[i]) == ',')
+        ):
             # The current element fits on the current line.
             if lines[curr_idx].endswith(','):
                 lines[curr_idx] += ' '
             lines[curr_idx] += repr(interior[i])
 
-        elif lines[curr_idx].strip() == '':
+        elif not lines[curr_idx].strip():
             # A degenerate case. The current atom is over the line length. We
             # can't do anything except place it on the line and proceed from
             # there.
@@ -1774,8 +1787,6 @@ def _reflow_lines(parsed_tokens, indentation, indent_word,
             break
 
         if start_on_prefix_line:
-            if not reflowed_lines:
-                reflowed_lines.append('')
             start_indent = ' ' * (len(reflowed_lines[curr_starting_idx]) + 1)
 
         interior = parsed_tokens[index]
