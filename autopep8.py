@@ -770,51 +770,20 @@ class FixPEP8(object):
                 max_line_length=self.options.max_line_length,
                 last_comment=not next_line.lstrip().startswith('#'))
 
-        fixed = self.get_fixed_long_line(
+        fixed = get_fixed_long_line(
             target=target,
             previous_line=previous_line,
-            original=original)
+            original=original,
+            indent_word=self.indent_word,
+            max_line_length=self.options.max_line_length,
+            aggressive=self.options.aggressive,
+            experimental=self.options.experimental,
+            verbose=self.options.verbose)
         if fixed and not code_almost_equal(original, fixed):
             return fixed
         else:
             self.long_line_ignore_cache.add(cache_entry)
             return None
-
-    def get_fixed_long_line(self, target, previous_line, original):
-        indent = _get_indentation(target)
-        source = target[len(indent):]
-        assert source.lstrip() == source
-
-        # Check for partial multiline.
-        try:
-            tokens = list(generate_tokens(source))
-        except (SyntaxError, tokenize.TokenError):
-            return
-
-        candidates = shorten_line(
-            tokens, source, indent,
-            self.indent_word,
-            self.options.max_line_length,
-            aggressive=self.options.aggressive,
-            experimental=self.options.experimental,
-            previous_line=previous_line)
-
-        # Also sort alphabetically as a tie breaker (for determinism).
-        candidates = sorted(
-            sorted(set(candidates).union([target, original])),
-            key=lambda x: line_shortening_rank(x,
-                                               self.indent_word,
-                                               self.options.max_line_length))
-
-        if self.options.verbose >= 4:
-            print(('-' * 79 + '\n').join([''] + candidates + ['']),
-                  file=codecs.getwriter('utf-8')(sys.stderr.buffer
-                                                 if hasattr(sys.stderr,
-                                                            'buffer')
-                                                 else sys.stderr))
-
-        if candidates:
-            return candidates[0]
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""
@@ -930,6 +899,45 @@ class FixPEP8(object):
         """Remove trailing whitespace."""
         fixed_line = self.source[result['line'] - 1].rstrip()
         self.source[result['line'] - 1] = fixed_line + '\n'
+
+
+def get_fixed_long_line(target, previous_line, original,
+                        indent_word='    ', max_line_length=79,
+                        aggressive=False, experimental=False, verbose=False):
+    indent = _get_indentation(target)
+    source = target[len(indent):]
+    assert source.lstrip() == source
+
+    # Check for partial multiline.
+    try:
+        tokens = list(generate_tokens(source))
+    except (SyntaxError, tokenize.TokenError):
+        return
+
+    candidates = shorten_line(
+        tokens, source, indent,
+        indent_word,
+        max_line_length,
+        aggressive=aggressive,
+        experimental=experimental,
+        previous_line=previous_line)
+
+    # Also sort alphabetically as a tie breaker (for determinism).
+    candidates = sorted(
+        sorted(set(candidates).union([target, original])),
+        key=lambda x: line_shortening_rank(x,
+                                           indent_word,
+                                           max_line_length))
+
+    if verbose >= 4:
+        print(('-' * 79 + '\n').join([''] + candidates + ['']),
+              file=codecs.getwriter('utf-8')(sys.stderr.buffer
+                                             if hasattr(sys.stderr,
+                                                        'buffer')
+                                             else sys.stderr))
+
+    if candidates:
+        return candidates[0]
 
 
 def join_logical_line(logical_line):

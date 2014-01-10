@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 
 import os
+import re
 import sys
 
 if sys.version_info < (2, 7):
@@ -721,6 +722,18 @@ True or \\
              (tokenize.ENDMARKER, '', 17, 17)],
             list(autopep8.token_offsets(
                 tokenize.generate_tokens(string_io.readline))))
+
+    def test_get_fixed_long_line(self):
+        text = """\
+[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, y] = [1, 2]
+"""
+        self.assertEqual(
+            re.sub(r'\s', '', text),
+            re.sub(r'\s', '', autopep8.get_fixed_long_line(
+                target=text,
+                previous_line='',
+                original=text,
+                experimental=True)))
 
 
 class SystemTests(unittest.TestCase):
@@ -1756,7 +1769,6 @@ class Foo(object):
 
     def test_e231_with_many_commas(self):
         fixed = str(list(range(200))) + '\n'
-        import re
         line = re.sub(', ', ',', fixed)
         with autopep8_context(line, options=['--select=E231']) as result:
             self.assertEqual(fixed, result)
