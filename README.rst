@@ -119,9 +119,9 @@ After running autopep8.
 Options::
 
     usage: autopep8 [-h] [--version] [-v] [-d] [-i] [-r] [-j n] [-p n] [-a]
-                    [--exclude globs] [--list-fixes] [--ignore errors]
-                    [--select errors] [--max-line-length n] [--range line line]
-                    [--indent-size n]
+                    [--experimental] [--exclude globs] [--list-fixes]
+                    [--ignore errors] [--select errors] [--max-line-length n]
+                    [--range line line] [--indent-size n]
                     [files [files ...]]
 
     Automatically formats Python code to conform to the PEP 8 style guide.
@@ -145,6 +145,7 @@ Options::
                             infinite)
       -a, --aggressive      enable non-whitespace changes; multiple -a result in
                             more aggressive changes
+      --experimental        enable experimental fixes
       --exclude globs       exclude file/directory names that match these comma-
                             separated globs
       --list-fixes          list codes for fixes; used by --ignore and --select
