@@ -40,7 +40,7 @@ def colored(text, color):
 def run(filename, command, max_line_length=79,
         ignore='', check_ignore='', verbose=False,
         comparison_function=None,
-        aggressive=0):
+        aggressive=0, experimental=False):
     """Run autopep8 on file at filename.
 
     Return True on success.
@@ -49,7 +49,8 @@ def run(filename, command, max_line_length=79,
     command = (shlex.split(command) + (['--verbose'] if verbose else []) +
                ['--max-line-length={0}'.format(max_line_length),
                 '--ignore=' + ignore, filename] +
-               aggressive * ['--aggressive'])
+               aggressive * ['--aggressive'] +
+               (['--experimental'] if experimental else []))
 
     with tempfile.NamedTemporaryFile(suffix='.py') as tmp_file:
         if 0 != subprocess.call(command, stdout=tmp_file):
@@ -120,6 +121,8 @@ def process_args():
                         'sets default --ignore=' + compare_bytecode_ignore)
     parser.add_argument('-a', '--aggressive', action='count', default=0,
                         help='run autopep8 in aggressive mode')
+    parser.add_argument('--experimental', action='store_true',
+                        help='run experimental fixes')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='print verbose messages')
     parser.add_argument('paths', nargs='*',
@@ -202,7 +205,8 @@ def check(paths, args):
                            check_ignore=args.check_ignore,
                            verbose=args.verbose,
                            comparison_function=comparison_function,
-                           aggressive=args.aggressive):
+                           aggressive=args.aggressive,
+                           experimental=args.experimental):
                     return False
         except (UnicodeDecodeError, UnicodeEncodeError) as exception:
             # Ignore annoying codec problems on Python 2.

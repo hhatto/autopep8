@@ -796,6 +796,7 @@ class FixPEP8(object):
             self.indent_word,
             self.options.max_line_length,
             aggressive=self.options.aggressive,
+            experimental=self.options.experimental,
             previous_line=previous_line)
 
         # Also sort alphabetically as a tie breaker (for determinism).
@@ -1245,7 +1246,7 @@ def _priority_key(pep8_result):
 
 
 def shorten_line(tokens, source, indentation, indent_word, max_line_length,
-                 aggressive=False, previous_line=''):
+                 aggressive=False, experimental=False, previous_line=''):
     """Separate line at OPERATOR.
 
     Multiple candidates will be yielded.
@@ -1259,7 +1260,7 @@ def shorten_line(tokens, source, indentation, indent_word, max_line_length,
                                    previous_line=previous_line):
         yield candidate
 
-    if 1 <= aggressive < 3:
+    if aggressive:
         for key_token_strings in SHORTEN_OPERATOR_GROUPS:
             shortened = _shorten_line_at_tokens(
                 tokens=tokens,
@@ -1272,7 +1273,7 @@ def shorten_line(tokens, source, indentation, indent_word, max_line_length,
             if shortened is not None and shortened != source:
                 yield shortened
 
-    elif aggressive >= 3:
+    if experimental:
         for shortened in _shorten_line_at_tokens_new(
                 tokens=tokens,
                 indentation=indentation,
@@ -2548,6 +2549,8 @@ def create_parser():
     parser.add_argument('-a', '--aggressive', action='count', default=0,
                         help='enable non-whitespace changes; '
                         'multiple -a result in more aggressive changes')
+    parser.add_argument('--experimental', action='store_true',
+                        help='enable experimental fixes')
     parser.add_argument('--exclude', metavar='globs',
                         help='exclude file/directory names that match these '
                         'comma-separated globs')
