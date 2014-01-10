@@ -3062,7 +3062,7 @@ def f(self):
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
-    @unittest.skipIf(sys.version_info <= (2, 6),
+    @unittest.skipIf(sys.version_info < (2, 7),
                      'Python 2.6 does not support dictionary comprehensions')
     def test_e501_experimental_with_complex_reformat(self):
         line = """\
