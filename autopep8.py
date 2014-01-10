@@ -1373,6 +1373,7 @@ class Atom(object):
     def size(self):
         return len(self.__repr__())
 
+
 class Sequence(object):
 
     """A sequence of atoms which are manipulated as a whole."""
