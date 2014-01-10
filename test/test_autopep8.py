@@ -3062,6 +3062,8 @@ def f(self):
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    @unittest.skipIf(sys.version_info <= (2, 6),
+                     'Python 2.6 does not support dictionary comprehensions')
     def test_e501_experimental_with_complex_reformat(self):
         line = """\
 bork(111, 111, 111, 111, 222, 222, 222, { 'foo': 222, 'qux': 222 }, ((['hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']), {str(i): i for i in range(10)}, {'bork':((x, x**x) for x in range(10))}), 222, 222, 222, 222, 333, 333, 333, 333)
