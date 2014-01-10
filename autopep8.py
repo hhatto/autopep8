@@ -1730,7 +1730,7 @@ def _reflow_lines(parsed_tokens, indentation, indent_word,
                   max_line_length, start_on_prefix_line):
     """Reflow the lines so that it looks nice."""
 
-    reflowed_lines = []
+    reflowed_lines = ['']
 
     curr_starting_idx = 0
 
@@ -1755,20 +1755,20 @@ def _reflow_lines(parsed_tokens, indentation, indent_word,
 
         prefix_str = _get_as_string(prefix)
         if prefix_str:
-            if reflowed_lines:
-                if (
-                    reflowed_lines[curr_starting_idx].strip() and
-                    not prefix_str.startswith('.')
-                ):
+            if reflowed_lines[curr_starting_idx].strip():
+                if not prefix_str.startswith('.'):
                     reflowed_lines[curr_starting_idx] += ' '
-                reflowed_lines[curr_starting_idx] += prefix_str
             else:
-                reflowed_lines.append(indentation + prefix_str)
+                reflowed_lines[curr_starting_idx] += indentation
+
+            reflowed_lines[curr_starting_idx] += prefix_str
 
         if index >= num_tokens:
             break
 
         if start_on_prefix_line:
+            if not reflowed_lines:
+                reflowed_lines.append('')
             start_indent = ' ' * (len(reflowed_lines[curr_starting_idx]) + 1)
 
         interior = parsed_tokens[index]
@@ -1799,9 +1799,8 @@ def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
     strings and at the end.
 
     """
-    postfix = tokens
 
-    parsed_tokens = _parse_tokens(postfix)
+    parsed_tokens = _parse_tokens(tokens)
 
     # TODO: Check syntax of candidates.
 
