@@ -723,17 +723,36 @@ True or \\
             list(autopep8.token_offsets(
                 tokenize.generate_tokens(string_io.readline))))
 
-    def test_get_fixed_long_line_with_experimental(self):
-        text = """\
+    def test_shorten_line_candidates_are_valid(self):
+        for text in [
+            """\
 [xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, y] = [1, 2]
-"""
-        self.assertEqual(
-            re.sub(r'\s', '', text),
-            re.sub(r'\s', '', autopep8.get_fixed_long_line(
-                target=text,
-                previous_line='',
-                original=text,
-                experimental=True)))
+""",
+            """\
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, y = [1, 2]
+""",
+            """\
+lambda xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: line_shortening_rank(x,
+                                           indent_word,
+                                           max_line_length)
+""",
+        ]:
+            indent = autopep8._get_indentation(text)
+            source = text[len(indent):]
+            assert source.lstrip() == source
+            tokens = list(autopep8.generate_tokens(source))
+
+            for candidate in autopep8.shorten_line(
+                    tokens, source, indent,
+                    indent_word='    ',
+                    max_line_length=79,
+                    aggressive=True,
+                    experimental=True,
+                    previous_line=''):
+
+                self.assertEqual(
+                    re.sub(r'\s', '', text),
+                    re.sub(r'\s', '', candidate))
 
 
 class SystemTests(unittest.TestCase):
