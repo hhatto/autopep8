@@ -746,7 +746,7 @@ lambda xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
                     tokens, source, indent,
                     indent_word='    ',
                     max_line_length=79,
-                    aggressive=True,
+                    aggressive=10,
                     experimental=True,
                     previous_line=''):
 
