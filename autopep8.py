@@ -1692,39 +1692,38 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length,
     curr_idx = 0
     lines = [current_indent]
 
-    num_elements = len(interior)
-    for i in range(num_elements):
+    for item in interior:
         line_extent = len(lines[curr_idx]) + depth
 
-        if isinstance(interior[i], (Tuple, List, Dictionary, Sequence)):
+        if isinstance(item, (Tuple, List, Dictionary, Sequence)):
             # We're reflowing a container.
-            if line_extent + interior[i].size + 1 < max_line_length:
+            if line_extent + item.size + 1 < max_line_length:
                 # The container fits on the current line. Go ahead and inline
                 # it.
                 if lines[curr_idx].endswith(','):
                     lines[curr_idx] += ' '
-                lines[curr_idx] += repr(interior[i])
+                lines[curr_idx] += repr(item)
 
             else:
                 # The container will go over multiple lines. Reflow the
                 # sub-container and then fold it into the parent container.
                 reflowed_lines = _reflow_lines_recursive(
-                    interior[i], current_indent + ' ', max_line_length,
+                    item, current_indent + ' ', max_line_length,
                     depth + 1)
-                first_line = current_indent + interior[i].open_bracket
+                first_line = current_indent + item.open_bracket
                 reflowed_lines[0] = first_line + reflowed_lines[0].lstrip()
-                reflowed_lines[-1] += interior[i].close_bracket
+                reflowed_lines[-1] += item.close_bracket
 
                 lines += reflowed_lines
                 curr_idx = len(lines) - 1
 
-        elif interior[i].is_string():
+        elif item.is_string():
             # We want to place adjacent strings on separate lines.
             string_list = []
-            if isinstance(interior[i], Atom):
-                string_list.append(current_indent + repr(interior[i]))
+            if isinstance(item, Atom):
+                string_list.append(current_indent + repr(item))
             else:
-                for string in interior[i]:
+                for string in item:
                     string_list.append(current_indent + repr(string))
 
             if len(lines[-1]) + len(string_list[0]) + 3 < max_line_length:
@@ -1736,23 +1735,23 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length,
             curr_idx = len(lines) - 1
 
         elif (
-            line_extent + interior[i].size + 2 < max_line_length or
-            (line_extent + interior[i].size < max_line_length and
-             repr(interior[i]) == ',')
+            line_extent + item.size + 2 < max_line_length or
+            (line_extent + item.size < max_line_length and
+             repr(item) == ',')
         ):
             # The current element fits on the current line.
             if lines[curr_idx].endswith(','):
                 lines[curr_idx] += ' '
-            lines[curr_idx] += repr(interior[i])
+            lines[curr_idx] += repr(item)
 
         elif not lines[curr_idx].strip():
             # A degenerate case. The current atom is over the line length. We
             # can't do anything except place it on the line and proceed from
             # there.
-            lines[curr_idx] += repr(interior[i])
+            lines[curr_idx] += repr(item)
 
         else:
-            lines.append(current_indent + repr(interior[i]))
+            lines.append(current_indent + repr(item))
             curr_idx += 1
 
     return lines
