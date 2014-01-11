@@ -1431,6 +1431,7 @@ class Sequence(object):
     def close_bracket(self):
         return ''
 
+
 class Container(object):
 
     """The base class for the high-level representations of containers."""
@@ -1811,8 +1812,8 @@ def _reflow_lines(parsed_tokens, indentation, indent_word,
             reflowed_lines[curr_starting_idx] += interior.open_bracket
 
             if (curr_starting_idx != 0 and
-                len(reflowed_lines[curr_starting_idx]) +
-                len(interior_reflowed_lines[0]) + 1 < max_line_length):
+                    len(reflowed_lines[curr_starting_idx]) +
+                    len(interior_reflowed_lines[0]) + 1 < max_line_length):
                 reflowed_lines[curr_starting_idx] += interior_reflowed_lines[0]
             else:
                 reflowed_lines.append(interior_reflowed_lines[0])
