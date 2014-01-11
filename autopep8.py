@@ -1423,6 +1423,13 @@ class Sequence(object):
     def size(self):
         return len(self.__repr__())
 
+    @property
+    def open_bracket(self):
+        return ''
+
+    @property
+    def close_bracket(self):
+        return ''
 
 class Container(object):
 
@@ -1687,7 +1694,8 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length,
     num_elements = len(interior)
     for i in range(num_elements):
         line_extent = len(lines[curr_idx]) + depth
-        if isinstance(interior[i], (Tuple, List, Dictionary)):
+
+        if isinstance(interior[i], (Tuple, List, Dictionary, Sequence)):
             # We're reflowing a container.
             if line_extent + interior[i].size + 1 < max_line_length:
                 # The container fits on the current line. Go ahead and inline
@@ -1712,8 +1720,11 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length,
         elif interior[i].is_string():
             # We want to place adjacent strings on separate lines.
             string_list = []
-            for string in interior[i]:
-                string_list.append(current_indent + repr(string))
+            if isinstance(interior[i], Atom):
+                string_list.append(current_indent + repr(interior[i]))
+            else:
+                for string in interior[i]:
+                    string_list.append(current_indent + repr(string))
 
             if len(lines[-1]) + len(string_list[0]) + 3 < max_line_length:
                 lines[-1] += ' ' + string_list[0].lstrip()
@@ -1793,12 +1804,18 @@ def _reflow_lines(parsed_tokens, indentation, indent_word,
         interior_reflowed_lines = _reflow_lines_recursive(
             interior, start_indent, max_line_length)
 
-        if start_on_prefix_line:
+        if start_on_prefix_line and curr_starting_idx == 0:
             reflowed_lines[curr_starting_idx] += \
                 interior.open_bracket + interior_reflowed_lines[0].lstrip()
         else:
             reflowed_lines[curr_starting_idx] += interior.open_bracket
-            reflowed_lines.append(interior_reflowed_lines[0])
+
+            if (curr_starting_idx != 0 and
+                len(reflowed_lines[curr_starting_idx]) +
+                len(interior_reflowed_lines[0]) + 1 < max_line_length):
+                reflowed_lines[curr_starting_idx] += interior_reflowed_lines[0]
+            else:
+                reflowed_lines.append(interior_reflowed_lines[0])
 
         reflowed_lines += interior_reflowed_lines[1:]
         reflowed_lines[-1] += interior.close_bracket
@@ -1817,7 +1834,6 @@ def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
     strings and at the end.
 
     """
-
     parsed_tokens = _parse_tokens(tokens)
 
     if parsed_tokens:

@@ -3073,8 +3073,40 @@ bork(
     111, 111, 111, 111, 222, 222, 222, {'foo': 222, 'qux': 222},
     ((['hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']),
      {str(i): i for i in range(10)},
-     {'bork': ((x, x ** x) for x in range(10))}), 222, 222, 222, 222, 333,
-    333, 333, 333)
+     {'bork': ((x, x ** x) for x in range(10))}), 222, 222, 222, 222, 333, 333
+    , 333, 333)
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_with_multiple_lines_and_quotes(self):
+        line = """\
+if True:
+    xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(xxxxxxxxxxx, xxxxxxxxxxxxxxxx={'xxxxxxxxxxxx': 'xxxxx',
+                                                                   'xxxxxxxxxxx': xx,
+                                                                   'xxxxxxxx': False,
+                                                                   })
+"""
+        fixed = """\
+if True:
+    xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(
+        xxxxxxxxxxx,
+        xxxxxxxxxxxxxxxx=
+        {'xxxxxxxxxxxx': 'xxxxx', 'xxxxxxxxxxx': xx, 'xxxxxxxx': False, })
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_avoid_breaking_at_empty_arentheses_if_possible(self):
+        line = """\
+someverylongindenttionwhatnot().foo().bar().baz("and here is a long string 123456789012345678901234567890")
+"""
+        fixed = """\
+someverylongindenttionwhatnot(
+).foo().bar().baz(
+    "and here is a long string 123456789012345678901234567890")
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
