@@ -46,6 +46,7 @@ import difflib
 import fnmatch
 import inspect
 import io
+import keyword
 import locale
 import os
 import re
@@ -1362,25 +1363,314 @@ Token = collections.namedtuple('Token', ['token_type', 'token_string',
                                          'spos', 'epos', 'line'])
 
 
+def _get_as_string(elements):
+    string = ''
+    last_was_keyword = False
+
+    for elem in elements:
+        if elem.is_comma:
+            string += ', '
+        elif elem.is_colon:
+            string += ': '
+        else:
+            elem_string = repr(elem)
+            if (
+                string and
+                (last_was_keyword or
+                 (not string.endswith(tuple('([{,.:}]) ')) and
+                  not elem_string.startswith(tuple('([{,.:}])'))))
+            ):
+                string += ' '
+            string += elem_string
+
+        last_was_keyword = elem.is_keyword
+    return string
+
+
+def _needs_a_space(curr_elem, prev_elem):
+    return (
+        # A space is required if the current element isn't one that doesn't
+        # need a space before it
+        repr(curr_elem) not in '.,:' and
+
+        # ...and there is a previous element
+        prev_elem and
+
+        # ...which is either a keyword,
+        (prev_elem.is_keyword or
+
+         # ...or an element which wants a space after it.
+         repr(prev_elem) in ',:)]}')
+    )
+
+
+class ReflowedLines(object):
+
+    """The reflowed lines of atoms."""
+
+    class _LineBreak(object):
+
+        """Represent a line break in the atom stream."""
+
+        def __init__(self, indent_amt):
+            self._indent_amt = indent_amt
+
+        def emit(self):
+            return '\n' + ' ' * self._indent_amt
+
+        @property
+        def size(self):
+            return self._indent_amt
+
+    class _Space(object):
+
+        """Represent a space in the atom stream."""
+
+        def emit(self):
+            return ' '
+
+        @property
+        def size(self):
+            return 1
+
+    def __init__(self, max_line_length):
+        self._lines = []
+        self._max_line_length = max_line_length
+
+    def add_atom(self, atom):
+        self._lines.append(atom)
+
+    def add_space(self):
+        self._lines.append(self._Space())
+
+    def add_line_break(self, effective_line_len):
+        self._lines.append(self._LineBreak(
+                self._max_line_length - effective_line_len))
+
+    def total_line_size(self):
+        """The size of the line as it will be emitted."""
+
+        size = 0
+        for elem in reversed(self._lines):
+            size += elem.size
+            if isinstance(elem, self._LineBreak):
+                break
+        return size
+
+    def current_size(self):
+        """The size of the current line minus the indentation."""
+
+        size = 0
+        for elem in reversed(self._lines):
+            if isinstance(elem, self._LineBreak):
+                break
+            size += elem.size
+        return size
+
+    def get_prev_element(self):
+        for elem in reversed(self._lines):
+            if not isinstance(elem, (self._LineBreak, self._Space)):
+                return elem
+        return None
+
+    def line_empty(self):
+        return self._lines and not isinstance(self._lines, self._LineBreak)
+
+    def emit(self):
+        string = ''
+        for elem in self._lines:
+            if isinstance(elem, self._LineBreak):
+                string = string.rstrip()
+            string += elem.emit()
+        return string.rstrip() + '\n'
+
+
 class Atom(object):
 
     """The smallest unbreakable unit that can be reflowed."""
 
     def __init__(self, element):
-        self.element = element
+        self._element = element
 
     def __repr__(self):
-        return self.element.token_string
+        return self._element.token_string
 
     def __len__(self):
-        return len(self.__repr__())
+        return self.size
 
     def is_string(self):
-        return self.element.token_type == tokenize.STRING
+        return self._element.token_type == tokenize.STRING
+
+    def reflow(self, reflowed_lines, effective_line_len,
+               break_after_open_bracket=False):
+        total_size = reflowed_lines.current_size() + self.size
+
+        if self.__repr__() not in ',:([{}])':
+            # Some elements will need an extra 1-sized space token after them.
+            total_size += 1
+
+        if total_size > effective_line_len:
+            # Start a new line if there is already something on the line and
+            # adding this atom would make it go over the effective max line
+            # length.
+            reflowed_lines.add_line_break(effective_line_len)
+
+        reflowed_lines.add_atom(self)
+
+    def emit(self):
+        return self.__repr__()
+
+    @property
+    def is_keyword(self):
+        return keyword.iskeyword(self._element.token_string)
+
+    @property
+    def is_comma(self):
+        return self._element.token_string == ','
+
+    @property
+    def is_colon(self):
+        return self._element.token_string == ':'
+
+    @property
+    def size(self):
+        return len(self._element.token_string)
+
+
+class Container_(object):
+
+    """Base class for all container types."""
+
+    def __init__(self, elements):
+        self._elements = elements
+
+    def __repr__(self):
+        return _get_as_string(self._elements)
+
+    def __iter__(self):
+        for element in self._elements:
+            yield element
+
+    def __getitem__(self, idx):
+        return self._elements[idx]
+
+    def reflow(self, reflowed_lines, effective_line_len,
+               break_after_open_bracket=False):
+        for (index, curr_elem) in enumerate(self._elements):
+            prev_elem = reflowed_lines.get_prev_element()
+            next_elem = get_item(self._elements, index + 1)
+
+            curr_elem_text = repr(curr_elem)
+            curr_elem_size = len(curr_elem_text)
+            curr_line_size = reflowed_lines.current_size()
+
+            if prev_elem and prev_elem.is_string() and curr_elem.is_string():
+                # Place consecutive string literals on separate lines.
+                reflowed_lines.add_line_break(effective_line_len)
+
+            elif isinstance(curr_elem, Atom):
+                if curr_line_size + curr_elem_size + 1 <= effective_line_len:
+                    if _needs_a_space(curr_elem, prev_elem):
+                        reflowed_lines.add_space()
+                else:
+                    # No room at the inn. Line break for the new element.
+                    reflowed_lines.add_line_break(effective_line_len)
+
+            # Decrease the effective line length only if we're recursing on a
+            # container.
+            offset = 1 if isinstance(curr_elem, Container_) else 0
+            curr_elem.reflow(reflowed_lines, effective_line_len - offset)
+
+            if (
+                break_after_open_bracket and index == 0 and
+                    # Prefer to keep empty containers together instead of
+                    # separating them.
+                    repr(curr_elem) == self.open_bracket and
+                    (not next_elem or repr(next_elem) != self.close_bracket)
+            ):
+                reflowed_lines.add_line_break(effective_line_len)
+                break_after_open_bracket = False
+
+    def is_string(self):
+        return False
 
     @property
     def size(self):
         return len(self.__repr__())
+
+    @property
+    def is_keyword(self):
+        return False
+
+    @property
+    def is_comma(self):
+        return False
+
+    @property
+    def is_colon(self):
+        return False
+
+
+class Tuple_(Container_):
+
+    """A high-level representation of a tuple."""
+
+    def __init__(self, elements):
+        super(Tuple_, self).__init__(elements)
+
+    def __repr__(self):
+        return super(Tuple_, self).__repr__()
+
+    @property
+    def open_bracket(self):
+        return '('
+
+    @property
+    def close_bracket(self):
+        return ')'
+
+
+class List_(Container_):
+
+    """A high-level representation of a list."""
+
+    def __init__(self, elements):
+        super(List_, self).__init__(elements)
+
+    def __repr__(self):
+        return super(List_, self).__repr__()
+
+    @property
+    def open_bracket(self):
+        return '['
+
+    @property
+    def close_bracket(self):
+        return ']'
+
+
+class DictOrSet(Container_):
+
+    """A high-level representation of a dictionary or set."""
+
+    def __init__(self, elements):
+        super(DictOrSet, self).__init__(elements)
+
+    def __repr__(self):
+        return super(DictOrSet, self).__repr__()
+
+    @property
+    def open_bracket(self):
+        return '{'
+
+    @property
+    def close_bracket(self):
+        return '}'
+
+
+
+
+
 
 
 class Sequence(object):
@@ -1551,91 +1841,40 @@ class DictionaryItem(object):
         return len(self.__repr__())
 
 
-def _parse_container(tokens, index, open_bracket):
-    """Parse a high-level container, like a list, tuple, etc."""
+def _parse_container(tokens, index):
+    """Parse a high-level container, such as a list, tuple, etc."""
 
-    atoms = []
+    # Store the opening bracket.
+    elements = [Atom(Token(*tokens[index]))]
+    index += 1
+
     num_tokens = len(tokens)
     while index < num_tokens:
         tok = Token(*tokens[index])
 
-        if tok.token_string == ')':
-            # The end of a tuple.
-            return (Tuple(atoms), index)
+        if tok.token_string in ')]}':
+            # We've reached the end of this container.
+            elements.append(Atom(tok))
 
-        elif tok.token_string == ']':
-            # The end of a list.
-            return (List(atoms), index)
+            if tok.token_string == ')':
+                # The end of a tuple.
+                return (Tuple_(elements), index)
 
-        elif tok.token_string == '}':
-            # The end of a dictionary or set.
-            return (Dictionary(atoms), index)
+            elif tok.token_string == ']':
+                # The end of a list.
+                return (List_(elements), index)
+
+            else:  # tok.token_string == '}'
+                # The end of a dictionary or set.
+                return (DictOrSet(elements), index)
 
         if tok.token_string in '([{':
             # A sub-container is being defined.
-            (atom, index) = _parse_container(tokens, index + 1,
-                                             tok.token_string)
-            atoms.append(atom)
+            (container, index) = _parse_container(tokens, index)
+            elements.append(container)
 
-        elif tok.token_string != ',':
-            # Collect all of the atoms for this element. It could be an
-            # expression intead of a single element.
-            key_atoms = []
-
-            while index < num_tokens:
-                k_tok = Token(*tokens[index])
-
-                if k_tok.token_string in '([{':
-                    (atom, index) = _parse_container(tokens, index + 1,
-                                                     k_tok.token_string)
-                    key_atoms.append(atom)
-
-                elif open_bracket == '{' and k_tok.token_string in ':,':
-                    break
-
-                elif k_tok.token_string in ',)]}':
-                    index -= 1
-                    break
-
-                else:
-                    key_atoms.append(Atom(k_tok))
-
-                index += 1
-
-            if open_bracket == '{' and tokens[index][1] == ':':
-                # We're parsing a dictionary. We have the key, now parse the
-                # value.
-                index += 1  # Skip the ':'
-                value_atoms = []
-
-                while index < num_tokens:
-                    v_tok = Token(*tokens[index])
-
-                    if v_tok.token_string in '([{':
-                        (atom, index) = _parse_container(tokens, index + 1,
-                                                         v_tok.token_string)
-                        value_atoms.append(atom)
-
-                    elif open_bracket == '{' and v_tok.token_string in ',}':
-                        index -= 1
-                        break
-
-                    elif v_tok.token_string in ',)]}':
-                        index -= 1
-                        break
-
-                    else:
-                        value_atoms.append(Atom(v_tok))
-
-                    index += 1
-
-                atoms.append(DictionaryItem(Sequence(key_atoms),
-                                            Sequence(value_atoms)))
-            else:
-                atoms.append(Sequence(key_atoms))
-
-        if tokens[index][1] == ',':
-            atoms.append(Atom(Token(*tokens[index])))
+        else:
+            elements.append(Atom(tok))
 
         index += 1
 
@@ -1657,12 +1896,12 @@ def _parse_tokens(tokens):
 
         assert tok.token_type != token.INDENT
         if tok.token_type == tokenize.NEWLINE:
+            # There's only one newline and it's at the end.
             break
 
         if tok.token_string in '([{':
-            (interior, index) = _parse_container(tokens, index + 1,
-                                                 tok.token_string)
-            parsed_tokens.append(interior)
+            (container, index) = _parse_container(tokens, index)
+            parsed_tokens.append(container)
         else:
             parsed_tokens.append(Atom(tok))
 
@@ -1671,22 +1910,8 @@ def _parse_tokens(tokens):
     return parsed_tokens
 
 
-def _get_as_string(atoms):
-    """Return the list of Atoms as a formatted string."""
-
-    string = ''
-    prev_val = None
-    for val in map(repr, atoms):
-        if prev_val and prev_val not in '(.' and val not in '(),.':
-            string += ' '
-        string += val
-        prev_val = val
-
-    return string
-
-
-def _reflow_lines_recursive(interior, current_indent, max_line_length,
-                            depth=0):
+def _reflow_lines_recursive_(interior, current_indent, max_line_length,
+                             depth=0):
     """Recursively reflow the text so that it looks nice."""
 
     curr_idx = 0
@@ -1758,8 +1983,8 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length,
     return lines
 
 
-def _reflow_lines(parsed_tokens, indentation, indent_word,
-                  max_line_length, start_on_prefix_line):
+def _reflow_lines_(parsed_tokens, indentation, indent_word,
+                   max_line_length, start_on_prefix_line):
     """Reflow the lines so that it looks nice."""
 
     reflowed_lines = ['']
@@ -1827,6 +2052,58 @@ def _reflow_lines(parsed_tokens, indentation, indent_word,
     return '\n'.join(reflowed_lines) + '\n'
 
 
+def _reflow_lines_recursive(container, effective_max_length, depth=0):
+    """Recursively reflow the text so that it looks nice.
+
+    The effective_max_length is the maximum line length we have to fit this
+    container into.
+    """
+
+    curr_idx = 0
+    lines = [starting_indent]
+
+    for element in container:
+        pass
+
+
+def _reflow_lines(parsed_tokens, indentation, indent_word,
+                  max_line_length, start_on_prefix_line):
+    """Reflow the lines so that it looks nice."""
+    #import pdb ; pdb.set_trace()
+    if repr(parsed_tokens[0]) == 'def':
+        # A function definition gets indented a bit more.
+        continued_indent = indentation + indent_word * 2
+    else:
+        continued_indent = indentation + indent_word
+
+    break_after_open_bracket = not start_on_prefix_line
+
+    effective_line_len = max_line_length - len(continued_indent)
+    reflowed_lines = ReflowedLines(max_line_length)
+    for (index, curr_elem) in enumerate(parsed_tokens):
+        prev_elem = get_item(parsed_tokens, index - 1)
+
+        if (
+            _needs_a_space(curr_elem, prev_elem) or repr(curr_elem) == '=' or
+                (prev_elem and repr(prev_elem) == '=')
+        ):
+            reflowed_lines.add_space()
+
+        if start_on_prefix_line and isinstance(curr_elem, Container_):
+            effective_line_len = \
+                max_line_length - reflowed_lines.total_line_size() - 1
+
+        curr_elem.reflow(
+            reflowed_lines, effective_line_len, break_after_open_bracket)
+
+        if start_on_prefix_line and isinstance(curr_elem, Container_):
+            effective_line_len = max_line_length - len(continued_indent)
+            start_on_prefix_line = False
+
+    print('reflowed:\n%s' % reflowed_lines.emit())
+    return reflowed_lines.emit()
+
+
 def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
                                 max_line_length):
     """Shorten the line taking its length into account.
@@ -1835,6 +2112,7 @@ def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
     strings and at the end.
 
     """
+
     parsed_tokens = _parse_tokens(tokens)
 
     if parsed_tokens:
@@ -1842,12 +2120,12 @@ def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
         # prefix. The second starts on the line after the prefix.
         fixed = _reflow_lines(parsed_tokens, indentation, indent_word,
                               max_line_length, start_on_prefix_line=True)
-        if check_syntax(normalize_multiline(fixed).lstrip()):
+        if check_syntax(normalize_multiline(fixed)):
             yield fixed
 
         fixed = _reflow_lines(parsed_tokens, indentation, indent_word,
                               max_line_length, start_on_prefix_line=False)
-        if check_syntax(normalize_multiline(fixed).lstrip()):
+        if check_syntax(normalize_multiline(fixed)):
             yield fixed
 
 
@@ -2816,6 +3094,9 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
             rank += 10
 
         rank += 10 * count_unbalanced_brackets(current_line)
+
+    print('candidate\n%s' % candidate)
+    print('rank:', rank)
 
     return max(0, rank)
 
