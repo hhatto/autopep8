@@ -723,17 +723,36 @@ True or \\
             list(autopep8.token_offsets(
                 tokenize.generate_tokens(string_io.readline))))
 
-    def test_get_fixed_long_line_with_experimental(self):
-        text = """\
+    def test_shorten_line_candidates_are_valid(self):
+        for text in [
+            """\
 [xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, y] = [1, 2]
-"""
-        self.assertEqual(
-            re.sub(r'\s', '', text),
-            re.sub(r'\s', '', autopep8.get_fixed_long_line(
-                target=text,
-                previous_line='',
-                original=text,
-                experimental=True)))
+""",
+            """\
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, y = [1, 2]
+""",
+            """\
+lambda xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: line_shortening_rank(x,
+                                           indent_word,
+                                           max_line_length)
+""",
+        ]:
+            indent = autopep8._get_indentation(text)
+            source = text[len(indent):]
+            assert source.lstrip() == source
+            tokens = list(autopep8.generate_tokens(source))
+
+            for candidate in autopep8.shorten_line(
+                    tokens, source, indent,
+                    indent_word='    ',
+                    max_line_length=79,
+                    aggressive=10,
+                    experimental=True,
+                    previous_line=''):
+
+                self.assertEqual(
+                    re.sub(r'\s', '', text),
+                    re.sub(r'\s', '', candidate))
 
 
 class SystemTests(unittest.TestCase):
@@ -3099,7 +3118,7 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_experimental_avoid_breaking_at_empty_arentheses_if_possible(self):
+    def test_e501_experimental_avoid_breaking_at_empty_parentheses_if_possible(self):
         line = """\
 someverylongindenttionwhatnot().foo().bar().baz("and here is a long string 123456789012345678901234567890")
 """
@@ -3107,6 +3126,19 @@ someverylongindenttionwhatnot().foo().bar().baz("and here is a long string 12345
 someverylongindenttionwhatnot(
 ).foo().bar().baz(
     "and here is a long string 123456789012345678901234567890")
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_with_unicode(self):
+        line = """\
+someverylongindenttionwhatnot().foo().bar().baz("and here is a l안녕하세요 123456789012345678901234567890")
+"""
+        fixed = """\
+someverylongindenttionwhatnot(
+).foo().bar().baz(
+    "and here is a l안녕하세요 123456789012345678901234567890")
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
