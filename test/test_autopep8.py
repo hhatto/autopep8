@@ -3118,7 +3118,7 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_experimental_avoid_breaking_at_empty_arentheses_if_possible(self):
+    def test_e501_experimental_avoid_breaking_at_empty_parentheses_if_possible(self):
         line = """\
 someverylongindenttionwhatnot().foo().bar().baz("and here is a long string 123456789012345678901234567890")
 """
@@ -3126,6 +3126,19 @@ someverylongindenttionwhatnot().foo().bar().baz("and here is a long string 12345
 someverylongindenttionwhatnot(
 ).foo().bar().baz(
     "and here is a long string 123456789012345678901234567890")
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_with_unicode(self):
+        line = """\
+someverylongindenttionwhatnot().foo().bar().baz("and here is a l안녕하세요 123456789012345678901234567890")
+"""
+        fixed = """\
+someverylongindenttionwhatnot(
+).foo().bar().baz(
+    "and here is a l안녕하세요 123456789012345678901234567890")
 """
 
         with autopep8_context(line, options=['--experimental']) as result:

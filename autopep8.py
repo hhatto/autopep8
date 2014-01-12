@@ -1393,7 +1393,7 @@ class Sequence(object):
     def __repr__(self):
         string = ''
         prev_val = None
-        for val in map(repr, self.elements):
+        for val in map(unicode, self.elements):
             if prev_val and prev_val not in '(.' and val[0] not in '[{(,.)}]':
                 string += ' '
             string += val
@@ -1442,7 +1442,7 @@ class Container(object):
     def __repr__(self):
         string = ''
         prev_val = None
-        for elem in map(repr, self.elements):
+        for elem in map(unicode, self.elements):
             if elem == ',':
                 string += ', '
             elif prev_val and prev_val.endswith(tuple(')]}')):
@@ -1538,7 +1538,7 @@ class DictionaryItem(object):
         self.value = value
 
     def __repr__(self):
-        return repr(self.key) + ': ' + repr(self.value)
+        return unicode(self.key) + ': ' + unicode(self.value)
 
     def __len__(self):
         return 1
@@ -1676,7 +1676,7 @@ def _get_as_string(atoms):
 
     string = ''
     prev_val = None
-    for val in map(repr, atoms):
+    for val in map(unicode, atoms):
         if prev_val and prev_val not in '(.' and val not in '(),.':
             string += ' '
         string += val
@@ -1702,7 +1702,7 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length,
                 # it.
                 if lines[curr_idx].endswith(','):
                     lines[curr_idx] += ' '
-                lines[curr_idx] += repr(item)
+                lines[curr_idx] += unicode(item)
 
             else:
                 # The container will go over multiple lines. Reflow the
@@ -1721,10 +1721,10 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length,
             # We want to place adjacent strings on separate lines.
             string_list = []
             if isinstance(item, Atom):
-                string_list.append(current_indent + repr(item))
+                string_list.append(current_indent + unicode(item))
             else:
                 for string in item:
-                    string_list.append(current_indent + repr(string))
+                    string_list.append(current_indent + unicode(string))
 
             if len(lines[-1]) + len(string_list[0]) + 3 < max_line_length:
                 lines[-1] += ' ' + string_list[0].lstrip()
@@ -1737,21 +1737,21 @@ def _reflow_lines_recursive(interior, current_indent, max_line_length,
         elif (
             line_extent + item.size + 2 < max_line_length or
             (line_extent + item.size < max_line_length and
-             repr(item) == ',')
+             unicode(item) == ',')
         ):
             # The current element fits on the current line.
             if lines[curr_idx].endswith(','):
                 lines[curr_idx] += ' '
-            lines[curr_idx] += repr(item)
+            lines[curr_idx] += unicode(item)
 
         elif not lines[curr_idx].strip():
             # A degenerate case. The current atom is over the line length. We
             # can't do anything except place it on the line and proceed from
             # there.
-            lines[curr_idx] += repr(item)
+            lines[curr_idx] += unicode(item)
 
         else:
-            lines.append(current_indent + repr(item))
+            lines.append(current_indent + unicode(item))
             curr_idx += 1
 
     return lines
@@ -1765,7 +1765,7 @@ def _reflow_lines(parsed_tokens, indentation, indent_word,
 
     curr_starting_idx = 0
 
-    if repr(parsed_tokens[0]) == 'def':
+    if unicode(parsed_tokens[0]) == 'def':
         # A function definition gets indented a bit more.
         start_indent = indentation + indent_word * 2
     else:
