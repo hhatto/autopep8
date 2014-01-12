@@ -1785,7 +1785,7 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
                   start_on_prefix_line):
     """Reflow the lines so that it looks nice."""
 
-    if repr(parsed_tokens[0]) == 'def':
+    if unicode(parsed_tokens[0]) == 'def':
         # A function definition gets indented a bit more.
         continued_indent = indentation + indent_word * 2
     else:
@@ -1796,14 +1796,14 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
     reflowed_lines = ReflowedLines(max_line_length)
     reflowed_lines.add_indent(indentation)
 
-    for (index, curr_elem) in enumerate(parsed_tokens):
-        reflowed_lines.add_space_if_needed(repr(curr_elem), equal=True)
+    for (index, item) in enumerate(parsed_tokens):
+        reflowed_lines.add_space_if_needed(unicode(item), equal=True)
 
-        if start_on_prefix_line and isinstance(curr_elem, Container_):
+        if start_on_prefix_line and isinstance(item, Container_):
             start_on_prefix_line = False
             continued_indent = ' ' * (reflowed_lines.current_size() + 1)
 
-        curr_elem.reflow(
+        item.reflow(
             reflowed_lines, continued_indent, break_after_open_bracket)
 
     return reflowed_lines.emit()
