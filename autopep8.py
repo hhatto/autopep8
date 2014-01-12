@@ -1823,6 +1823,8 @@ def _reflow_lines(parsed_tokens, indentation, indent_word,
         curr_starting_idx = len(reflowed_lines) - 1
         index += 1
 
+    assert reflowed_lines[0].startswith(indentation)
+
     return '\n'.join(reflowed_lines) + '\n'
 
 
