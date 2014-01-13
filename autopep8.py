@@ -1458,14 +1458,15 @@ class ReflowedLines(object):
         ):
             return
 
-        prev_text = unicode(prev_item)[-1]
+        prev_text = unicode(prev_item)
         if (
             ((prev_item.is_keyword or prev_item.is_string or
               prev_item.is_name or prev_item.is_number) and
              curr_text[0] not in '([{.,:}])') or
-            (prev_text != '.' and curr_text[0] != ':' and
-             ((prev_text in '}])' and curr_text[0] not in '.,}])') or
-              prev_text in ':,' or (equal and prev_text == '=')))
+            (prev_text[-1] != '.' and curr_text[0] != ':' and
+             ((prev_text[-1] in '}])' and curr_text[0] not in '.,}])') or
+              prev_text[-1] in ':,' or (equal and prev_text == '=') or
+              prev_text in ('+', '-', '%', '*', '/', '//', '**')))
         ):
             self._lines.append(self._Space())
 
