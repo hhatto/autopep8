@@ -1449,14 +1449,14 @@ class ReflowedLines(object):
         if (
             not prev_item or isinstance(
                 prev_item, (self._LineBreak, self._Indent, self._Space))
-         ):
+        ):
             return
 
         prev_text = unicode(prev_item)
         if (
             ((prev_item.is_keyword or prev_item.is_string or
               prev_item.is_name or prev_item.is_number) and
-             curr_text not in  ',}])') or
+             curr_text not in ',}])') or
             prev_text in ':,}])' or (equal and prev_text == '=')
         ):
             self._lines.append(self._Space())
