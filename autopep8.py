@@ -1444,21 +1444,22 @@ class ReflowedLines(object):
         self._lines.append(self._LineBreak())
 
     def add_space_if_needed(self, curr_text, equal=False):
-        for item in reversed(self._lines):
-            if isinstance(
-                    item, (self._LineBreak, self._Indent, self._Space)):
-                return
+        prev_item = self._lines[-1] if self._lines else None
 
-            prev_text = unicode(item)
-            if (
-                curr_text not in ',}])' and
-                not (item.is_string() or item.is_name() or
-                     item.is_number()) and
-                (prev_text in ':,}])' or (equal and prev_text == '='))
-            ):
-                self._lines.append(self._Space())
-
+        if (
+            not prev_item or isinstance(
+                prev_item, (self._LineBreak, self._Indent, self._Space))
+         ):
             return
+
+        prev_text = unicode(prev_item)
+        if (
+            ((prev_item.is_keyword or prev_item.is_string or
+              prev_item.is_name or prev_item.is_number) and
+             curr_text not in  ',}])') or
+            prev_text in ':,}])' or (equal and prev_text == '=')
+        ):
+            self._lines.append(self._Space())
 
     def fits_on_current_line(self, item_extent):
         return self.current_size() + item_extent <= self._max_line_length
@@ -1512,7 +1513,7 @@ class Atom(object):
         return self._atom.token_type == tokenize.NUMBER
 
     def reflow(self, reflowed_lines, continued_indent,
-               break_after_open_bracket=False, depth=0):
+               break_after_open_bracket=False, depth=1):
         total_size = self.size
 
         if self.__repr__() not in ',:([{}])':
@@ -1568,7 +1569,7 @@ class Container_(object):
         return self._items[idx]
 
     def reflow(self, reflowed_lines, continued_indent,
-               break_after_open_bracket=False, depth=0):
+               break_after_open_bracket=False, depth=1):
         for (index, item) in enumerate(self._items):
             prev_elem = get_item(self._items, index - 1)
             next_elem = get_item(self._items, index + 1)
