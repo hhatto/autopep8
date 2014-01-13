@@ -1445,8 +1445,9 @@ class ReflowedLines(object):
     def add_indent(self, indent):
         self._lines.append(self._Indent(indent))
 
-    def add_line_break(self):
+    def add_line_break(self, indent_amt):
         self._lines.append(self._LineBreak())
+        self.add_indent(indent_amt)
 
     def add_space_if_needed(self, curr_text, equal=False):
         prev_item = self._lines[-1] if self._lines else None
@@ -1528,8 +1529,7 @@ class Atom(object):
         ):
             # Start a new line if there is already something on the line and
             # adding this atom would make it go over the max line length.
-            reflowed_lines.add_line_break()
-            reflowed_lines.add_indent(continued_indent)
+            reflowed_lines.add_line_break(continued_indent)
 
         reflowed_lines.add_item(self)
 
@@ -1585,13 +1585,12 @@ class Container(object):
     def reflow(self, reflowed_lines, continued_indent,
                break_after_open_bracket=False, depth=1):
         for (index, item) in enumerate(self._items):
-            prev_elem = get_item(self._items, index - 1)
-            next_elem = get_item(self._items, index + 1)
+            prev_item = get_item(self._items, index - 1)
+            next_item = get_item(self._items, index + 1)
 
-            if prev_elem and prev_elem.is_string and item.is_string:
+            if prev_item and prev_item.is_string and item.is_string:
                 # Place consecutive string literals on separate lines.
-                reflowed_lines.add_line_break()
-                reflowed_lines.add_indent(continued_indent)
+                reflowed_lines.add_line_break(continued_indent)
 
             elif isinstance(item, Atom):
                 item_text = unicode(item)
@@ -1599,11 +1598,23 @@ class Container(object):
                 if item_text not in '([{,}])':
                     item_size += depth + 2
                 if reflowed_lines.fits_on_current_line(item_size):
-                    reflowed_lines.add_space_if_needed(item_text)
+                    next_text = unicode(next_item)
+                    next_next_item = get_item(self._items, index + 2)
+
+                    if (
+                        reflowed_lines.line_empty() or
+                        next_text != '=' or not next_next_item or
+                        reflowed_lines.fits_on_current_line(
+                            item.size + next_item.size +
+                            next_next_item.size + depth + 2)
+                    ):
+                        reflowed_lines.add_space_if_needed(item_text)
+                    else:
+                        # Prefer to break before a default initializer.
+                        reflowed_lines.add_line_break(continued_indent)
                 else:
-                    # No room at the inn. Line break for the new element.
-                    reflowed_lines.add_line_break()
-                    reflowed_lines.add_indent(continued_indent)
+                    # No room at the inn. Line break for the new item.
+                    reflowed_lines.add_line_break(continued_indent)
 
             # Increase the continued indentation only if we're recursing on a
             # container.
@@ -1616,10 +1627,9 @@ class Container(object):
                     # Prefer to keep empty containers together instead of
                     # separating them.
                     unicode(item) == self.open_bracket and
-                    (not next_elem or unicode(next_elem) != self.close_bracket)
+                    (not next_item or unicode(next_item) != self.close_bracket)
             ):
-                reflowed_lines.add_line_break()
-                reflowed_lines.add_indent(continued_indent)
+                reflowed_lines.add_line_break(continued_indent)
                 break_after_open_bracket = False
 
     @property
