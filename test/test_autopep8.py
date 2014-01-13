@@ -3089,14 +3089,14 @@ bork(111, 111, 111, 111, 222, 222, 222, { 'foo': 222, 'qux': 222 }, ((['hello', 
 """
         fixed = """\
 bork(
-    111, 111, 111, 111, 222, 222, 222, {'foo': 222, 'qux': 222},
-    ((['hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']),
-     {str(i): i for i in range(10)},
-     {'bork': ((x, x ** x) for x in range(10))}), 222, 222, 222, 222, 333, 333
-    , 333, 333)
+    111, 111, 111, 111, 222, 222, 222, {'foo': 222, 'qux': 222}, (([
+        'hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']), {
+        str(i): i for i in range(10)}, {'bork': ((x, x ** x) for x in
+                                                 range(10))}), 222, 222, 222, 222, 333, 333, 333, 333)
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
+            self.maxDiff = None
             self.assertEqual(fixed, result)
 
     def test_e501_experimental_with_multiple_lines_and_quotes(self):
@@ -3110,9 +3110,8 @@ if True:
         fixed = """\
 if True:
     xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(
-        xxxxxxxxxxx,
-        xxxxxxxxxxxxxxxx=
-        {'xxxxxxxxxxxx': 'xxxxx', 'xxxxxxxxxxx': xx, 'xxxxxxxx': False, })
+        xxxxxxxxxxx, xxxxxxxxxxxxxxxx={'xxxxxxxxxxxx': 'xxxxx',
+                                       'xxxxxxxxxxx': xx, 'xxxxxxxx': False, })
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
@@ -3123,8 +3122,7 @@ if True:
 someverylongindenttionwhatnot().foo().bar().baz("and here is a long string 123456789012345678901234567890")
 """
         fixed = """\
-someverylongindenttionwhatnot(
-).foo().bar().baz(
+someverylongindenttionwhatnot().foo().bar().baz(
     "and here is a long string 123456789012345678901234567890")
 """
 
@@ -3136,8 +3134,7 @@ someverylongindenttionwhatnot(
 someverylongindenttionwhatnot().foo().bar().baz("and here is a l안녕하세요 123456789012345678901234567890")
 """
         fixed = """\
-someverylongindenttionwhatnot(
-).foo().bar().baz(
+someverylongindenttionwhatnot().foo().bar().baz(
     "and here is a l안녕하세요 123456789012345678901234567890")
 """
 
@@ -3151,7 +3148,8 @@ if True:
 """
         fixed = """\
 if True:
-    (xxxxxxx,) = xxxx.xxxxxxx.xxxxx(xxxxxxxxxxxx.xx).xxxxxx(xxxxxxxxxxxx.xxxx == xxxx.xxxx).xxxxx()
+    (xxxxxxx,) = xxxx.xxxxxxx.xxxxx(xxxxxxxxxxxx.xx).xxxxxx(
+        xxxxxxxxxxxx.xxxx == xxxx.xxxx).xxxxx()
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
