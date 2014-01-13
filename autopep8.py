@@ -1373,7 +1373,7 @@ def _get_as_string(items):
         elif item.is_colon:
             string += ': '
         else:
-            item_string = repr(item)
+            item_string = unicode(item)
             if (
                 string and
                 (last_was_keyword or
@@ -1606,7 +1606,7 @@ class Container_(object):
                     # Prefer to keep empty containers together instead of
                     # separating them.
                     unicode(item) == self.open_bracket and
-                    (not next_elem or repr(next_elem) != self.close_bracket)
+                    (not next_elem or unicode(next_elem) != self.close_bracket)
             ):
                 reflowed_lines.add_line_break()
                 reflowed_lines.add_indent(continued_indent)
