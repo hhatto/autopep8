@@ -1634,9 +1634,6 @@ class Tuple_(Container_):
     def __init__(self, items):
         super(Tuple_, self).__init__(items)
 
-    def __repr__(self):
-        return super(Tuple_, self).__repr__()
-
     @property
     def open_bracket(self):
         return '('
@@ -1653,9 +1650,6 @@ class List_(Container_):
     def __init__(self, items):
         super(List_, self).__init__(items)
 
-    def __repr__(self):
-        return super(List_, self).__repr__()
-
     @property
     def open_bracket(self):
         return '['
@@ -1669,27 +1663,8 @@ class DictOrSet(Container_):
 
     """A high-level representation of a dictionary or set."""
 
-    class DictionaryItem(object):
-
-        """Representation of a key-value pair in a dictionary."""
-
-        def __init__(self, key, value):
-            self._key = key
-            self._value = value
-
-        @property
-        def key(self):
-            return self._key
-
-        @property
-        def value(self):
-            return self._value
-
     def __init__(self, items):
         super(DictOrSet, self).__init__(items)
-
-    def __repr__(self):
-        return super(DictOrSet, self).__repr__()
 
     @property
     def open_bracket(self):
@@ -1698,53 +1673,6 @@ class DictOrSet(Container_):
     @property
     def close_bracket(self):
         return '}'
-
-
-
-
-
-
-
-
-# class Dictionary(Container):
-
-#     """A high-level representation of a dictionary."""
-
-#     def __init__(self, elements):
-#         super(Dictionary, self).__init__(elements)
-
-#     def __repr__(self):
-#         return '{' + super(Dictionary, self).__repr__() + '}'
-
-#     @property
-#     def open_bracket(self):
-#         return '{'
-
-#     @property
-#     def close_bracket(self):
-#         return '}'
-
-
-# class DictionaryItem(object):
-
-#     """An argument to a function call."""
-
-#     def __init__(self, key, value):
-#         self.key = key
-#         self.value = value
-
-#     def __repr__(self):
-#         return repr(self.key) + ': ' + repr(self.value)
-
-#     def __len__(self):
-#         return 1
-
-#     def is_string(self):
-#         return False
-
-#     @property
-#     def size(self):
-#         return len(self.__repr__())
 
 
 def _parse_container(tokens, index):
