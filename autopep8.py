@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # Copyright (C) 2010-2011 Hideo Hattori
-# Copyright (C) 2011-2013 Hideo Hattori, Steven Myint
+# Copyright (C) 2011-2014 Hideo Hattori, Steven Myint
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -1437,6 +1437,11 @@ class ReflowedLines(object):
     def add_item(self, item):
         self._lines.append(item)
 
+    def add_comment(self, item):
+        self._lines.append(self._Space())
+        self._lines.append(self._Space())
+        self._lines.append(item)
+
     def add_indent(self, indent):
         self._lines.append(self._Indent(indent))
 
@@ -1507,6 +1512,10 @@ class Atom(object):
 
     def reflow(self, reflowed_lines, continued_indent,
                break_after_open_bracket=False, depth=1):
+        if self._atom.token_type == tokenize.COMMENT:
+            reflowed_lines.add_comment(self)
+            return
+
         total_size = self.size
 
         if self.__repr__() not in ',:([{}])':
