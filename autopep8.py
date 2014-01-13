@@ -1765,7 +1765,7 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
     reflowed_lines = ReflowedLines(max_line_length)
     reflowed_lines.add_indent(indentation)
 
-    for (index, item) in enumerate(parsed_tokens):
+    for item in parsed_tokens:
         reflowed_lines.add_space_if_needed(unicode(item), equal=True)
 
         if start_on_prefix_line and isinstance(item, Container_):
