@@ -1632,6 +1632,14 @@ class Container_(object):
     def is_colon(self):
         return False
 
+    @property
+    def open_bracket(self):
+        return None
+
+    @property
+    def close_bracket(self):
+        return None
+
 
 class Tuple_(Container_):
 
