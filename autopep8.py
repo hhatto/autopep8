@@ -1456,8 +1456,9 @@ class ReflowedLines(object):
         if (
             ((prev_item.is_keyword or prev_item.is_string or
               prev_item.is_name or prev_item.is_number) and
-             curr_text not in ',}])') or
-            prev_text in ':,}])' or (equal and prev_text == '=')
+             curr_text not in '.,}])') or
+            (prev_text != '.' and
+             (prev_text in ':,}])' or (equal and prev_text == '=')))
         ):
             self._lines.append(self._Space())
 
@@ -1503,15 +1504,6 @@ class Atom(object):
     def __len__(self):
         return self.size
 
-    def is_string(self):
-        return self._atom.token_type == tokenize.STRING
-
-    def is_name(self):
-        return self._atom.token_type == tokenize.NAME
-
-    def is_number(self):
-        return self._atom.token_type == tokenize.NUMBER
-
     def reflow(self, reflowed_lines, continued_indent,
                break_after_open_bracket=False, depth=1):
         total_size = self.size
@@ -1537,6 +1529,18 @@ class Atom(object):
     @property
     def is_keyword(self):
         return keyword.iskeyword(self._atom.token_string)
+
+    @property
+    def is_string(self):
+        return self._atom.token_type == tokenize.STRING
+
+    @property
+    def is_name(self):
+        return self._atom.token_type == tokenize.NAME
+
+    @property
+    def is_number(self):
+        return self._atom.token_type == tokenize.NUMBER
 
     @property
     def is_comma(self):
@@ -1574,7 +1578,7 @@ class Container_(object):
             prev_elem = get_item(self._items, index - 1)
             next_elem = get_item(self._items, index + 1)
 
-            if prev_elem and prev_elem.is_string() and item.is_string():
+            if prev_elem and prev_elem.is_string and item.is_string:
                 # Place consecutive string literals on separate lines.
                 reflowed_lines.add_line_break()
                 reflowed_lines.add_indent(continued_indent)
@@ -1608,6 +1612,7 @@ class Container_(object):
                 reflowed_lines.add_indent(continued_indent)
                 break_after_open_bracket = False
 
+    @property
     def is_string(self):
         return False
 
