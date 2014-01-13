@@ -1476,8 +1476,8 @@ class ReflowedLines(object):
 
     def line_empty(self):
         return (self._lines and
-                not isinstance(self._lines[-1],
-                               (self._LineBreak, self._Indent)))
+                isinstance(self._lines[-1],
+                           (self._LineBreak, self._Indent)))
 
     def emit(self):
         string = ''
