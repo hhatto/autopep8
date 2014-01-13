@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # Copyright (C) 2010-2011 Hideo Hattori
-# Copyright (C) 2011-2013 Hideo Hattori, Steven Myint
+# Copyright (C) 2011-2014 Hideo Hattori, Steven Myint
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -1437,6 +1437,11 @@ class ReflowedLines(object):
     def add_item(self, item):
         self._lines.append(item)
 
+    def add_comment(self, item):
+        self._lines.append(self._Space())
+        self._lines.append(self._Space())
+        self._lines.append(item)
+
     def add_indent(self, indent):
         self._lines.append(self._Indent(indent))
 
@@ -1452,13 +1457,14 @@ class ReflowedLines(object):
         ):
             return
 
-        prev_text = unicode(prev_item)
+        prev_text = unicode(prev_item)[-1]
         if (
             ((prev_item.is_keyword or prev_item.is_string or
               prev_item.is_name or prev_item.is_number) and
-             curr_text not in '.,}])') or
-            (prev_text != '.' and
-             (prev_text in ':,}])' or (equal and prev_text == '=')))
+             curr_text[0] not in '([{.,:}])') or
+            (prev_text != '.' and curr_text[0] != ':' and
+             ((prev_text in '}])' and curr_text[0] not in '.,}])') or
+              prev_text in ':,' or (equal and prev_text == '=')))
         ):
             self._lines.append(self._Space())
 
@@ -1506,6 +1512,10 @@ class Atom(object):
 
     def reflow(self, reflowed_lines, continued_indent,
                break_after_open_bracket=False, depth=1):
+        if self._atom.token_type == tokenize.COMMENT:
+            reflowed_lines.add_comment(self)
+            return
+
         total_size = self.size
 
         if self.__repr__() not in ',:([{}])':
@@ -1555,7 +1565,7 @@ class Atom(object):
         return len(self._atom.token_string)
 
 
-class Container_(object):
+class Container(object):
 
     """Base class for all container types."""
 
@@ -1597,7 +1607,7 @@ class Container_(object):
 
             # Increase the continued indentation only if we're recursing on a
             # container.
-            offset = 1 if isinstance(item, Container_) else 0
+            offset = 1 if isinstance(item, Container) else 0
             item.reflow(reflowed_lines, continued_indent + (' ' * offset),
                         depth=depth + 1)
 
@@ -1641,12 +1651,12 @@ class Container_(object):
         return None
 
 
-class Tuple_(Container_):
+class Tuple(Container):
 
     """A high-level representation of a tuple."""
 
     def __init__(self, items):
-        super(Tuple_, self).__init__(items)
+        super(Tuple, self).__init__(items)
 
     @property
     def open_bracket(self):
@@ -1657,12 +1667,12 @@ class Tuple_(Container_):
         return ')'
 
 
-class List_(Container_):
+class List(Container):
 
     """A high-level representation of a list."""
 
     def __init__(self, items):
-        super(List_, self).__init__(items)
+        super(List, self).__init__(items)
 
     @property
     def open_bracket(self):
@@ -1673,7 +1683,7 @@ class List_(Container_):
         return ']'
 
 
-class DictOrSet(Container_):
+class DictOrSet(Container):
 
     """A high-level representation of a dictionary or set."""
 
@@ -1706,11 +1716,11 @@ def _parse_container(tokens, index):
 
             if tok.token_string == ')':
                 # The end of a tuple.
-                return (Tuple_(items), index)
+                return (Tuple(items), index)
 
             elif tok.token_string == ']':
                 # The end of a list.
-                return (List_(items), index)
+                return (List(items), index)
 
             else:  # tok.token_string == '}'
                 # The end of a dictionary or set.
@@ -1776,7 +1786,7 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
     for item in parsed_tokens:
         reflowed_lines.add_space_if_needed(unicode(item), equal=True)
 
-        if start_on_prefix_line and isinstance(item, Container_):
+        if start_on_prefix_line and isinstance(item, Container):
             start_on_prefix_line = False
             continued_indent = ' ' * (reflowed_lines.current_size() + 1)
 
