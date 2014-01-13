@@ -1373,7 +1373,7 @@ def _get_as_string(items):
         elif item.is_colon:
             string += ': '
         else:
-            item_string = repr(item)
+            item_string = unicode(item)
             if (
                 string and
                 (last_was_keyword or
@@ -1452,13 +1452,14 @@ class ReflowedLines(object):
         ):
             return
 
-        prev_text = unicode(prev_item)
+        prev_text = unicode(prev_item)[-1]
         if (
             ((prev_item.is_keyword or prev_item.is_string or
               prev_item.is_name or prev_item.is_number) and
-             curr_text not in '.,}])') or
-            (prev_text != '.' and
-             (prev_text in ':,}])' or (equal and prev_text == '=')))
+             curr_text[0] not in '([{.,:}])') or
+            (prev_text != '.' and curr_text[0] != ':' and
+             ((prev_text in '}])' and curr_text[0] not in '.,}])') or
+              prev_text in ':,' or (equal and prev_text == '=')))
         ):
             self._lines.append(self._Space())
 
@@ -1606,7 +1607,7 @@ class Container_(object):
                     # Prefer to keep empty containers together instead of
                     # separating them.
                     unicode(item) == self.open_bracket and
-                    (not next_elem or repr(next_elem) != self.close_bracket)
+                    (not next_elem or unicode(next_elem) != self.close_bracket)
             ):
                 reflowed_lines.add_line_break()
                 reflowed_lines.add_indent(continued_indent)
