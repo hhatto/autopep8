@@ -3110,8 +3110,9 @@ if True:
         fixed = """\
 if True:
     xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(
-        xxxxxxxxxxx, xxxxxxxxxxxxxxxx={'xxxxxxxxxxxx': 'xxxxx',
-                                       'xxxxxxxxxxx': xx, 'xxxxxxxx': False, })
+        xxxxxxxxxxx,
+        xxxxxxxxxxxxxxxx={'xxxxxxxxxxxx': 'xxxxx', 'xxxxxxxxxxx': xx,
+                          'xxxxxxxx': False, })
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
