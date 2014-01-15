@@ -1473,6 +1473,9 @@ class ReflowedLines(object):
     def fits_on_current_line(self, item_extent):
         return self.current_size() + item_extent <= self._max_line_length
 
+    def fits_on_empty_line(self, item_extent):
+        return item_extent <= self._max_line_length
+
     def current_size(self):
         """The size of the current line minus the indentation."""
 
@@ -1497,6 +1500,10 @@ class ReflowedLines(object):
             string += item.emit()
 
         return string.rstrip() + '\n'
+
+    @property
+    def max_line_length(self):
+        return self._max_line_length
 
 
 class Atom(object):
@@ -1598,6 +1605,7 @@ class Container(object):
                 item_size = len(item_text)
                 if item_text not in '([{,}])':
                     item_size += depth + 2
+
                 if reflowed_lines.fits_on_current_line(item_size):
                     next_text = unicode(next_item)
                     next_next_item = get_item(self._items, index + 2)
@@ -1610,11 +1618,35 @@ class Container(object):
                             next_next_item.size + depth + 2)
                     ):
                         reflowed_lines.add_space_if_needed(item_text)
+
                     else:
                         # Prefer to break before a default initializer.
                         reflowed_lines.add_line_break(continued_indent)
+
                 else:
                     # No room at the inn. Line break for the new item.
+                    reflowed_lines.add_line_break(continued_indent)
+
+            else:  # isinstance(item, Container)
+                item_size = item.size
+                space_left_on_line = \
+                    reflowed_lines.max_line_length - \
+                    reflowed_lines.current_size() - len(continued_indent)
+
+                if (
+                    unicode(prev_item) != '=' and
+                    not reflowed_lines.line_empty() and
+                    not reflowed_lines.fits_on_current_line(item_size) and
+                    (reflowed_lines.fits_on_empty_line(item_size) or
+                     space_left_on_line < 31)
+                ):
+                    # Don't break a container if doing so means that it will
+                    # align further elements way far to the right. If this
+                    # happens, PEP 8 messages about visual indentations could
+                    # cause the code to flow over the maximum line length.
+                    #
+                    # This is just a heuristic, and therefore can be improved
+                    # greatly.
                     reflowed_lines.add_line_break(continued_indent)
 
             # Increase the continued indentation only if we're recursing on a
