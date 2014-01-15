@@ -3089,10 +3089,10 @@ bork(111, 111, 111, 111, 222, 222, 222, { 'foo': 222, 'qux': 222 }, ((['hello', 
 """
         fixed = """\
 bork(
-    111, 111, 111, 111, 222, 222, 222, {'foo': 222, 'qux': 222}, (([
-        'hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']), {
-        str(i): i for i in range(10)}, {'bork': ((x, x ** x) for x in range(
-        10))}), 222, 222, 222, 222, 333, 333, 333, 333)
+    111, 111, 111, 111, 222, 222, 222, {'foo': 222, 'qux': 222},
+    ((['hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']),
+     {str(i): i for i in range(10)}, {'bork': ((x, x ** x) for x in range(
+         10))}), 222, 222, 222, 222, 333, 333, 333, 333)
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
@@ -3151,6 +3151,23 @@ if True:
 if True:
     (xxxxxxx,) = xxxx.xxxxxxx.xxxxx(xxxxxxxxxxxx.xx).xxxxxx(
         xxxxxxxxxxxx.xxxx == xxxx.xxxx).xxxxx()
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_tuple_on_line(self):
+        line = """\
+def f():
+    self.aaaaaaaaa(bbbbbb, ccccccccc, dddddddddddddddd,
+                   ((x, y/eeeeeee) for x, y in self.outputs.total.iteritems()),
+                   fff, 'GG')
+"""
+        fixed = """\
+def f():
+    self.aaaaaaaaa(
+        bbbbbb, ccccccccc, dddddddddddddddd,
+        ((x, y / eeeeeee) for x, y in self.outputs.total.iteritems()), fff,
+        'GG')
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
