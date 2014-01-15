@@ -3172,6 +3172,23 @@ def f():
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_tuple_on_line_two_space_indent(self):
+        line = """\
+def f():
+  self.aaaaaaaaa(bbbbbb, ccccccccc, dddddddddddddddd,
+                 ((x, y/eeeeeee) for x, y in self.outputs.total.iteritems()),
+                 fff, 'GG')
+"""
+        fixed = """\
+def f():
+  self.aaaaaaaaa(bbbbbb, ccccccccc, dddddddddddddddd,
+                 ((x, y / eeeeeee) for x, y in self.outputs.total.iteritems()),
+                 fff, 'GG')
+"""
+        with autopep8_context(line, options=['--experimental',
+                                             '--indent-size=2']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
