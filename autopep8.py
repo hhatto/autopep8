@@ -1458,15 +1458,44 @@ class ReflowedLines(object):
         ):
             return
 
+        prev_prev_item = None
+        for item in reversed(self._lines[:-1]):
+            if isinstance(item, (self._LineBreak, self._Indent, self._Space)):
+                continue
+            prev_prev_item = item
+            break
+
         prev_text = unicode(prev_item)
+        prev_prev_text = unicode(prev_prev_item) if prev_prev_item else ''
         if (
+            # The previous item was a keyword or identifier and the current item
+            # isn't an operator that doesn't require a space.
             ((prev_item.is_keyword or prev_item.is_string or
               prev_item.is_name or prev_item.is_number) and
              curr_text[0] not in '([{.,:}])') or
-            (prev_text[-1] != '.' and curr_text[0] != ':' and
+
+            # Don't place spaces around a '.', unless it's in an 'import' statement.
+            ((prev_prev_text != 'from' and prev_text[-1] != '.' and
+              curr_text != 'import') and
+
+             # Don't place a space before a colon.
+             curr_text[0] != ':' and
+
+             # Don't split up ending brackets by spaces.
              ((prev_text[-1] in '}])' and curr_text[0] not in '.,}])') or
-              prev_text[-1] in ':,' or (equal and prev_text == '=') or
-              prev_text in ('+', '-', '%', '*', '/', '//', '**')))
+
+              # Put a space after a colon or comma.
+              prev_text[-1] in ':,' or
+
+              # Put space around '=' if asked to.
+              (equal and prev_text == '=') or
+
+              # Put spaces around non-unary arithmetic operators.
+              ((prev_prev_item and
+                (prev_text not in '+-' and
+                 (prev_prev_item.is_name or
+                  prev_prev_item.is_number)) and
+               prev_text in ('+', '-', '%', '*', '/', '//', '**')))))
         ):
             self._lines.append(self._Space())
 

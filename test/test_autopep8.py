@@ -4506,14 +4506,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx(
 
     def test_e501_experimental_and_multiple_logical_lines_with_math(self):
         line = """\
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx([-1 + 5 / 10,
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx([-1 + 5 / -10,
                                                                             100,
                                                                             -3 - 4])
 """
-        # FIXME: The unary operators shouldn't have spaces.
         fixed = """\
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(
-    [- 1 + 5 / 10, 100, - 3 - 4])
+    [-1 + 5 / -10, 100, -3 - 4])
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
