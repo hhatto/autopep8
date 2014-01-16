@@ -1629,16 +1629,15 @@ class Container(object):
 
             else:  # isinstance(item, Container)
                 item_size = item.size
-                space_left_on_line = \
-                    reflowed_lines.max_line_length - \
-                    reflowed_lines.current_size() - len(continued_indent)
+                space_available = reflowed_lines.max_line_length - \
+                    len(continued_indent)
 
                 if (
                     unicode(prev_item) != '=' and
                     not reflowed_lines.line_empty() and
                     not reflowed_lines.fits_on_current_line(item_size) and
                     (reflowed_lines.fits_on_empty_line(item_size) or
-                     space_left_on_line < 31)
+                     space_available // reflowed_lines.current_size() > 4)
                 ):
                     # Don't break a container if doing so means that it will
                     # align further elements way far to the right. If this

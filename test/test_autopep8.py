@@ -4473,17 +4473,16 @@ models = {
 }
 """
         fixed = """\
-models = {
-    'auth.group': {'Meta': {'object_name': 'Group'}, 'permissions':
-                   ('django.db.models.fields.related.ManyToManyField', [],
-                    {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank':
-                     'True'})}, 'auth.permission': {'Meta':
-                                                    {'ordering':
-                                                     "('content_type__app_label', 'content_type__model', 'codename')",
-                                                     'unique_together': "(('content_type', 'codename'),)", 'object_name':
-                                                     'Permission'}, 'name':
-                                                    ('django.db.models.fields.CharField', [], {'max_length': '50'})}, }
+models = {'auth.group': {'Meta': {'object_name': 'Group'}, 'permissions': (
+    'django.db.models.fields.related.ManyToManyField', [],
+    {'to': "orm['auth.Permission']", 'symmetrical': 'False',
+     'blank': 'True'})}, 'auth.permission': {'Meta': {'ordering':
+                                                      "('content_type__app_label', 'content_type__model', 'codename')",
+                                                      'unique_together': "(('content_type', 'codename'),)",
+                                                      'object_name': 'Permission'}, 'name':
+                                             ('django.db.models.fields.CharField', [], {'max_length': '50'})}, }
 """
+        self.maxDiff = None
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
@@ -4760,10 +4759,10 @@ bork(111, 111, 111, 111, 222, 222, 222, { 'foo': 222, 'qux': 222 }, ((['hello', 
 """
         fixed = """\
 bork(
-    111, 111, 111, 111, 222, 222, 222, {'foo': 222, 'qux': 222},
-    ((['hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']),
-     {str(i): i for i in range(10)}, {'bork': ((x, x ** x) for x in range(
-         10))}), 222, 222, 222, 222, 333, 333, 333, 333)
+    111, 111, 111, 111, 222, 222, 222, {'foo': 222, 'qux': 222}, (
+        (['hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']),
+        {str(i): i for i in range(10)}, {'bork': ((x, x ** x) for x in range(
+            10))}), 222, 222, 222, 222, 333, 333, 333, 333)
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
