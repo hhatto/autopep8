@@ -1472,7 +1472,8 @@ class ReflowedLines(object):
             # item isn't an operator that doesn't require a space.
             ((prev_item.is_keyword or prev_item.is_string or
               prev_item.is_name or prev_item.is_number) and
-             curr_text[0] not in '([{.,:}])') or
+             (curr_text[0] not in '([{.,:}])' or
+              (curr_text[0] == '=' and equal))) or
 
             # Don't place spaces around a '.', unless it's in an 'import'
             # statement.
@@ -1644,7 +1645,7 @@ class Container(object):
                         reflowed_lines.line_empty() or
                         next_text != '=' or not next_next_item or
                         reflowed_lines.fits_on_current_line(
-                            item.size + next_item.size +
+                            item_size + next_item.size +
                             next_next_item.size + depth + 2)
                     ):
                         reflowed_lines.add_space_if_needed(item_text)
