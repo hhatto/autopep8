@@ -78,6 +78,7 @@ check:
 		--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
 		--disable=C0103,C0111,R0902,R0904,R0912,R0913,R0914,R0915,W0142,W0212,W0511 \
 		--disable=bad-builtin \
+		--disable=fixme \
 		--disable=no-self-use \
 		--disable=too-few-public-methods \
 		--disable=too-many-lines \
@@ -90,6 +91,7 @@ check:
 		--disable=C0102,C0103,C0111,C0301,C0302,E1101,F0401,R0801,R0904,R0912,R0913,W0212 \
 		--rcfile=/dev/null \
 		--dummy-variables-rgx='^_+$$' \
+		--disable=fixme \
 		test/acid.py test/acid_github.py test/acid_pypi.py test/test_autopep8.py
 	./autopep8.py --diff autopep8.py setup.py test/test_autopep8.py update_readme.py
 

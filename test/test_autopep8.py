@@ -4230,17 +4230,6 @@ looooooooooooooong = foo(
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_experimental_avoid_breaking_at_empty_parentheses_if_possible(self):
-        line = """\
-someverylongindenttionwhatnot().foo().bar().baz("and here is a long string 123456789012345678901234567890")
-"""
-        fixed = """\
-someverylongindenttionwhatnot().foo().bar().baz(
-    "and here is a long string 123456789012345678901234567890")
-"""
-        with autopep8_context(line, options=['--experimental']) as result:
-            self.assertEqual(fixed, result)
-
     def test_e501_experimental_with_logical_fix(self):
         line = """\
 xxxxxxxxxxxxxxxxxxxxxxxxxxxx(aaaaaaaaaaaaaaaaaaaaaaa,
@@ -4684,22 +4673,6 @@ raise MultiProjectException("Ambiguous workspace: %s=%s, %s" % ( varname, varnam
 raise MultiProjectException(
     "Ambiguous workspace: %s=%s, %s" %
     (varname, varname_path, os.path.abspath(config_filename)))
-"""
-        with autopep8_context(line, options=['--experimental']) as result:
-            self.assertEqual(fixed, result)
-
-    def test_e501_experimental_with_def(self):
-        line = """\
-def foo(sldfkjlsdfsdf, kksdfsdfsf,sdfsdfsdf, sdfsdfkdk, szdfsdfsdf, sdfsdfsdfsdlkfjsdlf, sdfsdfddf,sdfsdfsfd, sdfsdfdsf):
-    pass
-"""
-        fixed = """\
-
-
-def foo(
-        sldfkjlsdfsdf, kksdfsdfsf, sdfsdfsdf, sdfsdfkdk, szdfsdfsdf,
-        sdfsdfsdfsdlkfjsdlf, sdfsdfddf, sdfsdfsfd, sdfsdfdsf):
-    pass
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
