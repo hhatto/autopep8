@@ -1468,13 +1468,14 @@ class ReflowedLines(object):
         prev_text = unicode(prev_item)
         prev_prev_text = unicode(prev_prev_item) if prev_prev_item else ''
         if (
-            # The previous item was a keyword or identifier and the current item
-            # isn't an operator that doesn't require a space.
+            # The previous item was a keyword or identifier and the current
+            # item isn't an operator that doesn't require a space.
             ((prev_item.is_keyword or prev_item.is_string or
               prev_item.is_name or prev_item.is_number) and
              curr_text[0] not in '([{.,:}])') or
 
-            # Don't place spaces around a '.', unless it's in an 'import' statement.
+            # Don't place spaces around a '.', unless it's in an 'import'
+            # statement.
             ((prev_prev_text != 'from' and prev_text[-1] != '.' and
               curr_text != 'import') and
 
