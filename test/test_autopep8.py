@@ -4289,27 +4289,6 @@ foo_bar_zap_bing_bang_boom(
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_experimental_with_multiple_lines_and_quotes(self):
-        line = """\
-if True:
-    xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(xxxxxxxxxxx, xxxxxxxxxxxxxxxx={'xxxxxxxxxxxx': 'xxxxx',
-                                                                   'xxxxxxxxxxx': xx,
-                                                                   'xxxxxxxx': False,
-                                                                   })
-"""
-        fixed = """\
-if True:
-    xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(
-        xxxxxxxxxxx,
-        xxxxxxxxxxxxxxxx={
-            'xxxxxxxxxxxx': 'xxxxx',
-            'xxxxxxxxxxx': xx,
-            'xxxxxxxx': False,
-        })
-"""
-        with autopep8_context(line, options=['--experimental']) as result:
-            self.assertEqual(fixed, result)
-
     def test_e501_experimental_do_not_break_on_keyword(self):
         # We don't want to put a newline after equals for keywords as this
         # violates PEP 8.
