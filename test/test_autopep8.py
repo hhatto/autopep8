@@ -4212,8 +4212,8 @@ if True:
     if True:
         if True:
             blah = blah.blah_blah_blah_bla_bl(
-                blahb.blah, blah.blah, blah=blah.label, blah_blah=
-                blah_blah, blah_blah2=blah_blah)
+                blahb.blah, blah.blah, blah=blah.label,
+                blah_blah=blah_blah, blah_blah2=blah_blah)
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
