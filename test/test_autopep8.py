@@ -4331,7 +4331,7 @@ if True:
         raise xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx('xxxxxxxxxxxxxxxxx "{d}" xxxxxxxxxxxxxx'.format(d='xxxxxxxxxxxxxxx'))
 """
         # FIXME: This formatting doesn't seem correct. The '(' in '(d=' should
-        # probably be on the preceeding line.
+        # probably be on the preceding line.
         fixed = """\
 if True:
     if True:
@@ -4450,7 +4450,6 @@ models = {'auth.group': {'Meta': {'object_name': 'Group'}, 'permissions': (
                                                       'object_name': 'Permission'}, 'name':
                                              ('django.db.models.fields.CharField', [], {'max_length': '50'})}, }
 """
-        self.maxDiff = None
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
@@ -4717,7 +4716,6 @@ bork(
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
-            self.maxDiff = None
             self.assertEqual(fixed, result)
 
     def test_e501_experimental_with_multiple_lines_and_quotes(self):
