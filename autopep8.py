@@ -1847,9 +1847,9 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
 
     if unicode(parsed_tokens[0]) == 'def':
         # A function definition gets indented a bit more.
-        continued_indent = indentation + ' ' * 8
+        continued_indent = indentation + ' ' * 2 * DEFAULT_INDENT_SIZE
     else:
-        continued_indent = indentation + ' ' * 4
+        continued_indent = indentation + ' ' * DEFAULT_INDENT_SIZE
 
     break_after_open_bracket = not start_on_prefix_line
 
