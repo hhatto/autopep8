@@ -44,6 +44,8 @@ else:
 
 class UnitTests(unittest.TestCase):
 
+    maxDiff = None
+
     def test_find_newline_only_cr(self):
         source = ['print 1\r', 'print 2\r', 'print3\r']
         self.assertEqual(autopep8.CR, autopep8.find_newline(source))
@@ -756,6 +758,8 @@ lambda xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
 class SystemTests(unittest.TestCase):
+
+    maxDiff = None
 
     def test_e101(self):
         line = """\
@@ -3706,6 +3710,8 @@ correct = 'good syntax ?' in dict()
 
 class CommandLineTests(unittest.TestCase):
 
+    maxDiff = None
+
     def test_diff(self):
         line = "'abc'  \n"
         fixed = "-'abc'  \n+'abc'\n"
@@ -3976,6 +3982,8 @@ class CommandLineTests(unittest.TestCase):
 
 
 class ExperimentalSystemTests(unittest.TestCase):
+
+    maxDiff = None
 
     def test_e501_experimental_basic(self):
         line = """\
