@@ -97,16 +97,17 @@ class ReformattedLines(object):
         if self._lines and self._bracket_depth:
             self._prevent_default_initializer_splitting(item, indent_amt)
 
-            if item_text in ',)]}':
+            if item_text in '.,)]}':
                 self._split_after_delimiter(item, indent_amt)
 
-        elif (
-            self._lines and not self.line_empty() and
-            not self.fits_on_current_line(len(item_text))
-        ):
-            # Line break for the new item.
-            self._lines.append(self._LineBreak())
-            self._lines.append(self._Indent(indent_amt))
+        elif self._lines and not self.line_empty():
+            if self.fits_on_current_line(len(item_text)):
+                self._enforce_space(item)
+
+            else:
+                # Line break for the new item.
+                self._lines.append(self._LineBreak())
+                self._lines.append(self._Indent(indent_amt))
 
         self._lines.append(item)
 
@@ -256,6 +257,39 @@ class ReformattedLines(object):
                            self._LineBreak())
         self._lines.insert(self._lines.index(last_space),
                            self._Indent(indent_amt))
+
+    def _enforce_space(self, item):
+        """Enforce a space in certain situations.
+
+        There are cases where we will want a space where normally we wouldn't
+        put one. This just enforces the addition of a space.
+
+        """
+        if isinstance(self._lines[-1],
+                      (self._Space, self._LineBreak, self._Indent)):
+            return
+
+        prev_item = None
+        for prev in reversed(self._lines):
+            if isinstance(prev, (self._Space, self._LineBreak, self._Indent)):
+                continue
+            prev_item = prev
+            break
+
+        if not prev_item:
+            return
+
+        item_text = unicode(item)
+        prev_text = unicode(prev_item)
+
+        # Prefer a space around a '.' in an import statement, and between the
+        # 'import' and '('.
+        if (
+            (item_text == '.' and prev_text == 'from') or
+            (item_text == 'import' and prev_text == '.') or
+            (item_text == '(' and prev_text == 'import')
+        ):
+            self._lines.append(self._Space())
 
     def _delete_whitespace(self):
         while isinstance(self._lines[-1], (self._Space, self._LineBreak,
