@@ -1395,15 +1395,15 @@ class ReflowedLines(object):
 
         """Represent an indentation in the atom stream."""
 
-        def __init__(self, indent):
-            self._indent = indent
+        def __init__(self, indent_amt):
+            self._indent_amt = indent_amt
 
         def emit(self):
-            return self._indent
+            return ' ' * self._indent_amt
 
         @property
         def size(self):
-            return len(self._indent)
+            return self._indent_amt
 
     class _Space(object):
 
@@ -1428,26 +1428,51 @@ class ReflowedLines(object):
             return 0
 
     def __init__(self, max_line_length):
-        self._lines = []
         self._max_line_length = max_line_length
+        self._lines = []
+        self._bracket_depth = 0
 
     def __repr__(self):
         return self.emit()
 
-    def add_item(self, item):
+    def add_item(self, item, indent_amt):
+        item_text = unicode(item)
+
+        if self._lines and self._bracket_depth:
+            self._prevent_default_initializer_splitting(item, indent_amt)
+
+            if item_text in ',)]}':
+                self._split_after_delimiter(item, indent_amt)
+
+        elif (
+            self._lines and not self.line_empty() and
+            item_text not in ',}])' and
+            not self.fits_on_current_line(len(item_text))
+        ):
+            # Line break for the new item.
+            self._lines.append(self._LineBreak())
+            self._lines.append(self._Indent(indent_amt))
+
         self._lines.append(item)
+
+        if item_text in '([{':
+            self._bracket_depth += 1
+
+        elif item_text in '}])':
+            self._bracket_depth -= 1
+            assert self._bracket_depth >= 0
 
     def add_comment(self, item):
         self._lines.append(self._Space())
         self._lines.append(self._Space())
         self._lines.append(item)
 
-    def add_indent(self, indent):
-        self._lines.append(self._Indent(indent))
+    def add_indent(self, indent_amt):
+        self._lines.append(self._Indent(indent_amt))
 
-    def add_line_break(self, indent_amt):
+    def add_line_break(self, indent):
         self._lines.append(self._LineBreak())
-        self.add_indent(indent_amt)
+        self.add_indent(len(indent))
 
     def add_space_if_needed(self, curr_text, equal=False):
         prev_item = self._lines[-1] if self._lines else None
@@ -1496,10 +1521,93 @@ class ReflowedLines(object):
               ((prev_prev_item and
                 (prev_text not in '+-' and
                  (prev_prev_item.is_name or
-                  prev_prev_item.is_number)) and
+                  prev_prev_item.is_number or
+                  prev_prev_item.is_string)) and
                prev_text in ('+', '-', '%', '*', '/', '//', '**')))))
         ):
             self._lines.append(self._Space())
+
+    def _prevent_default_initializer_splitting(self, item, indent_amt):
+        """Prevent splitting between a default initializer.
+
+        When there is a default initializer, it's best to keep it all on the
+        same line. It's nicer and more readable, even if it goes over the
+        maximum allowable line length. This goes back along the current line to
+        determine if we have a default initializer, and, if so, to remove
+        extraneous whitespaces and add a line break/indent before it if needed.
+        """
+        if unicode(item) == '=':
+            # This is the assignment in the initializer. Just remove spaces for
+            # now.
+            self._delete_whitespace()
+            return
+
+        # Retrieve the last two non-whitespace items.
+        prev_item = None
+        prev_prev_item = None
+
+        for prev in reversed(self._lines):
+            if isinstance(prev, (self._Space, self._LineBreak, self._Indent)):
+                continue
+            if prev_item:
+                prev_prev_item = prev
+                break
+            else:
+                prev_item = prev
+
+        if not prev_item or not prev_prev_item or unicode(prev_item) != '=':
+            return
+
+        self._delete_whitespace()
+        prev_prev_index = self._lines.index(prev_prev_item)
+
+        if (
+            isinstance(self._lines[prev_prev_index - 1], self._Indent) or
+            self.fits_on_current_line(item.size + 1)
+        ):
+            # The default initializer is already the only item on this line.
+            # Don't insert a newline here.
+            return
+
+        # Replace the space with a newline/indent combo.
+        if isinstance(self._lines[prev_prev_index - 1], self._Space):
+            del self._lines[prev_prev_index - 1]
+
+        self._lines.insert(self._lines.index(prev_prev_item),
+                           self._LineBreak())
+        self._lines.insert(self._lines.index(prev_prev_item),
+                           self._Indent(indent_amt))
+
+    def _split_after_delimiter(self, item, indent_amt):
+        """Split the line after a delimiter.
+
+        Don't split the line before a comma or closing bracket.
+        """
+        self._delete_whitespace()
+
+        if self.fits_on_current_line(item.size):
+            return
+
+        last_space = None
+        for item in reversed(self._lines):
+            if isinstance(item, self._Space):
+                last_space = item
+                break
+            if isinstance(item, (self._LineBreak, self._Indent)):
+                return
+
+        if not last_space:
+            return
+
+        self._lines.insert(self._lines.index(last_space),
+                           self._LineBreak())
+        self._lines.insert(self._lines.index(last_space),
+                           self._Indent(indent_amt))
+
+    def _delete_whitespace(self):
+        while isinstance(self._lines[-1], (self._Space, self._LineBreak,
+                                           self._Indent)):
+            del self._lines[-1]
 
     def fits_on_current_line(self, item_extent):
         return self.current_size() + item_extent <= self._max_line_length
@@ -1551,7 +1659,7 @@ class Atom(object):
         return self.size
 
     def reflow(self, reflowed_lines, continued_indent,
-               break_after_open_bracket=False, depth=1):
+               break_after_open_bracket=False):
         if self._atom.token_type == tokenize.COMMENT:
             reflowed_lines.add_comment(self)
             return
@@ -1569,8 +1677,10 @@ class Atom(object):
             # Start a new line if there is already something on the line and
             # adding this atom would make it go over the max line length.
             reflowed_lines.add_line_break(continued_indent)
+        else:
+            reflowed_lines.add_space_if_needed(unicode(self))
 
-        reflowed_lines.add_item(self)
+        reflowed_lines.add_item(self, len(continued_indent))
 
     def emit(self):
         return self.__repr__()
@@ -1622,42 +1732,17 @@ class Container(object):
         return self._items[idx]
 
     def reflow(self, reflowed_lines, continued_indent,
-               break_after_open_bracket=False, depth=1):
+               break_after_open_bracket=False):
         for (index, item) in enumerate(self._items):
             prev_item = get_item(self._items, index - 1)
             next_item = get_item(self._items, index + 1)
 
-            if prev_item and prev_item.is_string and item.is_string:
-                # Place consecutive string literals on separate lines.
-                reflowed_lines.add_line_break(continued_indent)
-
-            elif isinstance(item, Atom):
-                item_text = unicode(item)
-                item_size = len(item_text)
-                if item_text not in '([{,}])':
-                    item_size += depth + 2
-
-                if reflowed_lines.fits_on_current_line(item_size):
-                    next_text = unicode(next_item)
-                    next_next_item = get_item(self._items, index + 2)
-
-                    if (
-                        reflowed_lines.line_empty() or
-                        next_text != '=' or not next_next_item or
-                        reflowed_lines.fits_on_current_line(
-                            item_size + next_item.size +
-                            next_next_item.size + depth + 2)
-                    ):
-                        reflowed_lines.add_space_if_needed(item_text)
-
-                    else:
-                        # Prefer to break before a default initializer.
-                        reflowed_lines.add_line_break(continued_indent)
-
-                else:
-                    # No room at the inn. Line break for the new item.
+            if isinstance(item, Atom):
+                if prev_item and prev_item.is_string and item.is_string:
+                    # Place consecutive string literals on separate lines.
                     reflowed_lines.add_line_break(continued_indent)
 
+                item.reflow(reflowed_lines, continued_indent)
             else:  # isinstance(item, Container)
                 item_size = item.size
                 space_available = reflowed_lines.max_line_length - \
@@ -1679,11 +1764,9 @@ class Container(object):
                     # greatly.
                     reflowed_lines.add_line_break(continued_indent)
 
-            # Increase the continued indentation only if we're recursing on a
-            # container.
-            offset = 1 if isinstance(item, Container) else 0
-            item.reflow(reflowed_lines, continued_indent + (' ' * offset),
-                        depth=depth + 1)
+                # Increase the continued indentation only if recursing on a
+                # container.
+                item.reflow(reflowed_lines, continued_indent + ' ')
 
             if (
                 break_after_open_bracket and index == 0 and
@@ -1854,7 +1937,7 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
     break_after_open_bracket = not start_on_prefix_line
 
     reflowed_lines = ReflowedLines(max_line_length)
-    reflowed_lines.add_indent(indentation)
+    reflowed_lines.add_indent(len(indentation))
 
     for item in parsed_tokens:
         reflowed_lines.add_space_if_needed(unicode(item), equal=True)

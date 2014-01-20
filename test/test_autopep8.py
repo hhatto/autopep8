@@ -4220,8 +4220,8 @@ if True:
     if True:
         if True:
             blah = blah.blah_blah_blah_bla_bl(
-                blahb.blah, blah.blah, blah=blah.label,
-                blah_blah=blah_blah, blah_blah2=blah_blah)
+                blahb.blah, blah.blah, blah=blah.label, blah_blah=blah_blah,
+                blah_blah2=blah_blah)
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4449,14 +4449,15 @@ models = {
 }
 """
         fixed = """\
-models = {'auth.group': {'Meta': {'object_name': 'Group'}, 'permissions': (
-    'django.db.models.fields.related.ManyToManyField', [],
-    {'to': "orm['auth.Permission']", 'symmetrical': 'False',
-     'blank': 'True'})}, 'auth.permission': {'Meta': {'ordering':
-                                                      "('content_type__app_label', 'content_type__model', 'codename')",
-                                                      'unique_together': "(('content_type', 'codename'),)",
-                                                      'object_name': 'Permission'}, 'name':
-                                             ('django.db.models.fields.CharField', [], {'max_length': '50'})}, }
+models = {
+    'auth.group': {'Meta': {'object_name': 'Group'}, 'permissions': (
+        'django.db.models.fields.related.ManyToManyField', [],
+        {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank':
+         'True'})}, 'auth.permission': {'Meta': {'ordering':
+                                                 "('content_type__app_label', 'content_type__model', 'codename')",
+                                                 'unique_together': "(('content_type', 'codename'),)", 'object_name':
+                                                 'Permission'}, 'name':
+                                        ('django.db.models.fields.CharField', [], {'max_length': '50'})}, }
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4500,10 +4501,8 @@ from . import (xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         # FIXME: The output is pretty bad.
         fixed = """\
 from.import(
-    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    ,
-    yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
-    )
+    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,
+    yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy)
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4539,15 +4538,13 @@ print('---------------------------------------------------------------------',
       '''--------------------------------------------------------------------------------
       ''')
 """
-        # FIXME: The ending ')' shouldn't be on a line by itself.
         fixed = """\
 print(
     '---------------------------------------------------------------------',
     ('================================================',
      '====================='),
     '''--------------------------------------------------------------------------------
-      '''
-)
+      ''')
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4715,12 +4712,13 @@ def f(self):
         line = """\
 bork(111, 111, 111, 111, 222, 222, 222, { 'foo': 222, 'qux': 222 }, ((['hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']), {str(i): i for i in range(10)}, {'bork':((x, x**x) for x in range(10))}), 222, 222, 222, 222, 333, 333, 333, 333)
 """
+        # FIXME: This is bad.
         fixed = """\
 bork(
     111, 111, 111, 111, 222, 222, 222, {'foo': 222, 'qux': 222}, (
         (['hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']),
-        {str(i): i for i in range(10)}, {'bork': ((x, x ** x) for x in range(
-            10))}), 222, 222, 222, 222, 333, 333, 333, 333)
+        {str(i): i for i in range(10)}, {'bork': ((x, x ** x) for x in
+                                                  range(10))}), 222, 222, 222, 222, 333, 333, 333, 333)
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
@@ -4737,9 +4735,8 @@ if True:
         fixed = """\
 if True:
     xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(
-        xxxxxxxxxxx,
-        xxxxxxxxxxxxxxxx={'xxxxxxxxxxxx': 'xxxxx', 'xxxxxxxxxxx': xx,
-                          'xxxxxxxx': False, })
+        xxxxxxxxxxx, xxxxxxxxxxxxxxxx={'xxxxxxxxxxxx': 'xxxxx', 'xxxxxxxxxxx':
+                                       xx, 'xxxxxxxx': False, })
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
@@ -4814,6 +4811,20 @@ def f():
 """
         with autopep8_context(line, options=['--experimental',
                                              '--indent-size=2']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_oversized_default_initializer(self):
+        line = """\
+aaaaaaaaaaaaaaaaaaaaa(lllll,mmmmmmmm,nnn,fffffffffff,ggggggggggg,hhh,ddddddddddddd=eeeeeeeee,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb=ccccccccccccccccccccccccccccccccccccccccccccccccc,bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb=cccccccccccccccccccccccccccccccccccccccccccccccc)
+"""
+        fixed = """\
+aaaaaaaaaaaaaaaaaaaaa(
+    lllll, mmmmmmmm, nnn, fffffffffff, ggggggggggg, hhh,
+    ddddddddddddd=eeeeeeeee,
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb=ccccccccccccccccccccccccccccccccccccccccccccccccc,
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb=cccccccccccccccccccccccccccccccccccccccccccccccc)
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
 
