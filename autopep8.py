@@ -56,7 +56,6 @@ import token
 import tokenize
 
 import pep8
-import reformatted_lines
 
 
 try:
@@ -1909,7 +1908,7 @@ def _parse_container(tokens, index, for_or_if=None):
     """Parse a high-level container, such as a list, tuple, etc."""
 
     # Store the opening bracket.
-    items = [reformatted_lines.Atom(Token(*tokens[index]))]
+    items = [Atom(Token(*tokens[index]))]
     index += 1
 
     num_tokens = len(tokens)
@@ -1922,26 +1921,26 @@ def _parse_container(tokens, index, for_or_if=None):
             # comprehension or if-expression, because they aren't part of those
             # constructs.
             if for_or_if == 'for':
-                return (reformatted_lines.ListComprehension(items), index - 1)
+                return (ListComprehension(items), index - 1)
 
             elif for_or_if == 'if':
-                return (reformatted_lines.IfExpression(items), index - 1)
+                return (IfExpression(items), index - 1)
 
             # We've reached the end of a container.
-            items.append(reformatted_lines.Atom(tok))
+            items.append(Atom(tok))
 
             # If not, then we are at the end of a container.
             if tok.token_string == ')':
                 # The end of a tuple.
-                return (reformatted_lines.Tuple(items), index)
+                return (Tuple(items), index)
 
             elif tok.token_string == ']':
                 # The end of a list.
-                return (reformatted_lines.List(items), index)
+                return (List(items), index)
 
             elif tok.token_string == '}':
                 # The end of a dictionary or set.
-                return (reformatted_lines.DictOrSet(items), index)
+                return (DictOrSet(items), index)
 
         elif tok.token_string in '([{':
             # A sub-container is being defined.
@@ -1957,7 +1956,7 @@ def _parse_container(tokens, index, for_or_if=None):
             items.append(container)
 
         else:
-            items.append(reformatted_lines.Atom(tok))
+            items.append(Atom(tok))
 
         index += 1
 
@@ -1986,7 +1985,7 @@ def _parse_tokens(tokens):
             (container, index) = _parse_container(tokens, index)
             parsed_tokens.append(container)
         else:
-            parsed_tokens.append(reformatted_lines.Atom(tok))
+            parsed_tokens.append(Atom(tok))
 
         index += 1
 
@@ -2005,14 +2004,13 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
 
     break_after_open_bracket = not start_on_prefix_line
 
-    lines = reformatted_lines.ReformattedLines(max_line_length)
+    lines = ReformattedLines(max_line_length)
     lines.add_indent(len(indentation))
 
     for item in parsed_tokens:
         lines.add_space_if_needed(unicode(item), equal=True)
 
-        if start_on_prefix_line and isinstance(item,
-                                               reformatted_lines.Container):
+        if start_on_prefix_line and isinstance(item, Container):
             start_on_prefix_line = False
             continued_indent = ' ' * (lines.current_size() + 1)
 
