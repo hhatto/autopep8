@@ -33,7 +33,12 @@ import tokenize
 
 class ReformattedLines(object):
 
-    """The reflowed lines of atoms."""
+    """The reflowed lines of atoms.
+
+    Each part of the line is represented as an "atom." They can be moved around
+    when need be to get the optimal formatting.
+
+    """
 
     class _Indent(object):
 
@@ -80,6 +85,13 @@ class ReformattedLines(object):
         return self.emit()
 
     def add_item(self, item, indent_amt):
+        """Add an item to the line.
+
+        Reflow the line to get the best formatting after the item is inserted.
+        The bracket depth indicates if the item is being inserted inside of a
+        container or not.
+
+        """
         item_text = unicode(item)
 
         if self._lines and self._bracket_depth:
@@ -90,7 +102,6 @@ class ReformattedLines(object):
 
         elif (
             self._lines and not self.line_empty() and
-            item_text not in ',}])' and
             not self.fits_on_current_line(len(item_text))
         ):
             # Line break for the new item.
@@ -179,6 +190,7 @@ class ReformattedLines(object):
         maximum allowable line length. This goes back along the current line to
         determine if we have a default initializer, and, if so, to remove
         extraneous whitespaces and add a line break/indent before it if needed.
+
         """
         if unicode(item) == '=':
             # This is the assignment in the initializer. Just remove spaces for
@@ -223,10 +235,7 @@ class ReformattedLines(object):
                            self._Indent(indent_amt))
 
     def _split_after_delimiter(self, item, indent_amt):
-        """Split the line after a delimiter.
-
-        Don't split the line before a comma or closing bracket.
-        """
+        """Split the line only after a delimiter."""
         self._delete_whitespace()
 
         if self.fits_on_current_line(item.size):
@@ -261,7 +270,6 @@ class ReformattedLines(object):
 
     def current_size(self):
         """The size of the current line minus the indentation."""
-
         size = 0
         for item in reversed(self._lines):
             size += item.size
@@ -478,9 +486,6 @@ class Tuple(Container):
 
     """A high-level representation of a tuple."""
 
-    def __init__(self, items):
-        super(Tuple, self).__init__(items)
-
     @property
     def open_bracket(self):
         return '('
@@ -493,9 +498,6 @@ class Tuple(Container):
 class List(Container):
 
     """A high-level representation of a list."""
-
-    def __init__(self, items):
-        super(List, self).__init__(items)
 
     @property
     def open_bracket(self):
@@ -510,9 +512,6 @@ class DictOrSet(Container):
 
     """A high-level representation of a dictionary or set."""
 
-    def __init__(self, items):
-        super(DictOrSet, self).__init__(items)
-
     @property
     def open_bracket(self):
         return '{'
@@ -520,5 +519,3 @@ class DictOrSet(Container):
     @property
     def close_bracket(self):
         return '}'
-
-
