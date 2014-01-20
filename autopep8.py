@@ -56,6 +56,7 @@ import token
 import tokenize
 
 import pep8
+import reformatted_lines
 
 
 try:
@@ -1363,503 +1364,11 @@ Token = collections.namedtuple('Token', ['token_type', 'token_string',
                                          'spos', 'epos', 'line'])
 
 
-def _get_as_string(items):
-    string = ''
-    last_was_keyword = False
-
-    for item in items:
-        if item.is_comma:
-            string += ', '
-        elif item.is_colon:
-            string += ': '
-        else:
-            item_string = unicode(item)
-            if (
-                string and
-                (last_was_keyword or
-                 (not string.endswith(tuple('([{,.:}]) ')) and
-                  not item_string.startswith(tuple('([{,.:}])'))))
-            ):
-                string += ' '
-            string += item_string
-
-        last_was_keyword = item.is_keyword
-    return string
-
-
-class ReflowedLines(object):
-
-    """The reflowed lines of atoms."""
-
-    class _Indent(object):
-
-        """Represent an indentation in the atom stream."""
-
-        def __init__(self, indent_amt):
-            self._indent_amt = indent_amt
-
-        def emit(self):
-            return ' ' * self._indent_amt
-
-        @property
-        def size(self):
-            return self._indent_amt
-
-    class _Space(object):
-
-        """Represent a space in the atom stream."""
-
-        def emit(self):
-            return ' '
-
-        @property
-        def size(self):
-            return 1
-
-    class _LineBreak(object):
-
-        """Represent a line break in the atom stream."""
-
-        def emit(self):
-            return '\n'
-
-        @property
-        def size(self):
-            return 0
-
-    def __init__(self, max_line_length):
-        self._max_line_length = max_line_length
-        self._lines = []
-        self._bracket_depth = 0
-
-    def __repr__(self):
-        return self.emit()
-
-    def add_item(self, item, indent_amt):
-        item_text = unicode(item)
-
-        if self._lines and self._bracket_depth:
-            self._prevent_default_initializer_splitting(item, indent_amt)
-
-            if item_text in ',)]}':
-                self._split_after_delimiter(item, indent_amt)
-
-        elif (
-            self._lines and not self.line_empty() and
-            item_text not in ',}])' and
-            not self.fits_on_current_line(len(item_text))
-        ):
-            # Line break for the new item.
-            self._lines.append(self._LineBreak())
-            self._lines.append(self._Indent(indent_amt))
-
-        self._lines.append(item)
-
-        if item_text in '([{':
-            self._bracket_depth += 1
-
-        elif item_text in '}])':
-            self._bracket_depth -= 1
-            assert self._bracket_depth >= 0
-
-    def add_comment(self, item):
-        self._lines.append(self._Space())
-        self._lines.append(self._Space())
-        self._lines.append(item)
-
-    def add_indent(self, indent_amt):
-        self._lines.append(self._Indent(indent_amt))
-
-    def add_line_break(self, indent):
-        self._lines.append(self._LineBreak())
-        self.add_indent(len(indent))
-
-    def add_space_if_needed(self, curr_text, equal=False):
-        prev_item = self._lines[-1] if self._lines else None
-
-        if (
-            not prev_item or isinstance(
-                prev_item, (self._LineBreak, self._Indent, self._Space))
-        ):
-            return
-
-        prev_prev_item = None
-        for item in reversed(self._lines[:-1]):
-            if isinstance(item, (self._LineBreak, self._Indent, self._Space)):
-                continue
-            prev_prev_item = item
-            break
-
-        prev_text = unicode(prev_item)
-        prev_prev_text = unicode(prev_prev_item) if prev_prev_item else ''
-        if (
-            # The previous item was a keyword or identifier and the current
-            # item isn't an operator that doesn't require a space.
-            ((prev_item.is_keyword or prev_item.is_string or
-              prev_item.is_name or prev_item.is_number) and
-             (curr_text[0] not in '([{.,:}])' or
-              (curr_text[0] == '=' and equal))) or
-
-            # Don't place spaces around a '.', unless it's in an 'import'
-            # statement.
-            ((prev_prev_text != 'from' and prev_text[-1] != '.' and
-              curr_text != 'import') and
-
-             # Don't place a space before a colon.
-             curr_text[0] != ':' and
-
-             # Don't split up ending brackets by spaces.
-             ((prev_text[-1] in '}])' and curr_text[0] not in '.,}])') or
-
-              # Put a space after a colon or comma.
-              prev_text[-1] in ':,' or
-
-              # Put space around '=' if asked to.
-              (equal and prev_text == '=') or
-
-              # Put spaces around non-unary arithmetic operators.
-              ((prev_prev_item and
-                (prev_text not in '+-' and
-                 (prev_prev_item.is_name or
-                  prev_prev_item.is_number or
-                  prev_prev_item.is_string)) and
-               prev_text in ('+', '-', '%', '*', '/', '//', '**')))))
-        ):
-            self._lines.append(self._Space())
-
-    def _prevent_default_initializer_splitting(self, item, indent_amt):
-        """Prevent splitting between a default initializer.
-
-        When there is a default initializer, it's best to keep it all on the
-        same line. It's nicer and more readable, even if it goes over the
-        maximum allowable line length. This goes back along the current line to
-        determine if we have a default initializer, and, if so, to remove
-        extraneous whitespaces and add a line break/indent before it if needed.
-        """
-        if unicode(item) == '=':
-            # This is the assignment in the initializer. Just remove spaces for
-            # now.
-            self._delete_whitespace()
-            return
-
-        # Retrieve the last two non-whitespace items.
-        prev_item = None
-        prev_prev_item = None
-
-        for prev in reversed(self._lines):
-            if isinstance(prev, (self._Space, self._LineBreak, self._Indent)):
-                continue
-            if prev_item:
-                prev_prev_item = prev
-                break
-            else:
-                prev_item = prev
-
-        if not prev_item or not prev_prev_item or unicode(prev_item) != '=':
-            return
-
-        self._delete_whitespace()
-        prev_prev_index = self._lines.index(prev_prev_item)
-
-        if (
-            isinstance(self._lines[prev_prev_index - 1], self._Indent) or
-            self.fits_on_current_line(item.size + 1)
-        ):
-            # The default initializer is already the only item on this line.
-            # Don't insert a newline here.
-            return
-
-        # Replace the space with a newline/indent combo.
-        if isinstance(self._lines[prev_prev_index - 1], self._Space):
-            del self._lines[prev_prev_index - 1]
-
-        self._lines.insert(self._lines.index(prev_prev_item),
-                           self._LineBreak())
-        self._lines.insert(self._lines.index(prev_prev_item),
-                           self._Indent(indent_amt))
-
-    def _split_after_delimiter(self, item, indent_amt):
-        """Split the line after a delimiter.
-
-        Don't split the line before a comma or closing bracket.
-        """
-        self._delete_whitespace()
-
-        if self.fits_on_current_line(item.size):
-            return
-
-        last_space = None
-        for item in reversed(self._lines):
-            if isinstance(item, self._Space):
-                last_space = item
-                break
-            if isinstance(item, (self._LineBreak, self._Indent)):
-                return
-
-        if not last_space:
-            return
-
-        self._lines.insert(self._lines.index(last_space),
-                           self._LineBreak())
-        self._lines.insert(self._lines.index(last_space),
-                           self._Indent(indent_amt))
-
-    def _delete_whitespace(self):
-        while isinstance(self._lines[-1], (self._Space, self._LineBreak,
-                                           self._Indent)):
-            del self._lines[-1]
-
-    def fits_on_current_line(self, item_extent):
-        return self.current_size() + item_extent <= self._max_line_length
-
-    def fits_on_empty_line(self, item_extent):
-        return item_extent <= self._max_line_length
-
-    def current_size(self):
-        """The size of the current line minus the indentation."""
-
-        size = 0
-        for item in reversed(self._lines):
-            size += item.size
-            if isinstance(item, self._LineBreak):
-                break
-
-        return size
-
-    def line_empty(self):
-        return (self._lines and
-                isinstance(self._lines[-1],
-                           (self._LineBreak, self._Indent)))
-
-    def emit(self):
-        string = ''
-        for item in self._lines:
-            if isinstance(item, self._LineBreak):
-                string = string.rstrip()
-            string += item.emit()
-
-        return string.rstrip() + '\n'
-
-    @property
-    def max_line_length(self):
-        return self._max_line_length
-
-
-class Atom(object):
-
-    """The smallest unbreakable unit that can be reflowed."""
-
-    def __init__(self, atom):
-        self._atom = atom
-
-    def __repr__(self):
-        return self._atom.token_string
-
-    def __len__(self):
-        return self.size
-
-    def reflow(self, reflowed_lines, continued_indent,
-               break_after_open_bracket=False):
-        if self._atom.token_type == tokenize.COMMENT:
-            reflowed_lines.add_comment(self)
-            return
-
-        total_size = self.size
-
-        if self.__repr__() not in ',:([{}])':
-            # Some atoms will need an extra 1-sized space token after them.
-            total_size += 1
-
-        if (
-            not reflowed_lines.fits_on_current_line(total_size) and
-            not reflowed_lines.line_empty()
-        ):
-            # Start a new line if there is already something on the line and
-            # adding this atom would make it go over the max line length.
-            reflowed_lines.add_line_break(continued_indent)
-        else:
-            reflowed_lines.add_space_if_needed(unicode(self))
-
-        reflowed_lines.add_item(self, len(continued_indent))
-
-    def emit(self):
-        return self.__repr__()
-
-    @property
-    def is_keyword(self):
-        return keyword.iskeyword(self._atom.token_string)
-
-    @property
-    def is_string(self):
-        return self._atom.token_type == tokenize.STRING
-
-    @property
-    def is_name(self):
-        return self._atom.token_type == tokenize.NAME
-
-    @property
-    def is_number(self):
-        return self._atom.token_type == tokenize.NUMBER
-
-    @property
-    def is_comma(self):
-        return self._atom.token_string == ','
-
-    @property
-    def is_colon(self):
-        return self._atom.token_string == ':'
-
-    @property
-    def size(self):
-        return len(self._atom.token_string)
-
-
-class Container(object):
-
-    """Base class for all container types."""
-
-    def __init__(self, items):
-        self._items = items
-
-    def __repr__(self):
-        return _get_as_string(self._items)
-
-    def __iter__(self):
-        for element in self._items:
-            yield element
-
-    def __getitem__(self, idx):
-        return self._items[idx]
-
-    def reflow(self, reflowed_lines, continued_indent,
-               break_after_open_bracket=False):
-        for (index, item) in enumerate(self._items):
-            prev_item = get_item(self._items, index - 1)
-            next_item = get_item(self._items, index + 1)
-
-            if isinstance(item, Atom):
-                if prev_item and prev_item.is_string and item.is_string:
-                    # Place consecutive string literals on separate lines.
-                    reflowed_lines.add_line_break(continued_indent)
-
-                item.reflow(reflowed_lines, continued_indent)
-            else:  # isinstance(item, Container)
-                item_size = item.size
-                space_available = reflowed_lines.max_line_length - \
-                    len(continued_indent)
-
-                if (
-                    unicode(prev_item) != '=' and
-                    not reflowed_lines.line_empty() and
-                    not reflowed_lines.fits_on_current_line(item_size) and
-                    (reflowed_lines.fits_on_empty_line(item_size) or
-                     space_available // reflowed_lines.current_size() > 4)
-                ):
-                    # Don't break a container if doing so means that it will
-                    # align further elements way far to the right. If this
-                    # happens, PEP 8 messages about visual indentations could
-                    # cause the code to flow over the maximum line length.
-                    #
-                    # This is just a heuristic, and therefore can be improved
-                    # greatly.
-                    reflowed_lines.add_line_break(continued_indent)
-
-                # Increase the continued indentation only if recursing on a
-                # container.
-                item.reflow(reflowed_lines, continued_indent + ' ')
-
-            if (
-                break_after_open_bracket and index == 0 and
-                    # Prefer to keep empty containers together instead of
-                    # separating them.
-                    unicode(item) == self.open_bracket and
-                    (not next_item or unicode(next_item) != self.close_bracket)
-            ):
-                reflowed_lines.add_line_break(continued_indent)
-                break_after_open_bracket = False
-
-    @property
-    def is_string(self):
-        return False
-
-    @property
-    def size(self):
-        return len(self.__repr__())
-
-    @property
-    def is_keyword(self):
-        return False
-
-    @property
-    def is_comma(self):
-        return False
-
-    @property
-    def is_colon(self):
-        return False
-
-    @property
-    def open_bracket(self):
-        return None
-
-    @property
-    def close_bracket(self):
-        return None
-
-
-class Tuple(Container):
-
-    """A high-level representation of a tuple."""
-
-    def __init__(self, items):
-        super(Tuple, self).__init__(items)
-
-    @property
-    def open_bracket(self):
-        return '('
-
-    @property
-    def close_bracket(self):
-        return ')'
-
-
-class List(Container):
-
-    """A high-level representation of a list."""
-
-    def __init__(self, items):
-        super(List, self).__init__(items)
-
-    @property
-    def open_bracket(self):
-        return '['
-
-    @property
-    def close_bracket(self):
-        return ']'
-
-
-class DictOrSet(Container):
-
-    """A high-level representation of a dictionary or set."""
-
-    def __init__(self, items):
-        super(DictOrSet, self).__init__(items)
-
-    @property
-    def open_bracket(self):
-        return '{'
-
-    @property
-    def close_bracket(self):
-        return '}'
-
-
 def _parse_container(tokens, index):
     """Parse a high-level container, such as a list, tuple, etc."""
 
     # Store the opening bracket.
-    items = [Atom(Token(*tokens[index]))]
+    items = [reformatted_lines.Atom(Token(*tokens[index]))]
     index += 1
 
     num_tokens = len(tokens)
@@ -1868,19 +1377,19 @@ def _parse_container(tokens, index):
 
         if tok.token_string in ')]}':
             # We've reached the end of this container.
-            items.append(Atom(tok))
+            items.append(reformatted_lines.Atom(tok))
 
             if tok.token_string == ')':
                 # The end of a tuple.
-                return (Tuple(items), index)
+                return (reformatted_lines.Tuple(items), index)
 
             elif tok.token_string == ']':
                 # The end of a list.
-                return (List(items), index)
+                return (reformatted_lines.List(items), index)
 
             else:  # tok.token_string == '}'
                 # The end of a dictionary or set.
-                return (DictOrSet(items), index)
+                return (reformatted_lines.DictOrSet(items), index)
 
         if tok.token_string in '([{':
             # A sub-container is being defined.
@@ -1888,7 +1397,7 @@ def _parse_container(tokens, index):
             items.append(container)
 
         else:
-            items.append(Atom(tok))
+            items.append(reformatted_lines.Atom(tok))
 
         index += 1
 
@@ -1917,7 +1426,7 @@ def _parse_tokens(tokens):
             (container, index) = _parse_container(tokens, index)
             parsed_tokens.append(container)
         else:
-            parsed_tokens.append(Atom(tok))
+            parsed_tokens.append(reformatted_lines.Atom(tok))
 
         index += 1
 
@@ -1936,20 +1445,20 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
 
     break_after_open_bracket = not start_on_prefix_line
 
-    reflowed_lines = ReflowedLines(max_line_length)
-    reflowed_lines.add_indent(len(indentation))
+    lines = reformatted_lines.ReformattedLines(max_line_length)
+    lines.add_indent(len(indentation))
 
     for item in parsed_tokens:
-        reflowed_lines.add_space_if_needed(unicode(item), equal=True)
+        lines.add_space_if_needed(unicode(item), equal=True)
 
-        if start_on_prefix_line and isinstance(item, Container):
+        if start_on_prefix_line and isinstance(item,
+                                               reformatted_lines.Container):
             start_on_prefix_line = False
-            continued_indent = ' ' * (reflowed_lines.current_size() + 1)
+            continued_indent = ' ' * (lines.current_size() + 1)
 
-        item.reflow(
-            reflowed_lines, continued_indent, break_after_open_bracket)
+        item.reflow(lines, continued_indent, break_after_open_bracket)
 
-    return reflowed_lines.emit()
+    return lines.emit()
 
 
 def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
