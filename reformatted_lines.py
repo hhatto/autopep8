@@ -93,7 +93,6 @@ class ReformattedLines(object):
 
         """
         item_text = unicode(item)
-
         if self._lines and self._bracket_depth:
             self._prevent_default_initializer_splitting(item, indent_amt)
 
@@ -461,6 +460,7 @@ class Container(object):
                     unicode(prev_item) != '=' and
                     not reflowed_lines.line_empty() and
                     not reflowed_lines.fits_on_current_line(item_size) and
+                    (unicode(item)[0] != '(' or not prev_item.is_name) and
                     (reflowed_lines.fits_on_empty_line(item_size) or
                      space_available // reflowed_lines.current_size() > 4)
                 ):

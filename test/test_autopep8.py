@@ -4338,14 +4338,12 @@ if True:
     if True:
         raise xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx('xxxxxxxxxxxxxxxxx "{d}" xxxxxxxxxxxxxx'.format(d='xxxxxxxxxxxxxxx'))
 """
-        # FIXME: This formatting doesn't seem correct. The '(' in '(d=' should
-        # probably be on the preceding line.
         fixed = """\
 if True:
     if True:
         raise xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(
-            'xxxxxxxxxxxxxxxxx "{d}" xxxxxxxxxxxxxx'.format
-            (d='xxxxxxxxxxxxxxx'))
+            'xxxxxxxxxxxxxxxxx "{d}" xxxxxxxxxxxxxx'.format(
+                d='xxxxxxxxxxxxxxx'))
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
