@@ -1568,24 +1568,15 @@ class ReformattedLines(object):
             assert self._bracket_depth >= 0
 
     def _add_container(self, container, indent_amt):
-        container_size = container.size
-        space_available = self._max_line_length - indent_amt
-
         if (
             unicode(self._prev_item) != '=' and
             not self.line_empty() and
-            not self.fits_on_current_line(container_size) and
-            (unicode(container)[0] != '(' or not self._prev_item.is_name) and
-            (self.fits_on_empty_line(container_size) or
-             space_available // self.current_size() > 4)
+            not self.fits_on_current_line(
+                container.size + self._bracket_depth + 2) and
+            (unicode(container)[0] != '(' or not self._prev_item.is_name)
         ):
-            # Don't break a container if doing so means that it will
-            # align further elements way far to the right. If this
-            # happens, PEP 8 messages about visual indentations could
-            # cause the code to flow over the maximum line length.
-            #
-            # This is just a heuristic, and therefore can be improved
-            # greatly.
+            # If the container doesn't fit on the current line and the current
+            # line isn't empty, place the container on the next line.
             self._lines.append(self._LineBreak())
             self._lines.append(self._Indent(indent_amt))
 
