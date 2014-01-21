@@ -1412,6 +1412,8 @@ class ReformattedLines(object):
         self._max_line_length = max_line_length
         self._lines = []
         self._bracket_depth = 0
+        self._prev_item = None
+        self._prev_prev_item = None
 
     def __repr__(self):
         return self.emit()
@@ -1448,6 +1450,7 @@ class ReformattedLines(object):
                 self._lines.append(self._Indent(indent_amt))
 
         self._lines.append(item)
+        self._prev_item, self._prev_prev_item = item, self._prev_item
 
         if item_text in '([{':
             self._bracket_depth += 1
@@ -1469,28 +1472,21 @@ class ReformattedLines(object):
         self.add_indent(len(indent))
 
     def add_space_if_needed(self, curr_text, equal=False):
-        prev_item = self._lines[-1] if self._lines else None
-
         if (
-            not prev_item or isinstance(
-                prev_item, (self._LineBreak, self._Indent, self._Space))
+            not self._lines or isinstance(
+                self._lines[-1], (self._LineBreak, self._Indent, self._Space))
         ):
             return
 
-        prev_prev_item = None
-        for item in reversed(self._lines[:-1]):
-            if isinstance(item, (self._LineBreak, self._Indent, self._Space)):
-                continue
-            prev_prev_item = item
-            break
+        prev_text = unicode(self._prev_item)
+        prev_prev_text = \
+            unicode(self._prev_prev_item) if self._prev_prev_item else ''
 
-        prev_text = unicode(prev_item)
-        prev_prev_text = unicode(prev_prev_item) if prev_prev_item else ''
         if (
             # The previous item was a keyword or identifier and the current
             # item isn't an operator that doesn't require a space.
-            ((prev_item.is_keyword or prev_item.is_string or
-              prev_item.is_name or prev_item.is_number) and
+            ((self._prev_item.is_keyword or self._prev_item.is_string or
+              self._prev_item.is_name or self._prev_item.is_number) and
              (curr_text[0] not in '([{.,:}])' or
               (curr_text[0] == '=' and equal))) or
 
@@ -1512,11 +1508,11 @@ class ReformattedLines(object):
               (equal and prev_text == '=') or
 
               # Put spaces around non-unary arithmetic operators.
-              ((prev_prev_item and
+              ((self._prev_prev_item and
                 (prev_text not in '+-' and
-                 (prev_prev_item.is_name or
-                  prev_prev_item.is_number or
-                  prev_prev_item.is_string)) and
+                 (self._prev_prev_item.is_name or
+                  self._prev_prev_item.is_number or
+                  self._prev_prev_item.is_string)) and
                prev_text in ('+', '-', '%', '*', '/', '//', '**')))))
         ):
             self._lines.append(self._Space())
@@ -1537,24 +1533,12 @@ class ReformattedLines(object):
             self._delete_whitespace()
             return
 
-        # Retrieve the last two non-whitespace items.
-        prev_item = None
-        prev_prev_item = None
-
-        for prev in reversed(self._lines):
-            if isinstance(prev, (self._Space, self._LineBreak, self._Indent)):
-                continue
-            if prev_item:
-                prev_prev_item = prev
-                break
-            else:
-                prev_item = prev
-
-        if not prev_item or not prev_prev_item or unicode(prev_item) != '=':
+        if (not self._prev_item or not self._prev_prev_item or
+                unicode(self._prev_item) != '='):
             return
 
         self._delete_whitespace()
-        prev_prev_index = self._lines.index(prev_prev_item)
+        prev_prev_index = self._lines.index(self._prev_prev_item)
 
         if (
             isinstance(self._lines[prev_prev_index - 1], self._Indent) or
@@ -1568,9 +1552,9 @@ class ReformattedLines(object):
         if isinstance(self._lines[prev_prev_index - 1], self._Space):
             del self._lines[prev_prev_index - 1]
 
-        self._lines.insert(self._lines.index(prev_prev_item),
+        self._lines.insert(self._lines.index(self._prev_prev_item),
                            self._LineBreak())
-        self._lines.insert(self._lines.index(prev_prev_item),
+        self._lines.insert(self._lines.index(self._prev_prev_item),
                            self._Indent(indent_amt))
 
     def _split_after_delimiter(self, item, indent_amt):
@@ -1607,18 +1591,11 @@ class ReformattedLines(object):
                       (self._Space, self._LineBreak, self._Indent)):
             return
 
-        prev_item = None
-        for prev in reversed(self._lines):
-            if isinstance(prev, (self._Space, self._LineBreak, self._Indent)):
-                continue
-            prev_item = prev
-            break
-
-        if not prev_item:
+        if not self._prev_item:
             return
 
         item_text = unicode(item)
-        prev_text = unicode(prev_item)
+        prev_text = unicode(self._prev_item)
 
         # Prefer a space around a '.' in an import statement, and between the
         # 'import' and '('.
