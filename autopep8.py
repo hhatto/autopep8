@@ -1372,6 +1372,9 @@ class ReformattedLines(object):
 
     """
 
+    ###########################################################################
+    # Private Classes
+
     class _Indent(object):
 
         """Represent an indentation in the atom stream."""
@@ -1418,12 +1421,110 @@ class ReformattedLines(object):
     def __repr__(self):
         return self.emit()
 
+    ###########################################################################
+    # Public Methods
+
     def add(self, obj, indent_amt):
         if isinstance(obj, Atom):
             self._add_item(obj, indent_amt)
             return
 
         self._add_container(obj, indent_amt)
+
+    def add_comment(self, item):
+        self._lines.append(self._Space())
+        self._lines.append(self._Space())
+        self._lines.append(item)
+
+    def add_indent(self, indent_amt):
+        self._lines.append(self._Indent(indent_amt))
+
+    def add_line_break(self, indent):
+        self._lines.append(self._LineBreak())
+        self.add_indent(len(indent))
+
+    def add_line_break_at(self, index, indent_amt):
+        self._lines.insert(index, self._LineBreak())
+        self._lines.insert(index + 1, self._Indent(indent_amt))
+
+    def add_space_if_needed(self, curr_text, equal=False):
+        if (
+            not self._lines or isinstance(
+                self._lines[-1], (self._LineBreak, self._Indent, self._Space))
+        ):
+            return
+
+        prev_text = unicode(self._prev_item)
+        prev_prev_text = \
+            unicode(self._prev_prev_item) if self._prev_prev_item else ''
+
+        if (
+            # The previous item was a keyword or identifier and the current
+            # item isn't an operator that doesn't require a space.
+            ((self._prev_item.is_keyword or self._prev_item.is_string or
+              self._prev_item.is_name or self._prev_item.is_number) and
+             (curr_text[0] not in '([{.,:}])' or
+              (curr_text[0] == '=' and equal))) or
+
+            # Don't place spaces around a '.', unless it's in an 'import'
+            # statement.
+            ((prev_prev_text != 'from' and prev_text[-1] != '.' and
+              curr_text != 'import') and
+
+             # Don't place a space before a colon.
+             curr_text[0] != ':' and
+
+             # Don't split up ending brackets by spaces.
+             ((prev_text[-1] in '}])' and curr_text[0] not in '.,}])') or
+
+              # Put a space after a colon or comma.
+              prev_text[-1] in ':,' or
+
+              # Put space around '=' if asked to.
+              (equal and prev_text == '=') or
+
+              # Put spaces around non-unary arithmetic operators.
+              ((self._prev_prev_item and
+                (prev_text not in '+-' and
+                 (self._prev_prev_item.is_name or
+                  self._prev_prev_item.is_number or
+                  self._prev_prev_item.is_string)) and
+               prev_text in ('+', '-', '%', '*', '/', '//', '**')))))
+        ):
+            self._lines.append(self._Space())
+
+    def fits_on_current_line(self, item_extent):
+        return self.current_size() + item_extent <= self._max_line_length
+
+    def fits_on_empty_line(self, item_extent):
+        return item_extent <= self._max_line_length
+
+    def current_size(self):
+        """The size of the current line minus the indentation."""
+        size = 0
+        for item in reversed(self._lines):
+            size += item.size
+            if isinstance(item, self._LineBreak):
+                break
+
+        return size
+
+    def line_empty(self):
+        return (self._lines and
+                isinstance(self._lines[-1],
+                           (self._LineBreak, self._Indent)))
+
+    def emit(self):
+        string = ''
+        for item in self._lines:
+            if isinstance(item, self._LineBreak):
+                string = string.rstrip()
+            string += item.emit()
+
+        return string.rstrip() + '\n'
+
+    ###########################################################################
+    # Private Methods
 
     def _add_item(self, item, indent_amt):
         """Add an item to the line.
@@ -1492,68 +1593,6 @@ class ReformattedLines(object):
         # container.
         container.reflow(self, ' ' * (indent_amt + 1))
 
-    def add_comment(self, item):
-        self._lines.append(self._Space())
-        self._lines.append(self._Space())
-        self._lines.append(item)
-
-    def add_indent(self, indent_amt):
-        self._lines.append(self._Indent(indent_amt))
-
-    def add_line_break(self, indent):
-        self._lines.append(self._LineBreak())
-        self.add_indent(len(indent))
-
-    def add_line_break_at(self, index, indent_amt):
-        self._lines.insert(index, self._LineBreak())
-        self._lines.insert(index + 1, self._Indent(indent_amt))
-
-    def add_space_if_needed(self, curr_text, equal=False):
-        if (
-            not self._lines or isinstance(
-                self._lines[-1], (self._LineBreak, self._Indent, self._Space))
-        ):
-            return
-
-        prev_text = unicode(self._prev_item)
-        prev_prev_text = \
-            unicode(self._prev_prev_item) if self._prev_prev_item else ''
-
-        if (
-            # The previous item was a keyword or identifier and the current
-            # item isn't an operator that doesn't require a space.
-            ((self._prev_item.is_keyword or self._prev_item.is_string or
-              self._prev_item.is_name or self._prev_item.is_number) and
-             (curr_text[0] not in '([{.,:}])' or
-              (curr_text[0] == '=' and equal))) or
-
-            # Don't place spaces around a '.', unless it's in an 'import'
-            # statement.
-            ((prev_prev_text != 'from' and prev_text[-1] != '.' and
-              curr_text != 'import') and
-
-             # Don't place a space before a colon.
-             curr_text[0] != ':' and
-
-             # Don't split up ending brackets by spaces.
-             ((prev_text[-1] in '}])' and curr_text[0] not in '.,}])') or
-
-              # Put a space after a colon or comma.
-              prev_text[-1] in ':,' or
-
-              # Put space around '=' if asked to.
-              (equal and prev_text == '=') or
-
-              # Put spaces around non-unary arithmetic operators.
-              ((self._prev_prev_item and
-                (prev_text not in '+-' and
-                 (self._prev_prev_item.is_name or
-                  self._prev_prev_item.is_number or
-                  self._prev_prev_item.is_string)) and
-               prev_text in ('+', '-', '%', '*', '/', '//', '**')))))
-        ):
-            self._lines.append(self._Space())
-
     def _prevent_default_initializer_splitting(self, item, indent_amt):
         """Prevent splitting between a default initializer.
 
@@ -1590,7 +1629,7 @@ class ReformattedLines(object):
             del self._lines[prev_prev_index - 1]
 
         self.add_line_break_at(self._lines.index(self._prev_prev_item),
-                              indent_amt)
+                               indent_amt)
 
     def _split_after_delimiter(self, item, indent_amt):
         """Split the line only after a delimiter."""
@@ -1642,40 +1681,6 @@ class ReformattedLines(object):
         while isinstance(self._lines[-1], (self._Space, self._LineBreak,
                                            self._Indent)):
             del self._lines[-1]
-
-    def fits_on_current_line(self, item_extent):
-        return self.current_size() + item_extent <= self._max_line_length
-
-    def fits_on_empty_line(self, item_extent):
-        return item_extent <= self._max_line_length
-
-    def current_size(self):
-        """The size of the current line minus the indentation."""
-        size = 0
-        for item in reversed(self._lines):
-            size += item.size
-            if isinstance(item, self._LineBreak):
-                break
-
-        return size
-
-    def line_empty(self):
-        return (self._lines and
-                isinstance(self._lines[-1],
-                           (self._LineBreak, self._Indent)))
-
-    def emit(self):
-        string = ''
-        for item in self._lines:
-            if isinstance(item, self._LineBreak):
-                string = string.rstrip()
-            string += item.emit()
-
-        return string.rstrip() + '\n'
-
-    @property
-    def max_line_length(self):
-        return self._max_line_length
 
 
 class Atom(object):
