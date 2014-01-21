@@ -1423,6 +1423,8 @@ class ReformattedLines(object):
             self._add_item(obj, indent_amt)
             return
 
+        self._add_container(obj, indent_amt)
+
     def _add_item(self, item, indent_amt):
         """Add an item to the line.
 
@@ -1431,6 +1433,11 @@ class ReformattedLines(object):
         container or not.
 
         """
+        if self._prev_item and self._prev_item.is_string and item.is_string:
+            # Place consecutive string literals on separate lines.
+            self._lines.append(self._LineBreak())
+            self._lines.append(self._Indent(indent_amt))
+
         item_text = unicode(item)
         if self._lines and self._bracket_depth:
             # Adding the item into a container.
@@ -1458,6 +1465,32 @@ class ReformattedLines(object):
         elif item_text in '}])':
             self._bracket_depth -= 1
             assert self._bracket_depth >= 0
+
+    def _add_container(self, container, indent_amt):
+        container_size = container.size
+        space_available = self._max_line_length - indent_amt
+
+        if (
+            unicode(self._prev_item) != '=' and
+            not self.line_empty() and
+            not self.fits_on_current_line(container_size) and
+            (unicode(container)[0] != '(' or not self._prev_item.is_name) and
+            (self.fits_on_empty_line(container_size) or
+             space_available // self.current_size() > 4)
+        ):
+            # Don't break a container if doing so means that it will
+            # align further elements way far to the right. If this
+            # happens, PEP 8 messages about visual indentations could
+            # cause the code to flow over the maximum line length.
+            #
+            # This is just a heuristic, and therefore can be improved
+            # greatly.
+            self._lines.append(self._LineBreak())
+            self._lines.append(self._Indent(indent_amt))
+
+        # Increase the continued indentation only if recursing on a
+        # container.
+        container.reflow(self, ' ' * (indent_amt + 1))
 
     def add_comment(self, item):
         self._lines.append(self._Space())
@@ -1762,36 +1795,9 @@ class Container(object):
             next_item = self._get_item(index + 1)
 
             if isinstance(item, Atom):
-                if prev_item and prev_item.is_string and item.is_string:
-                    # Place consecutive string literals on separate lines.
-                    reflowed_lines.add_line_break(continued_indent)
-
                 item.reflow(reflowed_lines, continued_indent)
             else:  # isinstance(item, Container)
-                item_size = item.size
-                space_available = reflowed_lines.max_line_length - \
-                    len(continued_indent)
-
-                if (
-                    unicode(prev_item) != '=' and
-                    not reflowed_lines.line_empty() and
-                    not reflowed_lines.fits_on_current_line(item_size) and
-                    (unicode(item)[0] != '(' or not prev_item.is_name) and
-                    (reflowed_lines.fits_on_empty_line(item_size) or
-                     space_available // reflowed_lines.current_size() > 4)
-                ):
-                    # Don't break a container if doing so means that it will
-                    # align further elements way far to the right. If this
-                    # happens, PEP 8 messages about visual indentations could
-                    # cause the code to flow over the maximum line length.
-                    #
-                    # This is just a heuristic, and therefore can be improved
-                    # greatly.
-                    reflowed_lines.add_line_break(continued_indent)
-
-                # Increase the continued indentation only if recursing on a
-                # container.
-                item.reflow(reflowed_lines, continued_indent + ' ')
+                reflowed_lines.add(item, len(continued_indent))
 
             if (
                 break_after_open_bracket and index == 0 and
