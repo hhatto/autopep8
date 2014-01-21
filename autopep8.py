@@ -1590,7 +1590,7 @@ class ReformattedLines(object):
             del self._lines[prev_prev_index - 1]
 
         self.add_line_break_at(self._lines.index(self._prev_prev_item),
-                              indent_amt)
+                               indent_amt)
 
     def _split_after_delimiter(self, item, indent_amt):
         """Split the line only after a delimiter."""
