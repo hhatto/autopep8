@@ -1790,14 +1790,12 @@ class Container(object):
     def reflow(self, reflowed_lines, continued_indent,
                break_after_open_bracket=False):
         for (index, item) in enumerate(self._items):
-            prev_item = self._get_item(index - 1)
-            next_item = self._get_item(index + 1)
-
             if isinstance(item, Atom):
                 item.reflow(reflowed_lines, continued_indent)
             else:  # isinstance(item, Container)
                 reflowed_lines.add(item, len(continued_indent))
 
+            next_item = self._get_item(index + 1)
             if (
                 break_after_open_bracket and index == 0 and
                 # Prefer to keep empty containers together instead of
