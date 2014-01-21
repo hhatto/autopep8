@@ -1504,6 +1504,10 @@ class ReformattedLines(object):
         self._lines.append(self._LineBreak())
         self.add_indent(len(indent))
 
+    def add_line_break_at(self, index, indent_amt):
+        self._lines.insert(index, self._LineBreak())
+        self._lines.insert(index + 1, self._Indent(indent_amt))
+
     def add_space_if_needed(self, curr_text, equal=False):
         if (
             not self._lines or isinstance(
@@ -1585,10 +1589,8 @@ class ReformattedLines(object):
         if isinstance(self._lines[prev_prev_index - 1], self._Space):
             del self._lines[prev_prev_index - 1]
 
-        self._lines.insert(self._lines.index(self._prev_prev_item),
-                           self._LineBreak())
-        self._lines.insert(self._lines.index(self._prev_prev_item),
-                           self._Indent(indent_amt))
+        self.add_line_break_at(self._lines.index(self._prev_prev_item),
+                              indent_amt)
 
     def _split_after_delimiter(self, item, indent_amt):
         """Split the line only after a delimiter."""
@@ -1608,10 +1610,7 @@ class ReformattedLines(object):
         if not last_space:
             return
 
-        self._lines.insert(self._lines.index(last_space),
-                           self._LineBreak())
-        self._lines.insert(self._lines.index(last_space),
-                           self._Indent(indent_amt))
+        self.add_line_break_at(self._lines.index(last_space), indent_amt)
 
     def _enforce_space(self, item):
         """Enforce a space in certain situations.
