@@ -1573,6 +1573,8 @@ class ReformattedLines(object):
             not self.line_empty() and
             not self.fits_on_current_line(
                 container.size + self._bracket_depth + 2) and
+
+            # Don't split before the opening bracket of a call.
             (unicode(container)[0] != '(' or not self._prev_item.is_name)
         ):
             # If the container doesn't fit on the current line and the current
@@ -1669,6 +1671,7 @@ class ReformattedLines(object):
             self._lines.append(self._Space())
 
     def _delete_whitespace(self):
+        """Delete all whitespace from the end of the line."""
         while isinstance(self._lines[-1], (self._Space, self._LineBreak,
                                            self._Indent)):
             del self._lines[-1]

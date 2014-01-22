@@ -4113,9 +4113,13 @@ parser.add_argument(
             self.assertEqual(fixed, result)
 
     def test_e501_experimental_with_shorter_length(self):
-        line = "foooooooooooooooooo('abcdefghijklmnopqrstuvwxyz')\n"
-        fixed = "foooooooooooooooooo(\n    'abcdefghijklmnopqrstuvwxyz')\n"
-
+        line = """\
+foooooooooooooooooo('abcdefghijklmnopqrstuvwxyz')
+"""
+        fixed = """\
+foooooooooooooooooo(
+    'abcdefghijklmnopqrstuvwxyz')
+"""
         with autopep8_context(line,
                               options=['--max-line-length=40',
                                        '--experimental']) as result:
@@ -4186,8 +4190,9 @@ this_should_be_shortened = (
 def d():
     111 + 111 + 111 + 111 + 111 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 222 + 333 + 333 + 333 + 333
 """
-        fixed = r"""def d():
-    111 + 111 + 111 + 111 + 111 + 222 + 222 + 222 + 222 + \
+        fixed = """\
+def d():
+    111 + 111 + 111 + 111 + 111 + 222 + 222 + 222 + 222 + \\
         222 + 222 + 222 + 222 + 222 + 333 + 333 + 333 + 333
 """
         with autopep8_context(line, options=['--experimental']) as result:
