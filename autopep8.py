@@ -2143,6 +2143,8 @@ def normalize_multiline(line):
         return line + ' pass'
     elif line.startswith('return '):
         return 'def _(): ' + line
+    elif line.startswith('@'):
+        return line + 'def _(): pass'
     else:
         return line
 

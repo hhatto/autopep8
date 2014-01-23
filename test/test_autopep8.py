@@ -315,6 +315,9 @@ def foo():
         self.assertEqual('def _(): return 1',
                          autopep8.normalize_multiline('return 1'))
 
+        self.assertEqual('@decorator\ndef _(): pass',
+                         autopep8.normalize_multiline('@decorator\n'))
+
     def test_code_match(self):
         self.assertTrue(autopep8.code_match('E2', select=['E2', 'E3'],
                                             ignore=[]))
@@ -3085,6 +3088,25 @@ def f(self):
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_aggressive_decorator(self):
+        line = """\
+@foo(('xxxxxxxxxxxxxxxxxxxxxxxxxx', users.xxxxxxxxxxxxxxxxxxxxxxxxxx), ('yyyyyyyyyyyy', users.yyyyyyyyyyyy), ('zzzzzzzzzzzzzz', users.zzzzzzzzzzzzzz))
+"""
+        fixed = """\
+
+
+@foo(
+    ('xxxxxxxxxxxxxxxxxxxxxxxxxx',
+     users.xxxxxxxxxxxxxxxxxxxxxxxxxx),
+    ('yyyyyyyyyyyy',
+     users.yyyyyyyyyyyy),
+    ('zzzzzzzzzzzzzz',
+     users.zzzzzzzzzzzzzz))
+"""
+
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
@@ -4829,6 +4851,22 @@ aaaaaaaaaaaaaaaaaaaaa(
     bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb=ccccccccccccccccccccccccccccccccccccccccccccccccc,
     bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb=cccccccccccccccccccccccccccccccccccccccccccccccc)
 """
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_decorator(self):
+        line = """\
+@foo(('xxxxxxxxxxxxxxxxxxxxxxxxxx', users.xxxxxxxxxxxxxxxxxxxxxxxxxx), ('yyyyyyyyyyyy', users.yyyyyyyyyyyy), ('zzzzzzzzzzzzzz', users.zzzzzzzzzzzzzz))
+"""
+        fixed = """\
+
+
+@foo(
+    ('xxxxxxxxxxxxxxxxxxxxxxxxxx', users.xxxxxxxxxxxxxxxxxxxxxxxxxx),
+    ('yyyyyyyyyyyy', users.yyyyyyyyyyyy),
+    ('zzzzzzzzzzzzzz', users.zzzzzzzzzzzzzz))
+"""
+
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
