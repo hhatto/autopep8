@@ -318,6 +318,9 @@ def foo():
         self.assertEqual('@decorator\ndef _(): pass',
                          autopep8.normalize_multiline('@decorator\n'))
 
+        self.assertEqual('class A: pass',
+                         autopep8.normalize_multiline('class A:'))
+
     def test_code_match(self):
         self.assertTrue(autopep8.code_match('E2', select=['E2', 'E3'],
                                             ignore=[]))
@@ -3107,6 +3110,20 @@ def f(self):
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_aggressive_long_class_name(self):
+        line = """\
+class AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA(BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB):
+    pass
+"""
+        fixed = """\
+class AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA(
+        BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB):
+    pass
+"""
+
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
@@ -4865,6 +4882,20 @@ aaaaaaaaaaaaaaaaaaaaa(
     ('xxxxxxxxxxxxxxxxxxxxxxxxxx', users.xxxxxxxxxxxxxxxxxxxxxxxxxx),
     ('yyyyyyyyyyyy', users.yyyyyyyyyyyy),
     ('zzzzzzzzzzzzzz', users.zzzzzzzzzzzzzz))
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_long_class_name(self):
+        line = """\
+class AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA(BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB):
+    pass
+"""
+        fixed = """\
+class AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA(
+        BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB):
+    pass
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
