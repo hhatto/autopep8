@@ -1497,9 +1497,6 @@ class ReformattedLines(object):
     def fits_on_current_line(self, item_extent):
         return self.current_size() + item_extent <= self._max_line_length
 
-    def fits_on_empty_line(self, item_extent):
-        return item_extent <= self._max_line_length
-
     def current_size(self):
         """The size of the current line minus the indentation."""
         size = 0
