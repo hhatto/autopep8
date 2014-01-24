@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 #
 # Copyright (C) 2010-2011 Hideo Hattori
-# Copyright (C) 2011-2014 Hideo Hattori, Steven Myint
+# Copyright (C) 2011-2013 Hideo Hattori, Steven Myint
+# Copyright (C) 2013-2014 Hideo Hattori, Steven Myint, Bill Wendling
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -1367,8 +1368,8 @@ class ReformattedLines(object):
 
     """The reflowed lines of atoms.
 
-    Each part of the line is represented as an "atom." They can be moved around
-    when need be to get the optimal formatting.
+    Each part of the line is represented as an "atom." They can be moved
+    around when need be to get the optimal formatting.
 
     """
 
@@ -1529,9 +1530,9 @@ class ReformattedLines(object):
     def _add_item(self, item, indent_amt):
         """Add an item to the line.
 
-        Reflow the line to get the best formatting after the item is inserted.
-        The bracket depth indicates if the item is being inserted inside of a
-        container or not.
+        Reflow the line to get the best formatting after the item is
+        inserted. The bracket depth indicates if the item is being
+        inserted inside of a container or not.
 
         """
         if self._prev_item and self._prev_item.is_string and item.is_string:
@@ -1589,11 +1590,12 @@ class ReformattedLines(object):
     def _prevent_default_initializer_splitting(self, item, indent_amt):
         """Prevent splitting between a default initializer.
 
-        When there is a default initializer, it's best to keep it all on the
-        same line. It's nicer and more readable, even if it goes over the
-        maximum allowable line length. This goes back along the current line to
-        determine if we have a default initializer, and, if so, to remove
-        extraneous whitespaces and add a line break/indent before it if needed.
+        When there is a default initializer, it's best to keep it all on
+        the same line. It's nicer and more readable, even if it goes
+        over the maximum allowable line length. This goes back along the
+        current line to determine if we have a default initializer, and,
+        if so, to remove extraneous whitespaces and add a line
+        break/indent before it if needed.
 
         """
         if unicode(item) == '=':
@@ -1647,8 +1649,8 @@ class ReformattedLines(object):
     def _enforce_space(self, item):
         """Enforce a space in certain situations.
 
-        There are cases where we will want a space where normally we wouldn't
-        put one. This just enforces the addition of a space.
+        There are cases where we will want a space where normally we
+        wouldn't put one. This just enforces the addition of a space.
 
         """
         if isinstance(self._lines[-1],
@@ -1943,8 +1945,8 @@ def _parse_container(tokens, index, for_or_if=None):
 def _parse_tokens(tokens):
     """Parse the tokens.
 
-    This converts the tokens into a form where we can manipulate them more
-    easily.
+    This converts the tokens into a form where we can manipulate them
+    more easily.
 
     """
 
@@ -2002,8 +2004,8 @@ def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
                                 max_line_length):
     """Shorten the line taking its length into account.
 
-    The input is expected to be free of newlines except for inside multiline
-    strings and at the end.
+    The input is expected to be free of newlines except for inside
+    multiline strings and at the end.
 
     """
 
@@ -2027,8 +2029,8 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
                             key_token_strings, aggressive):
     """Separate line by breaking at tokens in key_token_strings.
 
-    The input is expected to be free of newlines except for inside multiline
-    strings and at the end.
+    The input is expected to be free of newlines except for inside
+    multiline strings and at the end.
 
     """
     offsets = []
