@@ -1286,6 +1286,7 @@ def shorten_line(tokens, source, indentation, indent_word, max_line_length,
     if experimental:
         for shortened in _shorten_line_at_tokens_new(
                 tokens=tokens,
+                source=source,
                 indentation=indentation,
                 indent_word=indent_word,
                 max_line_length=max_line_length):
@@ -1997,7 +1998,7 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
     return lines.emit()
 
 
-def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
+def _shorten_line_at_tokens_new(tokens, source, indentation, indent_word,
                                 max_line_length):
     """Shorten the line taking its length into account.
 
@@ -2005,6 +2006,9 @@ def _shorten_line_at_tokens_new(tokens, indentation, indent_word,
     multiline strings and at the end.
 
     """
+    # Yield the original source so to see if it's a better choice than the
+    # shortened candidate lines we generate here.
+    yield source
 
     parsed_tokens = _parse_tokens(tokens)
 
