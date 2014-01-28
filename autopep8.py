@@ -2988,7 +2988,7 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
             rank -= 50
 
         if current_line.endswith('\\'):
-            rank += 1
+            rank += 2
 
         # Prefer breaking at commas rather than colon.
         if ',' in current_line and current_line.endswith(':'):
