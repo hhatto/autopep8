@@ -2954,7 +2954,7 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
         ):
             rank += 20
 
-    for current_line in lines:
+    for lineno, current_line in enumerate(lines):
         current_line = current_line.strip()
 
         if current_line.startswith('#'):
@@ -2988,7 +2988,30 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
             rank -= 50
 
         if current_line.endswith('\\'):
-            rank += 2
+            # If a line ends in \-newline, it may be part of a
+            # multiline string. In that case, we would like to know
+            # how long that line is without the \-newline. If it's
+            # longer than the maximum, or has comments, then we assume
+            # that the \-newline is an okay candidate and only
+            # penalize it a bit.
+            total_len = len(current_line)
+            lineno += 1
+            while lineno < len(lines):
+                total_len += len(lines[lineno])
+
+                if lines[lineno].lstrip().startswith('#'):
+                    total_len = max_line_length
+                    break
+
+                if not lines[lineno].endswith('\\'):
+                    break
+
+                lineno += 1
+
+            if total_len < max_line_length:
+                rank += 10
+            else:
+                rank += 1
 
         # Prefer breaking at commas rather than colon.
         if ',' in current_line and current_line.endswith(':'):

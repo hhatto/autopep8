@@ -2922,8 +2922,7 @@ def f():
     email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
 <b>Czar: </b>""" + despot["Nicholas"] + """<br>
 <b>Minion: </b>""" + serf["Dmitri"] + """<br>
-<b>Residence: </b>""" + \\
-        palace["Winter"] + """<br>
+<b>Residence: </b>""" + palace["Winter"] + """<br>
 </body>
 </html>"""
 '''
@@ -4608,8 +4607,7 @@ def f():
     email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
 <b>Czar: </b>""" + despot["Nicholas"] + """<br>
 <b>Minion: </b>""" + serf["Dmitri"] + """<br>
-<b>Residence: </b>""" + \\
-        palace["Winter"] + """<br>
+<b>Residence: </b>""" + palace["Winter"] + """<br>
 </body>
 </html>"""
 '''
@@ -4631,8 +4629,7 @@ def f():
     email_text += ("""<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
 <b>Czar: </b>""" + despot["Nicholas"] + """<br>
 <b>Minion: </b>""" + serf["Dmitri"] + """<br>
-<b>Residence: </b>""" + palace["Winter"] +
-                   """<br>
+<b>Residence: </b>""" + palace["Winter"] + """<br>
 </body>
 </html>""")
 '''
