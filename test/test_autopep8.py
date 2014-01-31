@@ -4608,7 +4608,8 @@ def f():
     email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
 <b>Czar: </b>""" + despot["Nicholas"] + """<br>
 <b>Minion: </b>""" + serf["Dmitri"] + """<br>
-<b>Residence: </b>""" + palace["Winter"] + """<br>
+<b>Residence: </b>""" + \\
+        palace["Winter"] + """<br>
 </body>
 </html>"""
 '''
@@ -4630,7 +4631,8 @@ def f():
     email_text += ("""<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
 <b>Czar: </b>""" + despot["Nicholas"] + """<br>
 <b>Minion: </b>""" + serf["Dmitri"] + """<br>
-<b>Residence: </b>""" + palace["Winter"] + """<br>
+<b>Residence: </b>""" + palace["Winter"] +
+                   """<br>
 </body>
 </html>""")
 '''
@@ -4898,6 +4900,13 @@ class AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA(
 
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
+
+    def test_e501_experimental_no_line_change(self):
+        line = """\
+    return '<a href="javascript:;" class="copy-to-clipboard-button" data-clipboard-text="%s" title="copy url to clipboard">Copy Link</a>' % url
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(line, result)
 
 
 @contextlib.contextmanager

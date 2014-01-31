@@ -2008,7 +2008,7 @@ def _shorten_line_at_tokens_new(tokens, source, indentation, indent_word,
     """
     # Yield the original source so to see if it's a better choice than the
     # shortened candidate lines we generate here.
-    yield source
+    yield indentation + source
 
     parsed_tokens = _parse_tokens(tokens)
 
