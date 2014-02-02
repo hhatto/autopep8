@@ -1,7 +1,32 @@
+include AUTHORS
+include LICENSE
 include README.rst
 include test/__init__.py
 include test/bad_encoding.py
 include test/bad_encoding2.py
 include test/e101_example.py
+include test/example
+include test/example/é.py
+include test/example/é.txt
+include test/example/x.py
+include test/example_with_reduce.py
 include test/example.py
 include test/iso_8859_1.py
+recursive-exclude test/suite *.py
+recursive-exclude test/suite/out *.py
+exclude .travis.yml
+exclude CONTRIBUTING.rst
+exclude Makefile
+exclude coveralls.bash
+exclude hooks
+exclude hooks/pre-push
+exclude install_hooks.bash
+exclude test/.gitignore
+exclude test/acid.py
+exclude test/acid_github.py
+exclude test/acid_pypi.py
+exclude test/suite
+exclude test/suite/out
+exclude test/vim_autopep8.py
+exclude tox.ini
+exclude update_readme.py
