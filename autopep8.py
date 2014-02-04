@@ -1783,9 +1783,6 @@ class Container(object):
     def __getitem__(self, idx):
         return self._items[idx]
 
-    def _get_item(self, index):
-        return self._items[index] if 0 <= index < len(self._items) else None
-
     def reflow(self, reflowed_lines, continued_indent,
                break_after_open_bracket=False):
         for (index, item) in enumerate(self._items):
@@ -1794,7 +1791,7 @@ class Container(object):
             else:  # isinstance(item, Container)
                 reflowed_lines.add(item, len(continued_indent))
 
-            next_item = self._get_item(index + 1)
+            next_item = get_item(self._items, index + 1)
             if (
                 break_after_open_bracket and index == 0 and
                 # Prefer to keep empty containers together instead of
