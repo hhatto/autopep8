@@ -55,6 +55,7 @@ import signal
 import sys
 import token
 import tokenize
+from lib2to3.refactor import get_all_fix_names
 
 import pep8
 
@@ -97,20 +98,8 @@ CODE_TO_2TO3 = {
     'W601': ['has_key'],
     'W603': ['ne'],
     'W604': ['repr'],
-    'W690': ['apply',
-             'except',
-             'exitfunc',
-             'import',
-             'numliterals',
-             'operator',
-             'paren',
-             'reduce',
-             'renames',
-             'standarderror',
-             'sys_exc',
-             'throw',
-             'tuple_params',
-             'xreadlines']}
+    'W690': set(get_all_fix_names('lib2to3.fixes')) -
+    set(['idioms', 'ne', 'repr', 'print', 'execfile', 'raise'])}
 
 
 def open_with_encoding(filename, encoding=None, mode='r'):
