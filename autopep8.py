@@ -443,7 +443,7 @@ class FixPEP8(object):
                                                logical_start,
                                                logical_end)
                         if logical and set(range(
-                            logical[0][0],
+                            logical[0][0] + 1,
                             logical[1][0] + 1)).intersection(
                                 completed_lines):
                             continue

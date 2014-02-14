@@ -3123,6 +3123,24 @@ class AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA(
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_aggressive_long_comment_and_long_line(self):
+        line = """\
+def foo():
+    #. This is not a novel to be tossed aside lightly. It should be throw with great force.
+    self.xxxxxxxxx(_('yyyyyyyyyyyyy yyyyyyyyyyyy yyyyyyyy yyyyyyyy y'), 'zzzzzzzzzzzzzzzzzzz', bork='urgent')
+"""
+        fixed = """\
+def foo():
+    #. This is not a novel to be tossed aside lightly. It should be throw with great force.
+    self.xxxxxxxxx(
+        _('yyyyyyyyyyyyy yyyyyyyyyyyy yyyyyyyy yyyyyyyy y'),
+        'zzzzzzzzzzzzzzzzzzz',
+        bork='urgent')
+"""
+
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
