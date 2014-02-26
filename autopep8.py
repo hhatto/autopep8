@@ -1797,7 +1797,8 @@ class Container(object):
                 # Prefer to keep empty containers together instead of
                 # separating them.
                 unicode(item) == self.open_bracket and
-                (not next_item or unicode(next_item) != self.close_bracket)
+                (not next_item or unicode(next_item) != self.close_bracket) and
+                (len(self._items) != 3 or not isinstance(next_item, Atom))
             ):
                 reflowed_lines.add_line_break(continued_indent)
                 break_after_open_bracket = False
@@ -1986,11 +1987,13 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
     for item in parsed_tokens:
         lines.add_space_if_needed(unicode(item), equal=True)
 
+        save_continued_indent = continued_indent
         if start_on_prefix_line and isinstance(item, Container):
             start_on_prefix_line = False
             continued_indent = ' ' * (lines.current_size() + 1)
 
         item.reflow(lines, continued_indent, break_after_open_bracket)
+        continued_indent = save_continued_indent
 
     return lines.emit()
 

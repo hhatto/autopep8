@@ -4259,10 +4259,8 @@ def d():
 blahblah = os.environ.get('blahblah') or os.environ.get('blahblahblah') or os.environ.get('blahblahblahblah')
 """
         fixed = """\
-blahblah = os.environ.get(
-    'blahblah') or os.environ.get(
-    'blahblahblah') or os.environ.get(
-    'blahblahblahblah')
+blahblah = os.environ.get('blahblah') or os.environ.get(
+    'blahblahblah') or os.environ.get('blahblahblahblah')
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4922,6 +4920,22 @@ class AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA(
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(line, result)
+
+    def test_e501_experimental_splitting_small_arrays(self):
+        line = """\
+def foo():
+    unspecified[service] = ('# The %s brown fox jumped over the lazy, good for nothing '
+                            'dog until it grew tired and set its sights upon the cat!' % adj)
+"""
+        fixed = """\
+def foo():
+    unspecified[service] = (
+        '# The %s brown fox jumped over the lazy, good for nothing '
+        'dog until it grew tired and set its sights upon the cat!' % adj)
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
 
 
 @contextlib.contextmanager
