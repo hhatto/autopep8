@@ -1,4 +1,4 @@
-include AUTHORS
+include AUTHORS.rst
 include LICENSE
 include README.rst
 include test/__init__.py
