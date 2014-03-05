@@ -725,11 +725,14 @@ class FixPEP8(object):
 
         single_line = join_logical_line(''.join(logical_lines))
 
-        fixed = self.fix_long_line(
-            target=single_line,
-            previous_line=previous_line,
-            next_line=next_line,
-            original=''.join(logical_lines))
+        try:
+            fixed = self.fix_long_line(
+                target=single_line,
+                previous_line=previous_line,
+                next_line=next_line,
+                original=''.join(logical_lines))
+        except (SyntaxError, tokenize.TokenError):
+            return self.fix_long_line_physically(result)
 
         if fixed:
             for line_index in range(start_line_index, end_line_index + 1):
@@ -747,11 +750,14 @@ class FixPEP8(object):
         previous_line = get_item(self.source, line_index - 1, default='')
         next_line = get_item(self.source, line_index + 1, default='')
 
-        fixed = self.fix_long_line(
-            target=target,
-            previous_line=previous_line,
-            next_line=next_line,
-            original=target)
+        try:
+            fixed = self.fix_long_line(
+                target=target,
+                previous_line=previous_line,
+                next_line=next_line,
+                original=target)
+        except (SyntaxError, tokenize.TokenError):
+            return []
 
         if fixed:
             self.source[line_index] = fixed
@@ -911,10 +917,7 @@ def get_fixed_long_line(target, previous_line, original,
     assert source.lstrip() == source
 
     # Check for partial multiline.
-    try:
-        tokens = list(generate_tokens(source))
-    except (SyntaxError, tokenize.TokenError):
-        return
+    tokens = list(generate_tokens(source))
 
     candidates = shorten_line(
         tokens, source, indent,

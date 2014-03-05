@@ -3141,6 +3141,25 @@ def foo():
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_aggressive_intermingled_comments(self):
+        line = """\
+A = [
+    # A comment
+    ['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbbbb', 'cccccccccccccccccccccc']
+]
+"""
+        fixed = """\
+A = [
+    # A comment
+    ['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+     'bbbbbbbbbbbbbbbbbbbbbb',
+     'cccccccccccccccccccccc']
+]
+"""
+
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
