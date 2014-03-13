@@ -4729,9 +4729,8 @@ foo('                                                                           
 raise MultiProjectException("Ambiguous workspace: %s=%s, %s" % ( varname, varname_path, os.path.abspath(config_filename)))
 """
         fixed = """\
-raise MultiProjectException(
-    "Ambiguous workspace: %s=%s, %s" %
-    (varname, varname_path, os.path.abspath(config_filename)))
+raise MultiProjectException("Ambiguous workspace: %s=%s, %s" % (
+    varname, varname_path, os.path.abspath(config_filename)))
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4951,6 +4950,28 @@ def foo():
     unspecified[service] = (
         '# The %s brown fox jumped over the lazy, good for nothing '
         'dog until it grew tired and set its sights upon the cat!' % adj)
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_no_splitting_in_func_call(self):
+        line = """\
+def foo():
+    if True:
+        if True:
+            function.calls('%r (%s): aaaaaaaa bbbbbbbbbb ccccccc ddddddd eeeeee (%d, %d)',
+                           xxxxxx.yy, xxxxxx.yyyy, len(mmmmmmmmmmmmm['fnord']),
+                           len(mmmmmmmmmmmmm['asdfakjhdsfkj']))
+"""
+        fixed = """\
+def foo():
+    if True:
+        if True:
+            function.calls(
+                '%r (%s): aaaaaaaa bbbbbbbbbb ccccccc ddddddd eeeeee (%d, %d)',
+                xxxxxx.yy, xxxxxx.yyyy, len(mmmmmmmmmmmmm['fnord']),
+                len(mmmmmmmmmmmmm['asdfakjhdsfkj']))
 """
 
         with autopep8_context(line, options=['--experimental']) as result:

@@ -1693,13 +1693,13 @@ class Atom(object):
     def __len__(self):
         return self.size
 
-    def reflow(self, reflowed_lines, continued_indent,
+    def reflow(self, reflowed_lines, continued_indent, extent,
                break_after_open_bracket=False):
         if self._atom.token_type == tokenize.COMMENT:
             reflowed_lines.add_comment(self)
             return
 
-        total_size = self.size
+        total_size = extent if extent else self.size
 
         if self._atom.token_string not in ',:([{}])':
             # Some atoms will need an extra 1-sized space token after them.
@@ -1790,7 +1790,8 @@ class Container(object):
                break_after_open_bracket=False):
         for (index, item) in enumerate(self._items):
             if isinstance(item, Atom):
-                item.reflow(reflowed_lines, continued_indent)
+                item.reflow(reflowed_lines, continued_indent,
+                            self._get_extent(index))
             else:  # isinstance(item, Container)
                 reflowed_lines.add(item, len(continued_indent))
 
@@ -1805,6 +1806,31 @@ class Container(object):
             ):
                 reflowed_lines.add_line_break(continued_indent)
                 break_after_open_bracket = False
+            else:
+                next_next_item = get_item(self._items, index + 2)
+                if (
+                    unicode(item) not in '.%' and next_item and
+                    next_next_item and unicode(next_item) != ':' and
+                    not isinstance(next_next_item, Atom) and
+                    not reflowed_lines.line_empty() and
+                    not reflowed_lines.fits_on_current_line(
+                        next_item.size + next_next_item.size + 2)
+                ):
+                    reflowed_lines.add_line_break(continued_indent)
+
+    def _get_extent(self, index):
+        """The extent of the full element.
+
+        E.g., the length of a function call or keyword.
+        """
+        extent = 0
+        while index < len(self._items):
+            item = get_item(self._items, index)
+            if unicode(item) not in '.=' and not item.is_name:
+                break
+            extent += len(item)
+            index += 1
+        return extent
 
     @property
     def is_string(self):
@@ -1816,6 +1842,10 @@ class Container(object):
 
     @property
     def is_keyword(self):
+        return False
+
+    @property
+    def is_name(self):
         return False
 
     @property
