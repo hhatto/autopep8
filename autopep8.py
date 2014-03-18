@@ -2977,7 +2977,7 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
 
     current_longest = max(offset + len(x.strip()) for x in lines)
 
-    rank += 2 * max(0, current_longest - max_line_length)
+    rank += 4 * max(0, current_longest - max_line_length)
 
     rank += len(lines)
 
