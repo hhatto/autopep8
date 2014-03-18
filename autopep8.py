@@ -1570,23 +1570,32 @@ class ReformattedLines(object):
             assert self._bracket_depth >= 0
 
     def _add_container(self, container, indent_amt):
+        actual_indent = indent_amt + 1
+        break_after_open_bracket = False
+
         if (
             unicode(self._prev_item) != '=' and
             not self.line_empty() and
             not self.fits_on_current_line(
-                container.size + self._bracket_depth + 2) and
-
-            # Don't split before the opening bracket of a call.
-            (unicode(container)[0] != '(' or not self._prev_item.is_name)
+                container.size + self._bracket_depth + 2)
         ):
-            # If the container doesn't fit on the current line and the current
-            # line isn't empty, place the container on the next line.
-            self._lines.append(self._LineBreak())
-            self._lines.append(self._Indent(indent_amt))
+
+            if unicode(container)[0] == '(' and self._prev_item.is_name:
+                # Don't split before the opening bracket of a call.
+                break_after_open_bracket = True
+            else:
+                # If the container doesn't fit on the current line and the
+                # current line isn't empty, place the container on the next
+                # line.
+                self._lines.append(self._LineBreak())
+                self._lines.append(self._Indent(indent_amt))
+        else:
+            actual_indent = self.current_size() + 1
 
         # Increase the continued indentation only if recursing on a
         # container.
-        container.reflow(self, ' ' * (indent_amt + 1))
+        container.reflow(self, ' ' * actual_indent,
+                         break_after_open_bracket=break_after_open_bracket)
 
     def _prevent_default_initializer_splitting(self, item, indent_amt):
         """Prevent splitting between a default initializer.

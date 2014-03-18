@@ -4809,9 +4809,28 @@ if True:
 """
         fixed = """\
 if True:
-    xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(
-        xxxxxxxxxxx, xxxxxxxxxxxxxxxx={'xxxxxxxxxxxx': 'xxxxx', 'xxxxxxxxxxx':
-                                       xx, 'xxxxxxxx': False, })
+    xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(xxxxxxxxxxx, xxxxxxxxxxxxxxxx={
+        'xxxxxxxxxxxx': 'xxxxx',
+        'xxxxxxxxxxx': xx,
+        'xxxxxxxx':
+        False, })
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_with_dot_calls(self):
+        line = """\
+if True:
+    logging.info('aaaaaa bbbbb dddddd ccccccc eeeeeee fffffff gg: %s',
+        xxxxxxxxxxxxxxxxx.yyyyyyyyyyyyyyyyyyyyy(zzzzzzzzzzzzzzzzz.jjjjjjjjjjjjjjjjj()))
+"""
+        fixed = """\
+if True:
+    logging.info(
+        'aaaaaa bbbbb dddddd ccccccc eeeeeee fffffff gg: %s',
+        xxxxxxxxxxxxxxxxx.yyyyyyyyyyyyyyyyyyyyy(
+            zzzzzzzzzzzzzzzzz.jjjjjjjjjjjjjjjjj()))
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
