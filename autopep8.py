@@ -1837,6 +1837,7 @@ class Container(object):
         """The extent of the full element.
 
         E.g., the length of a function call or keyword.
+
         """
         extent = 0
         prev_item = get_item(self._items, index - 1)
@@ -2051,8 +2052,8 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
     lines.add_indent(len(indentation))
 
     if not start_on_prefix_line:
-        # If splitting after the opening bracket will cause the first element to
-        # be aligned weirdly, don't try it.
+        # If splitting after the opening bracket will cause the first element
+        # to be aligned weirdly, don't try it.
         first_token = get_item(parsed_tokens, 0)
         second_token = get_item(parsed_tokens, 1)
 
