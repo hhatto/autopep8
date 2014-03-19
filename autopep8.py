@@ -1829,7 +1829,6 @@ class Container(object):
                     not reflowed_lines.line_empty() and
                     not reflowed_lines.fits_on_current_line(
                         self._get_extent(index + 1) + 2)
-                        #next_item.size + next_next_item.size + 2)
                 ):
                     reflowed_lines.add_line_break(continued_indent)
 
