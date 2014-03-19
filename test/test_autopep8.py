@@ -5026,6 +5026,19 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx = [
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_no_splitting_before_arg_list(self):
+        line = """\
+xxxxxxxxxxxx = [yyyyyy['yyyyyy'].get('zzzzzzzzzzz') for yyyyyy in x.get('aaaaaaaaaaa') if yyyyyy['yyyyyy'].get('zzzzzzzzzzz')]
+"""
+        fixed = """\
+xxxxxxxxxxxx = [
+    yyyyyy['yyyyyy'].get('zzzzzzzzzzz')
+    for yyyyyy in x.get('aaaaaaaaaaa') if yyyyyy['yyyyyy'].get('zzzzzzzzzzz')]
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):

@@ -1818,9 +1818,10 @@ class Container(object):
             else:
                 next_next_item = get_item(self._items, index + 2)
                 if (
-                    unicode(item) not in '.%' and next_item and
-                    next_next_item and unicode(next_item) != ':' and
-                    not isinstance(next_next_item, Atom) and
+                    unicode(item) not in '.%' and
+                    next_item and not isinstance(next_item, Container) and
+                    unicode(next_item) != ':' and
+                    next_next_item and not isinstance(next_next_item, Atom) and
                     not reflowed_lines.line_empty() and
                     not reflowed_lines.fits_on_current_line(
                         next_item.size + next_next_item.size + 2)
