@@ -4743,8 +4743,9 @@ foo('                                                                           
 raise MultiProjectException("Ambiguous workspace: %s=%s, %s" % ( varname, varname_path, os.path.abspath(config_filename)))
 """
         fixed = """\
-raise MultiProjectException("Ambiguous workspace: %s=%s, %s" % (
-    varname, varname_path, os.path.abspath(config_filename)))
+raise MultiProjectException(
+    "Ambiguous workspace: %s=%s, %s" %
+    (varname, varname_path, os.path.abspath(config_filename)))
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4823,11 +4824,10 @@ if True:
 """
         fixed = """\
 if True:
-    xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(xxxxxxxxxxx, xxxxxxxxxxxxxxxx={
-        'xxxxxxxxxxxx': 'xxxxx',
-        'xxxxxxxxxxx': xx,
-        'xxxxxxxx':
-        False, })
+    xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(
+        xxxxxxxxxxx,
+        xxxxxxxxxxxxxxxx={'xxxxxxxxxxxx': 'xxxxx', 'xxxxxxxxxxx': xx,
+                          'xxxxxxxx': False, })
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
@@ -5051,6 +5051,20 @@ def f():
         BAD(('xxxxxxxxxxxxx', 42),
             'I died for beauty, but was scarce / Adjusted in the tomb %s',
             yyyyyyyyyyyyy)
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_list_comp(self):
+        line = """\
+xxxxxxxxxxxs = [xxxxxxxxxxx for xxxxxxxxxxx in xxxxxxxxxxxs if not yyyyyyyyyyyy[xxxxxxxxxxx] or not yyyyyyyyyyyy[xxxxxxxxxxx].zzzzzzzzzz]
+"""
+        fixed = """\
+xxxxxxxxxxxs = [xxxxxxxxxxx
+                for xxxxxxxxxxx in xxxxxxxxxxxs
+                if not yyyyyyyyyyyy[xxxxxxxxxxx] or
+                not yyyyyyyyyyyy[xxxxxxxxxxx].zzzzzzzzzz]
 """
 
         with autopep8_context(line, options=['--experimental']) as result:

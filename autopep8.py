@@ -1570,7 +1570,10 @@ class ReformattedLines(object):
             assert self._bracket_depth >= 0
 
     def _add_container(self, container, indent_amt):
-        actual_indent = indent_amt + 1
+        if isinstance(container, (ListComprehension, IfExpression)):
+            actual_indent = indent_amt
+        else:
+            actual_indent = indent_amt + 1
         break_after_open_bracket = False
 
         if (
@@ -1807,8 +1810,8 @@ class Container(object):
             next_item = get_item(self._items, index + 1)
             if (
                 break_after_open_bracket and index == 0 and
-                # Prefer to keep empty containers together instead of
-                # separating them.
+                # Prefer to keep empty containers together instead of separating
+                # them.
                 unicode(item) == self.open_bracket and
                 (not next_item or unicode(next_item) != self.close_bracket) and
                 (len(self._items) != 3 or not isinstance(next_item, Atom))
@@ -1818,13 +1821,15 @@ class Container(object):
             else:
                 next_next_item = get_item(self._items, index + 2)
                 if (
-                    unicode(item) not in '.%' and
+                    unicode(item) not in {'.', '%', 'in'} and
                     next_item and not isinstance(next_item, Container) and
                     unicode(next_item) != ':' and
-                    next_next_item and not isinstance(next_next_item, Atom) and
+                    next_next_item and (not isinstance(next_next_item, Atom) or
+                                        unicode(next_item) == 'not') and
                     not reflowed_lines.line_empty() and
                     not reflowed_lines.fits_on_current_line(
-                        next_item.size + next_next_item.size + 2)
+                        self._get_extent(index + 1) + 2)
+                        #next_item.size + next_next_item.size + 2)
                 ):
                     reflowed_lines.add_line_break(continued_indent)
 
@@ -1834,12 +1839,30 @@ class Container(object):
         E.g., the length of a function call or keyword.
         """
         extent = 0
+        prev_item = get_item(self._items, index - 1)
+        seen_dot = prev_item and unicode(prev_item) == '.'
         while index < len(self._items):
             item = get_item(self._items, index)
-            if unicode(item) not in '.=' and not item.is_name:
+            if isinstance(item, (ListComprehension, IfExpression)):
                 break
-            extent += len(item)
+
+            if isinstance(item, Container):
+                if prev_item and prev_item.is_name:
+                    if seen_dot:
+                        extent += 1
+                    else:
+                        extent += item.size
+                    break
+            elif unicode(item) not in {'.', '=', 'not'} and not item.is_name:
+                break
+
+            if unicode(item) == '.':
+                seen_dot = True
+
+            extent += item.size
+            prev_item = item
             index += 1
+
         return extent
 
     @property
