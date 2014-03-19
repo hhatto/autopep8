@@ -1810,8 +1810,8 @@ class Container(object):
             next_item = get_item(self._items, index + 1)
             if (
                 break_after_open_bracket and index == 0 and
-                # Prefer to keep empty containers together instead of separating
-                # them.
+                # Prefer to keep empty containers together instead of
+                # separating them.
                 unicode(item) == self.open_bracket and
                 (not next_item or unicode(next_item) != self.close_bracket) and
                 (len(self._items) != 3 or not isinstance(next_item, Atom))
