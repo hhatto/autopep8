@@ -2027,6 +2027,19 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
     lines = ReformattedLines(max_line_length)
     lines.add_indent(len(indentation))
 
+    if not start_on_prefix_line:
+        # If splitting after the opening bracket will cause the first element to
+        # be aligned weirdly, don't try it.
+        first_token = get_item(parsed_tokens, 0)
+        second_token = get_item(parsed_tokens, 1)
+
+        if (
+            first_token and second_token and
+            unicode(second_token)[0] == '(' and
+            len(indentation) + len(first_token) + 1 == len(continued_indent)
+        ):
+            return None
+
     for item in parsed_tokens:
         lines.add_space_if_needed(unicode(item), equal=True)
 
@@ -2060,12 +2073,12 @@ def _shorten_line_at_tokens_new(tokens, source, indentation, indent_word,
         # prefix. The second starts on the line after the prefix.
         fixed = _reflow_lines(parsed_tokens, indentation, indent_word,
                               max_line_length, start_on_prefix_line=True)
-        if check_syntax(normalize_multiline(fixed.lstrip())):
+        if fixed and check_syntax(normalize_multiline(fixed.lstrip())):
             yield fixed
 
         fixed = _reflow_lines(parsed_tokens, indentation, indent_word,
                               max_line_length, start_on_prefix_line=False)
-        if check_syntax(normalize_multiline(fixed.lstrip())):
+        if fixed and check_syntax(normalize_multiline(fixed.lstrip())):
             yield fixed
 
 

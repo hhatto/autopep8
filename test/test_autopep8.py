@@ -5039,6 +5039,23 @@ xxxxxxxxxxxx = [
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_dont_split_if_looks_bad(self):
+        line = """\
+def f():
+    if True:
+        BAD(('xxxxxxxxxxxxx', 42), 'I died for beauty, but was scarce / Adjusted in the tomb %s', yyyyyyyyyyyyy)
+"""
+        fixed = """\
+def f():
+    if True:
+        BAD(('xxxxxxxxxxxxx', 42),
+            'I died for beauty, but was scarce / Adjusted in the tomb %s',
+            yyyyyyyyyyyyy)
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
