@@ -3068,9 +3068,6 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
 
         rank += 10 * count_unbalanced_brackets(current_line)
 
-    #print('candidate:\n{}'.format(candidate))
-    #print('rank: {}'.format(rank))
-
     return max(0, rank)
 
 
