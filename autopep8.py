@@ -3010,13 +3010,20 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
             if current_line == bad_start:
                 rank += 1000
 
-        if current_line.endswith(('(', '[', '{')):
+        if current_line.endswith(('(', '[', '{', '.')):
             # Avoid lonely opening. They result in longer lines.
             if len(current_line) <= len(indent_word):
                 rank += 100
 
-            # Avoid ugliness of ", (\n".
-            if current_line.endswith(','):
+            # Avoid the ugliness of ", (\n".
+            if (
+                current_line.endswith('(') and
+                current_line[:-1].rstrip().endswith(',')
+            ):
+                rank += 100
+
+            # Also avoid the ugliness of "foo.\nbar"
+            if current_line.endswith('.'):
                 rank += 100
 
             if has_arithmetic_operator(current_line):
@@ -3060,6 +3067,9 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
             rank += 10
 
         rank += 10 * count_unbalanced_brackets(current_line)
+
+    #print('candidate:\n{}'.format(candidate))
+    #print('rank: {}'.format(rank))
 
     return max(0, rank)
 

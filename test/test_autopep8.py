@@ -2611,6 +2611,18 @@ class Useless(object):
         with autopep8_context(line) as result:
             self.assertEqual(line, result)
 
+    def test_e501_should_break_before_tuple_start(self):
+        line = """\
+xxxxxxxxxxxxx(aaaaaaaaaaaaa, bbbbbbbbbbbbbbbbbb, cccccccccc, (dddddddddddddddddddddd, eeeeeeeeeeee, fffffffffff, gggggggggg))
+"""
+        fixed = """\
+xxxxxxxxxxxxx(aaaaaaaaaaaaa, bbbbbbbbbbbbbbbbbb, cccccccccc,
+              (dddddddddddddddddddddd, eeeeeeeeeeee, fffffffffff, gggggggggg))
+"""
+
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_aggressive(self):
         line = """\
 models = {
@@ -4993,6 +5005,22 @@ def foo():
                 '%r (%s): aaaaaaaa bbbbbbbbbb ccccccc ddddddd eeeeee (%d, %d)',
                 xxxxxx.yy, xxxxxx.yyyy, len(mmmmmmmmmmmmm['fnord']),
                 len(mmmmmmmmmmmmm['asdfakjhdsfkj']))
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_no_splitting_at_dot(self):
+        line = """\
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx = [yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy.MMMMMM_NNNNNNN_OOOOO,
+                                yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy.PPPPPP_QQQQQQQ_RRRRR,
+                                yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy.SSSSSS_TTTTTTT_UUUUU]
+"""
+        fixed = """\
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx = [
+    yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy.MMMMMM_NNNNNNN_OOOOO,
+    yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy.PPPPPP_QQQQQQQ_RRRRR,
+    yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy.SSSSSS_TTTTTTT_UUUUU]
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
