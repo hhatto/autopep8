@@ -1853,7 +1853,7 @@ class Container(object):
                     else:
                         extent += item.size
                     break
-            elif unicode(item) not in {'.', '=', 'not'} and not item.is_name:
+            elif unicode(item) not in ['.', '=', 'not'] and not item.is_name:
                 break
 
             if unicode(item) == '.':
