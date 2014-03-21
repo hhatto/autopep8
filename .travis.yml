@@ -25,6 +25,7 @@ script:
     - if [ "$TRAVIS_PYTHON_VERSION" == "3.3" ]; then python -m doctest -v README.rst; fi
 
     - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then pep8 autopep8.py; fi
+    - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then pyflakes autopep8.py; fi
 
     - pip --quiet install pydiff
     - python test/acid.py -aaa --compare-bytecode --experimental test/example.py
