@@ -1570,10 +1570,7 @@ class ReformattedLines(object):
             assert self._bracket_depth >= 0
 
     def _add_container(self, container, indent_amt):
-        if isinstance(container, (ListComprehension, IfExpression)):
-            actual_indent = indent_amt
-        else:
-            actual_indent = indent_amt + 1
+        actual_indent = indent_amt + 1
         break_after_open_bracket = False
 
         if (
@@ -1594,6 +1591,9 @@ class ReformattedLines(object):
                 self._lines.append(self._Indent(indent_amt))
         else:
             actual_indent = self.current_size() + 1
+
+        if isinstance(container, (ListComprehension, IfExpression)):
+            actual_indent = indent_amt
 
         # Increase the continued indentation only if recursing on a
         # container.
@@ -1940,6 +1940,15 @@ class DictOrSet(Container):
 class ListComprehension(Container):
 
     """A high-level representation of a list comprehension."""
+
+    @property
+    def size(self):
+        length = 0
+        for item in self._items:
+            if isinstance(item, IfExpression):
+                break
+            length += item.size
+        return length
 
 
 class IfExpression(Container):

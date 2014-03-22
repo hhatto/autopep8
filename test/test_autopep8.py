@@ -5031,9 +5031,9 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx = [
 xxxxxxxxxxxx = [yyyyyy['yyyyyy'].get('zzzzzzzzzzz') for yyyyyy in x.get('aaaaaaaaaaa') if yyyyyy['yyyyyy'].get('zzzzzzzzzzz')]
 """
         fixed = """\
-xxxxxxxxxxxx = [
-    yyyyyy['yyyyyy'].get('zzzzzzzzzzz')
-    for yyyyyy in x.get('aaaaaaaaaaa') if yyyyyy['yyyyyy'].get('zzzzzzzzzzz')]
+xxxxxxxxxxxx = [yyyyyy['yyyyyy'].get('zzzzzzzzzzz')
+                for yyyyyy in x.get('aaaaaaaaaaa')
+                if yyyyyy['yyyyyy'].get('zzzzzzzzzzz')]
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
@@ -5061,8 +5061,7 @@ def f():
 xxxxxxxxxxxs = [xxxxxxxxxxx for xxxxxxxxxxx in xxxxxxxxxxxs if not yyyyyyyyyyyy[xxxxxxxxxxx] or not yyyyyyyyyyyy[xxxxxxxxxxx].zzzzzzzzzz]
 """
         fixed = """\
-xxxxxxxxxxxs = [xxxxxxxxxxx
-                for xxxxxxxxxxx in xxxxxxxxxxxs
+xxxxxxxxxxxs = [xxxxxxxxxxx for xxxxxxxxxxx in xxxxxxxxxxxs
                 if not yyyyyyyyyyyy[xxxxxxxxxxx] or
                 not yyyyyyyyyyyy[xxxxxxxxxxx].zzzzzzzzzz]
 """
