@@ -1821,7 +1821,7 @@ class Container(object):
             else:
                 next_next_item = get_item(self._items, index + 2)
                 if (
-                    unicode(item) not in {'.', '%', 'in'} and
+                    unicode(item) not in ['.', '%', 'in'] and
                     next_item and not isinstance(next_item, Container) and
                     unicode(next_item) != ':' and
                     next_next_item and (not isinstance(next_next_item, Atom) or
@@ -1853,7 +1853,7 @@ class Container(object):
                     else:
                         extent += item.size
                     break
-            elif unicode(item) not in {'.', '=', 'not'} and not item.is_name:
+            elif unicode(item) not in ['.', '=', 'not'] and not item.is_name:
                 break
 
             if unicode(item) == '.':

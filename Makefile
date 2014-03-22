@@ -80,7 +80,9 @@ check:
 		--disable=fixme \
 		--disable=invalid-name \
 		--disable=missing-docstring \
+		--disable=no-member \
 		--disable=no-self-use \
+		--disable=not-callable \
 		--disable=protected-access \
 		--disable=star-args \
 		--disable=too-few-public-methods \
