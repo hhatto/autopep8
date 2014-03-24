@@ -1706,7 +1706,7 @@ class Atom(object):
         return self.size
 
     def reflow(self, reflowed_lines, continued_indent, extent,
-               break_after_open_bracket=False):
+               break_after_open_bracket=False, is_list_comp_or_if_expr=False):
         if self._atom.token_type == tokenize.COMMENT:
             reflowed_lines.add_comment(self)
             return
@@ -1718,6 +1718,7 @@ class Atom(object):
             total_size += 1
 
         if (
+            not is_list_comp_or_if_expr and
             not reflowed_lines.fits_on_current_line(total_size) and
             not reflowed_lines.line_empty()
         ):
@@ -1802,8 +1803,11 @@ class Container(object):
                break_after_open_bracket=False):
         for (index, item) in enumerate(self._items):
             if isinstance(item, Atom):
+                is_list_comp_or_if_expr = (
+                    isinstance(self, (ListComprehension, IfExpression)))
                 item.reflow(reflowed_lines, continued_indent,
-                            self._get_extent(index))
+                            self._get_extent(index),
+                            is_list_comp_or_if_expr=is_list_comp_or_if_expr)
             else:  # isinstance(item, Container)
                 reflowed_lines.add(item, len(continued_indent))
 

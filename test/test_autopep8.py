@@ -5069,6 +5069,21 @@ xxxxxxxxxxxs = [xxxxxxxxxxx for xxxxxxxxxxx in xxxxxxxxxxxs
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+        line = """\
+def f():
+    xxxxxxxxxx = [f for f in yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy.zzzzzzzzzzzzzzzzzzzzzzzz.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
+"""
+        fixed = """\
+def f():
+    xxxxxxxxxx = [
+        f
+        for f in
+        yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy.zzzzzzzzzzzzzzzzzzzzzzzz.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
