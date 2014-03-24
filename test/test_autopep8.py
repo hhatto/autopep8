@@ -5061,9 +5061,10 @@ def f():
 xxxxxxxxxxxs = [xxxxxxxxxxx for xxxxxxxxxxx in xxxxxxxxxxxs if not yyyyyyyyyyyy[xxxxxxxxxxx] or not yyyyyyyyyyyy[xxxxxxxxxxx].zzzzzzzzzz]
 """
         fixed = """\
-xxxxxxxxxxxs = [xxxxxxxxxxx for xxxxxxxxxxx in xxxxxxxxxxxs
-                if not yyyyyyyyyyyy[xxxxxxxxxxx] or
-                not yyyyyyyyyyyy[xxxxxxxxxxx].zzzzzzzzzz]
+xxxxxxxxxxxs = [
+    xxxxxxxxxxx for xxxxxxxxxxx in xxxxxxxxxxxs
+    if not yyyyyyyyyyyy[xxxxxxxxxxx] or not
+    yyyyyyyyyyyy[xxxxxxxxxxx].zzzzzzzzzz]
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
