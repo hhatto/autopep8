@@ -5063,8 +5063,8 @@ xxxxxxxxxxxs = [xxxxxxxxxxx for xxxxxxxxxxx in xxxxxxxxxxxs if not yyyyyyyyyyyy[
         fixed = """\
 xxxxxxxxxxxs = [
     xxxxxxxxxxx for xxxxxxxxxxx in xxxxxxxxxxxs
-    if not yyyyyyyyyyyy[xxxxxxxxxxx] or not
-    yyyyyyyyyyyy[xxxxxxxxxxx].zzzzzzzzzz]
+    if not yyyyyyyyyyyy[xxxxxxxxxxx] or
+    not yyyyyyyyyyyy[xxxxxxxxxxx].zzzzzzzzzz]
 """
 
         with autopep8_context(line, options=['--experimental']) as result:

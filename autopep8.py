@@ -1847,6 +1847,8 @@ class Container(object):
         seen_dot = prev_item and unicode(prev_item) == '.'
         while index < len(self._items):
             item = get_item(self._items, index)
+            index += 1
+
             if isinstance(item, (ListComprehension, IfExpression)):
                 break
 
@@ -1856,7 +1858,9 @@ class Container(object):
                         extent += 1
                     else:
                         extent += item.size
-                    break
+
+                    prev_item = item
+                    continue
             elif unicode(item) not in ['.', '=', 'not'] and not item.is_name:
                 break
 
@@ -1865,7 +1869,6 @@ class Container(object):
 
             extent += item.size
             prev_item = item
-            index += 1
 
         return extent
 
