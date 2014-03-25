@@ -262,10 +262,10 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                     error = ('E122', one_indented)
                 elif indent[depth]:
                     error = ('E127', indent[depth])
-                elif hang % DEFAULT_INDENT_SIZE:
-                    error = ('E121', one_indented)
-                else:
+                elif hang > DEFAULT_INDENT_SIZE:
                     error = ('E126', one_indented)
+                else:
+                    error = ('E121', one_indented)
 
                 yield (start, '{0} {1}'.format(*error))
 
