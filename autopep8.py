@@ -1648,9 +1648,15 @@ class ReformattedLines(object):
 
         last_space = None
         for item in reversed(self._lines):
+            if (
+                last_space and
+                (not isinstance(item, Atom) or not item.is_colon)
+            ):
+                break
+            else:
+                last_space = None
             if isinstance(item, self._Space):
                 last_space = item
-                break
             if isinstance(item, (self._LineBreak, self._Indent)):
                 return
 
@@ -1862,7 +1868,8 @@ class Container(object):
 
                     prev_item = item
                     continue
-            elif unicode(item) not in ['.', '=', 'not'] and not item.is_name:
+            elif (unicode(item) not in ['.', '=', ':', 'not'] and
+                  not item.is_name and not item.is_string):
                 break
 
             if unicode(item) == '.':
