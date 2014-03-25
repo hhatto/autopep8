@@ -1720,7 +1720,8 @@ class Atom(object):
         if (
             not is_list_comp_or_if_expr and
             not reflowed_lines.fits_on_current_line(total_size) and
-            not reflowed_lines.line_empty()
+            not reflowed_lines.line_empty() and
+            not self.is_colon
         ):
             # Start a new line if there is already something on the line and
             # adding this atom would make it go over the max line length.

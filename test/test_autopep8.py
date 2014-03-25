@@ -5085,6 +5085,29 @@ def f():
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_dict(self):
+        line = """\
+def f():
+    zzzzzzzzzzzzz = {
+        'aaaaaa/bbbbbb/ccccc/dddddddd/eeeeeeeee/fffffffffff/ggggggggg/hhhhhhhh.py':
+            yyyyyyyyyyy.xxxxxxxxxxx(
+                'aa/bbbbbbb/cc/ddddddd/eeeeeeeeeee/fffffffffff/ggggggggg/hhhhhhh/ggggg.py',
+                '00000000',
+                yyyyyyyyyyy.xxxxxxxxx.zzzz),
+    }
+"""
+        fixed = """\
+def f():
+    zzzzzzzzzzzzz = {
+        'aaaaaa/bbbbbb/ccccc/dddddddd/eeeeeeeee/fffffffffff/ggggggggg/hhhhhhhh.py':
+        yyyyyyyyyyy.xxxxxxxxxxx(
+            'aa/bbbbbbb/cc/ddddddd/eeeeeeeeeee/fffffffffff/ggggggggg/hhhhhhh/ggggg.py',
+            '00000000', yyyyyyyyyyy.xxxxxxxxx.zzzz), }
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
