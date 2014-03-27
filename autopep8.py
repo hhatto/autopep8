@@ -1071,7 +1071,7 @@ def split_and_strip_non_empty_lines(text):
     return [line.strip() for line in text.splitlines() if line.strip()]
 
 
-def fix_e269(source, aggressive=False):
+def fix_e265(source, aggressive=False):
     """Format block comments."""
     if '#' not in source:
         # Optimization.
