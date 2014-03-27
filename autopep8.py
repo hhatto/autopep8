@@ -2072,7 +2072,7 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
     break_after_open_bracket = not start_on_prefix_line
 
     lines = ReformattedLines(max_line_length)
-    lines.add_indent(len(indentation))
+    lines.add_indent(len(indentation.lstrip('\r\n')))
 
     if not start_on_prefix_line:
         # If splitting after the opening bracket will cause the first element

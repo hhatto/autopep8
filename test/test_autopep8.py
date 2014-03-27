@@ -5112,6 +5112,29 @@ def f():
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_indentation(self):
+        line = """\
+class Klass(object):
+
+    '''Class docstring.'''
+
+    def Quote(self, parameter_1, parameter_2, parameter_3, parameter_4, parameter_5):
+        pass
+"""
+        fixed = """\
+class Klass(object):
+
+  '''Class docstring.'''
+
+  def Quote(
+      self, parameter_1, parameter_2, parameter_3, parameter_4,
+          parameter_5):
+    pass
+"""
+
+        with autopep8_context(line, options=['--experimental',
+                                             '--indent-size=2']) as result:
+            self.assertEqual(fixed, result)
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
