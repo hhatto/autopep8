@@ -2368,12 +2368,12 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx(
 
     def test_e501_with_logical_fix_and_physical_fix(self):
         line = """\
-# -------------------------------------------------------------------------------
+# ------------------------------------ ------------------------------------------
 xxxxxxxxxxxxxxxxxxxxxxxxxxxx(aaaaaaaaaaaaaaaaaaaaaaa,
                              bbbbbbbbbbbbbbbbbbbbbbbbbbbb, cccccccccccccccccccccccccccc, dddddddddddddddddddddddd)
 """
         fixed = """\
-# ------------------------------------------------------------------------
+# ------------------------------------ -----------------------------------
 xxxxxxxxxxxxxxxxxxxxxxxxxxxx(
     aaaaaaaaaaaaaaaaaaaaaaa,
     bbbbbbbbbbbbbbbbbbbbbbbbbbbb,
@@ -2879,10 +2879,10 @@ class Migration(SchemaMigration):
 
     def test_e501_shorten_comment_with_aggressive(self):
         line = """\
-# --------------------------------------------------------------------------------
+# --------- ----------------------------------------------------------------------
 """
         fixed = """\
-# ------------------------------------------------------------------------
+# --------- --------------------------------------------------------------
 """
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
@@ -4344,12 +4344,12 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx(
 
     def test_e501_experimental_with_logical_fix_and_physical_fix(self):
         line = """\
-# -------------------------------------------------------------------------------
+# ------ ------------------------------------------------------------------------
 xxxxxxxxxxxxxxxxxxxxxxxxxxxx(aaaaaaaaaaaaaaaaaaaaaaa,
                              bbbbbbbbbbbbbbbbbbbbbbbbbbbb, cccccccccccccccccccccccccccc, dddddddddddddddddddddddd)
 """
         fixed = """\
-# ------------------------------------------------------------------------
+# ------ -----------------------------------------------------------------
 xxxxxxxxxxxxxxxxxxxxxxxxxxxx(
     aaaaaaaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbbbbbbbbbbbbbb,
     cccccccccccccccccccccccccccc, dddddddddddddddddddddddd)
@@ -4604,10 +4604,10 @@ from . import (
 
     def test_e501_shorten_comment_with_experimental(self):
         line = """\
-# --------------------------------------------------------------------------------
+# ------ -------------------------------------------------------------------------
 """
         fixed = """\
-# ------------------------------------------------------------------------
+# ------ -----------------------------------------------------------------
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
