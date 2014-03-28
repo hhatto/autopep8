@@ -501,15 +501,21 @@ class FixPEP8(object):
                 n=len(results), progress=progress), file=sys.stderr)
 
         if self.options.line_range:
-            results = [
-                r for r in results
-                if self.options.line_range[0] <= r['line'] <=
-                self.options.line_range[1]]
+            start, end = self.options.line_range
+            results = [r for r in results
+                       if start <= r['line'] <= end]
 
         self._fix_source(filter_results(source=''.join(self.source),
                                         results=results,
                                         aggressive=self.options.aggressive,
                                         indent_size=self.options.indent_size))
+
+        if self.options.line_range:
+            # if number of lines has changed then change line_range
+            count = sum(1 for ch in ''.join(self.source[start - 1: end])
+                        if ch == '\n')
+            self.options.line_range[1] = start + count - 1
+
         return ''.join(self.source)
 
     def _fix_reindent(self, result):

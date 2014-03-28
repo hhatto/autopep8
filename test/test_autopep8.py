@@ -3796,6 +3796,12 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--range', '2', '2']) as result:
             self.assertEqual(fixed, result)
 
+    def test_range_line_number_changes(self):
+        line = 'a=12\na=1; b=2;c=3\nd=4;\n\ndef f(a = 1):\n    pass\n'
+        fixed = 'a=12\na = 1\nb = 2\nc = 3\nd=4;\n\ndef f(a = 1):\n    pass\n'
+        with autopep8_context(line, options=['--range', '2', '2']) as result:
+            self.assertEqual(fixed, result)
+
 
 class CommandLineTests(unittest.TestCase):
 
