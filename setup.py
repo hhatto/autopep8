@@ -10,7 +10,7 @@ from setuptools import setup
 
 
 INSTALL_REQUIRES = (
-    ['pep8 >= 1.4.6'] +
+    ['pep8 >= 1.5.1'] +
     (['argparse'] if sys.version_info < (2, 7) else [])
 )
 
