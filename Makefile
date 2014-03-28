@@ -79,6 +79,7 @@ check:
 		--disable=bad-builtin \
 		--disable=fixme \
 		--disable=invalid-name \
+		--disable=locally-disabled \
 		--disable=missing-docstring \
 		--disable=no-member \
 		--disable=no-self-use \
@@ -93,7 +94,6 @@ check:
 		--disable=too-many-locals \
 		--disable=too-many-public-methods \
 		--disable=too-many-statements \
-		--disable=unused-argument \
 		--rcfile=/dev/null autopep8.py setup.py update_readme.py
 	pylint \
 		--reports=no \

@@ -508,8 +508,7 @@ class FixPEP8(object):
 
         self._fix_source(filter_results(source=''.join(self.source),
                                         results=results,
-                                        aggressive=self.options.aggressive,
-                                        indent_size=self.options.indent_size))
+                                        aggressive=self.options.aggressive))
 
         if self.options.line_range:
             # If number of lines has changed then change line_range.
@@ -1078,7 +1077,7 @@ def split_and_strip_non_empty_lines(text):
     return [line.strip() for line in text.splitlines() if line.strip()]
 
 
-def fix_e265(source, aggressive=False):
+def fix_e265(source, aggressive=False):  # pylint: disable=unused-argument
     """Format block comments."""
     if '#' not in source:
         # Optimization.
@@ -1298,7 +1297,6 @@ def shorten_line(tokens, source, indentation, indent_word, max_line_length,
                 tokens=tokens,
                 source=source,
                 indentation=indentation,
-                indent_word=indent_word,
                 max_line_length=max_line_length):
 
             yield shortened
@@ -1718,8 +1716,11 @@ class Atom(object):
     def __len__(self):
         return self.size
 
-    def reflow(self, reflowed_lines, continued_indent, extent,
-               break_after_open_bracket=False, is_list_comp_or_if_expr=False):
+    def reflow(
+        self, reflowed_lines, continued_indent, extent,
+        break_after_open_bracket=False,
+        is_list_comp_or_if_expr=False
+    ):  # pylint: disable=unused-argument
         if self._atom.token_type == tokenize.COMMENT:
             reflowed_lines.add_comment(self)
             return
@@ -2066,7 +2067,7 @@ def _parse_tokens(tokens):
     return parsed_tokens
 
 
-def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
+def _reflow_lines(parsed_tokens, indentation, max_line_length,
                   start_on_prefix_line):
     """Reflow the lines so that it looks nice."""
 
@@ -2108,7 +2109,7 @@ def _reflow_lines(parsed_tokens, indentation, indent_word, max_line_length,
     return lines.emit()
 
 
-def _shorten_line_at_tokens_new(tokens, source, indentation, indent_word,
+def _shorten_line_at_tokens_new(tokens, source, indentation,
                                 max_line_length):
     """Shorten the line taking its length into account.
 
@@ -2125,13 +2126,13 @@ def _shorten_line_at_tokens_new(tokens, source, indentation, indent_word,
     if parsed_tokens:
         # Perform two reflows. The first one starts on the same line as the
         # prefix. The second starts on the line after the prefix.
-        fixed = _reflow_lines(parsed_tokens, indentation, indent_word,
-                              max_line_length, start_on_prefix_line=True)
+        fixed = _reflow_lines(parsed_tokens, indentation, max_line_length,
+                              start_on_prefix_line=True)
         if fixed and check_syntax(normalize_multiline(fixed.lstrip())):
             yield fixed
 
-        fixed = _reflow_lines(parsed_tokens, indentation, indent_word,
-                              max_line_length, start_on_prefix_line=False)
+        fixed = _reflow_lines(parsed_tokens, indentation, max_line_length,
+                              start_on_prefix_line=False)
         if fixed and check_syntax(normalize_multiline(fixed.lstrip())):
             yield fixed
 
@@ -2523,7 +2524,7 @@ def check_syntax(code):
         return False
 
 
-def filter_results(source, results, aggressive, indent_size):
+def filter_results(source, results, aggressive):
     """Filter out spurious reports from pep8.
 
     If aggressive is True, we allow possibly unsafe fixes (E711, E712).
