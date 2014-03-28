@@ -382,7 +382,8 @@ class FixPEP8(object):
             set() if long_line_ignore_cache is None
             else long_line_ignore_cache)
 
-        # method definition
+        # Many fixers are the same even though pep8 categorizes them
+        # differently.
         self.fix_e121 = self._fix_reindent
         self.fix_e122 = self._fix_reindent
         self.fix_e123 = self._fix_reindent
@@ -511,7 +512,7 @@ class FixPEP8(object):
                                         indent_size=self.options.indent_size))
 
         if self.options.line_range:
-            # if number of lines has changed then change line_range
+            # If number of lines has changed then change line_range.
             count = sum(1 for ch in ''.join(self.source[start - 1: end])
                         if ch == '\n')
             self.options.line_range[1] = start + count - 1
@@ -988,7 +989,7 @@ def untokenize_without_newlines(tokens):
 
 
 def _find_logical(source_lines):
-    # make a variable which is the index of all the starts of lines
+    # Make a variable which is the index of all the starts of lines.
     logical_start = []
     logical_end = []
     last_newline = True
@@ -1821,7 +1822,7 @@ class Container(object):
                 item.reflow(reflowed_lines, continued_indent,
                             self._get_extent(index),
                             is_list_comp_or_if_expr=is_list_comp_or_if_expr)
-            else:  # isinstance(item, Container)
+            else:
                 reflowed_lines.add(item, len(continued_indent))
 
             next_item = get_item(self._items, index + 1)
@@ -2446,8 +2447,8 @@ def _reindent_stats(tokens):
     our headache!
 
     """
-    find_stmt = 1  # next token begins a fresh stmt?
-    level = 0  # current indent level
+    find_stmt = 1  # Next token begins a fresh stmt?
+    level = 0  # Current indent level.
     stats = []
 
     for t in tokens:
@@ -2472,8 +2473,8 @@ def _reindent_stats(tokens):
         elif token_type == tokenize.COMMENT:
             if find_stmt:
                 stats.append((sline, -1))
-                # but we're still looking for a new stmt, so leave
-                # find_stmt alone
+                # But we're still looking for a new stmt, so leave
+                # find_stmt alone.
 
         elif token_type == tokenize.NL:
             pass
@@ -2483,7 +2484,7 @@ def _reindent_stats(tokens):
             # must be the first token of the next program statement, or an
             # ENDMARKER.
             find_stmt = 0
-            if line:   # not endmarker
+            if line:   # Not endmarker.
                 stats.append((sline, level))
 
     return stats
