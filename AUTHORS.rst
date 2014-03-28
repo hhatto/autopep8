@@ -19,3 +19,4 @@ Patches, Bug Reports, and Suggestions
 - Erik Bray (https://github.com/iguananaut)
 - Christopher Medrela (https://github.com/chrismedrela)
 - 小明 (https://github.com/dongweiming)
+- Andy Hayden (https://github.com/hayd)
