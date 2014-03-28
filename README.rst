@@ -184,7 +184,7 @@ autopep8 fixes the following issues_ reported by pep8_::
     E242 - Remove extraneous whitespace around operator.
     E251 - Remove whitespace around parameter '=' sign.
     E26  - Fix spacing after comment hash for inline comments.
-    E269 - Fix spacing after comment hash for block comments.
+    E265 - Fix spacing after comment hash for block comments.
     E27  - Fix extraneous whitespace around keywords.
     E301 - Add missing blank line.
     E302 - Add missing 2 blank lines.
@@ -213,7 +213,6 @@ autopep8 also fixes some issues not found by pep8_.
 - Correct deprecated or non-idiomatic Python code (via ``lib2to3``). Use this
   for making Python 2.6 and 2.7 code more compatible with Python 3. (This is
   triggered if ``W690`` is enabled.)
-- Format block comments. (This is triggered if ``E269`` is enabled.)
 - Normalize files with mixed line endings.
 - Put a blank line between a class declaration and its first method
   declaration. (Enabled with ``E309``.)
