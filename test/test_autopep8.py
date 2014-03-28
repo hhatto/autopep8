@@ -2714,8 +2714,9 @@ from . import (
     def test_e501_with_aggressive_and_massive_number_of_logical_lines(self):
         """We do not care about results here.
 
-        We just want to know that it doesn't take a ridiculous amount of time.
-        Caching is currently required to avoid repeately trying the same line.
+        We just want to know that it doesn't take a ridiculous amount of
+        time. Caching is currently required to avoid repeately trying
+        the same line.
 
         """
         line = """\
@@ -5135,6 +5136,7 @@ class Klass(object):
         with autopep8_context(line, options=['--experimental',
                                              '--indent-size=2']) as result:
             self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
