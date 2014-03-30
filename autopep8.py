@@ -40,6 +40,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import bisect
 import codecs
 import collections
 import copy
@@ -47,6 +48,7 @@ import difflib
 import fnmatch
 import inspect
 import io
+import itertools
 import keyword
 import locale
 import os
@@ -2732,7 +2734,7 @@ def fix_lines(source_lines, options, filename=''):
     previous_hashes = set()
 
     if options.line_range:
-        fixed_source = tmp_source
+        fixed_source = apply_local_fixes(tmp_source, options)
     else:
         # Apply global fixes only once (for efficiency).
         fixed_source = apply_global_fixes(tmp_source, options)
@@ -2840,6 +2842,119 @@ def apply_global_fixes(source, options):
                       ignore=options.ignore)
 
     return source
+
+
+def apply_local_fixes(source, options):
+    """
+    Ananologus to apply_global_fixes, but runs only those which makes sense
+    for the given line_range.
+    """
+    if code_match('E101', select=options.select, ignore=options.ignore):
+        source = reindent_local(source, options)
+    return source
+
+
+def reindent_local(source, options):
+    """
+    Do as much reindenting as possible without breaking code.
+
+    """
+    def find_ge(a, x):
+        'Find leftmost item greater than or equal to x'
+        i = bisect.bisect_left(a, x)
+        if i != len(a):
+            return i, a[i]
+        return len(a) - 1, a[-1]
+
+    def find_le(a, x):
+        'Find rightmost value less than or equal to x'
+        i = bisect.bisect_right(a, x)
+        if i:
+            return i, a[i-1]
+        return 0, a[0]
+
+    def clean_subset(source, start_log, end_log, start_lines, indents):
+        indent = _get_indentation(source[start_log])
+        ind = indents[start_log]
+        assert len(indent) == ind
+
+        # remove indent
+        for line_no in start_lines[start_log:end_log + 1]:
+            source[line_no] = source[line_no][ind:]
+
+        sl = slice(start_lines[start_log], start_lines[end_log] + 1)
+
+        # fix indentation
+        subsource = ''.join(source[sl])
+        fixed_subsource = reindent(subsource,
+                                   indent_size=options.indent_size)
+        source[sl] = fixed_subsource.splitlines(True)
+
+        # add back indent
+        for line_no in start_lines[start_log:end_log + 1]:
+            source[line_no] = indent + source[line_no]
+
+    def is_continued_stmt(line,
+                          continued_stmts=frozenset(['else', 'elif',
+                                                     'finally', 'except'])):
+        return line.strip().split(':')[0] in continued_stmts
+
+    assert options.line_range
+    start, end = options.line_range
+    start -= 1
+    end -= 1
+
+    logical = _find_logical(source)[0]
+
+    start_lines, indents = zip(*logical)
+
+    if not start_lines:
+        # TODO fix indentation (to ensure just blank lines)
+        return source
+
+    source = source.splitlines(True)
+
+    start_log, start = find_ge(start_lines, start)
+    end_log, end = find_le(start_lines, end)
+
+    while start < end:
+
+        if is_continued_stmt(source[start]):
+            start_log += 1
+            start = starts[start_log]
+            continue
+
+        indent = indents[start_log]
+        for t in itertools.takewhile(lambda t: t[1] >= indent,
+                                     logical[start_log:]):
+            N = t[0]
+        # start shares indent up to N
+
+        if N <= end:
+            clean_subset(source, start_log, N, start_lines, indents)
+            start_log += 1
+            start = starts[start_log]
+            continue
+
+        else:
+            after_end_log, after_end = find_ge(start_lines, end + 1)
+
+            if indents[after_end_log] < indents[start_log]:
+                clean_subset(source, start_log, end_log, start_lines, indents)
+                break
+
+            if indents[after_end_log] > indents[start_log]:
+                end_log, end = find_le(start_lines, end - 1)
+                continue
+
+            if is_continued_stmt(source[after_end]):
+                end_log, end = find_le(start_lines, end - 1)
+                continue
+
+            clean_subset(source, start_log, end_log, start_lines, indents)
+            break
+
+    return ''.join(source)
 
 
 def extract_code_from_function(function):
