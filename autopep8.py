@@ -2870,47 +2870,68 @@ def reindent_local(source, options):
         'Find rightmost value less than or equal to x'
         i = bisect.bisect_right(a, x)
         if i:
-            return i, a[i-1]
+            return i, a[i - 1]
         return 0, a[0]
 
-    def clean_subset(source, start_log, end_log, start_lines, indents):
-        indent = _get_indentation(source[start_log])
+    def reindent_subset(source, start_log, end_log,
+                        start_lines, end_lines, indents, last_line):
+        """
+        reindent the source between start_log and end_log.
+
+        The subsource must be the correct syntax of a complete python program
+        (but all lines may be indented). The subsource's shared indent is
+        removed, reindent is applied and the indent prepended back.
+
+        last_line is the strict cut off (options.line_range[1]), so that
+        lines after last_line are not modified.
+
+        """
+        # keep a copy of the lines after last_line
+        sl_after = slice(last_line + 1, end_lines[end_log] + 1)
+        after = source[sl_after]
+
         ind = indents[start_log]
-        assert len(indent) == ind
+        indent = _get_indentation(source[start_lines[start_log]])
 
         # remove indent
         for line_no in start_lines[start_log:end_log + 1]:
             source[line_no] = source[line_no][ind:]
 
-        sl = slice(start_lines[start_log], start_lines[end_log] + 1)
+        sl = slice(start_lines[start_log], end_lines[end_log] + 1)
 
         # fix indentation
         subsource = ''.join(source[sl])
         fixed_subsource = reindent(subsource,
                                    indent_size=options.indent_size)
+
         source[sl] = fixed_subsource.splitlines(True)
 
         # add back indent
-        for line_no in start_lines[start_log:end_log + 1]:
+        for line_no in range(start_lines[start_log], end_lines[end_log] + 1):
             source[line_no] = indent + source[line_no]
+
+        # ensure lines after last_line are not changed
+        source[sl_after] = after
 
     def is_continued_stmt(line,
                           continued_stmts=frozenset(['else', 'elif',
                                                      'finally', 'except'])):
-        return line.strip().split(':')[0] in continued_stmts
+        return re.split('[ :]', line.strip(), 1)[0] in continued_stmts
 
     assert options.line_range
     start, end = options.line_range
     start -= 1
     end -= 1
+    last_line = end  # we shouldn't modify lines after this
 
-    logical = _find_logical(source)[0]
+    logical = _find_logical(source)
 
-    start_lines, indents = zip(*logical)
-
-    if not start_lines:
-        # TODO fix indentation (to ensure just blank lines)
+    if not logical[0]:
+        # TODO check just blank lines are caught in future passes
         return source
+
+    start_lines, indents = zip(*logical[0])
+    end_lines, _ = zip(*logical[1])
 
     source = source.splitlines(True)
 
@@ -2921,37 +2942,53 @@ def reindent_local(source, options):
 
         if is_continued_stmt(source[start]):
             start_log += 1
-            start = starts[start_log]
+            start = start_lines[start_log]
             continue
 
-        indent = indents[start_log]
-        for t in itertools.takewhile(lambda t: t[1] >= indent,
-                                     logical[start_log:]):
-            N = t[0]
+        ind = indents[start_log]
+        for t in itertools.takewhile(lambda t: t[1][1] >= ind,
+                                     enumerate(logical[0][start_log:])):
+            N_log, N = start_log + t[0], t[1][0]
         # start shares indent up to N
 
         if N <= end:
-            clean_subset(source, start_log, N, start_lines, indents)
-            start_log += 1
-            start = starts[start_log]
+            reindent_subset(source, start_log, N_log,
+                            start_lines, end_lines,
+                            indents, last_line)
+            start_log = N_log if N == end else N_log + 1
+            start = start_lines[start_log]
             continue
 
         else:
+            # look at the line after end and see if allows us to reindent
             after_end_log, after_end = find_ge(start_lines, end + 1)
 
-            if indents[after_end_log] < indents[start_log]:
-                clean_subset(source, start_log, end_log, start_lines, indents)
-                break
-
             if indents[after_end_log] > indents[start_log]:
-                end_log, end = find_le(start_lines, end - 1)
+                start_log, start = find_ge(start_lines, start + 1)
                 continue
 
-            if is_continued_stmt(source[after_end]):
-                end_log, end = find_le(start_lines, end - 1)
+            if (indents[after_end_log] == indents[start_log]
+                    and is_continued_stmt(source[after_end])):
+                # find N, the start of the last continued statement
+                # apply fix to previous block if there is one
+                only_block = True
+                for N, N_ind in logical[0][start_log:end_log + 1][::-1]:
+                    if N_ind == ind and not is_continued_stmt(source[N]):
+                        N_log = start_lines.index(N)
+                        reindent_subset(source, start_log, N_log,
+                                        start_lines, end_lines,
+                                        indents, last_line)
+                        start_log = N_log + 1
+                        start = start_lines[start_log]
+                        only_block = False
+                        continue
+                if only_block:
+                    end_log, end = find_le(start_lines, end - 1)
                 continue
 
-            clean_subset(source, start_log, end_log, start_lines, indents)
+            reindent_subset(source, start_log, end_log,
+                            start_lines, end_lines,
+                            indents, last_line)
             break
 
     return ''.join(source)
