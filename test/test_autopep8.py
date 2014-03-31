@@ -4173,7 +4173,8 @@ if True:
         fixed = """\
 if True:
     reconstructed = iradon(
-        radon(image), filter="ramp", interpolation="nearest")
+        radon(image),
+        filter="ramp", interpolation="nearest")
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4425,7 +4426,8 @@ def dummy():
             if True:
                 object = ModifyAction(
                     [MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
-                    MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
+                    MODIFY70.getLine(),
+                    MODIFY70.getCharPositionInLine())
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4560,7 +4562,8 @@ models = {
             "('content_type__app_label', 'content_type__model', 'codename')",
             'unique_together': "(('content_type', 'codename'),)",
             'object_name': 'Permission'},
-        'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})}, }
+        'name': ('django.db.models.fields.CharField', [],
+                 {'max_length': '50'})}, }
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4802,7 +4805,8 @@ def f(self):
 def f(self):
     self._xxxxxxxx(
         aaaaaa, bbbbbbbbb, cccccccccccccccccc,
-        [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzz / _DDDDD)], eee, 'ff')
+        [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzz / _DDDDD)],
+        eee, 'ff')
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4816,10 +4820,12 @@ bork(111, 111, 111, 111, 222, 222, 222, { 'foo': 222, 'qux': 222 }, ((['hello', 
         fixed = """\
 bork(
     111, 111, 111, 111, 222, 222, 222, {'foo': 222, 'qux': 222},
-    ((['hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']),
+    ((['hello', 'world'],
+      ['yo', 'stella', "how's", 'it'],
+      ['going']),
      {str(i): i for i in range(10)},
-     {'bork': ((x, x ** x) for x in range(10))}), 222, 222, 222, 222, 333, 333,
-    333, 333)
+     {'bork': ((x, x ** x) for x in range(10))}),
+    222, 222, 222, 222, 333, 333, 333, 333)
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
@@ -4909,8 +4915,8 @@ def f():
 def f():
     self.aaaaaaaaa(
         bbbbbb, ccccccccc, dddddddddddddddd,
-        ((x, y / eeeeeee) for x, y in self.outputs.total.iteritems()), fff,
-        'GG')
+        ((x, y / eeeeeee) for x, y in self.outputs.total.iteritems()),
+        fff, 'GG')
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -5113,7 +5119,9 @@ def f():
         'aaaaaa/bbbbbb/ccccc/dddddddd/eeeeeeeee/fffffffffff/ggggggggg/hhhhhhhh.py':
         yyyyyyyyyyy.xxxxxxxxxxx(
             'aa/bbbbbbb/cc/ddddddd/eeeeeeeeeee/fffffffffff/ggggggggg/hhhhhhh/ggggg.py',
-            '00000000', yyyyyyyyyyy.xxxxxxxxx.zzzz), }
+            '00000000',
+            yyyyyyyyyyy.xxxxxxxxx.zzzz),
+    }
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
@@ -5141,6 +5149,30 @@ class Klass(object):
 
         with autopep8_context(line, options=['--experimental',
                                              '--indent-size=2']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_long_function_call_elements(self):
+        line = """\
+def g():
+    pppppppppppppppppppppppppp1, pppppppppppppppppppppppp2 = (
+        zzzzzzzzzzzz.yyyyyyyyyyyyyy(aaaaaaaaa=10, bbbbbbbbbbbbbbbb='2:3',
+                                    cccccccc='{1:2}', dd=1, eeeee=0),
+        zzzzzzzzzzzz.yyyyyyyyyyyyyy(dd=7, aaaaaaaaa=16, bbbbbbbbbbbbbbbb='2:3',
+                                    cccccccc='{1:2}',
+                                    eeeee=xxxxxxxxxxxxxxxxx.wwwwwwwwwwwww.vvvvvvvvvvvvvvvvvvvvvvvvv))
+"""
+        fixed = """\
+def g():
+    pppppppppppppppppppppppppp1, pppppppppppppppppppppppp2 = (
+        zzzzzzzzzzzz.yyyyyyyyyyyyyy(
+            aaaaaaaaa=10, bbbbbbbbbbbbbbbb='2:3', cccccccc='{1:2}', dd=1,
+            eeeee=0),
+        zzzzzzzzzzzz.yyyyyyyyyyyyyy(
+            dd=7, aaaaaaaaa=16, bbbbbbbbbbbbbbbb='2:3', cccccccc='{1:2}',
+            eeeee=xxxxxxxxxxxxxxxxx.wwwwwwwwwwwww.vvvvvvvvvvvvvvvvvvvvvvvvv))
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
 

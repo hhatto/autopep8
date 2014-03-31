@@ -1588,6 +1588,7 @@ class ReformattedLines(object):
             if unicode(container)[0] == '(' and self._prev_item.is_name:
                 # Don't split before the opening bracket of a call.
                 break_after_open_bracket = True
+                actual_indent = indent_amt + 4
             else:
                 # If the container doesn't fit on the current line and the
                 # current line isn't empty, place the container on the next
@@ -1816,6 +1817,7 @@ class Container(object):
 
     def reflow(self, reflowed_lines, continued_indent,
                break_after_open_bracket=False):
+        last_was_container = False
         for (index, item) in enumerate(self._items):
             if isinstance(item, Atom):
                 is_list_comp_or_if_expr = (
@@ -1823,8 +1825,13 @@ class Container(object):
                 item.reflow(reflowed_lines, continued_indent,
                             self._get_extent(index),
                             is_list_comp_or_if_expr=is_list_comp_or_if_expr)
-            else:
+                if last_was_container and item.is_comma:
+                    reflowed_lines.add_line_break(continued_indent)
+                last_was_container = False
+            else:  # isinstance(item, Container)
                 reflowed_lines.add(item, len(continued_indent))
+                last_was_container = not isinstance(item, (ListComprehension,
+                                                           IfExpression))
 
             next_item = get_item(self._items, index + 1)
             if (
