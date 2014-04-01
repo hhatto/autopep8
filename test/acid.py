@@ -40,7 +40,7 @@ def colored(text, color):
 def run(filename, command, max_line_length=79,
         ignore='', check_ignore='', verbose=False,
         comparison_function=None,
-        aggressive=0, experimental=False):
+        aggressive=0, experimental=False, line_range=None):
     """Run autopep8 on file at filename.
 
     Return True on success.
@@ -50,7 +50,9 @@ def run(filename, command, max_line_length=79,
                ['--max-line-length={0}'.format(max_line_length),
                 '--ignore=' + ignore, filename] +
                aggressive * ['--aggressive'] +
-               (['--experimental'] if experimental else []))
+               (['--experimental'] if experimental else []) +
+               (['--range', str(line_range[0]), str(line_range[1])]
+                if line_range else []))
 
     with tempfile.NamedTemporaryFile(suffix='.py') as tmp_file:
         if 0 != subprocess.call(command, stdout=tmp_file):
@@ -123,6 +125,9 @@ def process_args():
                         help='run autopep8 in aggressive mode')
     parser.add_argument('--experimental', action='store_true',
                         help='run experimental fixes')
+    parser.add_argument('--range', metavar='line', dest='line_range',
+                        default=None, type=int, nargs=2,
+                        help='pass --range to autope8')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='print verbose messages')
     parser.add_argument('paths', nargs='*',
@@ -206,7 +211,8 @@ def check(paths, args):
                            verbose=args.verbose,
                            comparison_function=comparison_function,
                            aggressive=args.aggressive,
-                           experimental=args.experimental):
+                           experimental=args.experimental,
+                           line_range=args.line_range):
                     return False
         except (UnicodeDecodeError, UnicodeEncodeError) as exception:
             # Ignore annoying codec problems on Python 2.
