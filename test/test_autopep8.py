@@ -3852,6 +3852,17 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--range', '2', '3']) as result:
             self.assertEqual(fixed_2_3, result)
 
+        fixed_3_3 = fixed_2_3
+        with autopep8_context(line, options=['--range', '3', '3']) as result:
+            self.assertEqual(fixed_3_3, result)
+
+        # lines above are less indented
+        line = '\ndef f(x):\n  if x:\n    return x\n'
+
+        fixed_3_4 = '\ndef f(x):\n    if x:\n        return x\n'
+        with autopep8_context(line, options=['--range', '3', '4']) as result:
+            self.assertEqual(fixed_3_4, result)
+
 
 class CommandLineTests(unittest.TestCase):
 

@@ -2938,6 +2938,14 @@ def reindent_local(source, options):
     start_log, start = find_ge(start_lines, start)
     end_log, end = find_le(start_lines, end)
 
+    # look behind one line, if it's indented less
+    # then we can start the game from there
+    if (start_log > 0
+            and indents[start_log - 1] < indents[start_log]
+            and not is_continued_stmt(source[start_log - 1])):
+        start_log -= 1
+        start = start_lines[start_log]
+
     while start < end:
 
         if is_continued_stmt(source[start]):
