@@ -3054,8 +3054,14 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
         not lines[0].lstrip().startswith('#') and
         lines[0].rstrip()[-1] not in '([{'
     ):
-        for symbol in '([{':
-            offset = max(offset, 1 + lines[0].find(symbol))
+        for (opening, closing) in ('()', '[]', '{}'):
+            # Don't penalize empty containers that aren't split up. Things like
+            # this "foo(\n    )" aren't particularly good.
+            opening_loc = lines[0].find(opening)
+            closing_loc = lines[0].find(closing)
+            if opening_loc >= 0:
+                if closing_loc < 0 or closing_loc != opening_loc + 1:
+                    offset = max(offset, 1 + opening_loc)
 
     current_longest = max(offset + len(x.strip()) for x in lines)
 
