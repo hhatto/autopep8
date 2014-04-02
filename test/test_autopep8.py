@@ -3816,10 +3816,26 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--range', '11', '15']) as result:
             self.assertEqual(fixed_11_15, result)
 
-        # this is an edge case where the end is in the middle of a line
         fixed_11_14 = '\nif True:\n  (1, \n    2,\n3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n    c = 2\n    a = (1,\n2)\n'
         with autopep8_context(line, options=['--range', '11', '14']) as result:
             self.assertEqual(fixed_11_14, result)
+
+        # last line in the middle of a multi-line line
+        line = '\nif True:\n  (1,\n2,\n3,\n\n4,\n\n5,\n6)'
+
+        fixed_2_3 = '\nif True:\n    (1,\n2,\n3,\n\n4,\n\n5,\n6)\n'
+        with autopep8_context(line, options=['--range', '2', '3']) as result:
+            self.assertEqual(fixed_2_3, result)
+
+        fixed_2_6 = '\nif True:\n    (1,\n     2,\n     3,\n\n4,\n\n5,\n6)\n'
+        with autopep8_context(line, options=['--range', '2', '6']) as result:
+            self.assertEqual(fixed_2_6, result)
+
+        # weird-ish edge case, fixes earlier lines (up to beginning of
+        # multi-line block)
+        fixed_2_6 = '\nif True:\n    (1,\n     2,\n     3,\n\n     4,\n\n5,\n6)\n'
+        with autopep8_context(line, options=['--range', '4', '6']) as result:
+            self.assertEqual(fixed_2_6, result)
 
         # deeper if and else blocks
         line = '\nif a:\n  if a = 1:\n    b = 1\n  else:\n    b = 2\nelif a == 0:\n  b = 3\nelse:\n  b = 4\n'
@@ -3863,12 +3879,17 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--range', '3', '4']) as result:
             self.assertEqual(fixed_3_4, result)
 
-    #def test_range_comments(self):
-    #    email = '/Users/andy/anaconda/python.app/Contents/lib/python2.7/email/__init__.py'
-    #    with autopep8.open_with_encoding(email, encoding='utf-8') as f:
-    #        code = f.read()
-    #    with autopep8_context(code, options=['--range', '1', '10']) as result:
-    #        self.assertEqual(code, result)
+        # comments and docstring
+        line = '\ndef f(x):\n  """docstring\ndocstring"""\n  #comment\n  if x:\n    return x\n'
+
+        # TODO this should fix the comment spacing
+        fixed_2_5 = '\ndef f(x):\n  """docstring\ndocstring"""\n  #comment\n  if x:\n    return x\n'
+        with autopep8_context(line, options=['--range', '2', '5']) as result:
+            self.assertEqual(fixed_2_5, result)
+
+        fixed_2_7 = '\ndef f(x):\n    """docstring\n  docstring"""\n    # comment\n    if x:\n        return x\n'
+        with autopep8_context(line, options=['--range', '2', '7']) as result:
+            self.assertEqual(fixed_2_7, result)
 
 
 class CommandLineTests(unittest.TestCase):
