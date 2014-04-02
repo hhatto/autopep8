@@ -1440,12 +1440,12 @@ class ReformattedLines(object):
     ###########################################################################
     # Public Methods
 
-    def add(self, obj, indent_amt):
+    def add(self, obj, indent_amt, break_after_open_bracket):
         if isinstance(obj, Atom):
-            self._add_item(obj, indent_amt)
+            self._add_item(obj, indent_amt, break_after_open_bracket)
             return
 
-        self._add_container(obj, indent_amt)
+        self._add_container(obj, indent_amt, break_after_open_bracket)
 
     def add_comment(self, item):
         self._lines.append(self._Space())
@@ -1539,7 +1539,7 @@ class ReformattedLines(object):
     ###########################################################################
     # Private Methods
 
-    def _add_item(self, item, indent_amt):
+    def _add_item(self, item, indent_amt, break_after_open_bracket):
         """Add an item to the line.
 
         Reflow the line to get the best formatting after the item is
@@ -1580,9 +1580,8 @@ class ReformattedLines(object):
             self._bracket_depth -= 1
             assert self._bracket_depth >= 0
 
-    def _add_container(self, container, indent_amt):
+    def _add_container(self, container, indent_amt, break_after_open_bracket):
         actual_indent = indent_amt + 1
-        break_after_open_bracket = False
 
         if (
             unicode(self._prev_item) != '=' and
@@ -1595,14 +1594,19 @@ class ReformattedLines(object):
                 # Don't split before the opening bracket of a call.
                 break_after_open_bracket = True
                 actual_indent = indent_amt + 4
-            else:
+            elif (
+                break_after_open_bracket or
+                unicode(self._prev_item) not in '([{'
+            ):
                 # If the container doesn't fit on the current line and the
                 # current line isn't empty, place the container on the next
                 # line.
                 self._lines.append(self._LineBreak())
                 self._lines.append(self._Indent(indent_amt))
+                break_after_open_bracket = False
         else:
             actual_indent = self.current_size() + 1
+            break_after_open_bracket = False
 
         if isinstance(container, (ListComprehension, IfExpression)):
             actual_indent = indent_amt
@@ -1750,7 +1754,8 @@ class Atom(object):
         else:
             reflowed_lines.add_space_if_needed(unicode(self))
 
-        reflowed_lines.add(self, len(continued_indent))
+        reflowed_lines.add(self, len(continued_indent),
+                           break_after_open_bracket)
 
     def emit(self):
         return self.__repr__()
@@ -1835,7 +1840,8 @@ class Container(object):
                     reflowed_lines.add_line_break(continued_indent)
                 last_was_container = False
             else:  # isinstance(item, Container)
-                reflowed_lines.add(item, len(continued_indent))
+                reflowed_lines.add(item, len(continued_indent),
+                                   break_after_open_bracket)
                 last_was_container = not isinstance(item, (ListComprehension,
                                                            IfExpression))
 

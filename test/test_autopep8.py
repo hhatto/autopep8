@@ -5175,6 +5175,25 @@ def g():
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_long_nested_tuples_in_arrays(self):
+        line = """\
+def f():
+    aaaaaaaaaaa.bbbbbbb([
+        ('xxxxxxxxxx', 'yyyyyy', 'Heaven hath no wrath like love to hatred turned. Nor hell a fury like a woman scorned.'),
+        ('xxxxxxx', 'yyyyyyyyyyy', "To the last I grapple with thee. From hell's heart I stab at thee. For hate's sake I spit my last breath at thee!")])
+"""
+        fixed = """\
+def f():
+    aaaaaaaaaaa.bbbbbbb(
+        [('xxxxxxxxxx', 'yyyyyy',
+          'Heaven hath no wrath like love to hatred turned. Nor hell a fury like a woman scorned.'),
+         ('xxxxxxx', 'yyyyyyyyyyy',
+          "To the last I grapple with thee. From hell's heart I stab at thee. For hate's sake I spit my last breath at thee!")])
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
