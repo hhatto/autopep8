@@ -5194,6 +5194,24 @@ def f():
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_func_call_open_paren_not_separated(self):
+        # Don't separate the opening paren of a function call from the
+        # function's name.
+        line = """\
+def f():
+    owned_list = [o for o in owned_list if self.display['zzzzzzzzzzzzzz'] in aaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbb(o.qq, ccccccccccccccccccccccccccc.ddddddddd.eeeeeee)]
+"""
+        fixed = """\
+def f():
+    owned_list = [
+        o for o in owned_list
+        if self.display['zzzzzzzzzzzzzz'] in aaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbb(
+            o.qq, ccccccccccccccccccccccccccc.ddddddddd.eeeeeee)]
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):

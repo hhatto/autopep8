@@ -1471,8 +1471,8 @@ class ReformattedLines(object):
             return
 
         prev_text = unicode(self._prev_item)
-        prev_prev_text = \
-            unicode(self._prev_prev_item) if self._prev_prev_item else ''
+        prev_prev_text = (
+            unicode(self._prev_prev_item) if self._prev_prev_item else '')
 
         if (
             # The previous item was a keyword or identifier and the current
@@ -1508,6 +1508,10 @@ class ReformattedLines(object):
                prev_text in ('+', '-', '%', '*', '/', '//', '**')))))
         ):
             self._lines.append(self._Space())
+
+    def previous_item(self):
+        """Return the previous non-whitespace item."""
+        return self._prev_item
 
     def fits_on_current_line(self, item_extent):
         return self.current_size() + item_extent <= self._max_line_length
@@ -1731,7 +1735,7 @@ class Atom(object):
         self, reflowed_lines, continued_indent, extent,
         break_after_open_bracket=False,
         is_list_comp_or_if_expr=False
-    ):  # pylint: disable=unused-argument
+    ):
         if self._atom.token_type == tokenize.COMMENT:
             reflowed_lines.add_comment(self)
             return
@@ -1742,11 +1746,14 @@ class Atom(object):
             # Some atoms will need an extra 1-sized space token after them.
             total_size += 1
 
+        prev_item = reflowed_lines.previous_item()
         if (
             not is_list_comp_or_if_expr and
             not reflowed_lines.fits_on_current_line(total_size) and
             not reflowed_lines.line_empty() and
-            not self.is_colon
+            not self.is_colon and
+            not (prev_item and prev_item.is_name and
+                 unicode(self) == '(')
         ):
             # Start a new line if there is already something on the line and
             # adding this atom would make it go over the max line length.
