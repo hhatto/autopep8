@@ -1225,7 +1225,7 @@ def get_diff_text(old, new, filename):
         text += line
 
         # Work around missing newline (http://bugs.python.org/issue2142).
-        if not line.endswith(newline):
+        if text and not line.endswith(newline):
             text += newline + r'\ No newline at end of file' + newline
 
     return text
@@ -2886,32 +2886,38 @@ def reindent_local(source, options):
         lines after last_line are not modified.
 
         """
-        # keep a copy of the lines after last_line
-        sl_after = slice(last_line + 1, end_lines[end_log] + 1)
-        after = source[sl_after]
+        # keep a copy of the lines before and after
+        before = source[:start_lines[start_log]]
+        after = source[end_lines[end_log] + 1:]
 
         ind = indents[start_log]
         indent = _get_indentation(source[start_lines[start_log]])
 
+        subsource = source[start_lines[start_log]:end_lines[end_log] + 1]
         # remove indent
-        for line_no in start_lines[start_log:end_log + 1]:
-            source[line_no] = source[line_no][ind:]
-
-        sl = slice(start_lines[start_log], end_lines[end_log] + 1)
+        if ind:
+            for line_no in start_lines[start_log:end_log + 1]:
+                pos = line_no - start_lines[start_log]
+                subsource[pos] = subsource[pos][ind:]
 
         # fix indentation
-        subsource = ''.join(source[sl])
-        fixed_subsource = reindent(subsource,
+        fixed_subsource = reindent(''.join(subsource),
                                    indent_size=options.indent_size)
-
-        source[sl] = fixed_subsource.splitlines(True)
+        fixed_subsource = fixed_subsource.splitlines(True)
 
         # add back indent
-        for line_no in range(start_lines[start_log], end_lines[end_log] + 1):
-            source[line_no] = indent + source[line_no]
+        if ind:
+            for i, line in enumerate(fixed_subsource):
+                fixed_subsource[i] = indent + line if line != '\n' else line
+
+
+        # don't change lines after last_line
+        if len(subsource) == len(fixed_subsource):
+            keep = last_line - start_lines[start_log] + 1
+            fixed_subsource[keep:] = source[last_line + 1:end_lines[end_log] + 1]
 
         # ensure lines after last_line are not changed
-        source[sl_after] = after
+        return before + fixed_subsource + after
 
     def is_continued_stmt(line,
                           continued_stmts=frozenset(['else', 'elif',
@@ -2960,9 +2966,9 @@ def reindent_local(source, options):
         # start shares indent up to N
 
         if N <= end:
-            reindent_subset(source, start_log, N_log,
-                            start_lines, end_lines,
-                            indents, last_line)
+            source = reindent_subset(source, start_log, N_log,
+                                     start_lines, end_lines,
+                                     indents, last_line)
             start_log = N_log if N == end else N_log + 1
             start = start_lines[start_log]
             continue
@@ -2983,9 +2989,9 @@ def reindent_local(source, options):
                 for N, N_ind in logical[0][start_log:end_log + 1][::-1]:
                     if N_ind == ind and not is_continued_stmt(source[N]):
                         N_log = start_lines.index(N)
-                        reindent_subset(source, start_log, N_log,
-                                        start_lines, end_lines,
-                                        indents, last_line)
+                        source = reindent_subset(source, start_log, N_log,
+                                                 start_lines, end_lines,
+                                                 indents, last_line)
                         start_log = N_log + 1
                         start = start_lines[start_log]
                         only_block = False
@@ -2994,9 +3000,9 @@ def reindent_local(source, options):
                     end_log, end = find_le(start_lines, end - 1)
                 continue
 
-            reindent_subset(source, start_log, end_log,
-                            start_lines, end_lines,
-                            indents, last_line)
+            source = reindent_subset(source, start_log, end_log,
+                                     start_lines, end_lines,
+                                     indents, last_line)
             break
 
     return ''.join(source)

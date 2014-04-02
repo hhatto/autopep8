@@ -3863,6 +3863,13 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--range', '3', '4']) as result:
             self.assertEqual(fixed_3_4, result)
 
+    #def test_range_comments(self):
+    #    email = '/Users/andy/anaconda/python.app/Contents/lib/python2.7/email/__init__.py'
+    #    with autopep8.open_with_encoding(email, encoding='utf-8') as f:
+    #        code = f.read()
+    #    with autopep8_context(code, options=['--range', '1', '10']) as result:
+    #        self.assertEqual(code, result)
+
 
 class CommandLineTests(unittest.TestCase):
 
