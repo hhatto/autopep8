@@ -918,6 +918,12 @@ class FixPEP8(object):
 def get_fixed_long_line(target, previous_line, original,
                         indent_word='    ', max_line_length=79,
                         aggressive=False, experimental=False, verbose=False):
+    """Break up long line and return result.
+
+    Do this by generating multiple reformatted candidates and then
+    ranking the candidates to heuristically select the best option.
+
+    """
     indent = _get_indentation(target)
     source = target[len(indent):]
     assert source.lstrip() == source
