@@ -1734,7 +1734,8 @@ class Atom(object):
     def reflow(
         self, reflowed_lines, continued_indent, extent,
         break_after_open_bracket=False,
-        is_list_comp_or_if_expr=False
+        is_list_comp_or_if_expr=False,
+        next_is_dot=False
     ):
         if self._atom.token_type == tokenize.COMMENT:
             reflowed_lines.add_comment(self)
@@ -1750,6 +1751,8 @@ class Atom(object):
         if (
             not is_list_comp_or_if_expr and
             not reflowed_lines.fits_on_current_line(total_size) and
+            not (next_is_dot and
+                 reflowed_lines.fits_on_current_line(self.size + 1)) and
             not reflowed_lines.line_empty() and
             not self.is_colon and
             not (prev_item and prev_item.is_name and
@@ -1837,12 +1840,16 @@ class Container(object):
                break_after_open_bracket=False):
         last_was_container = False
         for (index, item) in enumerate(self._items):
+            next_item = get_item(self._items, index + 1)
+
             if isinstance(item, Atom):
                 is_list_comp_or_if_expr = (
                     isinstance(self, (ListComprehension, IfExpression)))
                 item.reflow(reflowed_lines, continued_indent,
                             self._get_extent(index),
-                            is_list_comp_or_if_expr=is_list_comp_or_if_expr)
+                            is_list_comp_or_if_expr=is_list_comp_or_if_expr,
+                            next_is_dot=(next_item and
+                                         unicode(next_item) == '.'))
                 if last_was_container and item.is_comma:
                     reflowed_lines.add_line_break(continued_indent)
                 last_was_container = False
@@ -1852,7 +1859,6 @@ class Container(object):
                 last_was_container = not isinstance(item, (ListComprehension,
                                                            IfExpression))
 
-            next_item = get_item(self._items, index + 1)
             if (
                 break_after_open_bracket and index == 0 and
                 # Prefer to keep empty containers together instead of

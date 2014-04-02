@@ -5212,6 +5212,23 @@ def f():
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_long_dotted_object(self):
+        # Don't separate a long dotted object too soon. Otherwise, it may end
+        # up with most of its elements on separate lines.
+        line = """\
+def f(self):
+  return self.xxxxxxxxxxxxxxx(aaaaaaa.bbbbb.ccccccc.ddd.eeeeee.fffffffff.ggggg.hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh)
+"""
+        fixed = """\
+def f(self):
+    return self.xxxxxxxxxxxxxxx(
+        aaaaaaa.bbbbb.ccccccc.ddd.eeeeee.fffffffff.ggggg.
+        hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh)
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
