@@ -316,6 +316,9 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                 indent_chances[start[1]] = text
 
         last_token_multiline = (start[0] != end[0])
+        if last_token_multiline:
+            rel_indent[end[0] - first_row] = rel_indent[row]
+
         last_line = line
 
     if (
