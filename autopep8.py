@@ -1445,7 +1445,7 @@ class ReformattedLines(object):
 
     def add(self, obj, indent_amt, break_after_open_bracket):
         if isinstance(obj, Atom):
-            self._add_item(obj, indent_amt, break_after_open_bracket)
+            self._add_item(obj, indent_amt)
             return
 
         self._add_container(obj, indent_amt, break_after_open_bracket)
@@ -1546,7 +1546,7 @@ class ReformattedLines(object):
     ###########################################################################
     # Private Methods
 
-    def _add_item(self, item, indent_amt, break_after_open_bracket):
+    def _add_item(self, item, indent_amt):
         """Add an item to the line.
 
         Reflow the line to get the best formatting after the item is
