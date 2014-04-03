@@ -516,7 +516,7 @@ class FixPEP8(object):
         if self.options.line_range:
             # If number of lines has changed then change line_range.
             count = sum(sline.count('\n')
-                        for sline in self.source[start-1:end])
+                        for sline in self.source[start - 1:end])
             self.options.line_range[1] = start + count - 1
 
         return ''.join(self.source)
