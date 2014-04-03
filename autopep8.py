@@ -316,6 +316,9 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                 indent_chances[start[1]] = text
 
         last_token_multiline = (start[0] != end[0])
+        if last_token_multiline:
+            rel_indent[end[0] - first_row] = rel_indent[row]
+
         last_line = line
 
     if (
@@ -513,7 +516,7 @@ class FixPEP8(object):
         if self.options.line_range:
             # If number of lines has changed then change line_range.
             count = sum(sline.count('\n')
-                        for sline in self.source[start-1:end])
+                        for sline in self.source[start - 1:end])
             self.options.line_range[1] = start + count - 1
 
         return ''.join(self.source)
@@ -1442,7 +1445,7 @@ class ReformattedLines(object):
 
     def add(self, obj, indent_amt, break_after_open_bracket):
         if isinstance(obj, Atom):
-            self._add_item(obj, indent_amt, break_after_open_bracket)
+            self._add_item(obj, indent_amt)
             return
 
         self._add_container(obj, indent_amt, break_after_open_bracket)
@@ -1543,7 +1546,7 @@ class ReformattedLines(object):
     ###########################################################################
     # Private Methods
 
-    def _add_item(self, item, indent_amt, break_after_open_bracket):
+    def _add_item(self, item, indent_amt):
         """Add an item to the line.
 
         Reflow the line to get the best formatting after the item is
