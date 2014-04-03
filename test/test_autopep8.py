@@ -5229,6 +5229,29 @@ def f(self):
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_parsing_dict_with_comments(self):
+        line = """\
+self.display['xxxxxxxxxxxx'] = [{'title': _('Library'),  #. This is the first comment.
+    'flag': aaaaaaaaaa.bbbbbbbbb.cccccccccc
+    }, {'title': _('Original'),  #. This is the second comment.
+    'flag': aaaaaaaaaa.bbbbbbbbb.dddddddddd
+    }, {'title': _('Unknown'),  #. This is the third comment.
+    'flag': aaaaaaaaaa.bbbbbbbbb.eeeeeeeeee}]
+"""
+        fixed = """\
+self.display['xxxxxxxxxxxx'] = [{'title': _('Library'),  # . This is the first comment.
+                                 'flag': aaaaaaaaaa.bbbbbbbbb.cccccccccc
+                                 # . This is the second comment.
+                                 }, {'title': _('Original'),
+                                     'flag': aaaaaaaaaa.bbbbbbbbb.dddddddddd
+                                     # . This is the third comment.
+                                     }, {'title': _('Unknown'),
+                                         'flag': aaaaaaaaaa.bbbbbbbbb.eeeeeeeeee}]
+"""
+
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):

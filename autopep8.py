@@ -2067,6 +2067,8 @@ def _parse_container(tokens, index, for_or_if=None):
 
         index += 1
 
+    return (None, None)
+
 
 def _parse_tokens(tokens):
     """Parse the tokens.
@@ -2090,6 +2092,8 @@ def _parse_tokens(tokens):
 
         if tok.token_string in '([{':
             (container, index) = _parse_container(tokens, index)
+            if not container:
+                return None
             parsed_tokens.append(container)
         else:
             parsed_tokens.append(Atom(tok))
