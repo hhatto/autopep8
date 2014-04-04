@@ -122,7 +122,7 @@ part = [-1, 2, 3,
         4, 5, 6]
 
 part = [-1, (2, 3,
-        4, 5, 6), 7,
+             4, 5, 6), 7,
         8, 9, 0]
 
 fnct(1, 2, 3,
@@ -291,7 +291,7 @@ rv.update(dict.fromkeys(('qualif_nr', 'reasonComment_en',
                          'reasonComment_it'), '?'))
 
 rv.update(dict.fromkeys(('qualif_nr', 'reasonComment_en', 'reasonComment_fr',
-          'reasonComment_de', 'reasonComment_it'), '?'))
+                         'reasonComment_de', 'reasonComment_it'), '?'))
 
 
 rv.update(dict.fromkeys(

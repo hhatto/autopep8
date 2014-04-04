@@ -94,6 +94,7 @@ check:
 		--disable=too-many-locals \
 		--disable=too-many-public-methods \
 		--disable=too-many-statements \
+		--disable=undefined-loop-variable \
 		--rcfile=/dev/null autopep8.py setup.py update_readme.py
 	pylint \
 		--reports=no \

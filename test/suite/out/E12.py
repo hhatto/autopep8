@@ -252,7 +252,7 @@ troublesome_hash = {
 # probably not easily fixed, without using 'ast'
 troublesome_hash_ii = {
     "long key that tends to happen more when you're indented":
-    "stringwithalongtoken you don't want to break",
+        "stringwithalongtoken you don't want to break",
 }
 #:
 
