@@ -2924,9 +2924,9 @@ def apply_local_fixes(source, options):
         """apply_global_fixes to the source between start_log and end_log.
 
         The subsource must be the correct syntax of a complete python program
-        (but all lines may share an indentation). The subsource's shared indent is
-        removed, fixes are applied and the indent prepended back. Taking care to
-        not reindent strings.
+        (but all lines may share an indentation). The subsource's shared indent
+        is removed, fixes are applied and the indent prepended back. Taking
+        care to not reindent strings.
 
         last_line is the strict cut off (options.line_range[1]), so that
         lines after last_line are not modified.
