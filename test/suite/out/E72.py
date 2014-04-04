@@ -32,7 +32,7 @@ assert isinstance(res, type((1, )))
 assert not isinstance(res, type((1, )))
 #: E211 E721
 assert isinstance(res, type([2, ]))
-#: E201 E202 E721
+#: E201 E201 E202 E721
 assert isinstance(res, type(()))
 #: E201 E202 E721
 assert isinstance(res, type((0, )))
