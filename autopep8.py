@@ -2878,21 +2878,21 @@ def apply_global_fixes(source, options, where='global'):
 
 
 def apply_local_fixes(source, options):
-    """
-    Ananologus to apply_global_fixes, but runs only those which makes sense
+    """Ananologus to apply_global_fixes, but runs only those which makes sense
     for the given line_range.
 
     Do as much as we can without breaking code.
+
     """
     def find_ge(a, x):
-        'Find leftmost item greater than or equal to x'
+        """Find leftmost item greater than or equal to x."""
         i = bisect.bisect_left(a, x)
         if i != len(a):
             return i, a[i]
         return len(a) - 1, a[-1]
 
     def find_le(a, x):
-        'Find rightmost value less than or equal to x'
+        """Find rightmost value less than or equal to x."""
         i = bisect.bisect_right(a, x)
         if i:
             return i - 1, a[i - 1]
@@ -2900,8 +2900,7 @@ def apply_local_fixes(source, options):
 
     def local_fix(source, start_log, end_log,
                   start_lines, end_lines, indents, last_line):
-        """
-        reindent the source between start_log and end_log.
+        """reindent the source between start_log and end_log.
 
         The subsource must be the correct syntax of a complete python program
         (but all lines may be indented). The subsource's shared indent is
