@@ -580,6 +580,10 @@ class FixPEP8(object):
         target = self.source[line_index]
         offset = result['column'] - 1
 
+        # Avoid pep8 bug (https://github.com/jcrocholl/pep8/issues/268).
+        if offset < 0:
+            return []
+
         if is_probably_part_of_multiline(target):
             return []
 
@@ -836,6 +840,10 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
         c = result['column']
+
+        # Avoid pep8 bug (https://github.com/jcrocholl/pep8/issues/268).
+        if line_index > 0 and '\\' in self.source[line_index - 1]:
+            return []
 
         fixed_source = (target[:c] + '\n' +
                         _get_indentation(target) + self.indent_word +
