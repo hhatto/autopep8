@@ -70,6 +70,7 @@ print
 
 
 # comment
+
 print
 #: E303
 
@@ -78,6 +79,7 @@ def a():
     print
 
     # comment
+
     print
 #:
 
