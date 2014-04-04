@@ -1529,7 +1529,7 @@ class ReformattedLines(object):
                  (self._prev_prev_item.is_name or
                   self._prev_prev_item.is_number or
                   self._prev_prev_item.is_string)) and
-               prev_text in ('+', '-', '%', '*', '/', '//', '**')))))
+                prev_text in ('+', '-', '%', '*', '/', '//', '**')))))
         ):
             self._lines.append(self._Space())
 
