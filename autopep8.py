@@ -40,6 +40,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import bisect
 import codecs
 import collections
 import copy
@@ -47,6 +48,7 @@ import difflib
 import fnmatch
 import inspect
 import io
+import itertools
 import keyword
 import locale
 import os
@@ -578,6 +580,10 @@ class FixPEP8(object):
         target = self.source[line_index]
         offset = result['column'] - 1
 
+        # Avoid pep8 bug (https://github.com/jcrocholl/pep8/issues/268).
+        if offset < 0:
+            return []
+
         if is_probably_part_of_multiline(target):
             return []
 
@@ -834,6 +840,10 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
         c = result['column']
+
+        # Avoid pep8 bug (https://github.com/jcrocholl/pep8/issues/268).
+        if line_index > 0 and '\\' in self.source[line_index - 1]:
+            return []
 
         fixed_source = (target[:c] + '\n' +
                         _get_indentation(target) + self.indent_word +
@@ -1253,7 +1263,7 @@ def get_diff_text(old, new, filename):
         text += line
 
         # Work around missing newline (http://bugs.python.org/issue2142).
-        if not line.endswith(newline):
+        if text and not line.endswith(newline):
             text += newline + r'\ No newline at end of file' + newline
 
     return text
@@ -2785,7 +2795,7 @@ def fix_lines(source_lines, options, filename=''):
     previous_hashes = set()
 
     if options.line_range:
-        fixed_source = tmp_source
+        fixed_source = apply_local_fixes(tmp_source, options)
     else:
         # Apply global fixes only once (for efficiency).
         fixed_source = apply_global_fixes(tmp_source, options)
@@ -2868,7 +2878,7 @@ def global_fixes():
                 yield (code, function)
 
 
-def apply_global_fixes(source, options):
+def apply_global_fixes(source, options, where='global'):
     """Run global fixes on source code.
 
     These are fixes that only need be done once (unlike those in
@@ -2882,7 +2892,8 @@ def apply_global_fixes(source, options):
     for (code, function) in global_fixes():
         if code_match(code, select=options.select, ignore=options.ignore):
             if options.verbose:
-                print('--->  Applying global fix for {0}'.format(code.upper()),
+                print('--->  Applying {0} fix for {1}'.format(where,
+                                                              code.upper()),
                       file=sys.stderr)
             source = function(source,
                               aggressive=options.aggressive)
@@ -2893,6 +2904,177 @@ def apply_global_fixes(source, options):
                       ignore=options.ignore)
 
     return source
+
+
+def apply_local_fixes(source, options):
+    """Ananologus to apply_global_fixes, but runs only those which makes sense
+    for the given line_range.
+
+    Do as much as we can without breaking code.
+
+    """
+    def find_ge(a, x):
+        """Find leftmost item greater than or equal to x."""
+        i = bisect.bisect_left(a, x)
+        if i != len(a):
+            return i, a[i]
+        return len(a) - 1, a[-1]
+
+    def find_le(a, x):
+        """Find rightmost value less than or equal to x."""
+        i = bisect.bisect_right(a, x)
+        if i:
+            return i - 1, a[i - 1]
+        return 0, a[0]
+
+    def local_fix(source, start_log, end_log,
+                  start_lines, end_lines, indents, last_line):
+        """apply_global_fixes to the source between start_log and end_log.
+
+        The subsource must be the correct syntax of a complete python program
+        (but all lines may share an indentation). The subsource's shared indent
+        is removed, fixes are applied and the indent prepended back. Taking
+        care to not reindent strings.
+
+        last_line is the strict cut off (options.line_range[1]), so that
+        lines after last_line are not modified.
+
+        """
+        if end_log < start_log:
+            return source
+
+        ind = indents[start_log]
+        indent = _get_indentation(source[start_lines[start_log]])
+
+        sl = slice(start_lines[start_log], end_lines[end_log] + 1)
+
+        subsource = source[sl]
+        # Remove indent from subsource.
+        if ind:
+            for line_no in start_lines[start_log:end_log + 1]:
+                pos = line_no - start_lines[start_log]
+                subsource[pos] = subsource[pos][ind:]
+
+        # Fix indentation of subsource.
+        fixed_subsource = apply_global_fixes(''.join(subsource),
+                                             options,
+                                             where='local')
+        fixed_subsource = fixed_subsource.splitlines(True)
+
+        # Add back indent for non multi-line strings lines.
+        msl = multiline_string_lines(''.join(fixed_subsource),
+                                     include_docstrings=False)
+        for i, line in enumerate(fixed_subsource):
+            if not i + 1 in msl:
+                fixed_subsource[i] = indent + line if line != '\n' else line
+
+        # We make a special case to look at the final line, if it's a multiline
+        # *and* the cut off is somewhere inside it, we take the fixed
+        # subset up until last_line, this assumes that the number of lines
+        # does not change in this multiline line.
+        changed_lines = len(fixed_subsource)
+        if (start_lines[end_log] != end_lines[end_log]
+                and end_lines[end_log] > last_line):
+            after_end = end_lines[end_log] - last_line
+            fixed_subsource = (fixed_subsource[:-after_end] +
+                               source[sl][-after_end:])
+            changed_lines -= after_end
+
+            options.line_range[1] = (options.line_range[0] +
+                                     changed_lines - 1)
+
+        return (source[:start_lines[start_log]] +
+                fixed_subsource +
+                source[end_lines[end_log] + 1:])
+
+    def is_continued_stmt(line,
+                          continued_stmts=frozenset(['else', 'elif',
+                                                     'finally', 'except'])):
+        return re.split('[ :]', line.strip(), 1)[0] in continued_stmts
+
+    assert options.line_range
+    start, end = options.line_range
+    start -= 1
+    end -= 1
+    last_line = end  # We shouldn't modify lines after this cut-off.
+
+    logical = _find_logical(source)
+
+    if not logical[0]:
+        # Just blank lines, this should imply that it will become '\n' ?
+        return apply_global_fixes(source, options)
+
+    start_lines, indents = zip(*logical[0])
+    end_lines, _ = zip(*logical[1])
+
+    source = source.splitlines(True)
+
+    start_log, start = find_ge(start_lines, start)
+    end_log, end = find_le(start_lines, end)
+
+    # Look behind one line, if it's indented less than current indent
+    # then we can move to this previous line knowing that its
+    # indentation level will not be changed.
+    if (start_log > 0
+            and indents[start_log - 1] < indents[start_log]
+            and not is_continued_stmt(source[start_log - 1])):
+        start_log -= 1
+        start = start_lines[start_log]
+
+    while start < end:
+
+        if is_continued_stmt(source[start]):
+            start_log += 1
+            start = start_lines[start_log]
+            continue
+
+        ind = indents[start_log]
+        for t in itertools.takewhile(lambda t: t[1][1] >= ind,
+                                     enumerate(logical[0][start_log:])):
+            n_log, n = start_log + t[0], t[1][0]
+        # start shares indent up to n.
+
+        if n <= end:
+            source = local_fix(source, start_log, n_log,
+                               start_lines, end_lines,
+                               indents, last_line)
+            start_log = n_log if n == end else n_log + 1
+            start = start_lines[start_log]
+            continue
+
+        else:
+            # Look at the line after end and see if allows us to reindent.
+            after_end_log, after_end = find_ge(start_lines, end + 1)
+
+            if indents[after_end_log] > indents[start_log]:
+                start_log, start = find_ge(start_lines, start + 1)
+                continue
+
+            if (indents[after_end_log] == indents[start_log]
+                    and is_continued_stmt(source[after_end])):
+                # find n, the beginning of the last continued statement
+                # Apply fix to previous block if there is one.
+                only_block = True
+                for n, n_ind in logical[0][start_log:end_log + 1][::-1]:
+                    if n_ind == ind and not is_continued_stmt(source[n]):
+                        n_log = start_lines.index(n)
+                        source = local_fix(source, start_log, n_log - 1,
+                                           start_lines, end_lines,
+                                           indents, last_line)
+                        start_log = n_log + 1
+                        start = start_lines[start_log]
+                        only_block = False
+                        break
+                if only_block:
+                    end_log, end = find_le(start_lines, end - 1)
+                continue
+
+            source = local_fix(source, start_log, end_log,
+                               start_lines, end_lines,
+                               indents, last_line)
+            break
+
+    return ''.join(source)
 
 
 def extract_code_from_function(function):

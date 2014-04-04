@@ -1621,14 +1621,18 @@ c
             self.assertEqual(line, result)
 
     def test_e202_skip_multiline_with_escaped_newline(self):
-        """We skip this since pep8 reports the error as being on line 1."""
         line = r"""
 
 ('c\
 ' )
 """
+        fixed = r"""
+
+('c\
+')
+"""
         with autopep8_context(line) as result:
-            self.assertEqual(line, result)
+            self.assertEqual(fixed, result)
 
     def test_e203_colon(self):
         line = '{4 : 3}\n'
@@ -1648,6 +1652,7 @@ c
         with autopep8_context(line, options=['--select=E203']) as result:
             self.assertEqual(fixed, result)
 
+    @unittest.skip('https://github.com/jcrocholl/pep8/issues/268')
     def test_e203_with_newline(self):
         line = "print(a\n, end=' ')\n"
         fixed = "print(a, end=' ')\n"
@@ -1905,7 +1910,7 @@ bar[zap[0][0]:zig[0][0], :]
 
     def test_e261_with_comma(self):
         line = '{1: 2 # comment\n , }\n'
-        fixed = '{1: 2  # comment\n , }\n'
+        fixed = '{1: 2  # comment\n, }\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -2002,7 +2007,7 @@ class Foo(object):
 
     def test_e303(self):
         line = '\n\n\n# alpha\n\n1\n'
-        fixed = '\n\n# alpha\n1\n'
+        fixed = '\n\n# alpha\n\n1\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -2066,6 +2071,7 @@ def foo():
         with autopep8_context(line, options=['--select=E401']) as result:
             self.assertEqual(line, result)
 
+    @unittest.skip('pep8 changed the line at which it reports the error')
     def test_e401_with_escaped_newline_case(self):
         line = 'import foo, \\\n    bar\n'
         fixed = 'import foo\nimport \\\n    bar\n'
@@ -3186,12 +3192,14 @@ A = [
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    @unittest.skip('https://github.com/jcrocholl/pep8/issues/268')
     def test_e701_with_escaped_newline(self):
         line = 'if True:\\\nprint True\n'
         fixed = 'if True:\n    print True\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    @unittest.skip('https://github.com/jcrocholl/pep8/issues/268')
     def test_e701_with_escaped_newline_and_spaces(self):
         line = 'if True:    \\   \nprint True\n'
         fixed = 'if True:\n    print True\n'
@@ -3796,11 +3804,125 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--range', '2', '2']) as result:
             self.assertEqual(fixed, result)
 
-    def test_range_line_number_changes(self):
+    def test_range_line_number_changes_from_one_line(self):
         line = 'a=12\na=1; b=2;c=3\nd=4;\n\ndef f(a = 1):\n    pass\n'
         fixed = 'a=12\na = 1\nb = 2\nc = 3\nd=4;\n\ndef f(a = 1):\n    pass\n'
         with autopep8_context(line, options=['--range', '2', '2']) as result:
             self.assertEqual(fixed, result)
+
+    def test_range_indent_changes_large_range(self):
+        line = '\nif True:\n  (1, \n    2,\n3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n  c = 2\n  a = (1,\n2)\n'
+        fixed0_9 = '\nif True:\n    (1,\n     2,\n     3)\nelif False:\n    a = 1\nelse:\n    a = 2\n\nc = 1\nif True:\n  c = 2\n  a = (1,\n2)\n'
+        with autopep8_context(line, options=['--range', '0', '9']) as result:
+            self.assertEqual(fixed0_9, result)
+
+    def test_range_indent_changes_small_range(self):
+        line = '\nif True:\n  (1, \n    2,\n3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n  c = 2\n  a = (1,\n2)\n'
+        fixed2_5 = '\nif True:\n  (1,\n   2,\n   3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n  c = 2\n  a = (1,\n2)\n'
+        with autopep8_context(line, options=['--range', '2', '5']) as result:
+            self.assertEqual(fixed2_5, result)
+
+    def test_range_indent_changes_multiline(self):
+        line = '\nif True:\n  (1, \n    2,\n3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n  c = 2\n  a = (1,\n2)\n'
+        fixed_11_15 = '\nif True:\n  (1, \n    2,\n3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n    c = 2\n    a = (1,\n         2)\n'
+        with autopep8_context(line, options=['--range', '11', '15']) as result:
+            self.assertEqual(fixed_11_15, result)
+
+    def test_range_indent_changes_partial_multiline(self):
+        line = '\nif True:\n  (1, \n    2,\n3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n  c = 2\n  a = (1,\n2)\n'
+        fixed_11_14 = '\nif True:\n  (1, \n    2,\n3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n    c = 2\n    a = (1,\n2)\n'
+        with autopep8_context(line, options=['--range', '11', '14']) as result:
+            self.assertEqual(fixed_11_14, result)
+
+    def test_range_indent_long_multiline_small_range(self):
+        line = '\nif True:\n  (1,\n2,\n3,\n\n4,\n\n5,\n6)'
+        fixed_2_3 = '\nif True:\n    (1,\n2,\n3,\n\n4,\n\n5,\n6)\n'
+        with autopep8_context(line, options=['--range', '2', '3']) as result:
+            self.assertEqual(fixed_2_3, result)
+
+    def test_range_indent_long_multiline_partial_range(self):
+        line = '\nif True:\n  (1,\n2,\n3,\n\n4,\n\n5,\n6)'
+        fixed_2_6 = '\nif True:\n    (1,\n     2,\n     3,\n\n4,\n\n5,\n6)\n'
+        with autopep8_context(line, options=['--range', '2', '6']) as result:
+            self.assertEqual(fixed_2_6, result)
+
+    def test_range_indent_long_multiline_middle_of_multiline(self):
+        line = '\nif True:\n  (1,\n2,\n3,\n\n4,\n\n5,\n6)'
+        # weird-ish edge case, fixes earlier lines (up to beginning of
+        # multi-line block)
+        fixed_2_6 = '\nif True:\n    (1,\n     2,\n     3,\n\n     4,\n\n5,\n6)\n'
+        with autopep8_context(line, options=['--range', '4', '6']) as result:
+            self.assertEqual(fixed_2_6, result)
+
+    def test_range_indent_deep_if_blocks_first_block(self):
+        line = '\nif a:\n  if a = 1:\n    b = 1\n  else:\n    b = 2\nelif a == 0:\n  b = 3\nelse:\n  b = 4\n'
+        with autopep8_context(line, options=['--range', '2', '5']) as result:
+            self.assertEqual(line, result)
+
+    def test_range_indent_deep_if_blocks_large_range(self):
+        line = '\nif a:\n  if a = 1:\n    b = 1\n  else:\n    b = 2\nelif a == 0:\n  b = 3\nelse:\n  b = 4\n'
+        fixed_2_7 = '\nif a:\n  if a = 1:\n      b = 1\n  else:\n      b = 2\nelif a == 0:\n  b = 3\nelse:\n  b = 4\n'
+        with autopep8_context(line, options=['--range', '2', '7']) as result:
+            self.assertEqual(fixed_2_7, result)
+
+    def test_range_indent_deep_if_blocks_second_block(self):
+        line = '\nif a:\n  if a = 1:\n    b = 1\n  else:\n    b = 2\nelif a == 0:\n  b = 3\nelse:\n  b = 4\n'
+        with autopep8_context(line, options=['--range', '6', '9']) as result:
+            self.assertEqual(line, result)
+
+    def test_range_indent_continued_statements(self):
+        line = '\nif a == 1:\n\ttry:\n\t  foo\n\texcept AttributeError:\n\t  pass\n\telse:\n\t  "nooo"\n\tb = 1\n'
+        fixed_2_8 = '\nif a == 1:\n\ttry:\n\t    foo\n\texcept AttributeError:\n\t    pass\n\telse:\n\t    "nooo"\n\tb = 1\n'
+        with autopep8_context(line, options=['--range', '2', '8']) as result:
+            self.assertEqual(fixed_2_8, result)
+
+    def test_range_indent_continued_statements_partial(self):
+        line = '\nif a == 1:\n\ttry:\n\t  foo\n\texcept AttributeError:\n\t  pass\n\telse:\n\t  "nooo"\n\tb = 1\n'
+        with autopep8_context(line, options=['--range', '2', '6']) as result:
+            self.assertEqual(line, result)
+
+    def test_range_indent_continued_statements_last_block(self):
+        line = '\nif a == 1:\n\ttry:\n\t  foo\n\texcept AttributeError:\n\t  pass\n\telse:\n\t  "nooo"\n\tb = 1\n'
+        with autopep8_context(line, options=['--range', '6', '9']) as result:
+            self.assertEqual(line, result)
+
+    def test_range_indent_neighbouring_blocks(self):
+        line = '\nif a == 1:\n  b = 1\nif a == 2:\n  b = 2\nif a == 3:\n  b = 3\n'
+        fixed_2_3 = '\nif a == 1:\n    b = 1\nif a == 2:\n  b = 2\nif a == 3:\n  b = 3\n'
+        with autopep8_context(line, options=['--range', '2', '3']) as result:
+            self.assertEqual(fixed_2_3, result)
+
+    def test_range_indent_neighbouring_blocks_one_line(self):
+        line = '\nif a == 1:\n  b = 1\nif a == 2:\n  b = 2\nif a == 3:\n  b = 3\n'
+        fixed_2_3 = '\nif a == 1:\n    b = 1\nif a == 2:\n  b = 2\nif a == 3:\n  b = 3\n'
+        fixed_3_3 = fixed_2_3
+        with autopep8_context(line, options=['--range', '3', '3']) as result:
+            self.assertEqual(fixed_3_3, result)
+
+    def test_range_indent_above_less_indented(self):
+        line = '\ndef f(x):\n  if x:\n    return x\n'
+        fixed_3_4 = '\ndef f(x):\n    if x:\n        return x\n'
+        with autopep8_context(line, options=['--range', '3', '4']) as result:
+            self.assertEqual(fixed_3_4, result)
+
+    def test_range_indent_docstrings_partial(self):
+        line = '\ndef f(x):\n  """docstring\n  docstring"""\n  #comment\n  if x:\n    return x\n'
+        # TODO this should fix the comment spacing
+        fixed_2_5 = '\ndef f(x):\n  """docstring\n  docstring"""\n  #comment\n  if x:\n    return x\n'
+        with autopep8_context(line, options=['--range', '2', '5']) as result:
+            self.assertEqual(fixed_2_5, result)
+
+    def test_range_indent_docstrings(self):
+        line = '\ndef f(x):\n  """docstring\n  docstring"""\n  #comment\n  if x:\n    return x\n'
+        fixed_2_7 = '\ndef f(x):\n    """docstring\n    docstring"""\n    # comment\n    if x:\n        return x\n'
+        with autopep8_context(line, options=['--range', '2', '7']) as result:
+            self.assertEqual(fixed_2_7, result)
+
+    def test_range_indent_multiline_strings(self):
+        line = '\nif True:\n  a = """multi\nline\nstring"""\n  #comment\n  a=1\na=2\n'
+        fixed_2_7 = '\nif True:\n    a = """multi\nline\nstring"""\n    # comment\n    a = 1\na=2\n'
+        with autopep8_context(line, options=['--range', '2', '7']) as result:
+            self.assertEqual(fixed_2_7, result)
 
 
 class CommandLineTests(unittest.TestCase):
