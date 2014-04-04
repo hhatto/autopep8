@@ -60,6 +60,7 @@ try:
     from nonexistent import Bar
 except ImportError:
     class Bar(object):
+
         """This is a Bar replacement"""
 
 
@@ -87,6 +88,7 @@ def a():
 
 
 class Foo():
+
     """Class Foo"""
 
     def b():

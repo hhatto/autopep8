@@ -19,6 +19,7 @@ p4change = {
 
 
 class TestP4Poller(unittest.TestCase):
+
     def setUp(self):
         self.setUpGetProcessOutput()
         return self.setUpChangeSource()
