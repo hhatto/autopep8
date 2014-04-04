@@ -171,7 +171,8 @@ def extended_blank_lines(logical_line,
 pep8.register_check(extended_blank_lines)
 
 
-def continued_indentation(logical_line, tokens, indent_level, noqa):
+def continued_indentation(logical_line, tokens, indent_level, indent_char,
+                          noqa):
     """Override pep8's function to provide indentation information."""
     first_row = tokens[0][2][0]
     nrows = 1 + tokens[-1][2][0] - first_row
@@ -185,12 +186,22 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
     indent_next = logical_line.endswith(':')
 
     row = depth = 0
+    valid_hangs = (
+        (DEFAULT_INDENT_SIZE,)
+        if indent_char != '\t' else (DEFAULT_INDENT_SIZE,
+                                     2 * DEFAULT_INDENT_SIZE)
+    )
 
     # Remember how many brackets were opened on each line.
     parens = [0] * nrows
 
     # Relative indents of physical lines.
     rel_indent = [0] * nrows
+
+    # For each depth, collect a list of opening rows.
+    open_rows = [[0]]
+    # For each depth, memorize the hanging indentation.
+    hangs = [None]
 
     # Visual indents.
     indent_chances = {}
@@ -217,17 +228,18 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
             # Record the initial indent.
             rel_indent[row] = pep8.expand_indent(line) - indent_level
 
-            if depth:
-                # A bracket expression in a continuation line.
-                # Find the line that it was opened on.
-                for open_row in range(row - 1, -1, -1):
-                    if parens[open_row]:
-                        break
-            else:
-                # An unbracketed continuation line (ie, backslash).
-                open_row = 0
-            hang = rel_indent[row] - rel_indent[open_row]
+            # Identify closing bracket.
             close_bracket = (token_type == tokenize.OP and text in ']})')
+
+            # Is the indent relative to an opening bracket line?
+            for open_row in reversed(open_rows[depth]):
+                hang = rel_indent[row] - rel_indent[open_row]
+                hanging_indent = hang in valid_hangs
+                if hanging_indent:
+                    break
+            if hangs[depth]:
+                hanging_indent = (hang == hangs[depth])
+
             visual_indent = (not close_bracket and hang > 0 and
                              indent_chances.get(start[1]))
 
@@ -237,23 +249,23 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                     yield (start, 'E124 {0}'.format(indent[depth]))
             elif close_bracket and not hang:
                 pass
-            elif visual_indent is True:
-                # Visual indent is verified.
-                if not indent[depth]:
-                    indent[depth] = start[1]
-            elif visual_indent in (text, unicode):
-                # Ignore token lined up with matching one from a previous line.
-                pass
             elif indent[depth] and start[1] < indent[depth]:
                 # Visual indent is broken.
                 yield (start, 'E128 {0}'.format(indent[depth]))
-            elif (hang == DEFAULT_INDENT_SIZE or
+            elif (hanging_indent or
                   (indent_next and
                    rel_indent[row] == 2 * DEFAULT_INDENT_SIZE)):
                 # Hanging indent is verified.
                 if close_bracket:
                     yield (start, 'E123 {0}'.format(indent_level +
                                                     rel_indent[open_row]))
+                hangs[depth] = hang
+            elif visual_indent is True:
+                # Visual indent is verified.
+                indent[depth] = start[1]
+            elif visual_indent in (text, unicode):
+                # Ignore token lined up with matching one from a previous line.
+                pass
             else:
                 one_indented = (indent_level + rel_indent[open_row] +
                                 DEFAULT_INDENT_SIZE)
@@ -265,6 +277,7 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
                 elif hang > DEFAULT_INDENT_SIZE:
                     error = ('E126', one_indented)
                 else:
+                    hangs[depth] = hang
                     error = ('E121', one_indented)
 
                 yield (start, '{0} {1}'.format(*error))
@@ -282,29 +295,36 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
         # 4.
         elif not indent_chances and not row and not depth and text == 'if':
             indent_chances[end[1] + 1] = True
+        elif text == ':' and line[end[1]:].isspace():
+            open_rows[depth].append(row)
 
         # Keep track of bracket depth.
         if token_type == tokenize.OP:
             if text in '([{':
                 depth += 1
                 indent.append(0)
+                hangs.append(None)
+                if len(open_rows) == depth:
+                    open_rows.append([])
+                open_rows[depth].append(row)
                 parens[row] += 1
             elif text in ')]}' and depth > 0:
                 # Parent indents should not be more than this one.
                 prev_indent = indent.pop() or last_indent[1]
+                hangs.pop()
                 for d in range(depth):
                     if indent[d] > prev_indent:
                         indent[d] = 0
                 for ind in list(indent_chances):
                     if ind >= prev_indent:
                         del indent_chances[ind]
+                del open_rows[depth + 1:]
                 depth -= 1
                 if depth:
                     indent_chances[indent[depth]] = True
                 for idx in range(row, -1, -1):
                     if parens[idx]:
                         parens[idx] -= 1
-                        rel_indent[row] = rel_indent[idx]
                         break
             assert len(indent) == depth + 1
             if (
@@ -326,8 +346,9 @@ def continued_indentation(logical_line, tokens, indent_level, noqa):
         not last_line_begins_with_multiline and
         pep8.expand_indent(line) == indent_level + DEFAULT_INDENT_SIZE
     ):
-        yield (last_indent, 'E125 {0}'.format(indent_level +
-                                              2 * DEFAULT_INDENT_SIZE))
+        pos = (start[0], indent[0] + 4)
+        yield (pos, 'E125 {0}'.format(indent_level +
+                                      2 * DEFAULT_INDENT_SIZE))
 del pep8._checks['logical_line'][pep8.continued_indentation]
 pep8.register_check(continued_indentation)
 
