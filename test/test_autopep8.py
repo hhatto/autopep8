@@ -1976,6 +1976,7 @@ bar[zap[0][0]:zig[0][0], :]
     def test_e301_extended_with_docstring(self):
         line = '''\
 class Foo(object):
+
     """Test."""
     def foo(self):
 
@@ -2035,6 +2036,7 @@ def foo():
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    @unittest.skip('https://github.com/jcrocholl/pep8/commit/45c4a3b9e2b16ecaebaafc84f65ff4c20a9c89d8')
     def test_e309(self):
         line = 'class Foo:\n    def bar():\n        print 1\n'
         fixed = 'class Foo:\n\n    def bar():\n        print 1\n'
