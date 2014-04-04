@@ -7,15 +7,15 @@ python:
     - "3.2"
     - "3.3"
 env:
-  - PEP8_VERSION=lastest
-  - PEP8_VERSION=master
+    - PEP8_VERSION=pypi
+    - PEP8_VERSION=github
 matrix:
-  allow_failures:
-    - env: PEP8_VERSION=master
+    allow_failures:
+        - env: PEP8_VERSION=github
 
 install:
     - if [ "$TRAVIS_PYTHON_VERSION" == "2.6" ]; then pip --quiet install argparse unittest2; fi
-    - if [ "$PEP8_VERSION" == "master" ]; then pip --quiet install pep8 git+git://github.com/jcrocholl/pep8.git; fi
+    - if [ "$PEP8_VERSION" == "github" ]; then pip --quiet install git+https://github.com/jcrocholl/pep8; fi
     - python setup.py --quiet build --build-base=".build-$TRAVIS_PYTHON_VERSION" install
 
 before_script:
