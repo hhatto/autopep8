@@ -3802,6 +3802,95 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--range', '2', '2']) as result:
             self.assertEqual(fixed, result)
 
+    def test_range_indent_changes(self):
+        line = '\nif True:\n  (1, \n    2,\n3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n  c = 2\n  a = (1,\n2)\n'
+        fixed0_9 = '\nif True:\n    (1,\n     2,\n     3)\nelif False:\n    a = 1\nelse:\n    a = 2\n\nc = 1\nif True:\n  c = 2\n  a = (1,\n2)\n'
+        with autopep8_context(line, options=['--range', '0', '9']) as result:
+            self.assertEqual(fixed0_9, result)
+
+        fixed2_5 = '\nif True:\n  (1,\n   2,\n   3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n  c = 2\n  a = (1,\n2)\n'
+        with autopep8_context(line, options=['--range', '2', '5']) as result:
+            self.assertEqual(fixed2_5, result)
+
+        fixed_11_15 = '\nif True:\n  (1, \n    2,\n3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n    c = 2\n    a = (1,\n         2)\n'
+        with autopep8_context(line, options=['--range', '11', '15']) as result:
+            self.assertEqual(fixed_11_15, result)
+
+        fixed_11_14 = '\nif True:\n  (1, \n    2,\n3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n    c = 2\n    a = (1,\n2)\n'
+        with autopep8_context(line, options=['--range', '11', '14']) as result:
+            self.assertEqual(fixed_11_14, result)
+
+        # last line in the middle of a multi-line line
+        line = '\nif True:\n  (1,\n2,\n3,\n\n4,\n\n5,\n6)'
+
+        fixed_2_3 = '\nif True:\n    (1,\n2,\n3,\n\n4,\n\n5,\n6)\n'
+        with autopep8_context(line, options=['--range', '2', '3']) as result:
+            self.assertEqual(fixed_2_3, result)
+
+        fixed_2_6 = '\nif True:\n    (1,\n     2,\n     3,\n\n4,\n\n5,\n6)\n'
+        with autopep8_context(line, options=['--range', '2', '6']) as result:
+            self.assertEqual(fixed_2_6, result)
+
+        # weird-ish edge case, fixes earlier lines (up to beginning of
+        # multi-line block)
+        fixed_2_6 = '\nif True:\n    (1,\n     2,\n     3,\n\n     4,\n\n5,\n6)\n'
+        with autopep8_context(line, options=['--range', '4', '6']) as result:
+            self.assertEqual(fixed_2_6, result)
+
+        # deeper if and else blocks
+        line = '\nif a:\n  if a = 1:\n    b = 1\n  else:\n    b = 2\nelif a == 0:\n  b = 3\nelse:\n  b = 4\n'
+        with autopep8_context(line, options=['--range', '2', '5']) as result:
+            self.assertEqual(line, result)
+
+        fixed_2_7 = '\nif a:\n  if a = 1:\n      b = 1\n  else:\n      b = 2\nelif a == 0:\n  b = 3\nelse:\n  b = 4\n'
+        with autopep8_context(line, options=['--range', '2', '7']) as result:
+            self.assertEqual(fixed_2_7, result)
+
+        with autopep8_context(line, options=['--range', '6', '9']) as result:
+            self.assertEqual(line, result)
+
+        # some other continued statements
+        line = '\nif a == 1:\n\ttry:\n\t  foo\n\texcept AttributeError:\n\t  pass\n\telse:\n\t  "nooo"\n\tb = 1\n'
+
+        fixed_2_8 = '\nif a == 1:\n\ttry:\n\t    foo\n\texcept AttributeError:\n\t    pass\n\telse:\n\t    "nooo"\n\tb = 1\n'
+        with autopep8_context(line, options=['--range', '2', '8']) as result:
+            self.assertEqual(fixed_2_8, result)
+
+        with autopep8_context(line, options=['--range', '2', '6']) as result:
+            self.assertEqual(line, result)
+
+        with autopep8_context(line, options=['--range', '6', '9']) as result:
+            self.assertEqual(line, result)
+
+        # mutually exlusive neighbouring blocks
+        line = '\nif a == 1:\n  b = 1\nif a == 2:\n  b = 2\nif a == 3:\n  b = 3\n'
+        fixed_2_3 = '\nif a == 1:\n    b = 1\nif a == 2:\n  b = 2\nif a == 3:\n  b = 3\n'
+        with autopep8_context(line, options=['--range', '2', '3']) as result:
+            self.assertEqual(fixed_2_3, result)
+
+        fixed_3_3 = fixed_2_3
+        with autopep8_context(line, options=['--range', '3', '3']) as result:
+            self.assertEqual(fixed_3_3, result)
+
+        # lines above are less indented
+        line = '\ndef f(x):\n  if x:\n    return x\n'
+
+        fixed_3_4 = '\ndef f(x):\n    if x:\n        return x\n'
+        with autopep8_context(line, options=['--range', '3', '4']) as result:
+            self.assertEqual(fixed_3_4, result)
+
+        # comments and docstring
+        line = '\ndef f(x):\n  """docstring\ndocstring"""\n  #comment\n  if x:\n    return x\n'
+
+        # TODO this should fix the comment spacing
+        fixed_2_5 = '\ndef f(x):\n  """docstring\ndocstring"""\n  #comment\n  if x:\n    return x\n'
+        with autopep8_context(line, options=['--range', '2', '5']) as result:
+            self.assertEqual(fixed_2_5, result)
+
+        fixed_2_7 = '\ndef f(x):\n    """docstring\n  docstring"""\n    # comment\n    if x:\n        return x\n'
+        with autopep8_context(line, options=['--range', '2', '7']) as result:
+            self.assertEqual(fixed_2_7, result)
+
 
 class CommandLineTests(unittest.TestCase):
 
