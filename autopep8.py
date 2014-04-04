@@ -2921,11 +2921,12 @@ def apply_local_fixes(source, options):
 
     def local_fix(source, start_log, end_log,
                   start_lines, end_lines, indents, last_line):
-        """reindent the source between start_log and end_log.
+        """apply_global_fixes to the source between start_log and end_log.
 
         The subsource must be the correct syntax of a complete python program
-        (but all lines may be indented). The subsource's shared indent is
-        removed, reindent is applied and the indent prepended back.
+        (but all lines may share an indentation). The subsource's shared indent is
+        removed, fixes are applied and the indent prepended back. Taking care to
+        not reindent strings.
 
         last_line is the strict cut off (options.line_range[1]), so that
         lines after last_line are not modified.
@@ -2940,23 +2941,29 @@ def apply_local_fixes(source, options):
         sl = slice(start_lines[start_log], end_lines[end_log] + 1)
 
         subsource = source[sl]
-        # remove indent
+        # Remove indent from subsource.
         if ind:
             for line_no in start_lines[start_log:end_log + 1]:
                 pos = line_no - start_lines[start_log]
                 subsource[pos] = subsource[pos][ind:]
 
-        # fix indentation
+        # Fix indentation of subsource.
         fixed_subsource = apply_global_fixes(''.join(subsource),
                                              options,
                                              where='local')
         fixed_subsource = fixed_subsource.splitlines(True)
 
-        # add back indent
-        if ind:
-            for i, line in enumerate(fixed_subsource):
+        # Add back indent for non multi-line strings lines.
+        msl = multiline_string_lines(''.join(fixed_subsource),
+                                     include_docstrings=False)
+        for i, line in enumerate(fixed_subsource):
+            if not i + 1 in msl:
                 fixed_subsource[i] = indent + line if line != '\n' else line
 
+        # We make a special case to look at the final line, if it's a multiline
+        # *and* the cut off is somewhere inside it, we take the fixed
+        # subset up until last_line, this assumes that the number of lines
+        # does not change in this multiline line.
         changed_lines = len(fixed_subsource)
         if (start_lines[end_log] != end_lines[end_log]
                 and end_lines[end_log] > last_line):
@@ -2981,12 +2988,12 @@ def apply_local_fixes(source, options):
     start, end = options.line_range
     start -= 1
     end -= 1
-    last_line = end  # we shouldn't modify lines after this
+    last_line = end  # We shouldn't modify lines after this cut-off.
 
     logical = _find_logical(source)
 
     if not logical[0]:
-        # just blank lines implies will become '\n' ?
+        # Just blank lines, this should imply that it will become '\n' ?
         return apply_global_fixes(source, options)
 
     start_lines, indents = zip(*logical[0])
@@ -2997,8 +3004,9 @@ def apply_local_fixes(source, options):
     start_log, start = find_ge(start_lines, start)
     end_log, end = find_le(start_lines, end)
 
-    # look behind one line, if it's indented less
-    # then we can start the game from there
+    # Look behind one line, if it's indented less than current indent
+    # then we can move to this previous line knowing that its
+    # indentation level will not be changed.
     if (start_log > 0
             and indents[start_log - 1] < indents[start_log]
             and not is_continued_stmt(source[start_log - 1])):
@@ -3015,19 +3023,19 @@ def apply_local_fixes(source, options):
         ind = indents[start_log]
         for t in itertools.takewhile(lambda t: t[1][1] >= ind,
                                      enumerate(logical[0][start_log:])):
-            N_log, N = start_log + t[0], t[1][0]
-        # start shares indent up to N
+            n_log, n = start_log + t[0], t[1][0]
+        # start shares indent up to n.
 
-        if N <= end:
-            source = local_fix(source, start_log, N_log,
+        if n <= end:
+            source = local_fix(source, start_log, n_log,
                                start_lines, end_lines,
                                indents, last_line)
-            start_log = N_log if N == end else N_log + 1
+            start_log = n_log if n == end else n_log + 1
             start = start_lines[start_log]
             continue
 
         else:
-            # look at the line after end and see if allows us to reindent
+            # Look at the line after end and see if allows us to reindent.
             after_end_log, after_end = find_ge(start_lines, end + 1)
 
             if indents[after_end_log] > indents[start_log]:
@@ -3036,16 +3044,16 @@ def apply_local_fixes(source, options):
 
             if (indents[after_end_log] == indents[start_log]
                     and is_continued_stmt(source[after_end])):
-                # find N, the start of the last continued statement
-                # apply fix to previous block if there is one
+                # find n, the beginning of the last continued statement
+                # Apply fix to previous block if there is one.
                 only_block = True
-                for N, N_ind in logical[0][start_log:end_log + 1][::-1]:
-                    if N_ind == ind and not is_continued_stmt(source[N]):
-                        N_log = start_lines.index(N)
-                        source = local_fix(source, start_log, N_log - 1,
+                for n, n_ind in logical[0][start_log:end_log + 1][::-1]:
+                    if n_ind == ind and not is_continued_stmt(source[n]):
+                        n_log = start_lines.index(n)
+                        source = local_fix(source, start_log, n_log - 1,
                                            start_lines, end_lines,
                                            indents, last_line)
-                        start_log = N_log + 1
+                        start_log = n_log + 1
                         start = start_lines[start_log]
                         only_block = False
                         break
