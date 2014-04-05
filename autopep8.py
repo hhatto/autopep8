@@ -3218,6 +3218,13 @@ def parse_args(arguments):
     if args.jobs > 1 and not args.in_place:
         parser.error('parallel jobs requires --in-place')
 
+    if args.line_range:
+        if args.line_range[0] <= 0:
+            parser.error('--range must be positive numbers')
+        if args.line_range[0] > args.line_range[1]:
+            parser.error('First value of --range should be less than or equal '
+                         'to the second')
+
     return args
 
 
