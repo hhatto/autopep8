@@ -105,6 +105,7 @@ check:
 		--disable=import-error \
 		--disable=invalid-name \
 		--disable=line-too-long \
+		--disable=star-args \
 		--disable=missing-docstring \
 		--disable=no-member \
 		--disable=protected-access \
