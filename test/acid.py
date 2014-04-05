@@ -5,6 +5,7 @@ from __future__ import print_function
 
 import argparse
 import os
+import random
 import shlex
 import sys
 import subprocess
@@ -32,6 +33,10 @@ else:
     END = ''
 
 
+RANDOM_MIN = -100
+RANDOM_MAX = 1000
+
+
 def colored(text, color):
     """Return color coded text."""
     return color + text + END
@@ -40,12 +45,15 @@ def colored(text, color):
 def run(filename, command, max_line_length=79,
         ignore='', check_ignore='', verbose=False,
         comparison_function=None,
-        aggressive=0, experimental=False, line_range=None):
+        aggressive=0, experimental=False, line_range=None, random_range=False):
     """Run autopep8 on file at filename.
 
     Return True on success.
 
     """
+    if random_range:
+        line_range = [random.randint(RANDOM_MIN, RANDOM_MAX) for _ in range(2)]
+
     command = (shlex.split(command) + (['--verbose'] if verbose else []) +
                ['--max-line-length={0}'.format(max_line_length),
                 '--ignore=' + ignore, filename] +
@@ -53,6 +61,8 @@ def run(filename, command, max_line_length=79,
                (['--experimental'] if experimental else []) +
                (['--range', str(line_range[0]), str(line_range[1])]
                 if line_range else []))
+
+    print(' '.join(command), file=sys.stderr)
 
     with tempfile.NamedTemporaryFile(suffix='.py') as tmp_file:
         if 0 != subprocess.call(command, stdout=tmp_file):
@@ -128,6 +138,8 @@ def process_args():
     parser.add_argument('--range', metavar='line', dest='line_range',
                         default=None, type=int, nargs=2,
                         help='pass --range to autope8')
+    parser.add_argument('--random-range', action='store_true',
+                        help='pass random --range to autope8')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='print verbose messages')
     parser.add_argument('paths', nargs='*',
@@ -212,7 +224,8 @@ def check(paths, args):
                            comparison_function=comparison_function,
                            aggressive=args.aggressive,
                            experimental=args.experimental,
-                           line_range=args.line_range):
+                           line_range=args.line_range,
+                           random_range=args.random_range):
                     return False
         except (UnicodeDecodeError, UnicodeEncodeError) as exception:
             # Ignore annoying codec problems on Python 2.
