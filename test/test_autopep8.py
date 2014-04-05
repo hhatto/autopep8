@@ -3809,7 +3809,7 @@ correct = 'good syntax ?' in dict()
     def test_range_indent_changes_large_range(self):
         line = '\nif True:\n  (1, \n    2,\n3)\nelif False:\n  a = 1\nelse:\n  a = 2\n\nc = 1\nif True:\n  c = 2\n  a = (1,\n2)\n'
         fixed0_9 = '\nif True:\n    (1,\n     2,\n     3)\nelif False:\n    a = 1\nelse:\n    a = 2\n\nc = 1\nif True:\n  c = 2\n  a = (1,\n2)\n'
-        with autopep8_context(line, options=['--range', '0', '9']) as result:
+        with autopep8_context(line, options=['--range', '1', '9']) as result:
             self.assertEqual(fixed0_9, result)
 
     def test_range_indent_changes_small_range(self):
