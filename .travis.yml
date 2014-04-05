@@ -6,9 +6,11 @@ python:
     - "pypy"
     - "3.2"
     - "3.3"
+
 env:
     - PEP8_VERSION=pypi
     - PEP8_VERSION=github
+
 matrix:
     allow_failures:
         - env: PEP8_VERSION=github
