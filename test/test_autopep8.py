@@ -4135,6 +4135,9 @@ class CommandLineTests(unittest.TestCase):
                             ['-', '--in-place'],
                             ['-', '--recursive'],
                             ['-', filename],
+                            ['--range', '0', '2', filename],
+                            ['--range', '2', '1', filename],
+                            ['--range', '-1', '-1', filename],
                             ]:
                 p = Popen(list(AUTOPEP8_CMD_TUPLE) + options,
                           stderr=PIPE)
