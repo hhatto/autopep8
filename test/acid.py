@@ -52,7 +52,9 @@ def run(filename, command, max_line_length=79,
 
     """
     if random_range:
-        line_range = [random.randint(RANDOM_MIN, RANDOM_MAX) for _ in range(2)]
+        if not line_range:
+            line_range = [RANDOM_MIN, RANDOM_MAX]
+        line_range = [random.randint(*line_range) for _ in range(2)]
 
     command = (shlex.split(command) + (['--verbose'] if verbose else []) +
                ['--max-line-length={0}'.format(max_line_length),
