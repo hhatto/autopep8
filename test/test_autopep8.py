@@ -4258,8 +4258,21 @@ if True:
 \\
 # foo
 """
+        fixed = """\
+'''This should be left alone. -----------------------------------------------------
+
+'''  # foo
+
+'''This should be left alone. -----------------------------------------------------
+
+'''  # foo
+
+'''This should be left alone. -----------------------------------------------------
+
+'''  # foo
+"""
         with autopep8_context(line, options=['--experimental']) as result:
-            self.assertEqual(line, result)
+            self.assertEqual(fixed, result)
 
     def test_e501_experimental_with_inline_comments_should_skip_keywords(self):
         line = """\

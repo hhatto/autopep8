@@ -1475,8 +1475,17 @@ class ReformattedLines(object):
         self._add_container(obj, indent_amt, break_after_open_bracket)
 
     def add_comment(self, item):
-        self._lines.append(self._Space())
-        self._lines.append(self._Space())
+        num_spaces = 2
+        if len(self._lines) > 1:
+            if isinstance(self._lines[-1], self._Space):
+                num_spaces -= 1
+            if len(self._lines) > 2:
+                if isinstance(self._lines[-2], self._Space):
+                    num_spaces -= 1
+
+        while num_spaces > 0:
+            self._lines.append(self._Space())
+            num_spaces -= 1
         self._lines.append(item)
 
     def add_indent(self, indent_amt):
