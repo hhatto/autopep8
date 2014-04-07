@@ -690,10 +690,6 @@ class FixPEP8(object):
 
     def fix_e301(self, result):
         """Add missing blank line."""
-        # TODO: Delete this workaround after 1.5.4 is released.
-        if int(result['column']) <= 0:
-            return []
-
         cr = '\n'
         self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
 
