@@ -970,7 +970,8 @@ def get_fixed_long_line(target, previous_line, original,
         sorted(set(candidates).union([target, original])),
         key=lambda x: line_shortening_rank(x,
                                            indent_word,
-                                           max_line_length))
+                                           max_line_length,
+                                           experimental))
 
     if verbose >= 4:
         print(('-' * 79 + '\n').join([''] + candidates + ['']),
@@ -3265,7 +3266,8 @@ def docstring_summary(docstring):
     return docstring.split('\n')[0]
 
 
-def line_shortening_rank(candidate, indent_word, max_line_length):
+def line_shortening_rank(candidate, indent_word, max_line_length,
+                         experimental=False):
     """Return rank of candidate.
 
     This is for sorting candidates.
@@ -3376,7 +3378,7 @@ def line_shortening_rank(candidate, indent_word, max_line_length):
             if total_len < max_line_length:
                 rank += 10
             else:
-                rank += 1
+                rank += 100 if experimental else 1
 
         # Prefer breaking at commas rather than colon.
         if ',' in current_line and current_line.endswith(':'):
