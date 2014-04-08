@@ -556,6 +556,17 @@ class FixPEP8(object):
 
         self.source[line_index] = ' ' * num_indent_spaces + target.lstrip()
 
+    def fix_e112(self, result):
+        """Fix under-indented comments."""
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+
+        if not target.lstrip().startswith('#'):
+            # Don't screw with invalid syntax.
+            return []
+
+        self.source[line_index] = self.indent_word + target
+
     def fix_e113(self, result):
         """Fix overly indented comments."""
         line_index = result['line'] - 1
@@ -565,7 +576,7 @@ class FixPEP8(object):
         stripped = target.lstrip()
 
         if not stripped.startswith('#'):
-            # This case is handled by the global fixer.
+            # Don't screw with invalid syntax.
             return []
 
         self.source[line_index] = indent[1:] + stripped
