@@ -1072,6 +1072,16 @@ if True:
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e113(self):
+        line = """\
+      # A comment.
+"""
+        fixed = """\
+# A comment.
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e12_reindent(self):
         line = """\
 def foo_bar(baz, frop,
@@ -2531,6 +2541,12 @@ if True:
 
     def test_e501_with_comment(self):
         line = """123
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
 
 # http://foo.bar/abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-
@@ -2539,6 +2555,12 @@ if True:
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
 """
         fixed = """123
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
                         # This is a long comment that should be wrapped. I will
                         # wrap it using textwrap to be within 72 characters.
 
@@ -2562,12 +2584,24 @@ def foo():
 
     def test_e501_should_only_modify_last_comment(self):
         line = """123
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 1. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 2. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 3. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
 """
         fixed = """123
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 1. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 2. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
@@ -4585,6 +4619,12 @@ if True:
 
     def test_e501_experimental_with_comment(self):
         line = """123
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
 
 # http://foo.bar/abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-
@@ -4593,6 +4633,12 @@ if True:
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
 """
         fixed = """123
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
                         # This is a long comment that should be wrapped. I will
                         # wrap it using textwrap to be within 72 characters.
 
@@ -4616,12 +4662,24 @@ def foo():
 
     def test_e501_experimental_should_only_modify_last_comment(self):
         line = """123
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 1. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 2. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 3. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
 """
         fixed = """123
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 1. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
                         # 2. This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
