@@ -568,7 +568,7 @@ class FixPEP8(object):
         self.source[line_index] = self.indent_word + target
 
     def fix_e113(self, result):
-        """Fix overly indented comments."""
+        """Fix over-indented comments."""
         line_index = result['line'] - 1
         target = self.source[line_index]
 

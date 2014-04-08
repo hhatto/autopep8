@@ -1086,6 +1086,14 @@ if True:
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e112_should_leave_bad_syntax_alone(self):
+        line = """\
+if True:
+pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
     def test_e113(self):
         line = """\
       # A comment.
@@ -1095,6 +1103,13 @@ if True:
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
+
+    def test_e113_should_leave_bad_syntax_alone(self):
+        line = """\
+    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
 
     def test_e12_reindent(self):
         line = """\
