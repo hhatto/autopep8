@@ -65,7 +65,7 @@ benchmark:
 
 readme:
 	${PYTHON} update_readme.py
-	@${PYTHON} setup.py --long-description | rst2html --strict > README.html
+	@rstcheck README.html
 	@${PYTHON} -m doctest -v README.rst
 
 open_readme: readme
