@@ -221,6 +221,17 @@ autopep8 also fixes some issues not found by pep8_.
 - Remove blank lines between a function declaration and its docstring. (Enabled
   with ``E303``.)
 
+autopep8 avoids fixing some issues found by pep8_.
+
+- ``E112``/``E113`` for non comments are reports of bad indentation that break
+  syntax rules. These should not be modified at all.
+- ``E265``, which refers to spacing after comment hash, is ignored if the
+  comment looks like code. autopep8 avoids modifying these since they are not
+  real comments. If you really want to get rid of the pep8_ warning, consider
+  just removing the commented-out code. (This can be automated via eradicate_.)
+
+.. _eradicate: https://github.com/myint/eradicate
+
 
 More advanced usage
 ===================
