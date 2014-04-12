@@ -960,6 +960,18 @@ class FixPEP8(object):
 
             self.source[line_index] = left + new_right
 
+    def fix_e713(self, result):
+        """Fix non-membership check."""
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+
+        # Handle very easy case only.
+        if re.match(r'^\s*if not \w+ in \w+:$', target):
+            self.source[line_index] = re.sub(r'if not (\w+) in (\w+):',
+                                             r'if \1 not in \2:',
+                                             target,
+                                             count=1)
+
     def fix_w291(self, result):
         """Remove trailing whitespace."""
         fixed_line = self.source[result['line'] - 1].rstrip()
@@ -2658,7 +2670,7 @@ def filter_results(source, results, aggressive):
                 continue
 
         if aggressive <= 1:
-            if issue_id.startswith(('e712', )):
+            if issue_id.startswith(('e712', 'e713')):
                 continue
 
         if r['line'] in commented_out_code_line_numbers:

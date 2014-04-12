@@ -10,7 +10,7 @@ if res:
 
 #
 #: E713
-if not X in Y:
+if X not in Y:
     pass
 #: E713
 if not X.B in Y:

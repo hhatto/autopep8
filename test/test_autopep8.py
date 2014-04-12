@@ -3469,6 +3469,13 @@ raise IOError('abc '
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e713(self):
+        line = 'if not x in y:\n    pass\n'
+        fixed = 'if x not in y:\n    pass\n'
+        with autopep8_context(line,
+                              options=['-aa', '--select=E713']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e721(self):
         line = "type('') == type('')\n"
         fixed = "isinstance('', type(''))\n"
