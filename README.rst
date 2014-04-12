@@ -2,7 +2,7 @@
 autopep8
 ========
 
-.. image:: https://travis-ci.org/hhatto/autopep8.png?branch=master
+.. image:: https://travis-ci.org/hhatto/autopep8.svg?branch=master
     :target: https://travis-ci.org/hhatto/autopep8
     :alt: Build status
 
