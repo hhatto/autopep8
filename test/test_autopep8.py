@@ -3992,6 +3992,17 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--range', '2', '7']) as result:
             self.assertEqual(fixed_2_7, result)
 
+    def test_range_with_broken_syntax(self):
+        line = """\
+if True:
+   if True:
+      pass
+ else:
+    pass
+"""
+        with autopep8_context(line, options=['--range', '1', '1']) as result:
+            self.assertEqual(line, result)
+
 
 class CommandLineTests(unittest.TestCase):
 

@@ -3037,7 +3037,10 @@ def apply_local_fixes(source, options):
     end -= 1
     last_line = end  # We shouldn't modify lines after this cut-off.
 
-    logical = _find_logical(source)
+    try:
+        logical = _find_logical(source)
+    except (SyntaxError, tokenize.TokenError):
+        return ''.join(source)
 
     if not logical[0]:
         # Just blank lines, this should imply that it will become '\n' ?
