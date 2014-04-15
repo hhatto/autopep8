@@ -90,4 +90,11 @@ def a():
 @decorator
 def function():
     pass
+#: E303:5:1
+#!python
+
+
+"""This class docstring comes on line 5.
+It gives error E303: too many blank lines (3)
+"""
 #:
