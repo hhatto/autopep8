@@ -4130,7 +4130,6 @@ class CommandLineTests(unittest.TestCase):
         self.assertIn('--in-place and --diff are mutually exclusive', result)
 
     def test_recursive(self):
-        import tempfile
         temp_directory = tempfile.mkdtemp(dir='.')
         try:
             with open(os.path.join(temp_directory, 'a.py'), 'w') as output:
@@ -4191,7 +4190,6 @@ class CommandLineTests(unittest.TestCase):
             shutil.rmtree(temp_directory)
 
     def test_exclude(self):
-        import tempfile
         temp_directory = tempfile.mkdtemp(dir='.')
         try:
             with open(os.path.join(temp_directory, 'a.py'), 'w') as output:
@@ -5521,14 +5519,14 @@ def autopep8_subprocess(line, options):
 
 @contextlib.contextmanager
 def temporary_file_context(text, suffix='', prefix=''):
-    tempfile = mkstemp(suffix=suffix, prefix=prefix)
-    os.close(tempfile[0])
-    with autopep8.open_with_encoding(tempfile[1],
+    temporary = mkstemp(suffix=suffix, prefix=prefix)
+    os.close(temporary[0])
+    with autopep8.open_with_encoding(temporary[1],
                                      encoding='utf-8',
                                      mode='w') as temp_file:
         temp_file.write(text)
-    yield tempfile[1]
-    os.remove(tempfile[1])
+    yield temporary[1]
+    os.remove(temporary[1])
 
 
 @contextlib.contextmanager
