@@ -6,8 +6,6 @@ include test/bad_encoding.py
 include test/bad_encoding2.py
 include test/e101_example.py
 include test/example
-include test/example/é.py
-include test/example/é.txt
 include test/example/x.py
 include test/example_with_reduce.py
 include test/example.py
