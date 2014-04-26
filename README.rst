@@ -22,6 +22,10 @@ From pip::
 
     $ pip install --upgrade autopep8
 
+Consider using the ``--user`` option_.
+
+.. _option: https://pip.readthedocs.org/en/latest/user_guide.html#user-installs
+
 
 Requirements
 ============
