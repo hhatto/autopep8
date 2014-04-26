@@ -14,8 +14,10 @@ else:
 
 import contextlib
 import io
+import shutil
 from subprocess import Popen, PIPE
 from tempfile import mkstemp
+import tempfile
 import tokenize
 import warnings
 
@@ -4152,7 +4154,6 @@ class CommandLineTests(unittest.TestCase):
                 '-123  \n+123',
                 '\n'.join(result.split('\n')[8:10]))
         finally:
-            import shutil
             shutil.rmtree(temp_directory)
 
     def test_recursive_should_not_crash_on_unicode_filename(self):
@@ -4165,7 +4166,6 @@ class CommandLineTests(unittest.TestCase):
         self.assertEqual(0, p.returncode)
 
     def test_recursive_should_ignore_hidden(self):
-        import tempfile
         temp_directory = tempfile.mkdtemp(dir='.')
         temp_subdirectory = tempfile.mkdtemp(prefix='.', dir=temp_directory)
         try:
@@ -4180,7 +4180,6 @@ class CommandLineTests(unittest.TestCase):
             self.assertEqual(0, p.returncode)
             self.assertEqual('', result)
         finally:
-            import shutil
             shutil.rmtree(temp_directory)
 
     def test_exclude(self):
@@ -4204,7 +4203,6 @@ class CommandLineTests(unittest.TestCase):
             self.assertNotIn('abc', result)
             self.assertIn('123', result)
         finally:
-            import shutil
             shutil.rmtree(temp_directory)
 
     def test_invalid_option_combinations(self):
