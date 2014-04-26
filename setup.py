@@ -4,6 +4,7 @@
 """Setup for autopep8."""
 
 import ast
+import io
 import sys
 
 from setuptools import setup
@@ -17,13 +18,13 @@ INSTALL_REQUIRES = (
 
 def version():
     """Return version string."""
-    with open('autopep8.py') as input_file:
+    with io.open('autopep8.py') as input_file:
         for line in input_file:
             if line.startswith('__version__'):
                 return ast.parse(line).body[0].value.s
 
 
-with open('README.rst') as readme:
+with io.open('README.rst') as readme:
     setup(
         name='autopep8',
         version=version(),
