@@ -306,6 +306,20 @@ released packages on PyPI. In a similar fashion, ``test/acid_github.py`` tests
 against Python code in Github repositories.
 
 
+Troubleshooting
+===============
+
+``pkg_resources.DistributionNotFound``
+--------------------------------------
+
+It is recommended to do non-privileged installations, but if you really want to
+install from pip, using ``sudo``, and you might encounter
+``pkg_resources.DistributionNotFound``. Try disabling ``pip``'s wheel
+capability to workaround this ``pip`` bug::
+
+    $ sudo pip install --no-use-wheel autopep8
+
+
 Links
 =====
 
