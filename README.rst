@@ -314,12 +314,11 @@ Troubleshooting
 ``pkg_resources.DistributionNotFound``
 --------------------------------------
 
-It is recommended to do non-privileged installations, but if you really want to
-install from pip, using ``sudo``, you might encounter
+On OS X, using the default Python 2.7.5, you might encounter
 ``pkg_resources.DistributionNotFound`` when trying to run ``autopep8``. Try
-disabling ``pip``'s wheel capability to workaround this ``pip`` bug::
+disabling ``pip``'s wheel capability to workaround this bug::
 
-    $ sudo pip install --no-use-wheel autopep8
+    $ pip install --no-use-wheel autopep8
 
 
 Links
