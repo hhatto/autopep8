@@ -14,6 +14,8 @@ can be reported by pep8.
 .. _PEP 8: http://www.python.org/dev/peps/pep-0008/
 .. _issues: https://pep8.readthedocs.org/en/latest/intro.html#error-codes
 
+.. contents::
+
 
 Installation
 ============
