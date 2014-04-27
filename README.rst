@@ -313,9 +313,9 @@ Troubleshooting
 --------------------------------------
 
 It is recommended to do non-privileged installations, but if you really want to
-install from pip, using ``sudo``, and you might encounter
-``pkg_resources.DistributionNotFound``. Try disabling ``pip``'s wheel
-capability to workaround this ``pip`` bug::
+install from pip, using ``sudo``, you might encounter
+``pkg_resources.DistributionNotFound`` when trying to run ``autopep8``. Try
+disabling ``pip``'s wheel capability to workaround this ``pip`` bug::
 
     $ sudo pip install --no-use-wheel autopep8
 
