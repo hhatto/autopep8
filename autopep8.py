@@ -1871,10 +1871,10 @@ class Atom(object):
             elif self.is_string:
                 reflowed_lines.add_space()
 
-            elif unicode(prev_item) in {'=', ',', '+', '-', '*', '/', '//'}:
+            elif unicode(prev_item) in ['=', ',', '+', '-', '*', '/', '//']:
                 reflowed_lines.add_space()
 
-            elif unicode(self) in {'=', ',', '+', '-', '*', '/', '//'}:
+            elif unicode(self) in ['=', ',', '+', '-', '*', '/', '//']:
                 reflowed_lines.add_space()
 
         if not reflowed_lines.fits_on_current_line(self.__len__()):
@@ -1997,13 +1997,13 @@ def _needs_space_before(item, reflowed_lines):
     prev_item = reflowed_lines.previous_item()
     if not prev_item or unicode(prev_item) in '.([{':
         return False
-    if unicode(item) in {'=', '=='}:
+    if unicode(item) in ['=', '==']:
         return True
     if unicode(prev_item) in '])' and unicode(item) == '.':
         return False
     if unicode(prev_item) in ',:}])':
         return True
-    if unicode(prev_item) in {'=', '=='}:
+    if unicode(prev_item) in ['=', '==']:
         return True
     if item.is_keyword or prev_item.is_keyword:
         return True
@@ -2593,7 +2593,7 @@ def _parse_item(tokens, index, container_type):
         if tok.token_type == token.ENDMARKER:
             return Item(elements), index - 1
 
-        if tok.token_type in {tokenize.NEWLINE, tokenize.NL}:
+        if tok.token_type in [tokenize.NEWLINE, tokenize.NL]:
             pass
         elif tok.token_string in ',)]}':
             return Item(elements), index - 1
@@ -2775,7 +2775,7 @@ def _parse_tokens(tokens):
         tok = Token(*tokens[index])
 
         assert tok.token_type != token.INDENT
-        if tok.token_type in {tokenize.NEWLINE, tokenize.ENDMARKER}:
+        if tok.token_type in [tokenize.NEWLINE, tokenize.ENDMARKER]:
             # There's only one newline and it's at the end.
             break
 
