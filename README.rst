@@ -314,7 +314,7 @@ Troubleshooting
 ``pkg_resources.DistributionNotFound``
 --------------------------------------
 
-After installing ``autopep8`` using ``pip``, you might encounter
+If you are using an ancient version of ``setuptools``, you might encounter
 ``pkg_resources.DistributionNotFound`` when trying to run ``autopep8``. Try
 upgrading ``setuptools`` to workaround this ``setuptools`` problem::
 
