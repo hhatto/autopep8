@@ -314,11 +314,13 @@ Troubleshooting
 ``pkg_resources.DistributionNotFound``
 --------------------------------------
 
-On OS X, using the default Python 2.7.5, you might encounter
+After installing ``autopep8`` using ``pip``, you might encounter
 ``pkg_resources.DistributionNotFound`` when trying to run ``autopep8``. Try
-disabling ``pip``'s wheel capability to workaround this bug::
+upgrading ``setuptools`` to workaround this ``setuptools`` problem::
 
-    $ pip install --no-use-wheel autopep8
+    $ pip install --upgrade setuptools
+
+Use ``sudo`` if you are installing to the system.
 
 
 Links
