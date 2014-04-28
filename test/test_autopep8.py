@@ -757,6 +757,7 @@ lambda xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
                     indent_word='    ',
                     max_line_length=79,
                     aggressive=10,
+                    experimental=True,
                     previous_line=''):
 
                 self.assertEqual(
@@ -4293,8 +4294,8 @@ print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,
 """
         fixed = """\
 print(
-    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
-    333, 333, 333)
+    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,
+    333, 333)
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4305,10 +4306,8 @@ foobar = {'aaaaaaaaaaaa': 'bbbbbbbbbbbbbbbb', 'dddddd': 'eeeeeeeeeeeeeeee', 'fff
 """
         fixed = """\
 foobar = {
-    'aaaaaaaaaaaa': 'bbbbbbbbbbbbbbbb',
-    'dddddd': 'eeeeeeeeeeeeeeee',
-    'ffffffffffff': 'gggggggg'
-}
+    'aaaaaaaaaaaa': 'bbbbbbbbbbbbbbbb', 'dddddd': 'eeeeeeeeeeeeeeee',
+    'ffffffffffff': 'gggggggg'}
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4395,7 +4394,8 @@ if True:
         fixed = """\
 if True:
     reconstructed = iradon(
-        radon(image), filter="ramp", interpolation="nearest")
+        radon(image),
+        filter="ramp", interpolation="nearest")
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4493,9 +4493,9 @@ term3 = w6 * c5 * (8.0 * psi4 * (11.0 - 24.0 * t2) - 28 * psi3 * (1 - 6.0 * t2) 
 this_should_be_shortened = ('                                                                 ', '            ')
 """
         fixed = """\
-term3 = w6 * c5 * (8.0 * psi4 * (11.0 - 24.0 * t2) - 28 * psi3 *
-                   (1 - 6.0 * t2) + psi2 * (1 - 32 * t2) - psi * (2.0 * t2) +
-                   t4) / 720.0
+term3 = w6 * c5 * (
+    8.0 * psi4 * (11.0 - 24.0 * t2) - 28 * psi3 * (1 - 6.0 * t2) + psi2 *
+    (1 - 32 * t2) - psi * (2.0 * t2) + t4) / 720.0
 this_should_be_shortened = (
     '                                                                 ',
     '            ')
@@ -4540,10 +4540,9 @@ if True:
 if True:
     if True:
         if True:
-            blah = (
-                blah.blah_blah_blah_bla_bl(
-                    blahb.blah, blah.blah, blah=blah.label,
-                    blah_blah=blah_blah, blah_blah2=blah_blah))
+            blah = blah.blah_blah_blah_bla_bl(
+                blahb.blah, blah.blah, blah=blah.label, blah_blah=blah_blah,
+                blah_blah2=blah_blah)
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4613,9 +4612,8 @@ foo_bar_zap_bing_bang_boom(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222
 """
         fixed = """\
 foo_bar_zap_bing_bang_boom(
-    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
-    333, 111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222,
-    333, 333)
+    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,
+    111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333)
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4648,11 +4646,10 @@ def dummy():
     if True:
         if True:
             if True:
-                object = (
-                    ModifyAction(
-                        [MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
-                        MODIFY70.getLine(),
-                        MODIFY70.getCharPositionInLine()))
+                object = ModifyAction(
+                    [MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
+                    MODIFY70.getLine(),
+                    MODIFY70.getCharPositionInLine())
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4799,15 +4796,22 @@ models = {
 """
         fixed = """\
 models = {
-    'auth.group': {
-        'Meta': {'object_name': 'Group'},
-        'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-    },
-    'auth.permission': {
-        'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-        'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-    },
-}
+    'auth.group':
+    {'Meta': {'object_name': 'Group'},
+     'permissions':
+     ('django.db.models.fields.related.ManyToManyField', [],
+      {'to': "orm['auth.Permission']", 'symmetrical': 'False',
+       'blank': 'True'})},
+    'auth.permission':
+    {
+        'Meta':
+        {
+            'ordering':
+            "('content_type__app_label', 'content_type__model', 'codename')",
+            'unique_together': "(('content_type', 'codename'),)",
+            'object_name': 'Permission'},
+        'name': ('django.db.models.fields.CharField', [],
+                 {'max_length': '50'})}, }
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4969,9 +4973,7 @@ one_two_three_four_five_six = {'one two three four five': 12345, 'asdfsdflsdkfjl
         fixed = """\
 one_two_three_four_five_six = {
     'one two three four five': 12345,
-    'asdfsdflsdkfjl sdflkjsdkfkjsfjsdlkfj sdlkfjlsfjs': '343',
-    1: 1
-}
+    'asdfsdflsdkfjl sdflkjsdkfkjsfjsdlkfj sdlkfjlsfjs': '343', 1: 1}
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -5051,7 +5053,8 @@ def f(self):
 def f(self):
     self._xxxxxxxx(
         aaaaaa, bbbbbbbbb, cccccccccccccccccc,
-        [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzz / _DDDDD)], eee, 'ff')
+        [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzz / _DDDDD)],
+        eee, 'ff')
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -5064,16 +5067,13 @@ bork(111, 111, 111, 111, 222, 222, 222, { 'foo': 222, 'qux': 222 }, ((['hello', 
 """
         fixed = """\
 bork(
-    111, 111, 111, 111, 222, 222, 222, {
-        'foo': 222,
-        'qux': 222
-    },
-    ((['hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']),
-     {
-        str(i): i for i in range(10)
-    }, {
-        'bork': ((x, x ** x) for x in range(10))
-    }), 222, 222, 222, 222, 333, 333, 333, 333)
+    111, 111, 111, 111, 222, 222, 222, {'foo': 222, 'qux': 222},
+    ((['hello', 'world'],
+      ['yo', 'stella', "how's", 'it'],
+      ['going']),
+     {str(i): i for i in range(10)},
+     {'bork': ((x, x ** x) for x in range(10))}),
+    222, 222, 222, 222, 333, 333, 333, 333)
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
@@ -5091,11 +5091,8 @@ if True:
 if True:
     xxxxxxxxxxx = xxxxxxxxxxxxxxxxx(
         xxxxxxxxxxx,
-        xxxxxxxxxxxxxxxx={
-            'xxxxxxxxxxxx': 'xxxxx',
-            'xxxxxxxxxxx': xx,
-            'xxxxxxxx': False,
-        })
+        xxxxxxxxxxxxxxxx={'xxxxxxxxxxxx': 'xxxxx', 'xxxxxxxxxxx': xx,
+                          'xxxxxxxx': False, })
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
@@ -5149,9 +5146,8 @@ if True:
 """
         fixed = """\
 if True:
-    (xxxxxxx,) = (
-        xxxx.xxxxxxx.xxxxx(xxxxxxxxxxxx.xx).xxxxxx(
-            xxxxxxxxxxxx.xxxx == xxxx.xxxx).xxxxx())
+    (xxxxxxx,) = xxxx.xxxxxxx.xxxxx(xxxxxxxxxxxx.xx).xxxxxx(
+        xxxxxxxxxxxx.xxxx == xxxx.xxxx).xxxxx()
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -5165,9 +5161,10 @@ def f():
 """
         fixed = """\
 def f():
-    self.aaaaaaaaa(bbbbbb, ccccccccc, dddddddddddddddd,
-                   ((x, y / eeeeeee)
-                    for x, y in self.outputs.total.iteritems()), fff, 'GG')
+    self.aaaaaaaaa(
+        bbbbbb, ccccccccc, dddddddddddddddd,
+        ((x, y / eeeeeee) for x, y in self.outputs.total.iteritems()),
+        fff, 'GG')
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -5368,11 +5365,9 @@ def f():
 def f():
     zzzzzzzzzzzzz = {
         'aaaaaa/bbbbbb/ccccc/dddddddd/eeeeeeeee/fffffffffff/ggggggggg/hhhhhhhh.py':
-            yyyyyyyyyyy.xxxxxxxxxxx(
-                'aa/bbbbbbb/cc/ddddddd/eeeeeeeeeee/fffffffffff/ggggggggg/hhhhhhh/ggggg.py',
-                '00000000',
-                yyyyyyyyyyy.xxxxxxxxx.zzzz),
-    }
+        yyyyyyyyyyy.xxxxxxxxxxx(
+            'aa/bbbbbbb/cc/ddddddd/eeeeeeeeeee/fffffffffff/ggggggggg/hhhhhhh/ggggg.py',
+            '00000000', yyyyyyyyyyy.xxxxxxxxx.zzzz), }
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
@@ -5393,7 +5388,7 @@ class Klass(object):
   '''Class docstring.'''
 
   def Quote(
-          self, parameter_1, parameter_2, parameter_3, parameter_4,
+      self, parameter_1, parameter_2, parameter_3, parameter_4,
           parameter_5):
     pass
 """
@@ -5435,11 +5430,11 @@ def f():
 """
         fixed = """\
 def f():
-    aaaaaaaaaaa.bbbbbbb([
-        ('xxxxxxxxxx', 'yyyyyy',
-         'Heaven hath no wrath like love to hatred turned. Nor hell a fury like a woman scorned.'),
-        ('xxxxxxx', 'yyyyyyyyyyy',
-         "To the last I grapple with thee. From hell's heart I stab at thee. For hate's sake I spit my last breath at thee!")])
+    aaaaaaaaaaa.bbbbbbb(
+        [('xxxxxxxxxx', 'yyyyyy',
+          'Heaven hath no wrath like love to hatred turned. Nor hell a fury like a woman scorned.'),
+         ('xxxxxxx', 'yyyyyyyyyyy',
+          "To the last I grapple with thee. From hell's heart I stab at thee. For hate's sake I spit my last breath at thee!")])
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
@@ -5456,8 +5451,7 @@ def f():
 def f():
     owned_list = [
         o for o in owned_list
-        if self.display['zzzzzzzzzzzzzz'] in
-        aaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbb(
+        if self.display['zzzzzzzzzzzzzz'] in aaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbb(
             o.qq, ccccccccccccccccccccccccccc.ddddddddd.eeeeeee)]
 """
 
@@ -5474,7 +5468,8 @@ def f(self):
         fixed = """\
 def f(self):
     return self.xxxxxxxxxxxxxxx(
-        aaaaaaa.bbbbb.ccccccc.ddd.eeeeee.fffffffff.ggggg.hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh)
+        aaaaaaa.bbbbb.ccccccc.ddd.eeeeee.fffffffff.ggggg.
+        hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh)
 """
 
         with autopep8_context(line, options=['--experimental']) as result:
