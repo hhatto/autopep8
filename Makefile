@@ -77,6 +77,7 @@ check:
 		--reports=no \
 		--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
 		--disable=bad-builtin \
+		--disable=bad-continuation \
 		--disable=fixme \
 		--disable=invalid-name \
 		--disable=locally-disabled \
@@ -100,6 +101,7 @@ check:
 		--reports=no \
 		--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
 		--max-module-lines=2500 \
+		--disable=bad-continuation \
 		--disable=blacklisted-name \
 		--disable=duplicate-code \
 		--disable=import-error \
