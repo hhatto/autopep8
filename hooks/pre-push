@@ -1,24 +1,12 @@
 #!/bin/bash -e
 
-remote="$1"
-url="$2"
-
 z40=0000000000000000000000000000000000000000
 
 IFS=' '
-while read local_ref local_sha remote_ref remote_sha
+while read _ local_sha _ _
 do
     if [ "$local_sha" != $z40 ]
     then
-        if [ "$remote_sha" = $z40 ]
-        then
-            # New branch, examine all commits
-            range="$local_sha"
-        else
-            # Update to existing branch, examine new commits
-            range="$remote_sha..$local_sha"
-        fi
-
         make check
     fi
 done
