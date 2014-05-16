@@ -4800,7 +4800,7 @@ class Useless(object):
 class Useless(object):
 
     def _table_field_is_plain_widget(self, widget):
-        if widget.__class__ == Widget or(
+        if widget.__class__ == Widget or (
                 widget.__class__ == WidgetMeta and Widget in widget.__bases__):
             return True
 
