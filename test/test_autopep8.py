@@ -3245,6 +3245,22 @@ A = [
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_if_line_over_limit(self):
+        line = """\
+if not xxxxxxxxxxxx(aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc, dddddddddddddddddddddd):
+    return 1
+"""
+        fixed = """\
+if not xxxxxxxxxxxx(
+        aaaaaaaaaaaaaaaaaa,
+        bbbbbbbbbbbbbbbb,
+        cccccccccccccc,
+        dddddddddddddddddddddd):
+    return 1
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
@@ -4777,8 +4793,18 @@ class Useless(object):
 
         return False
 """
+        fixed = r"""
+class Useless(object):
+
+    def _table_field_is_plain_widget(self, widget):
+        if widget.__class__ == Widget or(
+                widget.__class__ == WidgetMeta and Widget in widget.__bases__):
+            return True
+
+        return False
+"""
         with autopep8_context(line, options=['--experimental']) as result:
-            self.assertEqual(line, result)
+            self.assertEqual(fixed, result)
 
     def test_e501_with_experimental(self):
         # FIXME: This has really bad output.
@@ -5495,6 +5521,20 @@ self.display['xxxxxxxxxxxx'] = [{'title': _('Library'),  # . This is the first c
                                          'flag': aaaaaaaaaa.bbbbbbbbb.eeeeeeeeee}]
 """
 
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_if_line_over_limit(self):
+        line = """\
+if not xxxxxxxxxxxx(aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc, dddddddddddddddddddddd):
+    return 1
+"""
+        fixed = """\
+if not xxxxxxxxxxxx(
+        aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc,
+        dddddddddddddddddddddd):
+    return 1
+"""
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
