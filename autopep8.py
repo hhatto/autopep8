@@ -2819,7 +2819,7 @@ def fix_code(source, options=None):
         options = parse_args([''])
 
     if not isinstance(source, unicode):
-        source = source.decode(locale.getpreferredencoding(False))
+        source = source.decode(locale.getpreferredencoding())
 
     sio = io.StringIO(source)
     return fix_lines(sio.readlines(), options=options)
