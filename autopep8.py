@@ -2864,11 +2864,22 @@ def _shorten_line_at_tokens_new(tokens, source, indentation,
             yield fixed
 
         if last_equal_sign:
-            # Now place parentheses around the RHS.
+            # Now place parentheses around the RHS, if it doesn't have them
+            # already or ends in a comma.
             last_equal_sign_idx = parsed_tokens.index(last_equal_sign) + 1
-            rhs = unicode(parsed_tokens[last_equal_sign_idx]).strip()
+            if last_equal_sign_idx >= len(parsed_tokens):
+              return
 
-            if not rhs.startswith(('(', '[', '{')):
+            rhs = unicode(parsed_tokens[last_equal_sign_idx]).strip()
+            rhs_next = ''
+            if last_equal_sign_idx + 1 < len(parsed_tokens):
+              rhs_next = (
+                  unicode(parsed_tokens[last_equal_sign_idx + 1]).strip())
+
+            if (
+                not rhs.startswith(('(', '[', '{', ',')) and
+                not rhs_next.endswith(',')
+            ):
                 parsed_tokens = (
                     parsed_tokens[:last_equal_sign_idx] +
                     [Tuple([Item(parsed_tokens[last_equal_sign_idx:])],

@@ -5543,6 +5543,26 @@ if not xxxxxxxxxxxx(
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_no_parens_after_comma(self):
+        line = """\
+aaaaaaaaaaaa.bbbbbbbbbbbb('aaaaaaaaaaaaaa',
+    description='Commit the contents of the foo to bar',
+
+    # TODO: Fix this.
+    xxxxxxxxxxxxxxx='yyyyyyyyyyyy',
+)
+"""
+        fixed = """\
+aaaaaaaaaaaa.bbbbbbbbbbbb('aaaaaaaaaaaaaa',
+                          description='Commit the contents of the foo to bar',
+
+                          # TODO: Fix this.
+                          xxxxxxxxxxxxxxx='yyyyyyyyyyyy',
+                          )
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
