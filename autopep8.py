@@ -1541,7 +1541,7 @@ class ReformattedLines(object):
     def add_space(self):
         if self._lines and not isinstance(self._lines[-1],
                                           (self._Indent, self._Space)):
-          self._lines.append(self._Space())
+            self._lines.append(self._Space())
 
     def append(self, item):
         self._lines.append(item)
@@ -1829,7 +1829,7 @@ class ReformattedLines(object):
         """Delete all whitespace from the end of the line."""
         while (self._lines and
                isinstance(self._lines[-1], (self._Space, self._LineBreak,
-                                           self._Indent))):
+                                            self._Indent))):
             del self._lines[-1]
 
 
@@ -1993,6 +1993,7 @@ class Container(object):
 
 _ARITHMETIC_OPS = frozenset({'+', '-', '*', '**', '/', '//'})
 
+
 def _needs_space_before(item, reflowed_lines):
     prev_item = reflowed_lines.previous_item()
     if not prev_item or unicode(prev_item) in '.([{':
@@ -2027,6 +2028,7 @@ def _needs_space_before(item, reflowed_lines):
                 return True
 
     return False
+
 
 class SequenceContainer(Container):
 
@@ -2315,12 +2317,13 @@ class DictEntry(Container):
                            False)
 
         if not reflowed_lines.fits_on_current_line(len(self.value) + 1):
-            reflowed_lines.add_line_break(len(continued_indent) +  4)
+            reflowed_lines.add_line_break(len(continued_indent) + 4)
         else:
             reflowed_lines.add_space()
 
         self.value.reflow(reflowed_lines, continued_indent + ' ' * 4,
                           depth=depth + 1)
+
 
 class DictItemKey(Container):
 
@@ -2868,7 +2871,7 @@ def _shorten_line_at_tokens_new(tokens, source, indentation,
             # already or ends in a comma.
             last_equal_sign_idx = parsed_tokens.index(last_equal_sign) + 1
             if last_equal_sign_idx >= len(parsed_tokens):
-              return
+                return
             rhs = unicode(parsed_tokens[last_equal_sign_idx]).strip()
 
             if (not rhs.startswith(('(', '[', '{', ',')) and
