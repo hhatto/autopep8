@@ -2869,17 +2869,10 @@ def _shorten_line_at_tokens_new(tokens, source, indentation,
             last_equal_sign_idx = parsed_tokens.index(last_equal_sign) + 1
             if last_equal_sign_idx >= len(parsed_tokens):
               return
-
             rhs = unicode(parsed_tokens[last_equal_sign_idx]).strip()
-            rhs_next = ''
-            if last_equal_sign_idx + 1 < len(parsed_tokens):
-              rhs_next = (
-                  unicode(parsed_tokens[last_equal_sign_idx + 1]).strip())
 
-            if (
-                not rhs.startswith(('(', '[', '{', ',')) and
-                not rhs_next.endswith(',')
-            ):
+            if (not rhs.startswith(('(', '[', '{', ',')) and
+                    unicode(parsed_tokens[-1]) != ','):
                 parsed_tokens = (
                     parsed_tokens[:last_equal_sign_idx] +
                     [Tuple([Item(parsed_tokens[last_equal_sign_idx:])],
