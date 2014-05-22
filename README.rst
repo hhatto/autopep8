@@ -289,6 +289,13 @@ function.
 >>> autopep8.fix_code('x=       123\n')
 'x = 123\n'
 
+Or with command-line options:
+
+>>> import autopep8
+>>> autopep8.fix_code('x.has_key(y)\n',
+...                   options=autopep8.parse_args(['--aggressive', '']))
+'y in x\n'
+
 
 Testing
 =======
