@@ -410,6 +410,8 @@ class FixPEP8(object):
 
         # Many fixers are the same even though pep8 categorizes them
         # differently.
+        self.fix_e115 = self.fix_e112
+        self.fix_e116 = self.fix_e113
         self.fix_e121 = self._fix_reindent
         self.fix_e122 = self._fix_reindent
         self.fix_e123 = self._fix_reindent
