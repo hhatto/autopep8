@@ -1709,7 +1709,7 @@ class ReformattedLines(object):
         ):
 
             if unicode(container)[0] == '(' and self._prev_item.is_name:
-                pass
+                actual_indent = self.current_size() + 1
             elif (
                 start_on_opening_line or
                 unicode(self._prev_item) not in '([{'

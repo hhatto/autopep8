@@ -4558,8 +4558,10 @@ if True:
         if True:
             blah = (
                 blah.blah_blah_blah_bla_bl(
-                    blahb.blah, blah.blah, blah=blah.label,
-                    blah_blah=blah_blah, blah_blah2=blah_blah))
+                    blahb.blah, blah.blah,
+                    blah=blah.label,
+                    blah_blah=blah_blah,
+                    blah_blah2=blah_blah))
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -4664,11 +4666,9 @@ def dummy():
     if True:
         if True:
             if True:
-                object = (
-                    ModifyAction(
-                        [MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
-                        MODIFY70.getLine(),
-                        MODIFY70.getCharPositionInLine()))
+                object = ModifyAction(
+                    [MODIFY70.text, OBJECTBINDING71.text, COLON72.text],
+                    MODIFY70.getLine(), MODIFY70.getCharPositionInLine())
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -5175,9 +5175,8 @@ if True:
 """
         fixed = """\
 if True:
-    (xxxxxxx,) = (
-        xxxx.xxxxxxx.xxxxx(xxxxxxxxxxxx.xx).xxxxxx(
-            xxxxxxxxxxxx.xxxx == xxxx.xxxx).xxxxx())
+    (xxxxxxx,) = xxxx.xxxxxxx.xxxxx(xxxxxxxxxxxx.xx).xxxxxx(
+        xxxxxxxxxxxx.xxxx == xxxx.xxxx).xxxxx()
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
@@ -5442,10 +5441,12 @@ def g():
 def g():
     pppppppppppppppppppppppppp1, pppppppppppppppppppppppp2 = (
         zzzzzzzzzzzz.yyyyyyyyyyyyyy(
-            aaaaaaaaa=10, bbbbbbbbbbbbbbbb='2:3', cccccccc='{1:2}', dd=1,
-            eeeee=0),
+            aaaaaaaaa=10, bbbbbbbbbbbbbbbb='2:3',
+            cccccccc='{1:2}', dd=1, eeeee=0),
         zzzzzzzzzzzz.yyyyyyyyyyyyyy(
-            dd=7, aaaaaaaaa=16, bbbbbbbbbbbbbbbb='2:3', cccccccc='{1:2}',
+            dd=7, aaaaaaaaa=16,
+            bbbbbbbbbbbbbbbb='2:3',
+            cccccccc='{1:2}',
             eeeee=xxxxxxxxxxxxxxxxx.wwwwwwwwwwwww.vvvvvvvvvvvvvvvvvvvvvvvvv))
 """
 
@@ -5559,6 +5560,23 @@ aaaaaaaaaaaa.bbbbbbbbbbbb('aaaaaaaaaaaaaa',
                           # TODO: Fix this.
                           xxxxxxxxxxxxxxx='yyyyyyyyyyyy',
                           )
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_keyword_with_initialize_call(self):
+        line = """\
+def run(self):
+    bork.fnord(
+        extended_attributes=dict(duration_ms=10000, genre=['Rock'], mood=['Happy'], instrument=['Drums'], keyword=[], reserved_keyword=['demo']))
+"""
+        fixed = """\
+def run(self):
+    bork.fnord(
+        extended_attributes=dict(duration_ms=10000, genre=['Rock'],
+                                 mood=['Happy'],
+                                 instrument=['Drums'], keyword=[],
+                                 reserved_keyword=['demo']))
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
