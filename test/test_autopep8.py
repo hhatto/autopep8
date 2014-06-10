@@ -5581,6 +5581,21 @@ def run(self):
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_percent_op(self):
+        line = """\
+def f():
+    FNORD = (
+        'this is a string for the percent operator. This is a fnord: "%s"' % FLAGS.fnord)
+"""
+        fixed = """\
+def f():
+    FNORD = (
+        'this is a string for the percent operator. This is a fnord: "%s"' %
+        FLAGS.fnord)
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):

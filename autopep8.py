@@ -1993,7 +1993,7 @@ class Container(object):
         return None
 
 
-_ARITHMETIC_OPS = frozenset({'+', '-', '*', '**', '/', '//'})
+_ARITHMETIC_OPS = frozenset({'+', '-', '*', '**', '/', '//', '%'})
 
 
 def _needs_space_before(item, reflowed_lines):
