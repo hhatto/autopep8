@@ -2815,13 +2815,13 @@ def code_match(code, select, ignore):
     return True
 
 
-def fix_code(source, options=None):
+def fix_code(source, options=None, encoding=None):
     """Return fixed source code."""
     if not options:
         options = parse_args([''])
 
     if not isinstance(source, unicode):
-        source = source.decode(locale.getpreferredencoding())
+        source = source.decode(encoding or locale.getpreferredencoding())
 
     sio = io.StringIO(source)
     return fix_lines(sio.readlines(), options=options)
@@ -3623,7 +3623,8 @@ def main():
 
             # LineEndingWrapper is unnecessary here due to the symmetry between
             # standard in and standard out.
-            sys.stdout.write(fix_code(sys.stdin.read(), args))
+
+            sys.stdout.write(fix_code(sys.stdin.read(), args, encoding=sys.stdin.encoding))
         else:
             if args.in_place or args.diff:
                 args.files = list(set(args.files))
