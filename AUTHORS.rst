@@ -19,3 +19,4 @@ Patches
 - Christopher Medrela (https://github.com/chrismedrela)
 - 小明 (https://github.com/dongweiming)
 - Andy Hayden (https://github.com/hayd)
+- Fabio Zadrozny (https://github.com/fabioz)
