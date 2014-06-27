@@ -4283,8 +4283,8 @@ def main():
 
             # LineEndingWrapper is unnecessary here due to the symmetry between
             # standard in and standard out.
-
-            sys.stdout.write(fix_code(sys.stdin.read(), args, encoding=sys.stdin.encoding))
+            sys.stdout.write(fix_code(sys.stdin.read(), args,
+                                      encoding=sys.stdin.encoding))
         else:
             if args.in_place or args.diff:
                 args.files = list(set(args.files))
