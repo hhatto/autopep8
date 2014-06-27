@@ -2816,7 +2816,11 @@ def code_match(code, select, ignore):
 
 
 def fix_code(source, options=None, encoding=None):
-    """Return fixed source code."""
+    """Return fixed source code.
+
+    "encoding" will be used to decode "source" if it is a byte string.
+
+    """
     if not options:
         options = parse_args([''])
 
