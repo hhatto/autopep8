@@ -5583,13 +5583,11 @@ for aaaaaaaaa in xxxxxxxxxxxx(aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccc
 """
         fixed = """\
 for aaaaaaaaa in xxxxxxxxxxxx(
-        aaaaaaaaaaaaaaaaaa,
-        bbbbbbbbbbbbbbbb,
-        cccccccccccccc,
+        aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc,
         dddddddddddddddddddddd):
     pass
 """
-        with autopep8_context(line, options=['-aa']) as result:
+        with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_experimental_while_line_over_limit(self):
@@ -5599,13 +5597,11 @@ while xxxxxxxxxxxx(aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc, ddddddd
 """
         fixed = """\
 while xxxxxxxxxxxx(
-        aaaaaaaaaaaaaaaaaa,
-        bbbbbbbbbbbbbbbb,
-        cccccccccccccc,
+        aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc,
         dddddddddddddddddddddd):
     pass
 """
-        with autopep8_context(line, options=['-aa']) as result:
+        with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
 
