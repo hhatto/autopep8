@@ -2372,7 +2372,7 @@ def normalize_multiline(line):
         return line + 'def _(): pass'
     elif line.startswith('class '):
         return line + ' pass'
-    elif line.startswith('if '):
+    elif line.startswith(('if ', 'elif ', 'for ', 'while ')):
         return line + ' pass'
     else:
         return line
