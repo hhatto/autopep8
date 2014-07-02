@@ -3266,6 +3266,38 @@ if not xxxxxxxxxxxx(
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_for_line_over_limit(self):
+        line = """\
+for aaaaaaaaa in xxxxxxxxxxxx(aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc, dddddddddddddddddddddd):
+    pass
+"""
+        fixed = """\
+for aaaaaaaaa in xxxxxxxxxxxx(
+        aaaaaaaaaaaaaaaaaa,
+        bbbbbbbbbbbbbbbb,
+        cccccccccccccc,
+        dddddddddddddddddddddd):
+    pass
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_while_line_over_limit(self):
+        line = """\
+while xxxxxxxxxxxx(aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc, dddddddddddddddddddddd):
+    pass
+"""
+        fixed = """\
+while xxxxxxxxxxxx(
+        aaaaaaaaaaaaaaaaaa,
+        bbbbbbbbbbbbbbbb,
+        cccccccccccccc,
+        dddddddddddddddddddddd):
+    pass
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
@@ -5546,6 +5578,34 @@ if not xxxxxxxxxxxx(
         aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc,
         dddddddddddddddddddddd):
     return 1
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_for_line_over_limit(self):
+        line = """\
+for aaaaaaaaa in xxxxxxxxxxxx(aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc, dddddddddddddddddddddd):
+    pass
+"""
+        fixed = """\
+for aaaaaaaaa in xxxxxxxxxxxx(
+        aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc,
+        dddddddddddddddddddddd):
+    pass
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_while_line_over_limit(self):
+        line = """\
+while xxxxxxxxxxxx(aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc, dddddddddddddddddddddd):
+    pass
+"""
+        fixed = """\
+while xxxxxxxxxxxx(
+        aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc,
+        dddddddddddddddddddddd):
+    pass
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
