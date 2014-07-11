@@ -1014,10 +1014,7 @@ def get_fixed_long_line(target, previous_line, original,
 
     if verbose >= 4:
         print(('-' * 79 + '\n').join([''] + candidates + ['']),
-              file=codecs.getwriter('utf-8')(sys.stderr.buffer
-                                             if hasattr(sys.stderr,
-                                                        'buffer')
-                                             else sys.stderr))
+              file=wrap_output(sys.stderr, 'utf-8'))
 
     if candidates:
         return candidates[0]
