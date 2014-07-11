@@ -2882,11 +2882,7 @@ def fix_file(filename, options=None, output=None):
         encoding = detect_encoding(filename)
 
     if output:
-        output = codecs.getwriter(encoding)(output.buffer
-                                            if hasattr(output, 'buffer')
-                                            else output)
-
-        output = LineEndingWrapper(output)
+        output = LineEndingWrapper(wrap_output(output, encoding=encoding))
 
     fixed_source = fix_lines(fixed_source, options, filename=filename)
 
@@ -3604,6 +3600,13 @@ def is_probably_part_of_multiline(line):
     )
 
 
+def wrap_output(output, encoding):
+    """Return output with specified encoding."""
+    return codecs.getwriter(encoding)(output.buffer
+                                      if hasattr(output, 'buffer')
+                                      else output)
+
+
 def main():
     """Tool main."""
     try:
@@ -3625,10 +3628,13 @@ def main():
         if args.files == ['-']:
             assert not args.in_place
 
+            encoding = sys.stdin.encoding or locale.getpreferredencoding()
+
             # LineEndingWrapper is unnecessary here due to the symmetry between
             # standard in and standard out.
-            sys.stdout.write(fix_code(sys.stdin.read(), args,
-                                      encoding=sys.stdin.encoding))
+            wrap_output(sys.stdout, encoding=encoding).write(
+                fix_code(sys.stdin.read(), args,
+                         encoding=sys.stdin.encoding))
         else:
             if args.in_place or args.diff:
                 args.files = list(set(args.files))
