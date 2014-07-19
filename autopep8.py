@@ -1183,7 +1183,7 @@ def fix_e265(source, aggressive=False):  # pylint: disable=unused-argument
     return ''.join(fixed_lines)
 
 
-def refactor(source, fixer_names, ignore=None):
+def refactor(source, fixer_names, ignore=None, filename=''):
     """Return refactored code using lib2to3.
 
     Skip if ignore string is produced in the refactored code.
@@ -1192,7 +1192,8 @@ def refactor(source, fixer_names, ignore=None):
     from lib2to3 import pgen2
     try:
         new_text = refactor_with_2to3(source,
-                                      fixer_names=fixer_names)
+                                      fixer_names=fixer_names,
+                                      filename=filename)
     except (pgen2.parse.ParseError,
             SyntaxError,
             UnicodeDecodeError,
@@ -1214,7 +1215,8 @@ def code_to_2to3(select, ignore):
     return fixes
 
 
-def fix_2to3(source, aggressive=True, select=None, ignore=None):
+def fix_2to3(source,
+             aggressive=True, select=None, ignore=None, filename=''):
     """Fix various deprecated code (via lib2to3)."""
     if not aggressive:
         return source
@@ -1224,7 +1226,8 @@ def fix_2to3(source, aggressive=True, select=None, ignore=None):
 
     return refactor(source,
                     code_to_2to3(select=select,
-                                 ignore=ignore))
+                                 ignore=ignore),
+                    filename=filename)
 
 
 def fix_w602(source, aggressive=True):
@@ -2609,7 +2612,7 @@ def _leading_space_count(line):
     return i
 
 
-def refactor_with_2to3(source_text, fixer_names):
+def refactor_with_2to3(source_text, fixer_names, filename=''):
     """Use lib2to3 to refactor the source.
 
     Return the refactored source code.
@@ -2621,7 +2624,8 @@ def refactor_with_2to3(source_text, fixer_names):
 
     from lib2to3.pgen2 import tokenize as lib2to3_tokenize
     try:
-        return unicode(tool.refactor_string(source_text, name=''))
+        # The name parameter is necessary particularly for the "import" fixer.
+        return unicode(tool.refactor_string(source_text, name=filename))
     except lib2to3_tokenize.TokenError:
         return source_text
 
@@ -2842,7 +2846,9 @@ def fix_lines(source_lines, options, filename=''):
         fixed_source = apply_local_fixes(tmp_source, options)
     else:
         # Apply global fixes only once (for efficiency).
-        fixed_source = apply_global_fixes(tmp_source, options)
+        fixed_source = apply_global_fixes(tmp_source,
+                                          options,
+                                          filename=filename)
 
     passes = 0
     long_line_ignore_cache = set()
@@ -2918,7 +2924,7 @@ def global_fixes():
                 yield (code, function)
 
 
-def apply_global_fixes(source, options, where='global'):
+def apply_global_fixes(source, options, where='global', filename=''):
     """Run global fixes on source code.
 
     These are fixes that only need be done once (unlike those in
@@ -2941,7 +2947,8 @@ def apply_global_fixes(source, options, where='global'):
     source = fix_2to3(source,
                       aggressive=options.aggressive,
                       select=options.select,
-                      ignore=options.ignore)
+                      ignore=options.ignore,
+                      filename=filename)
 
     return source
 
