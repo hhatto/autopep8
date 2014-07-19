@@ -2881,7 +2881,10 @@ def fix_file(filename, options=None, output=None):
     if output:
         output = LineEndingWrapper(wrap_output(output, encoding=encoding))
 
+    oldcwd = os.getcwd()
+    os.chdir(os.path.dirname(filename))
     fixed_source = fix_lines(fixed_source, options, filename=filename)
+    os.chdir(oldcwd)
 
     if options.diff:
         new = io.StringIO(fixed_source)
