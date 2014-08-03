@@ -3082,8 +3082,8 @@ def apply_local_fixes(source, options):
         for t in itertools.takewhile(lambda t: t[1][1] >= ind,
                                      enumerate(logical[0][start_log:])):
             n_log, n = start_log + t[0], t[1][0]
-        # start shares indent up to n.
 
+        # Start shares indent up to n.
         if n <= end:
             source = local_fix(source, start_log, n_log,
                                start_lines, end_lines,
@@ -3102,7 +3102,7 @@ def apply_local_fixes(source, options):
 
             if (indents[after_end_log] == indents[start_log]
                     and is_continued_stmt(source[after_end])):
-                # find n, the beginning of the last continued statement
+                # Find n, the beginning of the last continued statement.
                 # Apply fix to previous block if there is one.
                 only_block = True
                 for n, n_ind in logical[0][start_log:end_log + 1][::-1]:
