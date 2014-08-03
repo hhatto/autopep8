@@ -95,6 +95,7 @@ DEFAULT_INDENT_SIZE = 4
 
 # W602 is handled separately due to the need to avoid "with_traceback".
 CODE_TO_2TO3 = {
+    'E231': ['ws_comma'],
     'E721': ['idioms'],
     'W601': ['has_key'],
     'W603': ['ne'],
@@ -442,8 +443,6 @@ class FixPEP8(object):
             self.fix_long_line_physically)
         self.fix_e703 = self.fix_e702
 
-        self._ws_comma_done = False
-
     def _fix_source(self, results):
         try:
             (logical_start, logical_end) = _find_logical(self.source)
@@ -641,17 +640,6 @@ class FixPEP8(object):
 
     def fix_e231(self, result):
         """Add missing whitespace."""
-        # Optimize for comma case. This will fix all commas in the full source
-        # code in one pass. Don't do this more than once. If it fails the first
-        # time, there is no point in trying again.
-        if ',' in result['info'] and not self._ws_comma_done:
-            self._ws_comma_done = True
-            original = ''.join(self.source)
-            new = refactor(original, ['ws_comma'])
-            if original.strip() != new.strip():
-                self.source = [new]
-                return range(1, 1 + len(original))
-
         line_index = result['line'] - 1
         target = self.source[line_index]
         offset = result['column']
