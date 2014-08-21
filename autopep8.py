@@ -2897,6 +2897,7 @@ def fix_file(filename, options=None, output=None):
             output.flush()
         else:
             return fixed_source
+    return fixed_source
 
 
 def global_fixes():
@@ -3536,12 +3537,16 @@ def find_files(filenames, recursive, exclude):
 
 def _fix_file(parameters):
     """Helper function for optionally running fix_file() in parallel."""
+    filename = parameters[0]
     if parameters[1].verbose:
         print('[file:{0}]'.format(parameters[0]), file=sys.stderr)
     try:
-        fix_file(*parameters)
+        original_contents = ''.join(readlines_from_file(filename))
+        new_contents = fix_file(*parameters)
+        return int(original_contents != new_contents)
     except IOError as error:
         print(unicode(error), file=sys.stderr)
+        return 1
 
 
 def fix_multiple_files(filenames, options, output=None):
@@ -3554,11 +3559,13 @@ def fix_multiple_files(filenames, options, output=None):
     if options.jobs > 1:
         import multiprocessing
         pool = multiprocessing.Pool(options.jobs)
-        pool.map(_fix_file,
-                 [(name, options) for name in filenames])
+        retvals = pool.map(_fix_file, [(name, options) for name in filenames])
+        return max(retvals)
     else:
+        retval = 0
         for name in filenames:
-            _fix_file((name, options, output))
+            retval |= _fix_file((name, options, output))
+        return retval
 
 
 def is_python_file(filename):
