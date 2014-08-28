@@ -4097,6 +4097,12 @@ class CommandLineTests(unittest.TestCase):
         with autopep8_subprocess(line, ['--ignore=E,W']) as result:
             self.assertEqual(line, result)
 
+    def test_pep8_ignore_should_handle_trailing_comma_gracefully(self):
+        line = "'abc'  \n"
+        fixed = "'abc'\n"
+        with autopep8_subprocess(line, ['--ignore=,']) as result:
+            self.assertEqual(fixed, result)
+
     def test_help(self):
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['-h'],
                   stdout=PIPE)

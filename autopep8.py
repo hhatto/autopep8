@@ -3235,19 +3235,19 @@ def parse_args(arguments):
         parser.error('--max-line-length must be greater than 0')
 
     if args.select:
-        args.select = args.select.split(',')
+        args.select = _split_comma_separated(args.select)
 
     if args.ignore:
-        args.ignore = args.ignore.split(',')
+        args.ignore = _split_comma_separated(args.ignore)
     elif not args.select:
         if args.aggressive:
             # Enable everything by default if aggressive.
             args.select = ['E', 'W']
         else:
-            args.ignore = DEFAULT_IGNORE.split(',')
+            args.ignore = _split_comma_separated(DEFAULT_IGNORE)
 
     if args.exclude:
-        args.exclude = args.exclude.split(',')
+        args.exclude = _split_comma_separated(args.exclude)
     else:
         args.exclude = []
 
@@ -3268,6 +3268,11 @@ def parse_args(arguments):
                          'to the second')
 
     return args
+
+
+def _split_comma_separated(string):
+    """Return a set of strings."""
+    return set(filter(None, string.split(',')))
 
 
 def decode_filename(filename):
