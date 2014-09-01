@@ -442,6 +442,7 @@ class FixPEP8(object):
             options and (options.aggressive >= 2 or options.experimental) else
             self.fix_long_line_physically)
         self.fix_e703 = self.fix_e702
+        self.fix_w293 = self.fix_w291
 
     def _fix_source(self, results):
         try:
