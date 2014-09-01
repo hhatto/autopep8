@@ -2919,7 +2919,8 @@ def apply_global_fixes(source, options, where='global', filename=''):
     FixPEP8, which are dependent on pep8).
 
     """
-    if code_match('E101', select=options.select, ignore=options.ignore):
+    if any(code_match(code, select=options.select, ignore=options.ignore)
+           for code in ['E101', 'E111']):
         source = reindent(source,
                           indent_size=options.indent_size)
 
