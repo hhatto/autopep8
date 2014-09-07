@@ -2083,10 +2083,30 @@ def foo():
             self.assertEqual(fixed, result)
 
     def test_e309(self):
-        line = 'class Foo:\n    def bar():\n        print 1\n'
-        fixed = 'class Foo:\n\n    def bar():\n        print 1\n'
+        line = """
+class Foo:
+    def bar():
+        print 1
+"""
+        fixed = """
+class Foo:
+
+    def bar():
+        print 1
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
+
+    def test_not_e309_with_comment(self):
+        line = """
+class Foo:
+
+    # A comment.
+    def bar():
+        print 1
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
 
     def test_e401(self):
         line = 'import os, sys\n'

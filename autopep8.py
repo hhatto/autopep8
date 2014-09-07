@@ -149,6 +149,7 @@ def readlines_from_file(filename):
 
 def extended_blank_lines(logical_line,
                          blank_lines,
+                         blank_before,
                          indent_level,
                          previous_logical):
     """Check for missing blank lines after class declaration."""
@@ -157,7 +158,7 @@ def extended_blank_lines(logical_line,
             logical_line.startswith(('def ', 'class ', '@')) or
             pep8.DOCSTRING_REGEX.match(logical_line)
         ):
-            if indent_level and not blank_lines:
+            if indent_level and not blank_lines and not blank_before:
                 yield (0, 'E309 expected 1 blank line after class declaration')
     elif previous_logical.startswith('def '):
         if blank_lines and pep8.DOCSTRING_REGEX.match(logical_line):
