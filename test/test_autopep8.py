@@ -2045,6 +2045,19 @@ class Foo(object):
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_not_e301_extended_with_comment(self):
+        line = '''\
+class Foo(object):
+
+    """Test."""
+
+    # A comment.
+    def foo(self):
+        pass
+'''
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
     def test_e302(self):
         line = 'def f():\n    print 1\n\ndef ff():\n    print 2\n'
         fixed = 'def f():\n    print 1\n\n\ndef ff():\n    print 2\n'

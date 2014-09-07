@@ -168,6 +168,7 @@ def extended_blank_lines(logical_line,
         if (
             indent_level and
             not blank_lines and
+            not blank_before and
             logical_line.startswith(('def ')) and
             '(self' in logical_line
         ):
