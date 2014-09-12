@@ -2169,6 +2169,34 @@ print(111, 111, 111, 111, 222, 222, 222, 222,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_in(self):
+        line = """\
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
+                        if True:
+                            if True:
+                                if k_left in ('any', k_curr) and k_right in ('any', k_curr):
+                                    pass
+"""
+        fixed = """\
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
+                        if True:
+                            if True:
+                                if k_left in ('any', k_curr) and k_right in ('any', k_curr):
+                                    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_commas_and_colons(self):
         line = """\
 foobar = {'aaaaaaaaaaaa': 'bbbbbbbbbbbbbbbb', 'dddddd': 'eeeeeeeeeeeeeeee', 'ffffffffffff': 'gggggggg'}
@@ -5649,6 +5677,35 @@ while xxxxxxxxxxxx(
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_with_in(self):
+        line = """\
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
+                        if True:
+                            if True:
+                                if k_left in ('any', k_curr) and k_right in ('any', k_curr):
+                                    pass
+"""
+        fixed = """\
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
+                        if True:
+                            if True:
+                                if k_left in (
+                                        'any', k_curr) and k_right in (
+                                        'any', k_curr):
+                                    pass
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
