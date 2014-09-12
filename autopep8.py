@@ -885,7 +885,15 @@ class FixPEP8(object):
         second = (_get_indentation(logical_lines[0]) +
                   target[offset:].lstrip(';').lstrip())
 
-        self.source[line_index] = first + '\n' + second
+        # find inline commnet
+        inline_comment = None
+        if '# ' == target[offset:].lstrip(';').lstrip()[:2]:
+            inline_comment = target[offset:].lstrip(';')
+
+        if inline_comment:
+            self.source[line_index] = first + inline_comment
+        else:
+            self.source[line_index] = first + '\n' + second
         return [line_index + 1]
 
     def fix_e711(self, result):

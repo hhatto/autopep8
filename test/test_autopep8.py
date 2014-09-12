@@ -3488,6 +3488,12 @@ raise IOError('abc '
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e703_with_inline_comment(self):
+        line = 'a = 5;    # inline comment\n'
+        fixed = 'a = 5    # inline comment\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e711(self):
         line = 'foo == None\n'
         fixed = 'foo is None\n'
