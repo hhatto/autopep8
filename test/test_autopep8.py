@@ -2064,6 +2064,24 @@ class Foo(object):
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+        code = '''\
+#!/usr/bin/env python
+
+# A class description
+class A(object):
+    pass
+        '''
+        fixed = '''\
+#!/usr/bin/env python
+
+
+# A class description
+class A(object):
+    pass
+        '''
+        with autopep8_context(code) as result:
+            self.assertEqual(fixed, result)
+
     def test_e303(self):
         line = '\n\n\n# alpha\n\n1\n'
         fixed = '\n\n# alpha\n\n1\n'

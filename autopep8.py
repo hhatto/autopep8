@@ -715,7 +715,20 @@ class FixPEP8(object):
         """Add missing 2 blank lines."""
         add_linenum = 2 - int(result['info'].split()[-1])
         cr = '\n' * add_linenum
-        self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
+
+        text = self.source[result['line'] - 1]
+        if (text.startswith('class') or text[0] == '@'):
+            line_index = result['line'] - 2
+
+            target = self.source[line_index]
+            while target.startswith('#') and line_index > 0:
+                line_index -= 1
+                target = self.source[line_index]
+        else:
+            line_index = result['line'] - 1
+            target = self.source[line_index]
+
+        self.source[line_index] = cr + target
 
     def fix_e303(self, result):
         """Remove extra blank lines."""
