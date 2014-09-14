@@ -2064,6 +2064,72 @@ class Foo(object):
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e302_issue_164(self):
+        line = """\
+#!/usr/bin/env python
+
+# A class description
+class A(object):
+    pass
+"""
+        fixed = """\
+#!/usr/bin/env python
+
+
+# A class description
+class A(object):
+    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+        # now check if it handles class decorators
+        line = """\
+def dummy(cls):
+    return cls
+
+# A class description
+@dummy
+class A(object):
+    pass
+"""
+        fixed = """\
+def dummy(cls):
+    return cls
+
+
+# A class description
+@dummy
+class A(object):
+    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+        line = """\
+def dummy(cls):
+    return cls
+
+# text1
+# text2
+@dummy
+class A(object):
+    pass
+"""
+        fixed = """\
+def dummy(cls):
+    return cls
+
+
+# text1
+# text2
+@dummy
+class A(object):
+    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e303(self):
         line = '\n\n\n# alpha\n\n1\n'
         fixed = '\n\n# alpha\n\n1\n'
