@@ -718,7 +718,7 @@ class FixPEP8(object):
 
         text = self.source[result['line'] - 1]
         if (
-                (text.startswith('class') or text.startswith('def') or
+                (text.startswith('class ') or text.startswith('def ') or
                  text[0] == '@') and
                 result['line'] > 2 and
                 self.source[result['line'] - 2][0] == '#'
