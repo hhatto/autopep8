@@ -717,11 +717,10 @@ class FixPEP8(object):
         cr = '\n' * add_linenum
 
         text = self.source[result['line'] - 1]
-        if (text.startswith('class') or text[0] == '@'):
+        if (text.startswith('class') or text[0] == '@') and result['line'] > 1:
             line_index = result['line'] - 2
-
             target = self.source[line_index]
-            while target.startswith('#') and line_index > 0:
+            while target[0] == '#' and line_index > 0:
                 line_index -= 1
                 target = self.source[line_index]
         else:
