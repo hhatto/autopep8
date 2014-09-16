@@ -2083,6 +2083,66 @@ class A(object):
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+        line = """\
+#!/usr/bin/env python
+
+a = 'a'
+class A(object):
+    pass
+"""
+        fixed = """\
+#!/usr/bin/env python
+
+a = 'a'
+
+
+class A(object):
+    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+        line = """\
+#!/usr/bin/env python
+
+a = \"\"\"
+
+\"\"\"
+class A(object):
+    pass
+"""
+        fixed = """\
+#!/usr/bin/env python
+
+a = \"\"\"
+
+\"\"\"
+
+
+class A(object):
+    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+        line = """\
+#!/usr/bin/env python
+
+# text
+def a():
+    pass
+"""
+        fixed = """\
+#!/usr/bin/env python
+
+
+# text
+def a():
+    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
         # now check if it handles class decorators
         line = """\
 def dummy(cls):
