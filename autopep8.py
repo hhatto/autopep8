@@ -718,15 +718,15 @@ class FixPEP8(object):
 
         text = self.source[result['line'] - 1]
         if (
-                (text.startswith('class ') or text.startswith('def ') or
-                 text[0] == '@') and
-                result['line'] > 2 and
-                self.source[result['line'] - 2][0] == '#'
+            (text.startswith('class ') or text.startswith('def ') or
+             text[0] == '@') and
+            result['line'] > 2 and
+            self.source[result['line'] - 2][0] == '#'
         ):
             line_index = result['line'] - 2
             target = self.source[line_index]
 
-            while (len(target) and target[0] == '#' and line_index > 0):
+            while len(target) and target[0] == '#' and line_index > 0:
                 if target.startswith('#: ') or target.startswith(
                         '# -*- coding'):
                     # needed for the suite tests (tests/test_suite.py)
