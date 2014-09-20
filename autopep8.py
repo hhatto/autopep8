@@ -116,6 +116,14 @@ CODE_TO_2TO3 = {
              'xreadlines']}
 
 
+if sys.platform == 'win32':  # pragma: no cover
+    DEFAULT_CONFIG = os.path.expanduser(r'~\.pep8')
+else:
+    DEFAULT_CONFIG = os.path.join(os.getenv('XDG_CONFIG_HOME') or
+                                  os.path.expanduser('~/.config'), 'pep8')
+PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8')
+
+
 def open_with_encoding(filename, encoding=None, mode='r'):
     """Return opened file with a specific encoding."""
     if not encoding:
@@ -2840,14 +2848,14 @@ def code_match(code, select, ignore):
     return True
 
 
-def fix_code(source, options=None, encoding=None):
+def fix_code(source, options=None, encoding=None, apply_config=False):
     """Return fixed source code.
 
     "encoding" will be used to decode "source" if it is a byte string.
 
     """
     if not options:
-        options = parse_args([''])
+        options = parse_args([''], apply_config=apply_config)
 
     if not isinstance(source, unicode):
         source = source.decode(encoding or locale.getpreferredencoding())
@@ -2897,9 +2905,9 @@ def fix_lines(source_lines, options, filename=''):
     return ''.join(normalize_line_endings(sio.readlines(), original_newline))
 
 
-def fix_file(filename, options=None, output=None):
+def fix_file(filename, options=None, output=None, apply_config=False):
     if not options:
-        options = parse_args([filename])
+        options = parse_args([filename], apply_config=apply_config)
 
     original_source = readlines_from_file(filename)
 
@@ -3187,6 +3195,12 @@ def create_parser():
                         help='print the diff for the fixed source')
     parser.add_argument('-i', '--in-place', action='store_true',
                         help='make changes to files in place')
+    parser.add_argument('--config',
+                        default='',
+                        help='path to pep8 config file; '
+                        "don't pass anything and global and local "
+                        'config files will be used; pass False or '
+                        'a non-existent file to use defaults')
     parser.add_argument('-r', '--recursive', action='store_true',
                         help='run recursively over directories; '
                         'must be used with --in-place or --diff')
@@ -3231,9 +3245,11 @@ def create_parser():
     return parser
 
 
-def parse_args(arguments):
+def parse_args(arguments, apply_config=False):
     """Parse command-line options."""
     parser = create_parser()
+    if apply_config:
+        apply_config_defaults(parser, arguments)
     args = parser.parse_args(arguments)
 
     if not args.files and not args.list_fixes:
@@ -3305,6 +3321,48 @@ def parse_args(arguments):
                          'to the second')
 
     return args
+
+
+def apply_config_defaults(parser, arguments):
+    """Update the parser's defaults from either the arguments' config_arg or
+    the first config files found in parent directories."""
+    try:
+        from ConfigParser import SafeConfigParser, NoSectionError
+    except ImportError:  # py3, pragma: no cover
+        from configparser import SafeConfigParser, NoSectionError
+
+    config_file = config_arg(arguments)
+
+    config = SafeConfigParser()
+
+    if config_file:
+        config.read(config_file)
+    else:
+        parent, tail = os.getcwd(), 'tail'
+        while tail:
+            if config.read([os.path.join(parent, fn)
+                            for fn in PROJECT_CONFIG]):
+                break
+            parent, tail = os.path.split(parent)
+        else:
+            config.read(DEFAULT_CONFIG)
+
+    try:
+        defaults = dict((k.replace('-', '_'), v)
+                        for k, v in config.items("pep8"))
+        parser.set_defaults(**defaults)
+    except NoSectionError:
+        pass  # just do nothing, potentially this could raise ?
+    return parser
+
+
+def config_arg(arguments):
+    """Get --config arg from arguments.
+    """
+    for arg in arguments:
+        if arg.startswith('--config'):
+            config_file = arg[9:]
+            return os.path.expanduser(config_file)
 
 
 def _split_comma_separated(string):
@@ -3641,7 +3699,7 @@ def wrap_output(output, encoding):
                                       else output)
 
 
-def main():
+def main(apply_config=False):
     """Tool main."""
     try:
         # Exit on broken pipe.
@@ -3651,7 +3709,7 @@ def main():
         pass
 
     try:
-        args = parse_args(sys.argv[1:])
+        args = parse_args(sys.argv[1:], apply_config=apply_config)
 
         if args.list_fixes:
             for code, description in sorted(supported_fixes()):
@@ -3706,5 +3764,9 @@ _cached_tokenizer = CachedTokenizer()
 generate_tokens = _cached_tokenizer.generate_tokens
 
 
+def _main(apply_config=True):
+    return main(apply_config=apply_config)
+
+
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(_main())

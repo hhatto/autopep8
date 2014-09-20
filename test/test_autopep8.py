@@ -4537,6 +4537,35 @@ class CommandLineTests(unittest.TestCase):
             process.communicate(line.encode('utf-8'))[0].decode('utf-8'))
 
 
+class ParseArgsTests(unittest.TestCase):
+    cfg = os.path.join(ROOT_DIR, '.pep8')
+
+    def tearDown(self):
+        os.remove(self.cfg)
+
+    def setUp(self):
+        with open(self.cfg, 'w') as f:
+            f.write('[pep8]\nindent-size=2\n')
+
+    def test_config(self):
+        args = autopep8.parse_args([''], apply_config=True)
+        self.assertEqual(args.indent_size, 2)
+
+    def test_config_false(self):
+        args = autopep8.parse_args(['*.py', '--config=False'],
+                                   apply_config=True)
+        self.assertEqual(args.indent_size, 4)
+
+    def test_passed_config(self):
+        mycfg = self.cfg + 'blah'
+        with open(mycfg, 'w') as f:
+            f.write('[pep8]\nindent-size=3\n')
+        args = autopep8.parse_args(['*.py', '--config=%s' % mycfg],
+                                   apply_config=True)
+        self.assertEqual(args.indent_size, 3)
+        os.remove(mycfg)
+
+
 class ExperimentalSystemTests(unittest.TestCase):
 
     maxDiff = None
@@ -5832,6 +5861,7 @@ if True:
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
