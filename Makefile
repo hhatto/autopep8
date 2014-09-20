@@ -72,7 +72,7 @@ open_readme: readme
 	@python -m webbrowser -n "file://${PWD}/README.html"
 
 check:
-	pep8 autopep8.py setup.py test/acid.py test/acid_github.py test/acid_pypi.py update_readme.py
+	pep8 autopep8.py setup.py test/acid.py test/acid_pypi.py update_readme.py
 	pylint \
 		--reports=no \
 		--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \

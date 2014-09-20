@@ -21,7 +21,6 @@ exclude hooks/pre-push
 exclude install_hooks.bash
 exclude test/.gitignore
 exclude test/acid.py
-exclude test/acid_github.py
 exclude test/acid_pypi.py
 exclude test/suite
 exclude test/suite/out
