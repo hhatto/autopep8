@@ -2064,128 +2064,23 @@ class Foo(object):
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    def test_e302_issue_164(self):
-        line = """\
-#!/usr/bin/env python
-
-# A class description
-class A(object):
-    pass
+    def test_e302_bug(self):
+        """Avoid creating bad syntax."""
+        line = r"""\
+def repeatable_expr():      return [bracketed_choice, simple_match, rule_ref],\
+                                    Optional(repeat_operator)
+# def match():                return [simple_match , mixin_rule_match] TODO
+def simple_match():         return [str_match, re_match]
 """
-        fixed = """\
-#!/usr/bin/env python
+        fixed = r"""\
+def repeatable_expr():
+    return [bracketed_choice, simple_match, rule_ref],\
+        Optional(repeat_operator)
+# def match():                return [simple_match , mixin_rule_match] TODO
 
 
-# A class description
-class A(object):
-    pass
-"""
-        with autopep8_context(line) as result:
-            self.assertEqual(fixed, result)
-
-        line = """\
-#!/usr/bin/env python
-
-a = 'a'
-class A(object):
-    pass
-"""
-        fixed = """\
-#!/usr/bin/env python
-
-a = 'a'
-
-
-class A(object):
-    pass
-"""
-        with autopep8_context(line) as result:
-            self.assertEqual(fixed, result)
-
-        line = """\
-#!/usr/bin/env python
-
-a = \"\"\"
-
-\"\"\"
-class A(object):
-    pass
-"""
-        fixed = """\
-#!/usr/bin/env python
-
-a = \"\"\"
-
-\"\"\"
-
-
-class A(object):
-    pass
-"""
-        with autopep8_context(line) as result:
-            self.assertEqual(fixed, result)
-
-        line = """\
-#!/usr/bin/env python
-
-# text
-def a():
-    pass
-"""
-        fixed = """\
-#!/usr/bin/env python
-
-
-# text
-def a():
-    pass
-"""
-        with autopep8_context(line) as result:
-            self.assertEqual(fixed, result)
-
-        # now check if it handles class decorators
-        line = """\
-def dummy(cls):
-    return cls
-
-# A class description
-@dummy
-class A(object):
-    pass
-"""
-        fixed = """\
-def dummy(cls):
-    return cls
-
-
-# A class description
-@dummy
-class A(object):
-    pass
-"""
-        with autopep8_context(line) as result:
-            self.assertEqual(fixed, result)
-
-        line = """\
-def dummy(cls):
-    return cls
-
-# text1
-# text2
-@dummy
-class A(object):
-    pass
-"""
-        fixed = """\
-def dummy(cls):
-    return cls
-
-
-# text1
-# text2
-@dummy
-class A(object):
-    pass
+def simple_match():
+    return [str_match, re_match]
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)

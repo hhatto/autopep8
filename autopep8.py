@@ -715,32 +715,7 @@ class FixPEP8(object):
         """Add missing 2 blank lines."""
         add_linenum = 2 - int(result['info'].split()[-1])
         cr = '\n' * add_linenum
-
-        text = self.source[result['line'] - 1]
-        if (
-            (text.startswith('class ') or text.startswith('def ') or
-             text[0] == '@') and
-            result['line'] > 2 and
-            self.source[result['line'] - 2][0] == '#'
-        ):
-            line_index = result['line'] - 2
-            target = self.source[line_index]
-
-            while len(target) and target[0] == '#' and line_index > 0:
-                if target.startswith('#: ') or target.startswith(
-                        '# -*- coding'):
-                    # needed for the suite tests (tests/test_suite.py)
-                    line_index = result['line'] - 1
-                    target = text
-                    break
-
-                line_index -= 1
-                target = self.source[line_index]
-        else:
-            line_index = result['line'] - 1
-            target = self.source[line_index]
-
-        self.source[line_index] = cr + target
+        self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
 
     def fix_e303(self, result):
         """Remove extra blank lines."""
