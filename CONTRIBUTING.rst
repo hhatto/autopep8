@@ -20,6 +20,10 @@ When submitting a bug report, please provide the following:
 8. Does the bug happen with the latest version of autopep8? To upgrade::
 
     $ pip install --upgrade git+https://github.com/hhatto/autopep8
+9. Does the ``pep8`` tool report the problem correctly? If not, then the bug
+   report should be filed at the pep8_ repository.
+
+.. _pep8: https://github.com/jcrocholl/pep8
 
 
 Pull requests
