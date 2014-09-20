@@ -118,7 +118,7 @@ check:
 		--rcfile=/dev/null \
 		--dummy-variables-rgx='^_+$$' \
 		--disable=fixme \
-		test/acid.py test/acid_github.py test/acid_pypi.py test/test_autopep8.py
+		test/acid.py test/acid_pypi.py test/test_autopep8.py
 	./autopep8.py --diff autopep8.py setup.py test/test_autopep8.py update_readme.py
 
 mutant:

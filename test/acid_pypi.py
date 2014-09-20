@@ -92,13 +92,13 @@ def main():
                     last_hours *= 2
 
         package_name = names.pop(0)
-        print(package_name)
+        print(package_name, file=sys.stderr)
 
         package_tmp_dir = os.path.join(TMP_DIR, package_name)
         try:
             os.mkdir(package_tmp_dir)
         except OSError:
-            print('Skipping already checked package')
+            print('Skipping already checked package', file=sys.stderr)
             skipped_packages.append(package_name)
             continue
 
@@ -107,7 +107,7 @@ def main():
                 package_name,
                 output_directory=package_tmp_dir)
         except subprocess.CalledProcessError:
-            print('ERROR: yolk fetch failed')
+            print('yolk fetch failed', file=sys.stderr)
             continue
 
         for download_name in os.listdir(package_tmp_dir):
@@ -115,10 +115,10 @@ def main():
                 if not extract_package(
                         os.path.join(package_tmp_dir, download_name),
                         output_directory=package_tmp_dir):
-                    print('ERROR: Could not extract package')
+                    print('Could not extract package', file=sys.stderr)
                     continue
             except UnicodeDecodeError:
-                print('ERROR: Could not extract package')
+                print('Could not extract package', file=sys.stderr)
                 continue
 
             if acid.check([package_tmp_dir], args):
@@ -127,7 +127,8 @@ def main():
                 return 1
 
     if checked_packages:
-        print('\nTested packages:\n    ' + '\n    '.join(checked_packages))
+        print('\nTested packages:\n    ' + '\n    '.join(checked_packages),
+              file=sys.stderr)
 
 if __name__ == '__main__':
     try:
