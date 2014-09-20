@@ -4581,7 +4581,8 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_experimental_with_inline_comments_should_skip_multiline(self):
+    def test_e501_experimental_with_inline_comments_should_skip_multiline(
+            self):
         line = """\
 '''This should be left alone. -----------------------------------------------------
 
@@ -4625,7 +4626,8 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(line, result)
 
-    def test_e501_experimental_with_inline_comments_should_skip_edge_cases(self):
+    def test_e501_experimental_with_inline_comments_should_skip_edge_cases(
+            self):
         line = """\
 if True:
     x = \\
@@ -4740,7 +4742,8 @@ fooooooooooooooooooooooooooooooo000000000000000000000000 = [
                                              '--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_experimental_should_not_try_to_break_at_every_paren_in_arithmetic(self):
+    def test_e501_experimental_should_not_try_to_break_at_every_paren_in_arithmetic(
+            self):
         line = """\
 term3 = w6 * c5 * (8.0 * psi4 * (11.0 - 24.0 * t2) - 28 * psi3 * (1 - 6.0 * t2) + psi2 * (1 - 32 * t2) - psi * (2.0 * t2) + t4) / 720.0
 this_should_be_shortened = ('                                                                 ', '            ')
@@ -5378,7 +5381,8 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_experimental_avoid_breaking_at_empty_parentheses_if_possible(self):
+    def test_e501_experimental_avoid_breaking_at_empty_parentheses_if_possible(
+            self):
         line = """\
 someverylongindenttionwhatnot().foo().bar().baz("and here is a long string 123456789012345678901234567890")
 """
@@ -5832,6 +5836,7 @@ if True:
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
