@@ -4551,6 +4551,10 @@ class ParseArgsTests(unittest.TestCase):
         args = autopep8.parse_args([''], apply_config=True)
         self.assertEqual(args.indent_size, 2)
 
+    def test_config_override(self):
+        args = autopep8.parse_args(['*.py', '--indent-size=7'], apply_config=True)
+        self.assertEqual(args.indent_size, 7)
+
     def test_config_false(self):
         args = autopep8.parse_args(['*.py', '--config=False'],
                                    apply_config=True)
