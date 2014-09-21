@@ -3195,12 +3195,15 @@ def create_parser():
                         help='print the diff for the fixed source')
     parser.add_argument('-i', '--in-place', action='store_true',
                         help='make changes to files in place')
-    parser.add_argument('--config',
-                        default='',
-                        help='path to pep8 config file; '
-                        "don't pass anything and global and local "
-                        'config files will be used; pass False or '
-                        'a non-existent file to use defaults')
+    parser.add_argument('--global-config',
+                        default=DEFAULT_CONFIG,
+                        help='path to a global pep8 config file ' +
+                        '(default: %s); ' % DEFAULT_CONFIG +
+                        "if this file does not exist then this is ignored.")
+    parser.add_argument('--ignore-local-config', action='store_true',
+                        help="don't look for and apply local config files; "
+                        'if not passed, defaults are updated with any '
+                        "config files in the project's root dir")
     parser.add_argument('-r', '--recursive', action='store_true',
                         help='run recursively over directories; '
                         'must be used with --in-place or --diff')
@@ -3331,21 +3334,18 @@ def apply_config_defaults(parser, arguments):
     except ImportError:  # py3, pragma: no cover
         from configparser import SafeConfigParser, NoSectionError
 
-    config_file = config_arg(arguments)
+    global_config_file = global_config_arg(arguments) or DEFAULT_CONFIG
 
     config = SafeConfigParser()
+    config.read(global_config_file)
 
-    if config_file:
-        config.read(config_file)
-    else:
+    if '--ignore-local-config' not in arguments:
         parent, tail = os.getcwd(), 'tail'
         while tail:
             if config.read([os.path.join(parent, fn)
                             for fn in PROJECT_CONFIG]):
                 break
             parent, tail = os.path.split(parent)
-        else:
-            config.read(DEFAULT_CONFIG)
 
     try:
         defaults = dict((k.replace('-', '_'), v)
@@ -3356,12 +3356,12 @@ def apply_config_defaults(parser, arguments):
     return parser
 
 
-def config_arg(arguments):
-    """Get --config arg from arguments.
+def global_config_arg(arguments):
+    """Get --global-config arg from arguments.
     """
     for arg in arguments:
-        if arg.startswith('--config'):
-            config_file = arg[9:]
+        if arg.startswith('--global-config'):
+            config_file = arg[16:]
             return os.path.expanduser(config_file)
 
 
