@@ -103,7 +103,6 @@ CODE_TO_2TO3 = {
     'W690': ['apply',
              'except',
              'exitfunc',
-             'import',
              'numliterals',
              'operator',
              'paren',
