@@ -763,6 +763,7 @@ lambda xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
                     indent_word='    ',
                     max_line_length=79,
                     aggressive=10,
+                    experimental=True,
                     previous_line=''):
 
                 self.assertEqual(
@@ -2044,9 +2045,43 @@ class Foo(object):
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_not_e301_extended_with_comment(self):
+        line = '''\
+class Foo(object):
+
+    """Test."""
+
+    # A comment.
+    def foo(self):
+        pass
+'''
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
     def test_e302(self):
         line = 'def f():\n    print 1\n\ndef ff():\n    print 2\n'
         fixed = 'def f():\n    print 1\n\n\ndef ff():\n    print 2\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e302_bug(self):
+        """Avoid creating bad syntax."""
+        line = r"""\
+def repeatable_expr():      return [bracketed_choice, simple_match, rule_ref],\
+                                    Optional(repeat_operator)
+# def match():                return [simple_match , mixin_rule_match] TODO
+def simple_match():         return [str_match, re_match]
+"""
+        fixed = r"""\
+def repeatable_expr():
+    return [bracketed_choice, simple_match, rule_ref],\
+        Optional(repeat_operator)
+# def match():                return [simple_match , mixin_rule_match] TODO
+
+
+def simple_match():
+    return [str_match, re_match]
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -2082,10 +2117,30 @@ def foo():
             self.assertEqual(fixed, result)
 
     def test_e309(self):
-        line = 'class Foo:\n    def bar():\n        print 1\n'
-        fixed = 'class Foo:\n\n    def bar():\n        print 1\n'
+        line = """
+class Foo:
+    def bar():
+        print 1
+"""
+        fixed = """
+class Foo:
+
+    def bar():
+        print 1
+"""
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
+
+    def test_not_e309_with_comment(self):
+        line = """
+class Foo:
+
+    # A comment.
+    def bar():
+        print 1
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
 
     def test_e401(self):
         line = 'import os, sys\n'
@@ -2131,6 +2186,34 @@ print(111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333,
 
 print(111, 111, 111, 111, 222, 222, 222, 222,
       222, 222, 222, 222, 222, 333, 333, 333, 333)
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_with_in(self):
+        line = """\
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
+                        if True:
+                            if True:
+                                if k_left in ('any', k_curr) and k_right in ('any', k_curr):
+                                    pass
+"""
+        fixed = """\
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
+                        if True:
+                            if True:
+                                if k_left in ('any', k_curr) and k_right in ('any', k_curr):
+                                    pass
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -3454,6 +3537,12 @@ raise IOError('abc '
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e703_with_inline_comment(self):
+        line = 'a = 5;    # inline comment\n'
+        fixed = 'a = 5    # inline comment\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e711(self):
         line = 'foo == None\n'
         fixed = 'foo is None\n'
@@ -4096,6 +4185,12 @@ class CommandLineTests(unittest.TestCase):
         with autopep8_subprocess(line, ['--ignore=E,W']) as result:
             self.assertEqual(line, result)
 
+    def test_pep8_ignore_should_handle_trailing_comma_gracefully(self):
+        line = "'abc'  \n"
+        fixed = "'abc'\n"
+        with autopep8_subprocess(line, ['--ignore=,']) as result:
+            self.assertEqual(fixed, result)
+
     def test_help(self):
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['-h'],
                   stdout=PIPE)
@@ -4383,7 +4478,8 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_experimental_with_inline_comments_should_skip_multiline(self):
+    def test_e501_experimental_with_inline_comments_should_skip_multiline(
+            self):
         line = """\
 '''This should be left alone. -----------------------------------------------------
 
@@ -4427,7 +4523,8 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(line, result)
 
-    def test_e501_experimental_with_inline_comments_should_skip_edge_cases(self):
+    def test_e501_experimental_with_inline_comments_should_skip_edge_cases(
+            self):
         line = """\
 if True:
     x = \\
@@ -4541,7 +4638,8 @@ fooooooooooooooooooooooooooooooo000000000000000000000000 = [
                                              '--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_experimental_should_not_try_to_break_at_every_paren_in_arithmetic(self):
+    def test_e501_experimental_should_not_try_to_break_at_every_paren_in_arithmetic(
+            self):
         line = """\
 term3 = w6 * c5 * (8.0 * psi4 * (11.0 - 24.0 * t2) - 28 * psi3 * (1 - 6.0 * t2) + psi2 * (1 - 32 * t2) - psi * (2.0 * t2) + t4) / 720.0
 this_should_be_shortened = ('                                                                 ', '            ')
@@ -5182,7 +5280,8 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e501_experimental_avoid_breaking_at_empty_parentheses_if_possible(self):
+    def test_e501_experimental_avoid_breaking_at_empty_parentheses_if_possible(
+            self):
         line = """\
 someverylongindenttionwhatnot().foo().bar().baz("and here is a long string 123456789012345678901234567890")
 """
@@ -5606,6 +5705,35 @@ while xxxxxxxxxxxx(
         aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc,
         dddddddddddddddddddddd):
     pass
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_experimental_with_in(self):
+        line = """\
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
+                        if True:
+                            if True:
+                                if k_left in ('any', k_curr) and k_right in ('any', k_curr):
+                                    pass
+"""
+        fixed = """\
+if True:
+    if True:
+        if True:
+            if True:
+                if True:
+                    if True:
+                        if True:
+                            if True:
+                                if k_left in ('any', k_curr) and k_right in (
+                                        'any', k_curr):
+                                    pass
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)

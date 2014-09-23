@@ -17,14 +17,14 @@ fasttest: test_fast
 
 test_basic:
 	@echo '--->  Running basic test'
-	${PYTHON} autopep8.py --aggressive test/example.py > .tmp.test.py
+	@${PYTHON} autopep8.py --aggressive test/example.py > .tmp.test.py
 	pep8 --repeat .tmp.test.py
 	@rm .tmp.test.py
 
 test_diff:
 	@echo '--->  Running --diff test'
 	@cp test/example.py .tmp.example.py
-	${PYTHON} autopep8.py --aggressive --diff .tmp.example.py > .tmp.example.py.patch
+	@${PYTHON} autopep8.py --aggressive --diff .tmp.example.py > .tmp.example.py.patch
 	patch < .tmp.example.py.patch
 	@rm .tmp.example.py.patch
 	pep8 --repeat .tmp.example.py && ${PYTHON} -m py_compile .tmp.example.py
@@ -32,7 +32,7 @@ test_diff:
 
 test_unit:
 	@echo '--->  Running unit tests'
-	${PYTHON} test/test_autopep8.py
+	@${PYTHON} test/test_autopep8.py
 
 test_fast:
 	@echo '[run]' > .pytest.coveragerc
@@ -56,15 +56,15 @@ open_coverage: coverage
 	@python -m webbrowser -n "file://${PWD}/htmlcov/index.html"
 
 benchmark:
-	@echo '---> benchmark of autopep8.py test/example.py'
+	@echo '--->  Benchmark of autopep8.py test/example.py'
 	@time ${PYTHON} autopep8.py --aggressive test/example.py > /dev/null
-	@echo '---> benchmark of test_unit'
+	@echo '--->  Benchmark of test_unit'
 	@time ${PYTHON} test/test_autopep8.py > /dev/null
-	@echo '---> benchmark of autopep8.py -d test/*.py'
+	@echo '--->  Benchmark of autopep8.py -d test/*.py'
 	@time ${PYTHON} autopep8.py -d test/*.py > /dev/null
 
 readme:
-	${PYTHON} update_readme.py
+	@${PYTHON} update_readme.py
 	@rstcheck README.rst
 	@${PYTHON} -m doctest -v README.rst
 
@@ -72,7 +72,7 @@ open_readme: readme
 	@python -m webbrowser -n "file://${PWD}/README.html"
 
 check:
-	pep8 autopep8.py setup.py test/acid.py test/acid_github.py test/acid_pypi.py update_readme.py
+	pep8 autopep8.py setup.py test/acid.py test/acid_pypi.py update_readme.py
 	pylint \
 		--reports=no \
 		--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
@@ -118,7 +118,7 @@ check:
 		--rcfile=/dev/null \
 		--dummy-variables-rgx='^_+$$' \
 		--disable=fixme \
-		test/acid.py test/acid_github.py test/acid_pypi.py test/test_autopep8.py
+		test/acid.py test/acid_pypi.py test/test_autopep8.py
 	./autopep8.py --diff autopep8.py setup.py test/test_autopep8.py update_readme.py
 
 mutant:
