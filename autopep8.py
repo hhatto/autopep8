@@ -3027,9 +3027,16 @@ def apply_local_fixes(source, options):
         # Add back indent for non multi-line strings lines.
         msl = multiline_string_lines(''.join(fixed_subsource),
                                      include_docstrings=False)
-        for i, line in enumerate(fixed_subsource):
+        for i, line in reversed(list(enumerate(fixed_subsource))):
             if not i + 1 in msl:
-                fixed_subsource[i] = indent + line if line != '\n' else line
+                if line.lstrip().startswith('#'):  # is comment
+                    # This only works as a comment are never be the last line
+                    fixed_subsource[i] = next_indent + line.lstrip()
+
+                elif line != '\n':
+                    fixed_subsource[i] = indent + line
+                    # the following is used in the comments hack above
+                    next_indent = indent + _get_indentation(line)
 
         # We make a special case to look at the final line, if it's a multiline
         # *and* the cut off is somewhere inside it, we take the fixed
