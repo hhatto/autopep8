@@ -67,7 +67,7 @@ except NameError:
     unicode = str
 
 
-__version__ = '1.0.4'
+__version__ = '1.0.5a0'
 
 
 CR = '\r'
@@ -2649,6 +2649,8 @@ def filter_results(source, results, aggressive):
 
     commented_out_code_line_numbers = commented_out_code_lines(source)
 
+    has_e901 = any(result['id'].lower() == 'e901' for result in results)
+
     for r in results:
         issue_id = r['id'].lower()
 
@@ -2678,6 +2680,13 @@ def filter_results(source, results, aggressive):
 
         if r['line'] in commented_out_code_line_numbers:
             if issue_id.startswith(('e26', 'e501')):
+                continue
+
+        # Do not touch indentation if there is a token error caused by
+        # incomplete multi-line statement. Otherwise, we risk screwing up the
+        # indentation.
+        if has_e901:
+            if issue_id.startswith(('e1', 'e7')):
                 continue
 
         yield r

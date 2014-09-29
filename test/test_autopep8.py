@@ -3638,6 +3638,19 @@ raise IOError('abc '
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e901_should_cause_indentation_screw_up(self):
+        line = """\
+def tmp(g):
+    g(4)))
+
+    if not True:
+        pass
+        pass
+"""
+
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
     def test_should_preserve_vertical_tab(self):
         line = """\
 #Memory Bu\vffer Register:
