@@ -2071,15 +2071,9 @@ class Foo(object):
 # def match():                return [simple_match , mixin_rule_match] TODO
 def simple_match():         return [str_match, re_match]
 """
-        fixed = r"""def repeatable_expr():      return [bracketed_choice, simple_match, rule_ref],\
-    Optional(repeat_operator)
-# def match():                return [simple_match , mixin_rule_match] TODO
-
-
-def simple_match(): return [str_match, re_match]
-"""
+        self.assertTrue(autopep8.check_syntax(line))
         with autopep8_context(line) as result:
-            self.assertEqual(fixed, result)
+            self.assertTrue(autopep8.check_syntax(result))
 
     def test_e303(self):
         line = '\n\n\n# alpha\n\n1\n'
