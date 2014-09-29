@@ -2066,21 +2066,17 @@ class Foo(object):
 
     def test_e302_bug(self):
         """Avoid creating bad syntax."""
-        line = r"""\
-def repeatable_expr():      return [bracketed_choice, simple_match, rule_ref],\
+        line = r"""def repeatable_expr():      return [bracketed_choice, simple_match, rule_ref],\
                                     Optional(repeat_operator)
 # def match():                return [simple_match , mixin_rule_match] TODO
 def simple_match():         return [str_match, re_match]
 """
-        fixed = r"""\
-def repeatable_expr():
-    return [bracketed_choice, simple_match, rule_ref],\
-        Optional(repeat_operator)
+        fixed = r"""def repeatable_expr():      return [bracketed_choice, simple_match, rule_ref],\
+    Optional(repeat_operator)
 # def match():                return [simple_match , mixin_rule_match] TODO
 
 
-def simple_match():
-    return [str_match, re_match]
+def simple_match(): return [str_match, re_match]
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
