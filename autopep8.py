@@ -3359,9 +3359,14 @@ def apply_config_defaults(parser, arguments):
 def global_config_arg(arguments):
     """Get --global-config arg from arguments.
     """
-    for arg in arguments:
-        if arg.startswith('--global-config'):
-            config_file = arg[16:]
+    for i, arg in enumerate(arguments):
+        if arg.startswith('--g'):
+            if '=' in arg:
+                config_file = arg.split('=', 1)[1]
+            elif i + 1 < len(arguments):
+                config_file = arguments[i + 1]
+            else:
+                config_file = ''
             return os.path.expanduser(config_file)
 
 
