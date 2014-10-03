@@ -1,5 +1,5 @@
 #!/bin/bash -ex
 
-readonly ROOT=$(dirname "$0")
-cd "$ROOT"/.git/hooks
+readonly root=$(dirname "$0")
+cd "$root"/.git/hooks
 ln -fs ../../hooks/* .
