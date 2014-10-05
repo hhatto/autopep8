@@ -124,7 +124,8 @@ After running autopep8.
 
 Options::
 
-    usage: autopep8 [-h] [--version] [-v] [-d] [-i] [-r] [-j n] [-p n] [-a]
+    usage: autopep8 [-h] [--version] [-v] [-d] [-i] [--global-config filename]
+                    [--ignore-local-config] [-r] [-j n] [-p n] [-a]
                     [--experimental] [--exclude globs] [--list-fixes]
                     [--ignore errors] [--select errors] [--max-line-length n]
                     [--range line line] [--indent-size n]
@@ -142,6 +143,14 @@ Options::
                             verbose messages
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
+      --global-config filename
+                            path to a global pep8 config file (default:
+                            /Users/myint/.config/pep8); if this file does not
+                            exist then this is ignored.
+      --ignore-local-config
+                            don't look for and apply local config files; if not
+                            passed, defaults are updated with any config files in
+                            the project's root dir
       -r, --recursive       run recursively over directories; must be used with
                             --in-place or --diff
       -j n, --jobs n        number of parallel jobs; match CPU count if value is

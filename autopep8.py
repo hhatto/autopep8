@@ -3178,7 +3178,7 @@ def create_parser():
                         help='print the diff for the fixed source')
     parser.add_argument('-i', '--in-place', action='store_true',
                         help='make changes to files in place')
-    parser.add_argument('--global-config',
+    parser.add_argument('--global-config', metavar='filename',
                         default=DEFAULT_CONFIG,
                         help='path to a global pep8 config file ' +
                         '(default: %s); ' % DEFAULT_CONFIG +
