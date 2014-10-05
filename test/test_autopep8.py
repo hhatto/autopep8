@@ -970,7 +970,7 @@ try:
         # report properly, the below command will take a long time.
         p = Popen(list(AUTOPEP8_CMD_TUPLE) +
                   ['-vvv', '--select=E101', '--diff',
-                   '--global-config={}'.format(os.devnull),
+                   '--global-config={0}'.format(os.devnull),
                    os.path.join(ROOT_DIR, 'test', 'e101_example.py')],
                   stdout=PIPE, stderr=PIPE)
         output = [x.decode('utf-8') for x in p.communicate()][0]
@@ -4456,7 +4456,7 @@ class ParseArgsTests(unittest.TestCase):
 
     def test_local_config(self):
         args = autopep8.parse_args(
-            ['', '--global-config={}'.format(self.GLOBAL_CONFIG)],
+            ['', '--global-config={0}'.format(self.GLOBAL_CONFIG)],
             apply_config=True)
         self.assertEqual(args.indent_size, 2)
 
