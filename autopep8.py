@@ -3333,7 +3333,7 @@ def apply_config_defaults(parser, args):
                     break
                 parent, tail = os.path.split(parent)
 
-        defaults = dict((k.replace('-', '_'), v)
+        defaults = dict((k.lstrip('-').replace('-', '_'), v)
                         for k, v in config.items('pep8'))
         parser.set_defaults(**defaults)
     except Error:
