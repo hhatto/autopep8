@@ -969,7 +969,8 @@ try:
         # elsewhere is in a multiline string. If we don't filter the innocuous
         # report properly, the below command will take a long time.
         p = Popen(list(AUTOPEP8_CMD_TUPLE) +
-                  ['-vvv', '--select=E101', '--diff', '--global-config=/dev/null',
+                  ['-vvv', '--select=E101', '--diff',
+                   '--global-config={}'.format(os.devnull),
                    os.path.join(ROOT_DIR, 'test', 'e101_example.py')],
                   stdout=PIPE, stderr=PIPE)
         output = [x.decode('utf-8') for x in p.communicate()][0]
@@ -4437,6 +4438,8 @@ class CommandLineTests(unittest.TestCase):
 
 class ParseArgsTests(unittest.TestCase):
 
+    # FIXME: These are dangerous. They ought to be placed in safe paths via
+    # "tempfile".
     LOCAL_CONFIG = os.path.join(ROOT_DIR, '.pep8')
     GLOBAL_CONFIG = os.path.join(ROOT_DIR, 'GLOBAL_CONFIG')
 
@@ -4452,7 +4455,9 @@ class ParseArgsTests(unittest.TestCase):
             f.write('[pep8]\nindent-size=2\n')
 
     def test_local_config(self):
-        args = autopep8.parse_args([''], apply_config=True)
+        args = autopep8.parse_args(
+            ['', '--global-config={}'.format(self.GLOBAL_CONFIG)],
+            apply_config=True)
         self.assertEqual(args.indent_size, 2)
 
     def test_config_override(self):
