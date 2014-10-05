@@ -4514,16 +4514,17 @@ class ParseArgsTests(unittest.TestCase):
         os.remove(mycfg)
 
     def test_no_config(self):
-        self.skip_if_global_default()
+        skip_if_global_default()
         os.remove(self.LOCAL_CONFIG)
         args = autopep8.parse_args([''], apply_config=True)
         self.assertEqual(args.indent_size, 4)
 
-    def skip_if_global_default(self):
-        # Note: this will fail if DEFAULT_CONFIG is populated...
-        if os.path.isfile(autopep8.DEFAULT_CONFIG):
-            raise unittest.SkipTest("Can't test without DEFAULT_CONFIG as "
-                                    "found %s" % autopep8.DEFAULT_CONFIG)
+
+def skip_if_global_default():
+    # Note: this will fail if DEFAULT_CONFIG is populated...
+    if os.path.isfile(autopep8.DEFAULT_CONFIG):
+        raise unittest.SkipTest("Can't test without DEFAULT_CONFIG as "
+                                "found %s" % autopep8.DEFAULT_CONFIG)
 
 
 class ExperimentalSystemTests(unittest.TestCase):
