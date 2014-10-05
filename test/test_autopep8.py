@@ -4580,21 +4580,6 @@ class ParseArgsTests(unittest.TestCase):
         self.assertEqual(args.global_config, 'False')
         self.assertEqual(args.indent_size, 2)
 
-    def test_global_config_arg(self):
-        args = ['*.py', '--global-config=False']
-        config_file = autopep8.global_config_arg(args)
-        self.assertEqual(config_file, 'False')
-
-    def test_global_config_arg_space(self):
-        args = ['*.py', '--global-config', 'False']
-        config_file = autopep8.global_config_arg(args)
-        self.assertEqual(config_file, 'False')
-
-    def test_global_config_arg_autocomplete(self):
-        args = ['*.py', '--g', 'False']
-        config_file = autopep8.global_config_arg(args)
-        self.assertEqual(config_file, 'False')
-
     def test_config_false_without_local(self):
         os.remove(self.LOCAL_CONFIG)
         args = autopep8.parse_args(['*.py', '--global-config=False'],

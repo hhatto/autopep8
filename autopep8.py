@@ -3251,9 +3251,10 @@ def create_parser():
 def parse_args(arguments, apply_config=False):
     """Parse command-line options."""
     parser = create_parser()
-    if apply_config:
-        apply_config_defaults(parser, arguments)
     args = parser.parse_args(arguments)
+    if apply_config:
+        parser = apply_config_defaults(parser, args)
+        args = parser.parse_args(arguments)
 
     if not args.files and not args.list_fixes:
         parser.error('incorrect number of arguments')
@@ -3326,7 +3327,7 @@ def parse_args(arguments, apply_config=False):
     return args
 
 
-def apply_config_defaults(parser, arguments):
+def apply_config_defaults(parser, args):
     """Update the parser's defaults from either the arguments' config_arg or
     the first config files found in parent directories."""
     try:
@@ -3334,12 +3335,10 @@ def apply_config_defaults(parser, arguments):
     except ImportError:  # py3, pragma: no cover
         from configparser import SafeConfigParser, NoSectionError
 
-    global_config_file = global_config_arg(arguments) or DEFAULT_CONFIG
-
     config = SafeConfigParser()
-    config.read(global_config_file)
+    config.read(args.global_config)
 
-    if '--ignore-local-config' not in arguments:
+    if not args.ignore_local_config:
         parent, tail = os.getcwd(), 'tail'
         while tail:
             if config.read([os.path.join(parent, fn)
@@ -3354,20 +3353,6 @@ def apply_config_defaults(parser, arguments):
     except NoSectionError:
         pass  # just do nothing, potentially this could raise ?
     return parser
-
-
-def global_config_arg(arguments):
-    """Get --global-config arg from arguments.
-    """
-    for i, arg in enumerate(arguments):
-        if arg.startswith('--g'):
-            if '=' in arg:
-                config_file = arg.split('=', 1)[1]
-            elif i + 1 < len(arguments):
-                config_file = arguments[i + 1]
-            else:
-                config_file = ''
-            return os.path.expanduser(config_file)
 
 
 def _split_comma_separated(string):
