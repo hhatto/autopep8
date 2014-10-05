@@ -3173,54 +3173,54 @@ def create_parser():
     parser.add_argument('-v', '--verbose', action='count', dest='verbose',
                         default=0,
                         help='print verbose messages; '
-                        'multiple -v result in more verbose messages')
+                             'multiple -v result in more verbose messages')
     parser.add_argument('-d', '--diff', action='store_true', dest='diff',
                         help='print the diff for the fixed source')
     parser.add_argument('-i', '--in-place', action='store_true',
                         help='make changes to files in place')
     parser.add_argument('--global-config', metavar='filename',
                         default=DEFAULT_CONFIG,
-                        help='path to a global pep8 config file ' +
-                        '(default: %s); ' % DEFAULT_CONFIG +
-                        'if this file does not exist then this is ignored.')
+                        help='path to a global pep8 config file; if this file '
+                             'does not exist then this is ignored '
+                             '(default: {0})'.format(DEFAULT_CONFIG))
     parser.add_argument('--ignore-local-config', action='store_true',
                         help="don't look for and apply local config files; "
-                        'if not passed, defaults are updated with any '
-                        "config files in the project's root dir")
+                             'if not passed, defaults are updated with any '
+                             "config files in the project's root directory")
     parser.add_argument('-r', '--recursive', action='store_true',
                         help='run recursively over directories; '
-                        'must be used with --in-place or --diff')
+                             'must be used with --in-place or --diff')
     parser.add_argument('-j', '--jobs', type=int, metavar='n', default=1,
                         help='number of parallel jobs; '
-                        'match CPU count if value is less than 1')
+                             'match CPU count if value is less than 1')
     parser.add_argument('-p', '--pep8-passes', metavar='n',
                         default=-1, type=int,
                         help='maximum number of additional pep8 passes '
-                        '(default: infinite)')
+                             '(default: infinite)')
     parser.add_argument('-a', '--aggressive', action='count', default=0,
                         help='enable non-whitespace changes; '
-                        'multiple -a result in more aggressive changes')
+                             'multiple -a result in more aggressive changes')
     parser.add_argument('--experimental', action='store_true',
                         help='enable experimental fixes')
     parser.add_argument('--exclude', metavar='globs',
                         help='exclude file/directory names that match these '
-                        'comma-separated globs')
+                             'comma-separated globs')
     parser.add_argument('--list-fixes', action='store_true',
                         help='list codes for fixes; '
                         'used by --ignore and --select')
     parser.add_argument('--ignore', metavar='errors', default='',
                         help='do not fix these errors/warnings '
-                        '(default: {0})'.format(DEFAULT_IGNORE))
+                             '(default: {0})'.format(DEFAULT_IGNORE))
     parser.add_argument('--select', metavar='errors', default='',
                         help='fix only these errors/warnings (e.g. E4,W)')
     parser.add_argument('--max-line-length', metavar='n', default=79, type=int,
                         help='set maximum allowed line length '
-                        '(default: %(default)s)')
+                             '(default: %(default)s)')
     parser.add_argument('--range', metavar='line', dest='line_range',
                         default=None, type=int, nargs=2,
                         help='only fix errors found within this inclusive '
-                        'range of line numbers (e.g. 1 99); '
-                        'line numbers are indexed at 1')
+                             'range of line numbers (e.g. 1 99); '
+                             'line numbers are indexed at 1')
     parser.add_argument('--indent-size', default=DEFAULT_INDENT_SIZE,
                         type=int, metavar='n',
                         help='number of spaces per indent level '

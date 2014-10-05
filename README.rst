@@ -144,13 +144,13 @@ Options::
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
       --global-config filename
-                            path to a global pep8 config file (default:
-                            ~/.config/pep8); if this file does not
-                            exist then this is ignored.
+                            path to a global pep8 config file; if this file does
+                            not exist then this is ignored (default:
+                            ~/.config/pep8)
       --ignore-local-config
                             don't look for and apply local config files; if not
                             passed, defaults are updated with any config files in
-                            the project's root dir
+                            the project's root directory
       -r, --recursive       run recursively over directories; must be used with
                             --in-place or --diff
       -j n, --jobs n        number of parallel jobs; match CPU count if value is
