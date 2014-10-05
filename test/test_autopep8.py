@@ -4438,25 +4438,23 @@ class CommandLineTests(unittest.TestCase):
 
 class ParseArgsTests(unittest.TestCase):
 
-    # FIXME: These are dangerous. They ought to be placed in safe paths via
-    # "tempfile".
     LOCAL_CONFIG = os.path.join(ROOT_DIR, '.pep8')
-    GLOBAL_CONFIG = os.path.join(ROOT_DIR, 'GLOBAL_CONFIG')
 
     def tearDown(self):
         try:
             os.remove(self.LOCAL_CONFIG)
-            os.remove(self.GLOBAL_CONFIG)
         except OSError:
             pass
 
     def setUp(self):
+        # FIXME: This will interfere with any actual ".pep8". Also, this may
+        # cause a race condition.
         with open(self.LOCAL_CONFIG, 'w') as f:
             f.write('[pep8]\nindent-size=2\n')
 
     def test_local_config(self):
         args = autopep8.parse_args(
-            ['', '--global-config={0}'.format(self.GLOBAL_CONFIG)],
+            ['', '--global-config={0}'.format(os.devnull)],
             apply_config=True)
         self.assertEqual(args.indent_size, 2)
 
