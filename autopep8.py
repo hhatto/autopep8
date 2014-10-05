@@ -115,7 +115,7 @@ CODE_TO_2TO3 = {
              'xreadlines']}
 
 
-if sys.platform == 'win32':
+if sys.platform == 'win32':  # pragma: no cover
     DEFAULT_CONFIG = os.path.expanduser(r'~\.pep8')
 else:
     DEFAULT_CONFIG = os.path.join(os.getenv('XDG_CONFIG_HOME') or
@@ -457,7 +457,7 @@ class FixPEP8(object):
         try:
             (logical_start, logical_end) = _find_logical(self.source)
             logical_support = True
-        except (SyntaxError, tokenize.TokenError):
+        except (SyntaxError, tokenize.TokenError):  # pragma: no cover
             logical_support = False
 
         completed_lines = set()
@@ -871,7 +871,7 @@ class FixPEP8(object):
     def fix_e702(self, result, logical):
         """Put semicolon-separated compound statement on separate lines."""
         if not logical:
-            return []
+            return []  # pragma: no cover
         logical_lines = logical[2]
 
         line_index = result['line'] - 1
@@ -3677,7 +3677,7 @@ def main(apply_config=True):
     try:
         # Exit on broken pipe.
         signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
         # SIGPIPE is not available on Windows.
         pass
 
@@ -3708,7 +3708,7 @@ def main(apply_config=True):
 
             fix_multiple_files(args.files, args, sys.stdout)
     except KeyboardInterrupt:
-        return 1
+        return 1  # pragma: no cover
 
 
 class CachedTokenizer(object):
