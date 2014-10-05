@@ -3182,7 +3182,7 @@ def create_parser():
                         default=DEFAULT_CONFIG,
                         help='path to a global pep8 config file ' +
                         '(default: %s); ' % DEFAULT_CONFIG +
-                        "if this file does not exist then this is ignored.")
+                        'if this file does not exist then this is ignored.')
     parser.add_argument('--ignore-local-config', action='store_true',
                         help="don't look for and apply local config files; "
                         'if not passed, defaults are updated with any '
@@ -3331,7 +3331,7 @@ def apply_config_defaults(parser, args):
 
     try:
         defaults = dict((k.replace('-', '_'), v)
-                        for k, v in config.items("pep8"))
+                        for k, v in config.items('pep8'))
         parser.set_defaults(**defaults)
     except NoSectionError:
         pass  # just do nothing, potentially this could raise ?

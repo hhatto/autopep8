@@ -4524,7 +4524,7 @@ def skip_if_global_default():
     # Note: this will fail if DEFAULT_CONFIG is populated...
     if os.path.isfile(autopep8.DEFAULT_CONFIG):
         raise unittest.SkipTest("Can't test without DEFAULT_CONFIG as "
-                                "found %s" % autopep8.DEFAULT_CONFIG)
+                                'found %s' % autopep8.DEFAULT_CONFIG)
 
 
 class ExperimentalSystemTests(unittest.TestCase):
