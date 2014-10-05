@@ -145,7 +145,7 @@ Options::
       -i, --in-place        make changes to files in place
       --global-config filename
                             path to a global pep8 config file (default:
-                            /Users/myint/.config/pep8); if this file does not
+                            ~/.config/pep8); if this file does not
                             exist then this is ignored.
       --ignore-local-config
                             don't look for and apply local config files; if not
