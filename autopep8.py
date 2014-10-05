@@ -3314,9 +3314,11 @@ def apply_config_defaults(parser, args):
     """Update the parser's defaults from either the arguments' config_arg or
     the first config files found in parent directories."""
     try:
-        from ConfigParser import SafeConfigParser, NoSectionError
+        from configparser import ConfigParser as SafeConfigParser
+        from configparser import NoSectionError
     except ImportError:
-        from configparser import SafeConfigParser, NoSectionError
+        from ConfigParser import SafeConfigParser
+        from ConfigParser import NoSectionError
 
     config = SafeConfigParser()
     config.read(args.global_config)
