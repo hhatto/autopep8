@@ -57,5 +57,5 @@ with io.open('README.rst') as readme:
         test_suite='test.test_autopep8',
         py_modules=['autopep8'],
         zip_safe=False,
-        entry_points={'console_scripts': ['autopep8 = autopep8:_main']},
+        entry_points={'console_scripts': ['autopep8 = autopep8:main']},
     )

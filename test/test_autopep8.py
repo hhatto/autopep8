@@ -969,7 +969,7 @@ try:
         # elsewhere is in a multiline string. If we don't filter the innocuous
         # report properly, the below command will take a long time.
         p = Popen(list(AUTOPEP8_CMD_TUPLE) +
-                  ['-vvv', '--select=E101', '--diff',
+                  ['-vvv', '--select=E101', '--diff', '--global-config=/dev/null',
                    os.path.join(ROOT_DIR, 'test', 'e101_example.py')],
                   stdout=PIPE, stderr=PIPE)
         output = [x.decode('utf-8') for x in p.communicate()][0]
@@ -4624,8 +4624,8 @@ class ParseArgsTests(unittest.TestCase):
     def skip_if_global_default(self):
         # Note: this will fail if DEFAULT_CONFIG is populated...
         if os.path.isfile(autopep8.DEFAULT_CONFIG):
-            raise SkipTest("Can't test without DEFAULT_CONFIG as "
-                           "found %s" % autopep8.DEFAULT_CONFIG)
+            raise unittest.SkipTest("Can't test without DEFAULT_CONFIG as "
+                                    "found %s" % autopep8.DEFAULT_CONFIG)
 
 
 class ExperimentalSystemTests(unittest.TestCase):

@@ -3689,7 +3689,7 @@ def wrap_output(output, encoding):
                                       else output)
 
 
-def main(apply_config=False):
+def main(apply_config=True):
     """Tool main."""
     try:
         # Exit on broken pipe.
@@ -3754,9 +3754,5 @@ _cached_tokenizer = CachedTokenizer()
 generate_tokens = _cached_tokenizer.generate_tokens
 
 
-def _main(apply_config=True):
-    return main(apply_config=apply_config)
-
-
 if __name__ == '__main__':
-    sys.exit(_main())
+    sys.exit(main())
