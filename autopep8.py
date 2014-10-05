@@ -115,6 +115,14 @@ CODE_TO_2TO3 = {
              'xreadlines']}
 
 
+if sys.platform == 'win32':
+    DEFAULT_CONFIG = os.path.expanduser(r'~\.pep8')
+else:
+    DEFAULT_CONFIG = os.path.join(os.getenv('XDG_CONFIG_HOME') or
+                                  os.path.expanduser('~/.config'), 'pep8')
+PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8')
+
+
 def open_with_encoding(filename, encoding=None, mode='r'):
     """Return opened file with a specific encoding."""
     if not encoding:
@@ -449,7 +457,7 @@ class FixPEP8(object):
         try:
             (logical_start, logical_end) = _find_logical(self.source)
             logical_support = True
-        except (SyntaxError, tokenize.TokenError):  # pragma: no cover
+        except (SyntaxError, tokenize.TokenError):
             logical_support = False
 
         completed_lines = set()
@@ -863,7 +871,7 @@ class FixPEP8(object):
     def fix_e702(self, result, logical):
         """Put semicolon-separated compound statement on separate lines."""
         if not logical:
-            return []  # pragma: no cover
+            return []
         logical_lines = logical[2]
 
         line_index = result['line'] - 1
@@ -2823,14 +2831,14 @@ def code_match(code, select, ignore):
     return True
 
 
-def fix_code(source, options=None, encoding=None):
+def fix_code(source, options=None, encoding=None, apply_config=False):
     """Return fixed source code.
 
     "encoding" will be used to decode "source" if it is a byte string.
 
     """
     if not options:
-        options = parse_args([''])
+        options = parse_args([''], apply_config=apply_config)
 
     if not isinstance(source, unicode):
         source = source.decode(encoding or locale.getpreferredencoding())
@@ -2880,9 +2888,9 @@ def fix_lines(source_lines, options, filename=''):
     return ''.join(normalize_line_endings(sio.readlines(), original_newline))
 
 
-def fix_file(filename, options=None, output=None):
+def fix_file(filename, options=None, output=None, apply_config=False):
     if not options:
-        options = parse_args([filename])
+        options = parse_args([filename], apply_config=apply_config)
 
     original_source = readlines_from_file(filename)
 
@@ -3170,6 +3178,15 @@ def create_parser():
                         help='print the diff for the fixed source')
     parser.add_argument('-i', '--in-place', action='store_true',
                         help='make changes to files in place')
+    parser.add_argument('--global-config',
+                        default=DEFAULT_CONFIG,
+                        help='path to a global pep8 config file ' +
+                        '(default: %s); ' % DEFAULT_CONFIG +
+                        "if this file does not exist then this is ignored.")
+    parser.add_argument('--ignore-local-config', action='store_true',
+                        help="don't look for and apply local config files; "
+                        'if not passed, defaults are updated with any '
+                        "config files in the project's root dir")
     parser.add_argument('-r', '--recursive', action='store_true',
                         help='run recursively over directories; '
                         'must be used with --in-place or --diff')
@@ -3214,10 +3231,13 @@ def create_parser():
     return parser
 
 
-def parse_args(arguments):
+def parse_args(arguments, apply_config=False):
     """Parse command-line options."""
     parser = create_parser()
     args = parser.parse_args(arguments)
+    if apply_config:
+        parser = apply_config_defaults(parser, args)
+        args = parser.parse_args(arguments)
 
     if not args.files and not args.list_fixes:
         parser.error('incorrect number of arguments')
@@ -3288,6 +3308,34 @@ def parse_args(arguments):
                          'to the second')
 
     return args
+
+
+def apply_config_defaults(parser, args):
+    """Update the parser's defaults from either the arguments' config_arg or
+    the first config files found in parent directories."""
+    try:
+        from ConfigParser import SafeConfigParser, NoSectionError
+    except ImportError:
+        from configparser import SafeConfigParser, NoSectionError
+
+    config = SafeConfigParser()
+    config.read(args.global_config)
+
+    if not args.ignore_local_config:
+        parent, tail = os.getcwd(), 'tail'
+        while tail:
+            if config.read([os.path.join(parent, fn)
+                            for fn in PROJECT_CONFIG]):
+                break
+            parent, tail = os.path.split(parent)
+
+    try:
+        defaults = dict((k.replace('-', '_'), v)
+                        for k, v in config.items("pep8"))
+        parser.set_defaults(**defaults)
+    except NoSectionError:
+        pass  # just do nothing, potentially this could raise ?
+    return parser
 
 
 def _split_comma_separated(string):
@@ -3624,17 +3672,17 @@ def wrap_output(output, encoding):
                                       else output)
 
 
-def main():
+def main(apply_config=True):
     """Tool main."""
     try:
         # Exit on broken pipe.
         signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-    except AttributeError:  # pragma: no cover
+    except AttributeError:
         # SIGPIPE is not available on Windows.
         pass
 
     try:
-        args = parse_args(sys.argv[1:])
+        args = parse_args(sys.argv[1:], apply_config=apply_config)
 
         if args.list_fixes:
             for code, description in sorted(supported_fixes()):
@@ -3660,7 +3708,7 @@ def main():
 
             fix_multiple_files(args.files, args, sys.stdout)
     except KeyboardInterrupt:
-        return 1  # pragma: no cover
+        return 1
 
 
 class CachedTokenizer(object):

@@ -969,7 +969,7 @@ try:
         # elsewhere is in a multiline string. If we don't filter the innocuous
         # report properly, the below command will take a long time.
         p = Popen(list(AUTOPEP8_CMD_TUPLE) +
-                  ['-vvv', '--select=E101', '--diff',
+                  ['-vvv', '--select=E101', '--diff', '--global-config=/dev/null',
                    os.path.join(ROOT_DIR, 'test', 'e101_example.py')],
                   stdout=PIPE, stderr=PIPE)
         output = [x.decode('utf-8') for x in p.communicate()][0]
@@ -4433,6 +4433,97 @@ class CommandLineTests(unittest.TestCase):
         self.assertEqual(
             fixed,
             process.communicate(line.encode('utf-8'))[0].decode('utf-8'))
+
+
+class ParseArgsTests(unittest.TestCase):
+
+    LOCAL_CONFIG = os.path.join(ROOT_DIR, '.pep8')
+    GLOBAL_CONFIG = os.path.join(ROOT_DIR, 'GLOBAL_CONFIG')
+
+    def tearDown(self):
+        try:
+            os.remove(self.LOCAL_CONFIG)
+            os.remove(self.GLOBAL_CONFIG)
+        except OSError:
+            pass
+
+    def setUp(self):
+        with open(self.LOCAL_CONFIG, 'w') as f:
+            f.write('[pep8]\nindent-size=2\n')
+
+    def test_local_config(self):
+        args = autopep8.parse_args([''], apply_config=True)
+        self.assertEqual(args.indent_size, 2)
+
+    def test_config_override(self):
+        args = autopep8.parse_args(['*.py', '--indent-size=7'],
+                                   apply_config=True)
+        self.assertEqual(args.indent_size, 7)
+
+    def test_config_false_with_local(self):
+        args = autopep8.parse_args(['*.py', '--global-config=False'],
+                                   apply_config=True)
+        self.assertEqual(args.global_config, 'False')
+        self.assertEqual(args.indent_size, 2)
+
+    def test_config_false_with_local_space(self):
+        args = autopep8.parse_args(['*.py', '--global-config', 'False'],
+                                   apply_config=True)
+        self.assertEqual(args.global_config, 'False')
+        self.assertEqual(args.indent_size, 2)
+
+    def test_config_false_with_local_autocomplete(self):
+        args = autopep8.parse_args(['*.py', '--g', 'False'],
+                                   apply_config=True)
+        self.assertEqual(args.global_config, 'False')
+        self.assertEqual(args.indent_size, 2)
+
+    def test_config_false_without_local(self):
+        os.remove(self.LOCAL_CONFIG)
+        args = autopep8.parse_args(['*.py', '--global-config=False'],
+                                   apply_config=True)
+        self.assertEqual(args.indent_size, 4)
+
+    def test_global_config_with_locals(self):
+        mycfg = os.path.join(ROOT_DIR, 'mycfg')
+        with open(mycfg, 'w') as f:
+            f.write('[pep8]\nindent-size=3\n')
+        args = autopep8.parse_args(['*.py', '--global-config=%s' % mycfg],
+                                   apply_config=True)
+        self.assertEqual(args.indent_size, 2)
+        os.remove(mycfg)
+
+    def test_global_config_ignore_locals(self):
+        mycfg = os.path.join(ROOT_DIR, 'mycfg')
+        with open(mycfg, 'w') as f:
+            f.write('[pep8]\nindent-size=3\n')
+        args = autopep8.parse_args(['*.py', '--global-config=%s' % mycfg,
+                                    '--ignore-local-config'],
+                                   apply_config=True)
+        self.assertEqual(args.indent_size, 3)
+        os.remove(mycfg)
+
+    def test_global_config_without_locals(self):
+        mycfg = os.path.join(ROOT_DIR, 'mycfg')
+        with open(mycfg, 'w') as f:
+            f.write('[pep8]\nindent-size=3\n')
+        os.remove(self.LOCAL_CONFIG)
+        args = autopep8.parse_args(['*.py', '--global-config=%s' % mycfg],
+                                   apply_config=True)
+        self.assertEqual(args.indent_size, 3)
+        os.remove(mycfg)
+
+    def test_no_config(self):
+        self.skip_if_global_default()
+        os.remove(self.LOCAL_CONFIG)
+        args = autopep8.parse_args([''], apply_config=True)
+        self.assertEqual(args.indent_size, 4)
+
+    def skip_if_global_default(self):
+        # Note: this will fail if DEFAULT_CONFIG is populated...
+        if os.path.isfile(autopep8.DEFAULT_CONFIG):
+            raise unittest.SkipTest("Can't test without DEFAULT_CONFIG as "
+                                    "found %s" % autopep8.DEFAULT_CONFIG)
 
 
 class ExperimentalSystemTests(unittest.TestCase):
