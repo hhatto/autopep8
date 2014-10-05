@@ -3315,28 +3315,31 @@ def apply_config_defaults(parser, args):
     the first config files found in parent directories."""
     try:
         from configparser import ConfigParser as SafeConfigParser
-        from configparser import NoSectionError
+        from configparser import Error
     except ImportError:
         from ConfigParser import SafeConfigParser
-        from ConfigParser import NoSectionError
+        from ConfigParser import Error
 
     config = SafeConfigParser()
-    config.read(args.global_config)
-
-    if not args.ignore_local_config:
-        parent, tail = os.getcwd(), 'tail'
-        while tail:
-            if config.read([os.path.join(parent, fn)
-                            for fn in PROJECT_CONFIG]):
-                break
-            parent, tail = os.path.split(parent)
 
     try:
+        config.read(args.global_config)
+
+        if not args.ignore_local_config:
+            parent, tail = os.getcwd(), 'tail'
+            while tail:
+                if config.read([os.path.join(parent, fn)
+                                for fn in PROJECT_CONFIG]):
+                    break
+                parent, tail = os.path.split(parent)
+
         defaults = dict((k.replace('-', '_'), v)
                         for k, v in config.items('pep8'))
         parser.set_defaults(**defaults)
-    except NoSectionError:
-        pass  # just do nothing, potentially this could raise ?
+    except Error:
+        # Ignore for now.
+        pass
+
     return parser
 
 
