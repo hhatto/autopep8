@@ -4490,7 +4490,7 @@ class ConfigurationTests(unittest.TestCase):
         with temporary_file_context('[pep8]\nindent-size=3\n') as filename:
             with fake_configuration_context():
                 args = autopep8.parse_args(
-                    ['*.py', '--global-config={}'.format(filename),
+                    ['*.py', '--global-config={0}'.format(filename),
                      '--ignore-local-config'],
                     apply_config=True)
                 self.assertEqual(args.indent_size, 3)
@@ -4498,7 +4498,7 @@ class ConfigurationTests(unittest.TestCase):
     def test_global_config_without_locals(self):
         with temporary_file_context('[pep8]\nindent-size=3\n') as filename:
             args = autopep8.parse_args(
-                ['*.py', '--global-config={}'.format(filename)],
+                ['*.py', '--global-config={0}'.format(filename)],
                 apply_config=True)
             self.assertEqual(args.indent_size, 3)
 
