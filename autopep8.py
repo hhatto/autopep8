@@ -3235,14 +3235,16 @@ def parse_args(arguments, apply_config=False):
     """Parse command-line options."""
     parser = create_parser()
     args = parser.parse_args(arguments)
-    if apply_config:
-        parser = apply_config_defaults(parser, args)
-        args = parser.parse_args(arguments)
 
     if not args.files and not args.list_fixes:
         parser.error('incorrect number of arguments')
 
     args.files = [decode_filename(name) for name in args.files]
+
+    if apply_config:
+        parser = read_config(args, parser)
+        args = parser.parse_args(arguments)
+        args.files = [decode_filename(name) for name in args.files]
 
     if '-' in args.files:
         if len(args.files) > 1:
@@ -3310,9 +3312,8 @@ def parse_args(arguments, apply_config=False):
     return args
 
 
-def apply_config_defaults(parser, args):
-    """Update the parser's defaults from either the arguments' config_arg or
-    the first config files found in parent directories."""
+def read_config(args, parser):
+    """Read both user configuration and local configuration."""
     try:
         from configparser import ConfigParser as SafeConfigParser
         from configparser import Error
