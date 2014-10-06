@@ -4509,18 +4509,6 @@ class ConfigurationTests(unittest.TestCase):
                 apply_config=True)
             self.assertEqual(args.indent_size, 3)
 
-    def test_no_config(self):
-        skip_if_global_default()
-        args = autopep8.parse_args([''], apply_config=True)
-        self.assertEqual(args.indent_size, 4)
-
-
-def skip_if_global_default():
-    # Note: this will fail if DEFAULT_CONFIG is populated...
-    if os.path.isfile(autopep8.DEFAULT_CONFIG):
-        raise unittest.SkipTest("Can't test without DEFAULT_CONFIG as "
-                                'found %s' % autopep8.DEFAULT_CONFIG)
-
 
 class ExperimentalSystemTests(unittest.TestCase):
 
