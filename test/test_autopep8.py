@@ -38,6 +38,9 @@ sys.path.insert(0, ROOT_DIR)
 import autopep8
 
 
+FAKE_CONFIGURATION = os.path.join(ROOT_DIR, 'test', 'fake_configuration')
+
+
 if 'AUTOPEP8_COVERAGE' in os.environ and int(os.environ['AUTOPEP8_COVERAGE']):
     AUTOPEP8_CMD_TUPLE = ('coverage', 'run', '--branch', '--parallel',
                           '--omit=*/site-packages/*',
@@ -4439,66 +4442,70 @@ class CommandLineTests(unittest.TestCase):
 class ConfigurationTests(unittest.TestCase):
 
     def test_local_config(self):
-        with fake_configuration_context():
-            args = autopep8.parse_args(
-                ['', '--global-config={0}'.format(os.devnull)],
-                apply_config=True)
-            self.assertEqual(args.indent_size, 2)
+        args = autopep8.parse_args(
+            [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+             '--global-config={0}'.format(os.devnull)],
+            apply_config=True)
+        self.assertEqual(args.indent_size, 2)
 
     def test_config_override(self):
-        with fake_configuration_context():
-            args = autopep8.parse_args(['*.py', '--indent-size=7'],
-                                       apply_config=True)
-            self.assertEqual(args.indent_size, 7)
+        args = autopep8.parse_args(
+            [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+             '--indent-size=7'],
+            apply_config=True)
+        self.assertEqual(args.indent_size, 7)
 
     def test_config_false_with_local(self):
-        with fake_configuration_context():
-            args = autopep8.parse_args(['*.py', '--global-config=False'],
-                                       apply_config=True)
-            self.assertEqual(args.global_config, 'False')
-            self.assertEqual(args.indent_size, 2)
+        args = autopep8.parse_args(
+            [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+             '--global-config=False'],
+            apply_config=True)
+        self.assertEqual(args.global_config, 'False')
+        self.assertEqual(args.indent_size, 2)
 
     def test_config_false_with_local_space(self):
-        with fake_configuration_context():
-            args = autopep8.parse_args(['*.py', '--global-config', 'False'],
-                                       apply_config=True)
-            self.assertEqual(args.global_config, 'False')
-            self.assertEqual(args.indent_size, 2)
+        args = autopep8.parse_args(
+            [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+             '--global-config', 'False'],
+            apply_config=True)
+        self.assertEqual(args.global_config, 'False')
+        self.assertEqual(args.indent_size, 2)
 
     def test_config_false_with_local_autocomplete(self):
-        with fake_configuration_context():
-            args = autopep8.parse_args(['*.py', '--g', 'False'],
-                                       apply_config=True)
-            self.assertEqual(args.global_config, 'False')
-            self.assertEqual(args.indent_size, 2)
+        args = autopep8.parse_args(
+            [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+             '--g', 'False'],
+            apply_config=True)
+        self.assertEqual(args.global_config, 'False')
+        self.assertEqual(args.indent_size, 2)
 
     def test_config_false_without_local(self):
-        args = autopep8.parse_args(['*.py',
+        args = autopep8.parse_args(['/nowhere/foo.py',
                                     '--global-config={0}'.format(os.devnull)],
                                    apply_config=True)
         self.assertEqual(args.indent_size, 4)
 
     def test_global_config_with_locals(self):
         with temporary_file_context('[pep8]\nindent-size=3\n') as filename:
-            with fake_configuration_context():
-                args = autopep8.parse_args(
-                    ['*.py', '--global-config={0}'.format(filename)],
-                    apply_config=True)
-                self.assertEqual(args.indent_size, 2)
+            args = autopep8.parse_args(
+                [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+                 '--global-config={0}'.format(filename)],
+                apply_config=True)
+            self.assertEqual(args.indent_size, 2)
 
     def test_global_config_ignore_locals(self):
         with temporary_file_context('[pep8]\nindent-size=3\n') as filename:
-            with fake_configuration_context():
-                args = autopep8.parse_args(
-                    ['*.py', '--global-config={0}'.format(filename),
-                     '--ignore-local-config'],
-                    apply_config=True)
-                self.assertEqual(args.indent_size, 3)
+            args = autopep8.parse_args(
+                [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+                 '--global-config={0}'.format(filename),
+                 '--ignore-local-config'],
+                apply_config=True)
+            self.assertEqual(args.indent_size, 3)
 
     def test_global_config_without_locals(self):
         with temporary_file_context('[pep8]\nindent-size=3\n') as filename:
             args = autopep8.parse_args(
-                ['*.py', '--global-config={0}'.format(filename)],
+                ['/nowhere/foo.py', '--global-config={0}'.format(filename)],
                 apply_config=True)
             self.assertEqual(args.indent_size, 3)
 
@@ -5861,16 +5868,6 @@ def capture_stderr(sio):
         yield
     finally:
         sys.stderr = _tmp
-
-
-@contextlib.contextmanager
-def fake_configuration_context():
-    old_working_directory = os.getcwd()
-    os.chdir(os.path.join(ROOT_DIR, 'test', 'fake_configuration'))
-    try:
-        yield
-    finally:
-        os.chdir(old_working_directory)
 
 
 if __name__ == '__main__':

@@ -3326,12 +3326,13 @@ def apply_config_defaults(parser, args):
         config.read(args.global_config)
 
         if not args.ignore_local_config:
-            parent, tail = os.getcwd(), 'tail'
+            parent = tail = args.files and os.path.abspath(
+                os.path.commonprefix(args.files))
             while tail:
                 if config.read([os.path.join(parent, fn)
                                 for fn in PROJECT_CONFIG]):
                     break
-                parent, tail = os.path.split(parent)
+                (parent, tail) = os.path.split(parent)
 
         defaults = dict((k.lstrip('-').replace('-', '_'), v)
                         for k, v in config.items('pep8'))
