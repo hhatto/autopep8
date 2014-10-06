@@ -2980,15 +2980,15 @@ def apply_local_fixes(source, options):
         """Find leftmost item greater than or equal to x."""
         i = bisect.bisect_left(a, x)
         if i != len(a):
-            return i, a[i]
-        return len(a) - 1, a[-1]
+            return (i, a[i])
+        return (len(a) - 1, a[-1])
 
     def find_le(a, x):
         """Find rightmost value less than or equal to x."""
         i = bisect.bisect_right(a, x)
         if i:
-            return i - 1, a[i - 1]
-        return 0, a[0]
+            return (i - 1, a[i - 1])
+        return (0, a[0])
 
     def local_fix(source, start_log, end_log,
                   start_lines, end_lines, indents, last_line):
@@ -3056,7 +3056,7 @@ def apply_local_fixes(source, options):
         return re.split('[ :]', line.strip(), 1)[0] in continued_stmts
 
     assert options.line_range
-    start, end = options.line_range
+    (start, end) = options.line_range
     start -= 1
     end -= 1
     last_line = end  # We shouldn't modify lines after this cut-off.
@@ -3075,8 +3075,8 @@ def apply_local_fixes(source, options):
 
     source = source.splitlines(True)
 
-    start_log, start = find_ge(start_lines, start)
-    end_log, end = find_le(start_lines, end)
+    (start_log, start) = find_ge(start_lines, start)
+    (end_log, end) = find_le(start_lines, end)
 
     # Look behind one line, if it's indented less than current indent
     # then we can move to this previous line knowing that its
@@ -3097,7 +3097,7 @@ def apply_local_fixes(source, options):
         ind = indents[start_log]
         for t in itertools.takewhile(lambda t: t[1][1] >= ind,
                                      enumerate(logical[0][start_log:])):
-            n_log, n = start_log + t[0], t[1][0]
+            (n_log, n) = start_log + t[0], t[1][0]
 
         # Start shares indent up to n.
         if n <= end:
@@ -3110,10 +3110,10 @@ def apply_local_fixes(source, options):
 
         else:
             # Look at the line after end and see if allows us to reindent.
-            after_end_log, after_end = find_ge(start_lines, end + 1)
+            (after_end_log, after_end) = find_ge(start_lines, end + 1)
 
             if indents[after_end_log] > indents[start_log]:
-                start_log, start = find_ge(start_lines, start + 1)
+                (start_log, start) = find_ge(start_lines, start + 1)
                 continue
 
             if (indents[after_end_log] == indents[start_log]
@@ -3132,7 +3132,7 @@ def apply_local_fixes(source, options):
                         only_block = False
                         break
                 if only_block:
-                    end_log, end = find_le(start_lines, end - 1)
+                    (end_log, end) = find_le(start_lines, end - 1)
                 continue
 
             source = local_fix(source, start_log, end_log,
