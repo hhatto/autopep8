@@ -5873,6 +5873,5 @@ def fake_configuration_context():
         os.chdir(old_working_directory)
 
 
-
 if __name__ == '__main__':
     unittest.main()
