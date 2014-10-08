@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """Run acid test against latest packages on PyPi."""
 
 from __future__ import print_function
@@ -6,6 +7,8 @@ from __future__ import print_function
 import os
 import subprocess
 import sys
+import tarfile
+import zipfile
 
 import acid
 
@@ -38,7 +41,6 @@ def download_package(name, output_directory):
 def extract_package(path, output_directory):
     """Extract package at path."""
     if path.lower().endswith('.tar.gz'):
-        import tarfile
         try:
             tar = tarfile.open(path)
             tar.extractall(path=output_directory)
@@ -47,7 +49,6 @@ def extract_package(path, output_directory):
         except (tarfile.ReadError, IOError):
             return False
     elif path.lower().endswith('.zip'):
-        import zipfile
         try:
             archive = zipfile.ZipFile(path)
             archive.extractall(path=output_directory)
