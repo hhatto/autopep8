@@ -17,9 +17,9 @@ matrix:
         - env: PEP8_VERSION=github
 
 install:
-    - if [ "$TRAVIS_PYTHON_VERSION" == "2.6" ]; then pip --quiet install argparse unittest2; fi
-    - if [ "$PEP8_VERSION" == "github" ]; then pip --quiet install git+https://github.com/jcrocholl/pep8; fi
-    - python setup.py --quiet build --build-base=".build-$TRAVIS_PYTHON_VERSION" install
+    - if [ "$TRAVIS_PYTHON_VERSION" == "2.6" ]; then pip install unittest2; fi
+    - if [ "$PEP8_VERSION" == "github" ]; then pip install git+https://github.com/jcrocholl/pep8; fi
+    - python setup.py build --build-base=".build-$TRAVIS_PYTHON_VERSION" install
 
 before_script:
     # This is needed for Python multiprocessing.
@@ -37,7 +37,7 @@ script:
     - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then pep8 autopep8.py; fi
     - if [ "$TRAVIS_PYTHON_VERSION" != "pypy" ]; then pip install pyflakes; pyflakes autopep8.py; fi
 
-    - pip --quiet install pydiff
+    - pip install pydiff
     - python test/acid.py -aaa --compare-bytecode --experimental test/example.py
 
     - python test/test_suite.py
