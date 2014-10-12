@@ -4143,6 +4143,12 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--range', '2', '7']) as result:
             self.assertEqual(fixed_2_7, result)
 
+    def test_range_indent_multiline_strings_and_docstring(self):
+        line = '\ndef f():\n  """docstring\n  continued"""\n  a = """multi\nline\nstring"""\n  #comment\n  a=1\na=2\n'
+        fixed_2_7 = '\ndef f():\n    """docstring\n    continued"""\n    a = """multi\nline\nstring"""\n    # comment\n    a = 1\na=2\n'
+        with autopep8_context(line, options=['--range', '2', '9']) as result:
+            self.assertEqual(fixed_2_7, result)
+
     def test_range_with_indented_comments(self):
         line = 'if True:\n  if True:\n    if True:\n      # bah\n      pass\n'
         fixed = 'if True:\n  if True:\n    if True:\n        # bah\n        pass\n'
