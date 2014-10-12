@@ -3015,7 +3015,8 @@ def apply_local_fixes(source, options):
         msl = multiline_string_lines(''.join(subsource),
                                      include_docstrings=False)
         msl_docstrings = (multiline_string_lines(''.join(subsource),
-                                                 include_docstrings=True) - msl)
+                                                 include_docstrings=True)
+                          - msl)
         # Remove indent from subsource.
         if ind:
             for line_no in start_lines[start_log:end_log + 1]:
