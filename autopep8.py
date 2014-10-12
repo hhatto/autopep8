@@ -3012,11 +3012,20 @@ def apply_local_fixes(source, options):
         sl = slice(start_lines[start_log], end_lines[end_log] + 1)
 
         subsource = source[sl]
+        msl = multiline_string_lines(''.join(subsource),
+                                     include_docstrings=False)
         # Remove indent from subsource.
         if ind:
             for line_no in start_lines[start_log:end_log + 1]:
                 pos = line_no - start_lines[start_log]
                 subsource[pos] = subsource[pos][ind:]
+            # Remove indent from comments.
+            for i, line in enumerate(subsource):
+                if i + 1 not in msl and re.match("\s*#", line):
+                    if line.index("#") >= ind:
+                        subsource[i] = line[ind:]
+                    else:
+                        subsource[i] = line.lstrip()
 
         # Fix indentation of subsource.
         fixed_subsource = apply_global_fixes(''.join(subsource),
@@ -3027,16 +3036,9 @@ def apply_local_fixes(source, options):
         # Add back indent for non multi-line strings lines.
         msl = multiline_string_lines(''.join(fixed_subsource),
                                      include_docstrings=False)
-        for i, line in reversed(list(enumerate(fixed_subsource))):
+        for i, line in enumerate(fixed_subsource):
             if not i + 1 in msl:
-                if line.lstrip().startswith('#'):  # is comment
-                    # This only works as a comment are never be the last line
-                    fixed_subsource[i] = next_indent + line.lstrip()
-
-                elif line != '\n':
-                    fixed_subsource[i] = indent + line
-                    # the following is used in the comments hack above
-                    next_indent = indent + _get_indentation(line)
+                fixed_subsource[i] = indent + line if line != '\n' else line
 
         # We make a special case to look at the final line, if it's a multiline
         # *and* the cut off is somewhere inside it, we take the fixed
