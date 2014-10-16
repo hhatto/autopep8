@@ -638,6 +638,12 @@ class FixPEP8(object):
         offset = result['column'] - 1
         fixed = target[:offset] + ' ' + target[offset:]
 
+        # Ignore the case of 'x**2'
+        if target[offset:offset+2] == '**' and result['id'] == "E226":
+            return []
+        if target[offset-2:offset] == '**' and result['id'] == "E225":
+            return []
+
         # Only proceed if non-whitespace characters match.
         # And make sure we don't break the indentation.
         if (
