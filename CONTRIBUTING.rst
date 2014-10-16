@@ -10,20 +10,18 @@ Issues
 
 When submitting a bug report, please provide the following:
 
-1. ``autopep8 --version``
-2. ``pep8 --version``
-3. ``python --version``
-4. ``uname -a`` if on Unix.
-5. The example input that causes the bug.
-6. The ``autopep8`` command-line options used to cause the bug.
-7. The expected output.
-8. Does the bug happen with the latest version of autopep8? To upgrade::
+1. Does the ``pep8`` tool behave correctly? If not, then the bug
+   report should be filed at the pep8_ repository instead.
+2. ``autopep8 --version``
+3. ``pep8 --version``
+4. ``python --version``
+5. ``uname -a`` if on Unix.
+6. The example input that causes the bug.
+7. The ``autopep8`` command-line options used to cause the bug.
+8. The expected output.
+9. Does the bug happen with the latest version of autopep8? To upgrade::
 
     $ pip install --upgrade git+https://github.com/hhatto/autopep8
-9. Does the ``pep8`` tool report the problem correctly? If not, then the bug
-   report should be filed at the pep8_ repository.
-
-.. _pep8: https://github.com/jcrocholl/pep8
 
 
 Pull requests
@@ -31,6 +29,10 @@ Pull requests
 
 When submitting a pull request, please do the following.
 
-1. Add a test case to ``test/test_autopep8.py`` that demonstrates what your
+1. Does the ``pep8`` tool behave correctly? If not, then a pull request
+   should be filed at the pep8_ repository instead.
+2. Add a test case to ``test/test_autopep8.py`` that demonstrates what your
    change does.
-2. Make sure all tests pass.
+3. Make sure all tests pass.
+
+.. _pep8: https://github.com/jcrocholl/pep8
