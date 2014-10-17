@@ -3014,9 +3014,8 @@ def apply_local_fixes(source, options):
         subsource = source[sl]
         msl = multiline_string_lines(''.join(subsource),
                                      include_docstrings=False)
-        msl_docstrings = (multiline_string_lines(''.join(subsource),
-                                                 include_docstrings=True)
-                          - msl)
+        msl_docstrings = multiline_string_lines(
+            ''.join(subsource), include_docstrings=True) - msl
         # Remove indent from subsource.
         if ind:
             for line_no in start_lines[start_log:end_log + 1]:
@@ -3029,9 +3028,9 @@ def apply_local_fixes(source, options):
                         subsource[pos] = subsource[pos][ind:]
 
             # Remove indent from comments.
-            for i, line in enumerate(subsource):
-                if i + 1 not in msl and re.match(r"\s*#", line):
-                    if line.index("#") >= ind:
+            for (i, line) in enumerate(subsource):
+                if i + 1 not in msl and re.match(r'\s*#', line):
+                    if line.index('#') >= ind:
                         subsource[i] = line[ind:]
                     else:
                         subsource[i] = line.lstrip()
@@ -3045,7 +3044,7 @@ def apply_local_fixes(source, options):
         # Add back indent for non multi-line strings lines.
         msl = multiline_string_lines(''.join(fixed_subsource),
                                      include_docstrings=False)
-        for i, line in enumerate(fixed_subsource):
+        for (i, line) in enumerate(fixed_subsource):
             if not i + 1 in msl:
                 fixed_subsource[i] = indent + line if line != '\n' else line
 
