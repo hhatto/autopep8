@@ -3030,7 +3030,7 @@ def apply_local_fixes(source, options):
 
             # Remove indent from comments.
             for i, line in enumerate(subsource):
-                if i + 1 not in msl and re.match("\s*#", line):
+                if i + 1 not in msl and re.match(r"\s*#", line):
                     if line.index("#") >= ind:
                         subsource[i] = line[ind:]
                     else:
