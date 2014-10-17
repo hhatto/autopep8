@@ -295,8 +295,11 @@ def continued_indentation(logical_line, tokens, indent_level, indent_char,
                 yield (start, '{0} {1}'.format(*error))
 
         # Look for visual indenting.
-        if (parens[row] and token_type not in (tokenize.NL, tokenize.COMMENT)
-                and not indent[depth]):
+        if (
+            parens[row] and
+            token_type not in (tokenize.NL, tokenize.COMMENT) and
+            not indent[depth]
+        ):
             indent[depth] = start[1]
             indent_chances[start[1]] = True
         # Deal with implicit string concatenation.
@@ -1176,9 +1179,9 @@ def fix_e265(source, aggressive=False):  # pylint: disable=unused-argument
             if len(line) > 1:
                 if (
                     # Leave multiple spaces like '#    ' alone.
-                    (line.count('#') > 1 or line[1].isalnum())
+                    (line.count('#') > 1 or line[1].isalnum()) and
                     # Leave stylistic outlined blocks alone.
-                    and not line.rstrip().endswith('#')
+                    not line.rstrip().endswith('#')
                 ):
                     line = '# ' + line.lstrip('# \t')
 
@@ -3053,8 +3056,10 @@ def apply_local_fixes(source, options):
         # subset up until last_line, this assumes that the number of lines
         # does not change in this multiline line.
         changed_lines = len(fixed_subsource)
-        if (start_lines[end_log] != end_lines[end_log]
-                and end_lines[end_log] > last_line):
+        if (
+            start_lines[end_log] != end_lines[end_log] and
+            end_lines[end_log] > last_line
+        ):
             after_end = end_lines[end_log] - last_line
             fixed_subsource = (fixed_subsource[:-after_end] +
                                source[sl][-after_end:])
@@ -3087,8 +3092,8 @@ def apply_local_fixes(source, options):
         # Just blank lines, this should imply that it will become '\n' ?
         return apply_global_fixes(source, options)
 
-    start_lines, indents = zip(*logical[0])
-    end_lines, _ = zip(*logical[1])
+    (start_lines, indents) = zip(*logical[0])
+    (end_lines, _) = zip(*logical[1])
 
     source = source.splitlines(True)
 
@@ -3098,9 +3103,11 @@ def apply_local_fixes(source, options):
     # Look behind one line, if it's indented less than current indent
     # then we can move to this previous line knowing that its
     # indentation level will not be changed.
-    if (start_log > 0
-            and indents[start_log - 1] < indents[start_log]
-            and not is_continued_stmt(source[start_log - 1])):
+    if (
+        start_log > 0 and
+        indents[start_log - 1] < indents[start_log] and
+        not is_continued_stmt(source[start_log - 1])
+    ):
         start_log -= 1
         start = start_lines[start_log]
 
@@ -3133,8 +3140,10 @@ def apply_local_fixes(source, options):
                 (start_log, start) = find_ge(start_lines, start + 1)
                 continue
 
-            if (indents[after_end_log] == indents[start_log]
-                    and is_continued_stmt(source[after_end])):
+            if (
+                indents[after_end_log] == indents[start_log] and
+                is_continued_stmt(source[after_end])
+            ):
                 # Find n, the beginning of the last continued statement.
                 # Apply fix to previous block if there is one.
                 only_block = True
