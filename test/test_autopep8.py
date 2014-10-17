@@ -4144,6 +4144,44 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--range', '2', '7']) as result:
             self.assertEqual(fixed_2_7, result)
 
+    def test_range_indent_multiline_strings_and_docstring(self):
+        code_ = '''
+def f():
+  """docstring
+  continued"""
+  a = """multi
+line
+string"""
+  #comment
+  a=1
+a=2
+'''
+        fixed_2_7 = '''
+def f():
+    """docstring
+    continued"""
+    a = """multi
+line
+string"""
+    # comment
+    a = 1
+a=2
+'''
+        with autopep8_context(code_, options=['--range', '2', '9']) as result:
+            self.assertEqual(fixed_2_7, result)
+
+    def test_range_with_indented_comments(self):
+        code_ = 'if True:\n  if True:\n    if True:\n      # bah\n      pass\n'
+        fixed = 'if True:\n  if True:\n    if True:\n        # bah\n        pass\n'
+        with autopep8_context(code_, options=['--range', '4', '5']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_range_with_indented_comments_spaced(self):
+        code_ = 'if True:\n  if True:\n    if True:\n      # bah\n\n      pass\n'
+        fixed = 'if True:\n  if True:\n    if True:\n        # bah\n\n        pass\n'
+        with autopep8_context(code_, options=['--range', '4', '6']) as result:
+            self.assertEqual(fixed, result)
+
     def test_range_with_broken_syntax(self):
         line = """\
 if True:
