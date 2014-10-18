@@ -3028,8 +3028,6 @@ def apply_local_fixes(source, options):
                 if i + 1 not in msl and re.match(r'\s*#', line):
                     if line.index('#') >= ind:
                         subsource[i] = line[ind:]
-                    else:
-                        subsource[i] = line.lstrip()
 
         # Fix indentation of subsource.
         fixed_subsource = apply_global_fixes(''.join(subsource),
