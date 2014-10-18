@@ -3017,18 +3017,11 @@ def apply_local_fixes(source, options):
         subsource = source[sl]
         msl = multiline_string_lines(''.join(subsource),
                                      include_docstrings=False)
-        msl_docstrings = multiline_string_lines(
-            ''.join(subsource), include_docstrings=True) - msl
         # Remove indent from subsource.
         if ind:
             for line_no in start_lines[start_log:end_log + 1]:
                 pos = line_no - start_lines[start_log]
                 subsource[pos] = subsource[pos][ind:]
-                while pos + 1 in msl_docstrings:
-                    # Remove indent from multi-line docstrings.
-                    pos += 1
-                    if _get_indentation(subsource[pos]) >= ind:
-                        subsource[pos] = subsource[pos][ind:]
 
             # Remove indent from comments.
             for (i, line) in enumerate(subsource):
