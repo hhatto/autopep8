@@ -698,6 +698,17 @@ class FixPEP8(object):
 
         self.source[result['line'] - 1] = fixed
 
+    def fix_e265(self, result):
+        """Fix lack of spacing after comment hash."""
+        target = self.source[result['line'] - 1]
+        offset = result['column'] - 1
+
+        code = target[:offset]
+        comment = target[offset:].lstrip(' \t#')
+
+        fixed = code + ('# ' + comment if comment.strip() else '\n')
+        self.source[result['line'] - 1] = fixed
+
     def fix_e271(self, result):
         """Fix extraneous whitespace around keywords."""
         line_index = result['line'] - 1

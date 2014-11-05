@@ -3298,7 +3298,7 @@ def foo():
 """
         fixed = """\
 def foo():
-    #. This is not a novel to be tossed aside lightly. It should be throw with great force.
+    # . This is not a novel to be tossed aside lightly. It should be throw with great force.
     self.xxxxxxxxx(
         _('yyyyyyyyyyyyy yyyyyyyyyyyy yyyyyyyy yyyyyyyy y'),
         'zzzzzzzzzzzzzzzzzzz',
@@ -4127,8 +4127,7 @@ correct = 'good syntax ?' in dict()
 
     def test_range_indent_docstrings_partial(self):
         line = '\ndef f(x):\n  """docstring\n  docstring"""\n  #comment\n  if x:\n    return x\n'
-        # TODO this should fix the comment spacing
-        fixed_2_5 = '\ndef f(x):\n  """docstring\n  docstring"""\n  #comment\n  if x:\n    return x\n'
+        fixed_2_5 = '\ndef f(x):\n  """docstring\n  docstring"""\n  # comment\n  if x:\n    return x\n'
         with autopep8_context(line, options=['--range', '2', '5']) as result:
             self.assertEqual(fixed_2_5, result)
 
