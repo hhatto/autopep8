@@ -78,14 +78,18 @@ check:
 		--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
 		--disable=bad-builtin \
 		--disable=bad-continuation \
+		--disable=bad-option-value \
 		--disable=fixme \
 		--disable=invalid-name \
 		--disable=locally-disabled \
 		--disable=missing-docstring \
+		--disable=no-absolute-import \
 		--disable=no-member \
 		--disable=no-self-use \
 		--disable=not-callable \
+		--disable=old-division \
 		--disable=protected-access \
+		--disable=redefined-builtin \
 		--disable=star-args \
 		--disable=too-few-public-methods \
 		--disable=too-many-arguments \
@@ -96,28 +100,33 @@ check:
 		--disable=too-many-public-methods \
 		--disable=too-many-statements \
 		--disable=undefined-loop-variable \
+		--disable=unicode-builtin \
 		--rcfile=/dev/null autopep8.py setup.py update_readme.py
 	pylint \
 		--reports=no \
 		--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
 		--max-module-lines=2500 \
 		--disable=bad-continuation \
+		--disable=basestring-builtin \
 		--disable=blacklisted-name \
 		--disable=duplicate-code \
+		--disable=fixme \
 		--disable=import-error \
 		--disable=invalid-name \
 		--disable=line-too-long \
-		--disable=star-args \
 		--disable=missing-docstring \
+		--disable=no-absolute-import \
 		--disable=no-member \
 		--disable=protected-access \
+		--disable=redefined-builtin \
+		--disable=relative-import \
+		--disable=star-args \
 		--disable=too-many-arguments \
 		--disable=too-many-branches \
 		--disable=too-many-lines \
 		--disable=too-many-public-methods \
 		--rcfile=/dev/null \
 		--dummy-variables-rgx='^_+$$' \
-		--disable=fixme \
 		test/acid.py test/acid_pypi.py test/test_autopep8.py
 	./autopep8.py --diff autopep8.py setup.py test/test_autopep8.py update_readme.py
 
