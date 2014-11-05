@@ -393,7 +393,7 @@ class FixPEP8(object):
         - e221,e222,e223,e224,e225
         - e231
         - e251
-        - e261,e262
+        - e261,e262,e265
         - e271,e272,e273,e274
         - e301,e302,e303
         - e401
@@ -696,6 +696,17 @@ class FixPEP8(object):
 
         fixed = code + ('  # ' + comment if comment.strip() else '\n')
 
+        self.source[result['line'] - 1] = fixed
+
+    def fix_e265(self, result):
+        """Fix lack of spacing after comment hash."""
+        target = self.source[result['line'] - 1]
+        offset = result['column'] - 1
+
+        code = target[:offset]
+        comment = target[offset:].lstrip(' \t#')
+
+        fixed = code + ('# ' + comment if comment.strip() else '\n')
         self.source[result['line'] - 1] = fixed
 
     def fix_e271(self, result):
@@ -1163,7 +1174,7 @@ def fix_e265(source, aggressive=False):  # pylint: disable=unused-argument
 
     ignored_line_numbers = multiline_string_lines(
         source,
-        include_docstrings=True) | set(commented_out_code_lines(source))
+        include_docstrings=True)
 
     fixed_lines = []
     sio = io.StringIO(source)
@@ -1323,7 +1334,7 @@ def _priority_key(pep8_result):
         # Break multiline statements early.
         'e702',
         # Things that make lines longer.
-        'e225', 'e231',
+        'e225', 'e231', 'e265',
         # Remove extraneous whitespace before breaking lines.
         'e201',
         # Shorten whitespace in comment before resorting to wrapping.

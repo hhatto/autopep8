@@ -259,9 +259,9 @@ def foo():
 
     def test_format_block_comments_should_only_touch_real_comments(self):
         commented_out_code = '#x = 1'
-        self.assertEqual(
-            commented_out_code,
-            autopep8.fix_e265(commented_out_code))
+        commented_out_spaced_code = '# x = 1'
+        self.assertEqual(commented_out_spaced_code,
+                         autopep8.fix_e265(commented_out_code))
 
     def test_fix_file(self):
         self.assertIn(
@@ -2665,7 +2665,7 @@ if True:
 
 # http://foo.bar/abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-
 
-# The following is ugly commented-out code and should not be touched.
+# The following is ugly commented-out code whose only change should be a space after the comment sign.
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
 """
         fixed = """123
@@ -2681,8 +2681,8 @@ if True:
 
 # http://foo.bar/abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-
 
-# The following is ugly commented-out code and should not be touched.
-#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
+# The following is ugly commented-out code whose only change should be a space after the comment sign.
+# xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
@@ -3298,7 +3298,7 @@ def foo():
 """
         fixed = """\
 def foo():
-    #. This is not a novel to be tossed aside lightly. It should be throw with great force.
+    # . This is not a novel to be tossed aside lightly. It should be throw with great force.
     self.xxxxxxxxx(
         _('yyyyyyyyyyyyy yyyyyyyyyyyy yyyyyyyy yyyyyyyy y'),
         'zzzzzzzzzzzzzzzzzzz',
@@ -4127,8 +4127,7 @@ correct = 'good syntax ?' in dict()
 
     def test_range_indent_docstrings_partial(self):
         line = '\ndef f(x):\n  """docstring\n  docstring"""\n  #comment\n  if x:\n    return x\n'
-        # TODO this should fix the comment spacing
-        fixed_2_5 = '\ndef f(x):\n  """docstring\n  docstring"""\n  #comment\n  if x:\n    return x\n'
+        fixed_2_5 = '\ndef f(x):\n  """docstring\n  docstring"""\n  # comment\n  if x:\n    return x\n'
         with autopep8_context(line, options=['--range', '2', '5']) as result:
             self.assertEqual(fixed_2_5, result)
 
@@ -4951,7 +4950,7 @@ if True:
 
 # http://foo.bar/abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-
 
-# The following is ugly commented-out code and should not be touched.
+# The following is ugly commented-out code whose only change should be a space after the comment sign.
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
 """
         fixed = """123
@@ -4967,8 +4966,8 @@ if True:
 
 # http://foo.bar/abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-
 
-# The following is ugly commented-out code and should not be touched.
-#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
+# The following is ugly commented-out code whose only change should be a space after the comment sign.
+# xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
