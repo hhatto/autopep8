@@ -393,7 +393,7 @@ class FixPEP8(object):
         - e221,e222,e223,e224,e225
         - e231
         - e251
-        - e261,e262
+        - e261,e262,e265
         - e271,e272,e273,e274
         - e301,e302,e303
         - e401
@@ -1334,7 +1334,7 @@ def _priority_key(pep8_result):
         # Break multiline statements early.
         'e702',
         # Things that make lines longer.
-        'e225', 'e231',
+        'e225', 'e231', 'e265',
         # Remove extraneous whitespace before breaking lines.
         'e201',
         # Shorten whitespace in comment before resorting to wrapping.
