@@ -1174,7 +1174,7 @@ def fix_e265(source, aggressive=False):  # pylint: disable=unused-argument
 
     ignored_line_numbers = multiline_string_lines(
         source,
-        include_docstrings=True) | set(commented_out_code_lines(source))
+        include_docstrings=True)
 
     fixed_lines = []
     sio = io.StringIO(source)
