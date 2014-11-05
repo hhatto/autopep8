@@ -11,7 +11,7 @@ PYTHON?=python
 COVERAGE?=coverage
 
 TEST_DIR=test
-.PHONY: test
+
 test: test_basic test_diff test_unit
 fasttest: test_fast
 
@@ -88,8 +88,8 @@ check:
 		--disable=not-callable \
 		--disable=protected-access \
 		--disable=redefined-builtin \
-		--disable=super-on-old-class \
 		--disable=star-args \
+		--disable=super-on-old-class \
 		--disable=too-few-public-methods \
 		--disable=too-many-arguments \
 		--disable=too-many-branches \
@@ -136,3 +136,8 @@ clean:
 	rm -rf .tmp.test.py temp *.pyc *egg-info dist build \
 		__pycache__ */__pycache__ */*/__pycache__ \
 		htmlcov coverage.xml
+
+.PHONY: \
+	all clean mutant pypireg test_basic test_unit \
+	benchmark coverage open_coverage readme test_diff \
+	check fasttest open_readme test test_fast
