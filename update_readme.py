@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """Update example in readme."""
 
 import io
