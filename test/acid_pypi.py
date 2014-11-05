@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-"""Run acid test against latest packages on PyPi."""
+"""Run acid test against latest packages on PyPI."""
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 
 import os
@@ -18,7 +20,7 @@ TMP_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),
 
 
 def latest_packages(last_hours):
-    """Return names of latest released packages on PyPi."""
+    """Return names of latest released packages on PyPI."""
     process = subprocess.Popen(
         ['yolk', '--latest-releases={hours}'.format(hours=last_hours)],
         stdout=subprocess.PIPE)
