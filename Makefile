@@ -79,6 +79,7 @@ check:
 		--disable=bad-builtin \
 		--disable=bad-continuation \
 		--disable=fixme \
+		--disable=import-error \
 		--disable=invalid-name \
 		--disable=locally-disabled \
 		--disable=missing-docstring \
@@ -86,6 +87,8 @@ check:
 		--disable=no-self-use \
 		--disable=not-callable \
 		--disable=protected-access \
+		--disable=redefined-builtin \
+		--disable=super-on-old-class \
 		--disable=star-args \
 		--disable=too-few-public-methods \
 		--disable=too-many-arguments \
@@ -111,6 +114,7 @@ check:
 		--disable=missing-docstring \
 		--disable=no-member \
 		--disable=protected-access \
+		--disable=redefined-builtin \
 		--disable=too-many-arguments \
 		--disable=too-many-branches \
 		--disable=too-many-lines \

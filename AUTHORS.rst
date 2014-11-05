@@ -20,3 +20,4 @@ Patches
 - 小明 (https://github.com/dongweiming)
 - Andy Hayden (https://github.com/hayd)
 - Fabio Zadrozny (https://github.com/fabioz)
+- Alex Chernetz (https://github.com/achernet)
