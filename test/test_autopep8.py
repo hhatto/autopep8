@@ -213,6 +213,10 @@ def foo():
             '# abc',
             autopep8.fix_e265('##   #   ##abc'))
 
+        self.assertEqual(
+            '# abc "# noqa"',
+            autopep8.fix_e265('# abc "# noqa"'))
+
     def test_format_block_comments_should_leave_outline_alone(self):
         line = """\
 ###################################################################
