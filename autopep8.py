@@ -1177,9 +1177,11 @@ def fix_e265(source, aggressive=False):  # pylint: disable=unused-argument
 
             # Normalize beginning if not a shebang.
             if len(line) > 1:
+                pos = next((index for index, c in enumerate(line)
+                            if c != '#'))
                 if (
                     # Leave multiple spaces like '#    ' alone.
-                    (line.count('#') > 1 or line[1].isalnum()) and
+                    (line[:pos].count('#') > 1 or line[1].isalnum()) and
                     # Leave stylistic outlined blocks alone.
                     not line.rstrip().endswith('#')
                 ):
