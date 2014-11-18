@@ -446,6 +446,8 @@ sys.maxint
             with open(os.path.join(sub, 'c.py'), 'w'):
                 pass
 
+            # FIXME: Avoid changing directory. This may interfere with parallel
+            # test runs.
             cwd = os.getcwd()
             os.chdir(temp_directory)
             try:
