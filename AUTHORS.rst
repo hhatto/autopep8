@@ -21,3 +21,4 @@ Patches
 - Andy Hayden (https://github.com/hayd)
 - Fabio Zadrozny (https://github.com/fabioz)
 - Alex Chernetz (https://github.com/achernet)
+- Marc Schlaich (https://github.com/schlamar)
