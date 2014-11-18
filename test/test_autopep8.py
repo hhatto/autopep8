@@ -428,6 +428,39 @@ sys.maxint
             self.assertTrue(autopep8.match_file(filename, exclude=[]),
                             msg=filename)
 
+    def test_find_files(self):
+        temp_directory = tempfile.mkdtemp()
+        try:
+            target = os.path.join(temp_directory, 'dir')
+            os.mkdir(target)
+            with open(os.path.join(target, 'a.py'), 'w'):
+                pass
+
+            exclude = os.path.join(target, 'ex')
+            os.mkdir(exclude)
+            with open(os.path.join(exclude, 'b.py'), 'w'):
+                pass
+
+            sub = os.path.join(exclude, 'sub')
+            os.mkdir(sub)
+            with open(os.path.join(sub, 'c.py'), 'w'):
+                pass
+
+            cwd = os.getcwd()
+            os.chdir(temp_directory)
+            try:
+                files = list(autopep8.find_files(
+                    ['dir'], True, [os.path.join('dir', 'ex')]))
+            finally:
+                os.chdir(cwd)
+
+            file_names = [os.path.basename(f) for f in files]
+            self.assertIn('a.py', file_names)
+            self.assertNotIn('b.py', file_names)
+            self.assertNotIn('c.py', file_names)
+        finally:
+            shutil.rmtree(temp_directory)
+
     def test_line_shortening_rank(self):
         self.assertGreater(
             autopep8.line_shortening_rank('(1\n+1)\n',
