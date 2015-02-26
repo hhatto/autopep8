@@ -2080,7 +2080,6 @@ class Foo(object):
 '''
         fixed = '''\
 class Foo(object):
-
     """Test."""
 
     def foo(self):
