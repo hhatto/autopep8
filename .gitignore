@@ -11,6 +11,7 @@
 README.html
 __pycache__
 build
+.coverage
 coverage.xml
 dist
 htmlcov
