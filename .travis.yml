@@ -9,6 +9,7 @@ python:
     - "3.4"
 
 env:
+    - LANG=
     - PEP8_VERSION=pypi
     - PEP8_VERSION=github
 

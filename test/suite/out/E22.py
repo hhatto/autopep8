@@ -89,7 +89,7 @@ c = (a + b) * (a - b)
 #:
 
 #: E226
-z = 2 ** 30
+z = 2**30
 #: E226 E226
 c = (a + b) * (a - b)
 #: E226
@@ -106,7 +106,7 @@ c = (a + b) * (a - b)
 
 
 def squares(n):
-    return (i ** 2 for i in range(n))
+    return (i**2 for i in range(n))
 #: E227
 _1kB = _1MB >> 10
 #: E227
