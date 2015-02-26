@@ -10,6 +10,7 @@ include test/example/x.py
 include test/example_with_reduce.py
 include test/example.py
 include test/iso_8859_1.py
+include test/fake_configuration/.pep8
 recursive-exclude test/suite *.py
 recursive-exclude test/suite/out *.py
 exclude .travis.yml
