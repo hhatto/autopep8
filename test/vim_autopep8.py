@@ -30,7 +30,10 @@ def decode(text):
         return text.decode(ENCODING)
 
 
-if vim.eval('&syntax') == 'python':
+def main():
+    if vim.eval('&syntax') != 'python':
+        return
+
     source = '\n'.join(decode(line)
                        for line in vim.current.buffer) + '\n'
 
@@ -48,3 +51,7 @@ if vim.eval('&syntax') == 'python':
 
         vim.current.buffer[:] = [encode(line)
                                  for line in formatted.splitlines()]
+
+
+if __name__ == '__main__':
+    main()
