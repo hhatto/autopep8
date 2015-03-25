@@ -2859,7 +2859,7 @@ def fix_lines(source_lines, options, filename=''):
     # Keep a history to break out of cycles.
     previous_hashes = set()
 
-    if options.line_range:
+    if options.line_range or options.only_local_fixes:
         fixed_source = apply_local_fixes(tmp_source, options)
     else:
         # Apply global fixes only once (for efficiency).
@@ -3067,11 +3067,7 @@ def apply_local_fixes(source, options):
                                                      'finally', 'except'])):
         return re.split('[ :]', line.strip(), 1)[0] in continued_stmts
 
-    assert options.line_range
-    (start, end) = options.line_range
-    start -= 1
-    end -= 1
-    last_line = end  # We shouldn't modify lines after this cut-off.
+    assert options.line_range or options.only_local_fixes
 
     try:
         logical = _find_logical(source)
@@ -3086,6 +3082,16 @@ def apply_local_fixes(source, options):
     (end_lines, _) = zip(*logical[1])
 
     source = source.splitlines(True)
+
+    if options.only_local_fixes:
+        start = 1
+        end = len(source)
+    else: 
+        (start, end) = options.line_range
+
+    start -= 1
+    end -= 1
+    last_line = end  # We shouldn't modify lines after this cut-off.
 
     (start_log, start) = find_ge(start_lines, start)
     (end_log, end) = find_le(start_lines, end)
@@ -3237,6 +3243,10 @@ def create_parser():
                         help='only fix errors found within this inclusive '
                              'range of line numbers (e.g. 1 99); '
                              'line numbers are indexed at 1')
+    parser.add_argument('--only-local-fixes', action='store_true',
+                        help='same as --range 1 len(input lines); '
+                        'use it for formatting code fragments to preserve '
+                        'shared indentation level')
     parser.add_argument('--indent-size', default=DEFAULT_INDENT_SIZE,
                         type=int, metavar='n',
                         help='number of spaces per indent level '
