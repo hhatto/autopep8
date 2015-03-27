@@ -2370,6 +2370,25 @@ x = [
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_shorten_with_backslash(self):
+        line = """\
+class Bar(object):
+
+    def bar(self, position):
+        if 0 <= position <= self._blocks[-1].position + len(self._blocks[-1].text):
+            pass
+"""
+        fixed = """\
+class Bar(object):
+
+    def bar(self, position):
+        if 0 <= position <= self._blocks[-1].position + \\
+                len(self._blocks[-1].text):
+            pass
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_shorten_at_commas_skip(self):
         line = """\
 parser.add_argument('source_corpus', help='corpus name/path relative to an nltk_data directory')
