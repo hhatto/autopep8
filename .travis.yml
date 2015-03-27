@@ -41,6 +41,9 @@ script:
     - pip install pydiff
     - python test/acid.py -aaa --compare-bytecode --experimental test/example.py
 
+    # See issue #175.
+    - python test/acid.py --aggressive --range 550 610 test/inspect_example.py
+
     - python test/test_suite.py
 
 after_success:
