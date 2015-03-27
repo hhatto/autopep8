@@ -3500,10 +3500,7 @@ def line_shortening_rank(candidate, indent_word, max_line_length,
                 rank += 100
 
         # Avoid breaking at unary operators.
-        if current_line.rstrip('\\ ').endswith(
-                ('(-', '[-', '{-',
-                 '(+', '[+', '{+',
-                 '(~', '[~', '{~')):
+        if re.match(r'.*[(\[{]\s*[\-\+~]$', current_line.rstrip('\\ ')):
             rank += 1000
 
         if current_line.endswith(('%', '(', '[', '{')):
