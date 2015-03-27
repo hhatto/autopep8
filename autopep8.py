@@ -3064,6 +3064,10 @@ def apply_local_fixes(source, options):
             if not i + 1 in msl:
                 fixed_subsource[i] = indent + line if line != '\n' else line
 
+        # Avoid buggy case. See issue #175.
+        if len(fixed_subsource) != len(source):
+            return source
+
         # We make a special case to look at the final line, if it's a multiline
         # *and* the cut off is somewhere inside it, we take the fixed
         # subset up until last_line, this assumes that the number of lines
