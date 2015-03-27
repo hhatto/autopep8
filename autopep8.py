@@ -794,7 +794,7 @@ class FixPEP8(object):
         if fixed:
             for line_index in range(start_line_index, end_line_index + 1):
                 self.source[line_index] = ''
-            self.source[start_line_index] = fixed.rstrip() + '\n'
+            self.source[start_line_index] = fixed
             return range(start_line_index + 1, end_line_index + 1)
         else:
             return []
@@ -1070,7 +1070,7 @@ def untokenize_without_newlines(tokens):
         last_row = end_row
         last_column = end_column
 
-    return text
+    return text.rstrip()
 
 
 def _find_logical(source_lines):
