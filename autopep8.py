@@ -985,6 +985,20 @@ class FixPEP8(object):
         fixed_line = self.source[result['line'] - 1].rstrip()
         self.source[result['line'] - 1] = fixed_line + '\n'
 
+    def fix_w391(self, _):
+        """Remove trailing blank lines."""
+        blank_count = 0
+        for line in reversed(self.source):
+            line = line.rstrip()
+            if line:
+                break
+            else:
+                blank_count += 1
+
+        original_length = len(self.source)
+        self.source = self.source[:original_length - blank_count]
+        return range(1, 1 + original_length)
+
 
 def get_fixed_long_line(target, previous_line, original,
                         indent_word='    ', max_line_length=79,
@@ -2493,8 +2507,6 @@ class Reindenter(object):
             return self.input_text
         # Remove trailing empty lines.
         lines = self.lines
-        while lines and lines[-1] == '\n':
-            lines.pop()
         # Sentinel.
         stats.append((len(lines), 0))
         # Map count of leading spaces to # we want.
