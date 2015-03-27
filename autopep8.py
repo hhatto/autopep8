@@ -3503,6 +3503,9 @@ def line_shortening_rank(candidate, indent_word, max_line_length,
         if re.match(r'.*[(\[{]\s*[\-\+~]$', current_line.rstrip('\\ ')):
             rank += 1000
 
+        if re.match(r'.*lambda\s*\*$', current_line.rstrip('\\ ')):
+            rank += 1000
+
         if current_line.endswith(('%', '(', '[', '{')):
             rank -= 20
 

@@ -2370,6 +2370,17 @@ x = [
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_lambda(self):
+        line = """\
+self.mock_group.modify_state.side_effect = lambda *_: defer.fail(NoSuchScalingGroupError(1, 2))
+"""
+        fixed = """\
+self.mock_group.modify_state.side_effect = lambda *_: defer.fail(
+    NoSuchScalingGroupError(1, 2))
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_shorten_with_backslash(self):
         line = """\
 class Bar(object):
