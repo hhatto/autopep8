@@ -1013,17 +1013,28 @@ def get_fixed_long_line(target, previous_line, original,
     # Also sort alphabetically as a tie breaker (for determinism).
     candidates = sorted(
         sorted(set(candidates).union([target, original])),
-        key=lambda x: line_shortening_rank(x,
-                                           indent_word,
-                                           max_line_length,
-                                           experimental))
+        key=lambda x: line_shortening_rank(
+            x,
+            indent_word,
+            max_line_length,
+            experimental=experimental))
 
     if verbose >= 4:
         print(('-' * 79 + '\n').join([''] + candidates + ['']),
               file=wrap_output(sys.stderr, 'utf-8'))
 
     if candidates:
-        return candidates[0]
+        best_candidate = candidates[0]
+        # Don't allow things to get longer.
+        if longest_line_length(best_candidate) > longest_line_length(original):
+            return None
+        else:
+            return best_candidate
+
+
+def longest_line_length(code):
+    """Return length of longest line."""
+    return max(len(line) for line in code.splitlines())
 
 
 def join_logical_line(logical_line):
