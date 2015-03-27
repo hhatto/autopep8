@@ -794,7 +794,7 @@ class FixPEP8(object):
         if fixed:
             for line_index in range(start_line_index, end_line_index + 1):
                 self.source[line_index] = ''
-            self.source[start_line_index] = fixed
+            self.source[start_line_index] = fixed.rstrip() + '\n'
             return range(start_line_index + 1, end_line_index + 1)
         else:
             return []
