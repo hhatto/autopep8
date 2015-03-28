@@ -2862,19 +2862,36 @@ def fix_code(source, options=None, encoding=None, apply_config=False):
     "encoding" will be used to decode "source" if it is a byte string.
 
     """
-    if not options:
-        options = parse_args([''], apply_config=apply_config)
-    elif isinstance(options, dict):
-        option_dictionary = options
-        options = parse_args([''], apply_config=apply_config)
-        for name, value in option_dictionary.items():
-            setattr(options, name, value)
+    options = _get_options(options, apply_config)
 
     if not isinstance(source, unicode):
         source = source.decode(encoding or get_encoding())
 
     sio = io.StringIO(source)
     return fix_lines(sio.readlines(), options=options)
+
+
+def _get_options(options, apply_config):
+    """Return parsed options."""
+    if not options:
+        return parse_args([''], apply_config=apply_config)
+
+    if isinstance(options, dict):
+        option_dictionary = options
+        options = parse_args([''], apply_config=apply_config)
+        for name, value in option_dictionary.items():
+            if not hasattr(options, name):
+                raise ValueError("No such option '{}'".format(name))
+
+            # Check for very basic type errors.
+            expected_type = type(getattr(options, name))
+            if not isinstance(expected_type, (str, unicode)):
+                if isinstance(value, (str, unicode)):
+                    raise ValueError(
+                        "Option '{}' should not be a string".format(name))
+            setattr(options, name, value)
+
+    return options
 
 
 def fix_lines(source_lines, options, filename=''):

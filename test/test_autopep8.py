@@ -325,6 +325,13 @@ def foo():
             'y in x\n',
             autopep8.fix_code('x.has_key(y)\n', options={'aggressive': True}))
 
+    def test_fix_code_with_bad_options(self):
+        with self.assertRaises(ValueError):
+            autopep8.fix_code('print( 123 )\n', options={'ignor': ['W']})
+
+        with self.assertRaises(ValueError):
+            autopep8.fix_code('print( 123 )\n', options={'ignore': 'W'})
+
     def test_normalize_line_endings(self):
         self.assertEqual(
             ['abc\n', 'def\n', '123\n', 'hello\n', 'world\n'],
