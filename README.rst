@@ -297,12 +297,15 @@ function.
 >>> autopep8.fix_code('x=       123\n')
 'x = 123\n'
 
-Or with command-line options:
+Or with options:
 
 >>> import autopep8
 >>> autopep8.fix_code('x.has_key(y)\n',
-...                   options=autopep8.parse_args(['--aggressive', '']))
+...                   options={'aggressive': True})
 'y in x\n'
+>>> autopep8.fix_code('print( 123 )\n',
+...                   options={'ignore': ['E']})
+'print( 123 )\n'
 
 
 Testing

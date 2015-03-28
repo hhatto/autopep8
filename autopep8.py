@@ -2864,6 +2864,11 @@ def fix_code(source, options=None, encoding=None, apply_config=False):
     """
     if not options:
         options = parse_args([''], apply_config=apply_config)
+    elif isinstance(options, dict):
+        option_dictionary = options
+        options = parse_args([''], apply_config=apply_config)
+        for name, value in option_dictionary.items():
+            setattr(options, name, value)
 
     if not isinstance(source, unicode):
         source = source.decode(encoding or get_encoding())
