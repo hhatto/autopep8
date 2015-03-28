@@ -2871,15 +2871,14 @@ def fix_code(source, options=None, encoding=None, apply_config=False):
     return fix_lines(sio.readlines(), options=options)
 
 
-def _get_options(options, apply_config):
+def _get_options(raw_options, apply_config):
     """Return parsed options."""
-    if not options:
+    if not raw_options:
         return parse_args([''], apply_config=apply_config)
 
-    if isinstance(options, dict):
-        option_dictionary = options
+    if isinstance(raw_options, dict):
         options = parse_args([''], apply_config=apply_config)
-        for name, value in option_dictionary.items():
+        for name, value in raw_options.items():
             if not hasattr(options, name):
                 raise ValueError("No such option '{}'".format(name))
 
@@ -2890,6 +2889,8 @@ def _get_options(options, apply_config):
                     raise ValueError(
                         "Option '{}' should not be a string".format(name))
             setattr(options, name, value)
+    else:
+        options = raw_options
 
     return options
 
