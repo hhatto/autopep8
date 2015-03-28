@@ -3218,11 +3218,11 @@ def create_parser():
                                      prog='autopep8')
     parser.add_argument('--version', action='version',
                         version='%(prog)s ' + __version__)
-    parser.add_argument('-v', '--verbose', action='count', dest='verbose',
+    parser.add_argument('-v', '--verbose', action='count',
                         default=0,
                         help='print verbose messages; '
                              'multiple -v result in more verbose messages')
-    parser.add_argument('-d', '--diff', action='store_true', dest='diff',
+    parser.add_argument('-d', '--diff', action='store_true',
                         help='print the diff for the fixed source')
     parser.add_argument('-i', '--in-place', action='store_true',
                         help='make changes to files in place')
