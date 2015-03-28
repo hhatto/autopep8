@@ -127,7 +127,7 @@ Options::
                     [--ignore-local-config] [-r] [-j n] [-p n] [-a]
                     [--experimental] [--exclude globs] [--list-fixes]
                     [--ignore errors] [--select errors] [--max-line-length n]
-                    [--range line line] [--indent-size n]
+                    [--line-range line line] [--indent-size n]
                     [files [files ...]]
 
     Automatically formats Python code to conform to the PEP 8 style guide.
@@ -166,7 +166,8 @@ Options::
       --ignore errors       do not fix these errors/warnings (default: E24)
       --select errors       fix only these errors/warnings (e.g. E4,W)
       --max-line-length n   set maximum allowed line length (default: 79)
-      --range line line     only fix errors found within this inclusive range of
+      --line-range line line, --range line line
+                            only fix errors found within this inclusive range of
                             line numbers (e.g. 1 99); line numbers are indexed at
                             1
       --indent-size n       number of spaces per indent level (default 4)

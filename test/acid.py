@@ -63,7 +63,7 @@ def run(filename, command, max_line_length=79,
                 '--ignore=' + ignore, filename] +
                aggressive * ['--aggressive'] +
                (['--experimental'] if experimental else []) +
-               (['--range', str(line_range[0]), str(line_range[1])]
+               (['--line-range', str(line_range[0]), str(line_range[1])]
                 if line_range else []))
 
     print(' '.join(command), file=sys.stderr)
@@ -139,11 +139,11 @@ def process_args():
                         help='run autopep8 in aggressive mode')
     parser.add_argument('--experimental', action='store_true',
                         help='run experimental fixes')
-    parser.add_argument('--range', metavar='line', dest='line_range',
+    parser.add_argument('--line-range', metavar='line',
                         default=None, type=int, nargs=2,
-                        help='pass --range to autope8')
+                        help='pass --line-range to autope8')
     parser.add_argument('--random-range', action='store_true',
-                        help='pass random --range to autope8')
+                        help='pass random --line-range to autope8')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='print verbose messages')
     parser.add_argument('paths', nargs='*',

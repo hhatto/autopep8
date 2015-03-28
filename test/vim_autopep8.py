@@ -35,15 +35,13 @@ def main():
         return
 
     source = '\n'.join(decode(line)
-                       for line in vim.current.buffer) + '\n'
+                        for line in vim.current.buffer) + '\n'
 
     import autopep8
-    options = autopep8.parse_args(['--range',
-                                   str(1 + vim.current.range.start),
-                                   str(1 + vim.current.range.end),
-                                   ''])
-
-    formatted = autopep8.fix_code(source, options=options)
+    formatted = autopep8.fix_code(
+        source,
+        options={'line_range': [1 + vim.current.range.start,
+                                1 + vim.current.range.end]})
 
     if source != formatted:
         if formatted.endswith('\n'):
