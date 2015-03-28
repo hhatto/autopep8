@@ -301,7 +301,7 @@ Or with options:
 
 >>> import autopep8
 >>> autopep8.fix_code('x.has_key(y)\n',
-...                   options={'aggressive': True})
+...                   options={'aggressive': 1})
 'y in x\n'
 >>> autopep8.fix_code('print( 123 )\n',
 ...                   options={'ignore': ['E']})

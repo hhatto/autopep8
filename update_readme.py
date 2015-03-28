@@ -74,7 +74,7 @@ def main():
 
     output_code = autopep8.fix_code(
         input_code,
-        options=autopep8.parse_args(['', '-aa']))
+        options={'aggressive': 2})
 
     check(output_code)
 
