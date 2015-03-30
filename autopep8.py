@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#
+
 # Copyright (C) 2010-2011 Hideo Hattori
 # Copyright (C) 2011-2013 Hideo Hattori, Steven Myint
 # Copyright (C) 2013-2015 Hideo Hattori, Steven Myint, Bill Wendling
@@ -55,6 +55,7 @@ import os
 import re
 import signal
 import sys
+import textwrap
 import token
 import tokenize
 
@@ -2814,7 +2815,6 @@ def shorten_comment(line, max_line_length, last_comment=False):
         # Trim comments that end with things like ---------
         return line[:max_line_length] + '\n'
     elif last_comment and re.match(r'\s*#+\s*\w+', line):
-        import textwrap
         split_lines = textwrap.wrap(line.lstrip(' \t#'),
                                     initial_indent=indentation,
                                     subsequent_indent=indentation,
