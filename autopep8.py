@@ -3087,10 +3087,6 @@ def apply_local_fixes(source, options):
             if not i + 1 in msl:
                 fixed_subsource[i] = indent + line if line != '\n' else line
 
-        # Avoid buggy case. See issue #175.
-        if len(fixed_subsource) != len(subsource):
-            return source
-
         # We make a special case to look at the final line, if it's a multiline
         # *and* the cut off is somewhere inside it, we take the fixed
         # subset up until last_line, this assumes that the number of lines
@@ -3190,9 +3186,14 @@ def apply_local_fixes(source, options):
                 for n, n_ind in logical[0][start_log:end_log + 1][::-1]:
                     if n_ind == ind and not is_continued_stmt(source[n]):
                         n_log = start_lines.index(n)
-                        source = local_fix(source, start_log, n_log - 1,
-                                           start_lines, end_lines,
-                                           indents, last_line)
+                        fixed_source = local_fix(source, start_log, n_log - 1,
+                                                 start_lines, end_lines,
+                                                 indents, last_line)
+                        if len(fixed_source) == len(source):
+                            source = fixed_source
+                        else:  # see GH 175
+                            source = fixed_source
+                            break
                         start_log = n_log + 1
                         start = start_lines[start_log]
                         only_block = False
