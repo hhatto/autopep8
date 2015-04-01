@@ -4284,6 +4284,49 @@ if True:
         with autopep8_context(line, options=['--line-range', '1', '1']) as result:
             self.assertEqual(line, result)
 
+    def test_range_changes_line_count(self):
+        # GH 175
+        line = """\
+a = []
+a.sort()
+if True:
+    a = []
+    a.sort()
+else:
+    pass
+"""
+        fixed = """\
+a = sorted([])
+if True:
+    a = []
+    a.sort()
+else:
+    pass
+"""
+        with autopep8_context(line, options=['--range', '1', '5', '-a']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_range_changes_line_count_twice(self):
+        # GH 175
+        line = """\
+a = []
+a.sort()
+if True:
+    a = []
+    a.sort()
+else:
+    pass
+"""
+        fixed = """\
+a = sorted([])
+if True:
+    a = sorted([])
+else:
+    pass
+"""
+        with autopep8_context(line, options=['--range', '1', '9', '-a']) as result:
+            self.assertEqual(fixed, result)
+
 
 class CommandLineTests(unittest.TestCase):
 
