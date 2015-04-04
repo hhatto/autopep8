@@ -3519,6 +3519,12 @@ def line_shortening_rank(candidate, indent_word, max_line_length,
             if current_line == bad_start:
                 rank += 1000
 
+        if (
+            current_line.endswith(('.', '%', '+', '-', '/')) and
+            "': " in current_line
+        ):
+            rank += 1000
+
         if current_line.endswith(('(', '[', '{', '.')):
             # Avoid lonely opening. They result in longer lines.
             if len(current_line) <= len(indent_word):

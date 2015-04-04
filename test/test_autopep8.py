@@ -2245,6 +2245,20 @@ print(111, 111, 111, 111, 222, 222, 222, 222,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_dictionary(self):
+        line = """\
+myDict = { 'kg': 1, 'tonnes': tonne, 't/y': tonne / year, 'Mt/y': 1e6 * tonne / year}
+"""
+        fixed = """\
+myDict = {
+    'kg': 1,
+    'tonnes': tonne,
+    't/y': tonne / year,
+    'Mt/y': 1e6 * tonne / year}
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_with_in(self):
         line = """\
 if True:
