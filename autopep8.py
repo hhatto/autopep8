@@ -3468,7 +3468,7 @@ def line_shortening_rank(candidate, indent_word, max_line_length,
         return 0
 
     rank = 0
-    lines = candidate.split('\n')
+    lines = candidate.rstrip().split('\n')
 
     offset = 0
     if (
@@ -3581,6 +3581,10 @@ def line_shortening_rank(candidate, indent_word, max_line_length,
         # Prefer breaking at commas rather than colon.
         if ',' in current_line and current_line.endswith(':'):
             rank += 10
+
+        # Avoid splitting dictionaries between key and value.
+        if current_line.endswith(':'):
+            rank += 100
 
         rank += 10 * count_unbalanced_brackets(current_line)
 

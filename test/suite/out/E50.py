@@ -47,8 +47,7 @@ ddd = \
 ')
 #: E501 E225 E226
 very_long_identifiers = and_terrible_whitespace_habits(
-    are_no_excuse +
-    for_long_lines)
+    are_no_excuse + for_long_lines)
 #
 #: E501
 '''multiline string
