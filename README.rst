@@ -292,21 +292,21 @@ Use as a module
 ===============
 
 The simplest way of using autopep8 as a module is via the ``fix_code()``
-function.
+function:
 
->>> import autopep8
->>> autopep8.fix_code('x=       123\n')
-'x = 123\n'
+    >>> import autopep8
+    >>> autopep8.fix_code('x=       123\n')
+    'x = 123\n'
 
 Or with options:
 
->>> import autopep8
->>> autopep8.fix_code('x.has_key(y)\n',
-...                   options={'aggressive': 1})
-'y in x\n'
->>> autopep8.fix_code('print( 123 )\n',
-...                   options={'ignore': ['E']})
-'print( 123 )\n'
+    >>> import autopep8
+    >>> autopep8.fix_code('x.has_key(y)\n',
+    ...                   options={'aggressive': 1})
+    'y in x\n'
+    >>> autopep8.fix_code('print( 123 )\n',
+    ...                   options={'ignore': ['E']})
+    'print( 123 )\n'
 
 
 Testing
