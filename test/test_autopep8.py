@@ -4491,7 +4491,6 @@ class CommandLineTests(unittest.TestCase):
         with temporary_file_context(line) as filename:
             for options in [['--recursive', filename],  # without --diff
                             ['--jobs=2', filename],  # without --diff
-                            ['--exclude=foo', filename],  # without --recursive
                             ['--max-line-length=0', filename],
                             [],  # no argument
                             ['-', '--in-place'],

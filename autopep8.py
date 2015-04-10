@@ -3333,9 +3333,6 @@ def parse_args(arguments, apply_config=False):
     if args.recursive and not (args.in_place or args.diff):
         parser.error('--recursive must be used with --in-place or --diff')
 
-    if args.exclude and not args.recursive:
-        parser.error('--exclude is only relevant when used with --recursive')
-
     if args.in_place and args.diff:
         parser.error('--in-place and --diff are mutually exclusive')
 
