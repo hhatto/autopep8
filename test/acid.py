@@ -119,9 +119,11 @@ def process_args():
     compare_bytecode_ignore = 'E71,E721,W'
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--command',
-                        default=os.path.join(ROOT_PATH, 'autopep8.py'),
-                        help='autopep8 command (default: %(default)s)')
+    parser.add_argument(
+        '--command',
+        default='{} {}'.format(sys.executable,
+                               os.path.join(ROOT_PATH, 'autopep8.py')),
+        help='autopep8 command (default: %(default)s)')
     parser.add_argument('--ignore',
                         help='comma-separated errors to ignore',
                         default='')
