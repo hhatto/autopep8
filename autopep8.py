@@ -2906,7 +2906,8 @@ def fix_lines(source_lines, options, filename=''):
     previous_hashes = set()
 
     if options.line_range:
-        fixed_source = apply_local_fixes(tmp_source, options)
+        # Disable "apply_local_fixes()" for now due to issue #175.
+        fixed_source = tmp_source
     else:
         # Apply global fixes only once (for efficiency).
         fixed_source = apply_global_fixes(tmp_source,
