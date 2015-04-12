@@ -131,7 +131,7 @@ mutant:
 
 pypireg:
 	${PYTHON} setup.py register
-	${PYTHON} setup.py sdist bdist_wheel upload
+	${PYTHON} setup.py sdist upload
 
 clean:
 	rm -rf .tmp.test.py temp *.pyc *egg-info dist build \
