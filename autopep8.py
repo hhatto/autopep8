@@ -3217,7 +3217,7 @@ def read_config(args, parser):
 
 def _split_comma_separated(string):
     """Return a set of strings."""
-    return set(filter(None, string.split(',')))
+    return set(text.strip() for text in string.split(',') if text.strip())
 
 
 def decode_filename(filename):
