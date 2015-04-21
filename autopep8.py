@@ -2431,9 +2431,12 @@ def _execute_pep8(pep8_options, source):
             super(QuietReport, self).__init__(options)
             self.__full_error_results = []
 
-        def error(self, line_number, offset, text, _):
+        def error(self, line_number, offset, text, check):
             """Collect errors."""
-            code = super(QuietReport, self).error(line_number, offset, text, _)
+            code = super(QuietReport, self).error(line_number,
+                                                  offset,
+                                                  text,
+                                                  check)
             if code:
                 self.__full_error_results.append(
                     {'id': code,
