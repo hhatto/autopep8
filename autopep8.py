@@ -973,8 +973,8 @@ class FixPEP8(object):
         target = self.source[line_index]
 
         # Handle very easy case only.
-        if re.match(r'^\s*if not \w+ in \w+:$', target):
-            self.source[line_index] = re.sub(r'if not (\w+) in (\w+):',
+        if re.match(r'^\s*if not .* in .*:$', target):
+            self.source[line_index] = re.sub(r'if not (.*) in (.*):',
                                              r'if \1 not in \2:',
                                              target,
                                              count=1)
