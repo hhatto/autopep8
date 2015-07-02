@@ -929,7 +929,7 @@ class FixPEP8(object):
         self.source[line_index] = ' '.join([left, new_center, right])
 
     def fix_e712(self, result):
-        """Fix comparison with boolean."""
+        """Fix (trivial case of) comparison with boolean."""
         line_index = result['line'] - 1
         target = self.source[line_index]
         offset = result['column'] - 1
@@ -968,7 +968,7 @@ class FixPEP8(object):
             self.source[line_index] = left + new_right
 
     def fix_e713(self, result):
-        """Fix non-membership check."""
+        """Fix (trivial case of) non-membership check."""
         line_index = result['line'] - 1
         target = self.source[line_index]
 
