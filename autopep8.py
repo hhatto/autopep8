@@ -968,7 +968,7 @@ class FixPEP8(object):
             self.source[line_index] = left + new_right
 
     def fix_e713(self, result):
-        """Fix (trivial case of) non-membership check."""
+        """Fix non-membership check."""
         line_index = result['line'] - 1
         target = self.source[line_index]
 
