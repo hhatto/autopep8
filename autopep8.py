@@ -851,8 +851,8 @@ class FixPEP8(object):
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""
-        line_index = result['line'] - 1
-        target = self.source[line_index]
+        (line_index, _, target) = get_index_offset_contents(result,
+                                                            self.source)
         self.source[line_index] = target.rstrip('\n\r \t\\') + '\n'
 
     def fix_e701(self, result):
@@ -904,9 +904,8 @@ class FixPEP8(object):
 
     def fix_e711(self, result):
         """Fix comparison with None."""
-        line_index = result['line'] - 1
-        target = self.source[line_index]
-        offset = result['column'] - 1
+        (line_index, offset, target) = get_index_offset_contents(result,
+                                                                 self.source)
 
         right_offset = offset + 2
         if right_offset >= len(target):
@@ -930,9 +929,8 @@ class FixPEP8(object):
 
     def fix_e712(self, result):
         """Fix (trivial case of) comparison with boolean."""
-        line_index = result['line'] - 1
-        target = self.source[line_index]
-        offset = result['column'] - 1
+        (line_index, offset, target) = get_index_offset_contents(result,
+                                                                 self.source)
 
         # Handle very easy "not" special cases.
         if re.match(r'^\s*if [\w.]+ == False:$', target):
@@ -968,9 +966,9 @@ class FixPEP8(object):
             self.source[line_index] = left + new_right
 
     def fix_e713(self, result):
-        """Fix non-membership check."""
-        line_index = result['line'] - 1
-        target = self.source[line_index]
+        """Fix (trivial case of) non-membership check."""
+        (line_index, _, target) = get_index_offset_contents(result,
+                                                            self.source)
 
         # Handle very easy case only.
         if re.match(r'^\s*if not [\w.]+ in [\w.]+:$', target):
@@ -997,6 +995,14 @@ class FixPEP8(object):
         original_length = len(self.source)
         self.source = self.source[:original_length - blank_count]
         return range(1, 1 + original_length)
+
+
+def get_index_offset_contents(result, source):
+    """Return (line_index, column_offset, line_contents)."""
+    line_index = result['line'] - 1
+    return (line_index,
+            result['column'] - 1,
+            source[line_index])
 
 
 def get_fixed_long_line(target, previous_line, original,
