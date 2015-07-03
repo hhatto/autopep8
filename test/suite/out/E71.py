@@ -13,7 +13,7 @@ if res:
 if X not in Y:
     pass
 #: E713
-if not X.B in Y:
+if X.B not in Y:
     pass
 #: E713
 if not X in Y and Z == "zero":

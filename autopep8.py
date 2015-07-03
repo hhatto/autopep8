@@ -935,11 +935,11 @@ class FixPEP8(object):
         offset = result['column'] - 1
 
         # Handle very easy "not" special cases.
-        if re.match(r'^\s*if \w+ == False:$', target):
-            self.source[line_index] = re.sub(r'if (\w+) == False:',
+        if re.match(r'^\s*if [\w.]+ == False:$', target):
+            self.source[line_index] = re.sub(r'if ([\w.]+) == False:',
                                              r'if not \1:', target, count=1)
-        elif re.match(r'^\s*if \w+ != True:$', target):
-            self.source[line_index] = re.sub(r'if (\w+) != True:',
+        elif re.match(r'^\s*if [\w.]+ != True:$', target):
+            self.source[line_index] = re.sub(r'if ([\w.]+) != True:',
                                              r'if not \1:', target, count=1)
         else:
             right_offset = offset + 2
@@ -973,8 +973,8 @@ class FixPEP8(object):
         target = self.source[line_index]
 
         # Handle very easy case only.
-        if re.match(r'^\s*if not \w+ in \w+:$', target):
-            self.source[line_index] = re.sub(r'if not (\w+) in (\w+):',
+        if re.match(r'^\s*if not [\w.]+ in [\w.]+:$', target):
+            self.source[line_index] = re.sub(r'if not ([\w.]+) in ([\w.]+):',
                                              r'if \1 not in \2:',
                                              target,
                                              count=1)
