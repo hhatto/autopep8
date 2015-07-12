@@ -19,7 +19,7 @@ matrix:
 
 install:
     - if [ "$TRAVIS_PYTHON_VERSION" == "2.6" ]; then pip install unittest2; fi
-    - if [ "$PEP8_VERSION" == "github" ]; then pip install git+https://github.com/jcrocholl/pep8; fi
+    - if [ "$PEP8_VERSION" == "github" ]; then pip install git+https://github.com/PyCQA/pep8; fi
     - python setup.py build --build-base=".build-$TRAVIS_PYTHON_VERSION" install
 
 before_script:

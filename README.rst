@@ -34,7 +34,7 @@ Requirements
 
 autopep8 requires pep8_.
 
-.. _pep8: https://github.com/jcrocholl/pep8
+.. _pep8: https://github.com/PyCQA/pep8
 
 
 Usage

@@ -35,4 +35,4 @@ When submitting a pull request, please do the following.
    change does.
 3. Make sure all tests pass.
 
-.. _pep8: https://github.com/jcrocholl/pep8
+.. _pep8: https://github.com/PyCQA/pep8
