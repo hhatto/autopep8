@@ -3582,7 +3582,7 @@ def get_encoding():
     return locale.getpreferredencoding() or sys.getdefaultencoding()
 
 
-def main(apply_config=True):
+def main(apply_config=True, argv=sys.argv):
     """Tool main."""
     try:
         # Exit on broken pipe.
@@ -3592,7 +3592,7 @@ def main(apply_config=True):
         pass
 
     try:
-        args = parse_args(sys.argv[1:], apply_config=apply_config)
+        args = parse_args(argv[1:], apply_config=apply_config)
 
         if args.list_fixes:
             for code, description in sorted(supported_fixes()):
