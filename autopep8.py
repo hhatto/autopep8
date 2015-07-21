@@ -3582,8 +3582,11 @@ def get_encoding():
     return locale.getpreferredencoding() or sys.getdefaultencoding()
 
 
-def main(apply_config=True):
-    """Tool main."""
+def main(argv=None, apply_config=True):
+    """Command-line entry."""
+    if argv is None:
+        argv = sys.argv
+
     try:
         # Exit on broken pipe.
         signal.signal(signal.SIGPIPE, signal.SIG_DFL)
@@ -3592,7 +3595,7 @@ def main(apply_config=True):
         pass
 
     try:
-        args = parse_args(sys.argv[1:], apply_config=apply_config)
+        args = parse_args(argv[1:], apply_config=apply_config)
 
         if args.list_fixes:
             for code, description in sorted(supported_fixes()):
