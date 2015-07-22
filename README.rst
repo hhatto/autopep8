@@ -103,7 +103,8 @@ After running autopep8.
         return (some_tuple, some_variable)
 
 
-    def example2(): return ('' in {'f': 2}) in {'has_key() is deprecated': True}
+    def example2():
+        return ('' in {'f': 2}) in {'has_key() is deprecated': True}
 
 
     class Example3(object):
