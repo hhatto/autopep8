@@ -2984,7 +2984,7 @@ def fix_file(filename, options=None, output=None, apply_config=False):
 
 def global_fixes():
     """Yield multiple (code, function) tuples."""
-    for function in globals().values():
+    for function in list(globals().values()):
         if inspect.isfunction(function):
             arguments = inspect.getargspec(function)[0]
             if arguments[:1] != ['source']:
