@@ -22,12 +22,6 @@ install:
     - if [ "$PEP8_VERSION" == "github" ]; then pip install git+https://github.com/PyCQA/pep8; fi
     - python setup.py build --build-base=".build-$TRAVIS_PYTHON_VERSION" install
 
-before_script:
-    # This is needed for Python multiprocessing.
-    # https://github.com/travis-ci/travis-cookbooks/issues/155
-    - sudo rm -rf /dev/shm
-    - sudo ln -s /run/shm /dev/shm
-
 script:
     - python test/test_autopep8.py
     - python test/acid.py -aaa --experimental test/example.py
