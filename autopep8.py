@@ -471,7 +471,7 @@ class FixPEP8(object):
                 line_index = result['line'] - 1
                 original_line = self.source[line_index]
 
-                is_logical_fix = len(inspect.getargspec(fix).args) > 2
+                is_logical_fix = len(_get_parameters(fix)) > 2
                 if is_logical_fix:
                     logical = None
                     if logical_support:
@@ -2986,13 +2986,26 @@ def global_fixes():
     """Yield multiple (code, function) tuples."""
     for function in list(globals().values()):
         if inspect.isfunction(function):
-            arguments = inspect.getargspec(function)[0]
+            arguments = _get_parameters(function)
             if arguments[:1] != ['source']:
                 continue
 
             code = extract_code_from_function(function)
             if code:
                 yield (code, function)
+
+
+def _get_parameters(function):
+    if sys.version_info >= (3, 3):
+        # We need to match "getargspec()", which includes "self" as the first
+        # value for methods.
+        # https://bugs.python.org/issue17481#msg209469
+        if inspect.ismethod(function):
+            function = function.__func__
+
+        return list(inspect.signature(function).parameters)
+    else:
+        return inspect.getargspec(function)[0]
 
 
 def apply_global_fixes(source, options, where='global', filename=''):
