@@ -2996,6 +2996,7 @@ def global_fixes():
 
 
 def _get_parameters(function):
+    # pylint: disable=deprecated-method
     if sys.version_info >= (3, 3):
         # We need to match "getargspec()", which includes "self" as the first
         # value for methods.
