@@ -652,7 +652,7 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
         offset = result['column']
-        fixed = target[:offset] + ' ' + target[offset:]
+        fixed = target[:offset].rstrip() + ' ' + target[offset:].lstrip()
         self.source[line_index] = fixed
 
     def fix_e251(self, result):
