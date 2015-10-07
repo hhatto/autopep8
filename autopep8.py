@@ -3118,9 +3118,7 @@ def create_parser():
                              'range of line numbers (e.g. 1 99); '
                              'line numbers are indexed at 1')
     parser.add_argument('--indent-size', default=DEFAULT_INDENT_SIZE,
-                        type=int, metavar='n',
-                        help='number of spaces per indent level '
-                             '(default %(default)s)')
+                        type=int, help=argparse.SUPPRESS)
     parser.add_argument('files', nargs='*',
                         help="files to format or '-' for standard in")
 
