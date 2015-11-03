@@ -1197,7 +1197,8 @@ def fix_e265(source, aggressive=False):  # pylint: disable=unused-argument
     for (line_number, line) in enumerate(sio.readlines(), start=1):
         if (
             line.lstrip().startswith('#') and
-            line_number not in ignored_line_numbers
+            line_number not in ignored_line_numbers and
+            not pep8.noqa(line)
         ):
             indentation = _get_indentation(line)
             line = line.lstrip()
