@@ -3280,7 +3280,7 @@ def supported_fixes():
 
 def docstring_summary(docstring):
     """Return summary of docstring."""
-    return docstring.split('\n')[0]
+    return docstring.split('\n')[0] if docstring else docstring
 
 
 def line_shortening_rank(candidate, indent_word, max_line_length,
