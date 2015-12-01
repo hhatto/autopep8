@@ -891,9 +891,9 @@ class FixPEP8(object):
         second = (_get_indentation(logical_lines[0]) +
                   target[offset:].lstrip(';').lstrip())
 
-        # find inline commnet
+        # Find inline comment.
         inline_comment = None
-        if '# ' == target[offset:].lstrip(';').lstrip()[:2]:
+        if target[offset:].lstrip(';').lstrip()[:2] == '# ':
             inline_comment = target[offset:].lstrip(';')
 
         if inline_comment:
