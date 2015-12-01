@@ -1166,7 +1166,7 @@ def code_almost_equal(a, b):
     if len(split_a) != len(split_b):
         return False
 
-    for index in range(len(split_a)):
+    for (index, _) in enumerate(split_a):
         if ''.join(split_a[index].split()) != ''.join(split_b[index].split()):
             return False
 
