@@ -69,16 +69,16 @@ def run(filename, command, max_line_length=79,
     print(' '.join(command), file=sys.stderr)
 
     with tempfile.NamedTemporaryFile(suffix='.py') as tmp_file:
-        if 0 != subprocess.call(command, stdout=tmp_file):
+        if subprocess.call(command, stdout=tmp_file) != 0:
             sys.stderr.write('autopep8 crashed on ' + filename + '\n')
             return False
 
-        if 0 != subprocess.call(
+        if subprocess.call(
             ['pep8',
              '--ignore=' + ','.join([x for x in ignore.split(',') +
                                      check_ignore.split(',') if x]),
              '--show-source', tmp_file.name],
-                stdout=sys.stdout):
+                stdout=sys.stdout) != 0:
             sys.stderr.write('autopep8 did not completely fix ' +
                              filename + '\n')
 

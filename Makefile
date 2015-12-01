@@ -122,6 +122,8 @@ check:
 		--disable=too-many-branches \
 		--disable=too-many-lines \
 		--disable=too-many-public-methods \
+		--disable=wrong-import-order \
+		--disable=wrong-import-position \
 		--rcfile=/dev/null \
 		--dummy-variables-rgx='^_+$$' \
 		--disable=fixme \
