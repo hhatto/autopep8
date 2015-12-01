@@ -94,10 +94,12 @@ check:
 		--disable=super-on-old-class \
 		--disable=too-few-public-methods \
 		--disable=too-many-arguments \
+		--disable=too-many-boolean-expressions \
 		--disable=too-many-branches \
 		--disable=too-many-instance-attributes \
 		--disable=too-many-lines \
 		--disable=too-many-locals \
+		--disable=too-many-nested-blocks \
 		--disable=too-many-public-methods \
 		--disable=too-many-statements \
 		--disable=undefined-loop-variable \
