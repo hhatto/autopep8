@@ -26,7 +26,7 @@ From pip::
 
 Consider using the ``--user`` option_.
 
-.. _option: https://pip.readthedocs.org/en/latest/user_guide.html#user-installs
+.. _option: https://pip.pypa.io/en/latest/user_guide/#user-installs
 
 
 Requirements
