@@ -107,26 +107,9 @@ check:
 	pylint \
 		--reports=no \
 		--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
-		--disable=bad-continuation \
-		--disable=blacklisted-name \
-		--disable=duplicate-code \
-		--disable=import-error \
-		--disable=invalid-name \
-		--disable=line-too-long \
-		--disable=star-args \
-		--disable=missing-docstring \
+		--errors-only \
 		--disable=no-member \
-		--disable=protected-access \
-		--disable=redefined-builtin \
-		--disable=too-many-arguments \
-		--disable=too-many-branches \
-		--disable=too-many-lines \
-		--disable=too-many-public-methods \
-		--disable=wrong-import-order \
-		--disable=wrong-import-position \
 		--rcfile=/dev/null \
-		--dummy-variables-rgx='^_+$$' \
-		--disable=fixme \
 		test/acid.py test/acid_pypi.py test/test_autopep8.py
 	./autopep8.py --diff autopep8.py setup.py test/test_autopep8.py update_readme.py
 
