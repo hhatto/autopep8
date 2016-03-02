@@ -197,7 +197,7 @@ def qualify_by_address(
     """ This gets called by the web server """
 #: E129
 if (a == 2 or
-        b == "abc def ghi"
+    b == "abc def ghi"
         "jkl mno"):
     return True
 #:
