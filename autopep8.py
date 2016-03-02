@@ -358,8 +358,11 @@ def continued_indentation(logical_line, tokens, indent_level, indent_char,
         pep8.expand_indent(line) == indent_level + DEFAULT_INDENT_SIZE
     ):
         pos = (start[0], indent[0] + 4)
-        yield (pos, 'E125 {0}'.format(indent_level +
-                                      2 * DEFAULT_INDENT_SIZE))
+        desired_indent = indent_level + 2 * DEFAULT_INDENT_SIZE
+        if visual_indent:
+            yield (pos, 'E129 {0}'.format(desired_indent))
+        else:
+            yield (pos, 'E125 {0}'.format(desired_indent))
 del pep8._checks['logical_line'][pep8.continued_indentation]
 pep8.register_check(continued_indentation)
 

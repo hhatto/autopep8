@@ -1527,7 +1527,7 @@ x = \
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(fixed, result)
 
-    def test_e125(self):
+    def test_e129(self):
         line = """\
 if (a and
     b in [
@@ -1538,13 +1538,13 @@ if (a and
 """
         fixed = """\
 if (a and
-        b in [
-            'foo',
-        ] or
+    b in [
+        'foo',
+    ] or
         c):
     pass
 """
-        with autopep8_context(line, options=['--select=E125']) as result:
+        with autopep8_context(line, options=['--select=E129']) as result:
             self.assertEqual(fixed, result)
 
     def test_e125_with_multiline_string(self):
