@@ -3563,7 +3563,7 @@ def is_python_file(filename):
     try:
         with open_with_encoding(filename) as f:
             first_line = f.readlines(1)[0]
-    except (IOError, IndexError):
+    except (IOError, IndexError, MemoryError):
         return False
 
     if not PYTHON_SHEBANG_REGEX.match(first_line):
