@@ -122,6 +122,9 @@ else:
 PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8')
 
 
+MAX_PYTHON_FILE_DETECTION_BYTES = 1024
+
+
 def open_with_encoding(filename, encoding=None, mode='r'):
     """Return opened file with a specific encoding."""
     if not encoding:
@@ -3562,7 +3565,10 @@ def is_python_file(filename):
 
     try:
         with open_with_encoding(filename) as f:
-            first_line = f.readlines(1)[0]
+            text = f.read(MAX_PYTHON_FILE_DETECTION_BYTES)
+            if not text:
+                return False
+            first_line = text.splitlines()[0]
     except (IOError, IndexError):
         return False
 
