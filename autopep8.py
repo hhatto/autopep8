@@ -125,25 +125,25 @@ PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8')
 MAX_PYTHON_FILE_DETECTION_BYTES = 1024
 
 
-def open_with_encoding(filename, encoding=None, mode='r'):
+def open_with_encoding(filename,
+                       encoding=None, mode='r', limit_byte_check=-1):
     """Return opened file with a specific encoding."""
     if not encoding:
-        encoding = detect_encoding(filename)
+        encoding = detect_encoding(filename, limit_byte_check=limit_byte_check)
 
     return io.open(filename, mode=mode, encoding=encoding,
                    newline='')  # Preserve line endings
 
 
-def detect_encoding(filename):
+def detect_encoding(filename, limit_byte_check=-1):
     """Return file encoding."""
     try:
         with open(filename, 'rb') as input_file:
             from lib2to3.pgen2 import tokenize as lib2to3_tokenize
             encoding = lib2to3_tokenize.detect_encoding(input_file.readline)[0]
 
-        # Check for correctness of encoding
         with open_with_encoding(filename, encoding) as test_file:
-            test_file.read()
+            test_file.read(limit_byte_check)
 
         return encoding
     except (LookupError, SyntaxError, UnicodeDecodeError):
@@ -2977,8 +2977,7 @@ def fix_file(filename, options=None, output=None, apply_config=False):
         else:
             return diff
     elif options.in_place:
-        fp = open_with_encoding(filename, encoding=encoding,
-                                mode='w')
+        fp = open_with_encoding(filename, encoding=encoding, mode='w')
         fp.write(fixed_source)
         fp.close()
     else:
@@ -3564,7 +3563,9 @@ def is_python_file(filename):
         return True
 
     try:
-        with open_with_encoding(filename) as f:
+        with open_with_encoding(
+                filename,
+                limit_byte_check=MAX_PYTHON_FILE_DETECTION_BYTES) as f:
             text = f.read(MAX_PYTHON_FILE_DETECTION_BYTES)
             if not text:
                 return False
