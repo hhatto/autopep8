@@ -74,7 +74,7 @@ def run(filename, command, max_line_length=79,
             return False
 
         if subprocess.call(
-            ['pep8',
+            ['pycodestyle',
              '--ignore=' + ','.join([x for x in ignore.split(',') +
                                      check_ignore.split(',') if x]),
              '--show-source', tmp_file.name],

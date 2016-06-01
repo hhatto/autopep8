@@ -18,7 +18,7 @@ fasttest: test_fast
 test_basic:
 	@echo '--->  Running basic test'
 	@${PYTHON} autopep8.py --aggressive test/example.py > .tmp.test.py
-	pep8 --repeat .tmp.test.py
+	pycodestyle --repeat .tmp.test.py
 	@rm .tmp.test.py
 
 test_diff:
@@ -27,7 +27,7 @@ test_diff:
 	@${PYTHON} autopep8.py --aggressive --diff .tmp.example.py > .tmp.example.py.patch
 	patch < .tmp.example.py.patch
 	@rm .tmp.example.py.patch
-	pep8 --repeat .tmp.example.py && ${PYTHON} -m py_compile .tmp.example.py
+	pycodestyle --repeat .tmp.example.py && ${PYTHON} -m py_compile .tmp.example.py
 	@rm .tmp.example.py
 
 test_unit:
@@ -72,7 +72,7 @@ open_readme: readme
 	@python -m webbrowser -n "file://${PWD}/README.html"
 
 check:
-	pep8 \
+	pycodestyle \
 		--ignore=E402 \
 		autopep8.py setup.py test/acid.py test/acid_pypi.py update_readme.py
 	pylint \

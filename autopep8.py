@@ -30,8 +30,8 @@ Fixes that only need be done once can be added by adding a function of the form
 "fix_<code>(source)" to this module. They should return the fixed source code.
 These fixes are picked up by apply_global_fixes().
 
-Fixes that depend on pep8 should be added as methods to FixPEP8. See the class
-documentation for more information.
+Fixes that depend on pycodestyle should be added as methods to FixPEP8. See the
+class documentation for more information.
 
 """
 
@@ -57,7 +57,7 @@ import textwrap
 import token
 import tokenize
 
-import pep8
+import pycodestyle
 
 
 try:
@@ -167,9 +167,9 @@ def extended_blank_lines(logical_line,
             if indent_level and not blank_lines and not blank_before:
                 yield (0, 'E309 expected 1 blank line after class declaration')
     elif previous_logical.startswith('def '):
-        if blank_lines and pep8.DOCSTRING_REGEX.match(logical_line):
+        if blank_lines and pycodestyle.DOCSTRING_REGEX.match(logical_line):
             yield (0, 'E303 too many blank lines ({0})'.format(blank_lines))
-    elif pep8.DOCSTRING_REGEX.match(previous_logical):
+    elif pycodestyle.DOCSTRING_REGEX.match(previous_logical):
         # Missing blank line between class docstring and method declaration.
         if (
             indent_level and
@@ -179,12 +179,12 @@ def extended_blank_lines(logical_line,
             '(self' in logical_line
         ):
             yield (0, 'E301 expected 1 blank line, found 0')
-pep8.register_check(extended_blank_lines)
+pycodestyle.register_check(extended_blank_lines)
 
 
 def continued_indentation(logical_line, tokens, indent_level, indent_char,
                           noqa):
-    """Override pep8's function to provide indentation information."""
+    """Override pycodestyle's function to provide indentation information."""
     first_row = tokens[0][2][0]
     nrows = 1 + tokens[-1][2][0] - first_row
     if noqa or nrows == 1:
@@ -237,7 +237,7 @@ def continued_indentation(logical_line, tokens, indent_level, indent_char,
             last_indent = start
 
             # Record the initial indent.
-            rel_indent[row] = pep8.expand_indent(line) - indent_level
+            rel_indent[row] = pycodestyle.expand_indent(line) - indent_level
 
             # Identify closing bracket.
             close_bracket = (token_type == tokenize.OP and text in ']})')
@@ -358,7 +358,7 @@ def continued_indentation(logical_line, tokens, indent_level, indent_char,
     if (
         indent_next and
         not last_line_begins_with_multiline and
-        pep8.expand_indent(line) == indent_level + DEFAULT_INDENT_SIZE
+        pycodestyle.expand_indent(line) == indent_level + DEFAULT_INDENT_SIZE
     ):
         pos = (start[0], indent[0] + 4)
         desired_indent = indent_level + 2 * DEFAULT_INDENT_SIZE
@@ -366,8 +366,8 @@ def continued_indentation(logical_line, tokens, indent_level, indent_char,
             yield (pos, 'E129 {0}'.format(desired_indent))
         else:
             yield (pos, 'E125 {0}'.format(desired_indent))
-del pep8._checks['logical_line'][pep8.continued_indentation]
-pep8.register_check(continued_indentation)
+del pycodestyle._checks['logical_line'][pycodestyle.continued_indentation]
+pycodestyle.register_check(continued_indentation)
 
 
 class FixPEP8(object):
@@ -379,14 +379,15 @@ class FixPEP8(object):
 
     The fixer method can take either one or two arguments (in addition to
     self). The first argument is "result", which is the error information from
-    pep8. The second argument, "logical", is required only for logical-line
-    fixes.
+    pycodestyle. The second argument, "logical", is required only for
+    logical-line fixes.
 
     The fixer method can return the list of modified lines or None. An empty
     list would mean that no changes were made. None would mean that only the
-    line reported in the pep8 error was modified. Note that the modified line
-    numbers that are returned are indexed at 1. This typically would correspond
-    with the line number reported in the pep8 error information.
+    line reported in the pycodestyle error was modified. Note that the modified
+    line numbers that are returned are indexed at 1. This typically would
+    correspond with the line number reported in the pycodestyle error
+    information.
 
     [fixed method list]
         - e121,e122,e123,e124,e125,e126,e127,e128,e129
@@ -423,7 +424,7 @@ class FixPEP8(object):
             set() if long_line_ignore_cache is None
             else long_line_ignore_cache)
 
-        # Many fixers are the same even though pep8 categorizes them
+        # Many fixers are the same even though pycodestyle categorizes them
         # differently.
         self.fix_e115 = self.fix_e112
         self.fix_e116 = self.fix_e113
@@ -666,8 +667,8 @@ class FixPEP8(object):
         line_index = result['line'] - 1
         target = self.source[line_index]
 
-        # This is necessary since pep8 sometimes reports columns that goes
-        # past the end of the physical line. This happens in cases like,
+        # This is necessary since pycodestyle sometimes reports columns that
+        # goes past the end of the physical line. This happens in cases like,
         # foo(bar\n=None)
         c = min(result['column'] - 1,
                 len(target) - 1)
@@ -734,8 +735,8 @@ class FixPEP8(object):
         delete_linenum = int(result['info'].split('(')[1].split(')')[0]) - 2
         delete_linenum = max(1, delete_linenum)
 
-        # We need to count because pep8 reports an offset line number if there
-        # are comments.
+        # We need to count because pycodestyle reports an offset line number if
+        # there are comments.
         cnt = 0
         line = result['line'] - 2
         modified_lines = []
@@ -1204,7 +1205,7 @@ def fix_e265(source, aggressive=False):  # pylint: disable=unused-argument
         if (
             line.lstrip().startswith('#') and
             line_number not in ignored_line_numbers and
-            not pep8.noqa(line)
+            not pycodestyle.noqa(line)
         ):
             indentation = _get_indentation(line)
             line = line.lstrip()
@@ -2435,8 +2436,8 @@ def fix_whitespace(line, offset, replacement):
 
 
 def _execute_pep8(pep8_options, source):
-    """Execute pep8 via python method calls."""
-    class QuietReport(pep8.BaseReport):
+    """Execute pycodestyle via python method calls."""
+    class QuietReport(pycodestyle.BaseReport):
 
         """Version of checker that does not print."""
 
@@ -2466,8 +2467,8 @@ def _execute_pep8(pep8_options, source):
             """
             return self.__full_error_results
 
-    checker = pep8.Checker('', lines=source,
-                           reporter=QuietReport, **pep8_options)
+    checker = pycodestyle.Checker('', lines=source, reporter=QuietReport,
+                                  **pep8_options)
     checker.check_all()
     return checker.report.full_error_results()
 
@@ -2685,7 +2686,7 @@ def check_syntax(code):
 
 
 def filter_results(source, results, aggressive):
-    """Filter out spurious reports from pep8.
+    """Filter out spurious reports from pycodestyle.
 
     If aggressive is True, we allow possibly unsafe fixes (E711, E712).
 
@@ -3019,7 +3020,7 @@ def apply_global_fixes(source, options, where='global', filename=''):
     """Run global fixes on source code.
 
     These are fixes that only need be done once (unlike those in
-    FixPEP8, which are dependent on pep8).
+    FixPEP8, which are dependent on pycodestyle).
 
     """
     if any(code_match(code, select=options.select, ignore=options.ignore)
@@ -3440,7 +3441,7 @@ def standard_deviation(numbers):
 
 def has_arithmetic_operator(line):
     """Return True if line contains any arithmetic operators."""
-    for operator in pep8.ARITHMETIC_OP:
+    for operator in pycodestyle.ARITHMETIC_OP:
         if operator in line:
             return True
 
