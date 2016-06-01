@@ -7,12 +7,12 @@ autopep8
     :alt: Build status
 
 autopep8 automatically formats Python code to conform to the `PEP 8`_ style
-guide. It uses the pep8_ utility to determine what parts of the code needs to
-be formatted. autopep8 is capable of fixing most of the formatting issues_ that
-can be reported by pep8.
+guide. It uses the pycodestyle_ utility to determine what parts of the code
+needs to be formatted. autopep8 is capable of fixing most of the formatting
+issues_ that can be reported by pycodestyle.
 
 .. _PEP 8: https://www.python.org/dev/peps/pep-0008/
-.. _issues: https://pep8.readthedocs.org/en/latest/intro.html#error-codes
+.. _issues: https://pycodestyle.readthedocs.org/en/latest/intro.html#error-codes
 
 .. contents::
 
@@ -32,9 +32,9 @@ Consider using the ``--user`` option_.
 Requirements
 ============
 
-autopep8 requires pep8_.
+autopep8 requires pycodestyle_.
 
-.. _pep8: https://github.com/PyCQA/pycodestyle
+.. _pycodestyle: https://github.com/PyCQA/pycodestyle
 
 
 Usage
@@ -175,7 +175,7 @@ Options::
 Features
 ========
 
-autopep8 fixes the following issues_ reported by pep8_::
+autopep8 fixes the following issues_ reported by pycodestyle_::
 
     E101 - Reindent all lines.
     E121 - Fix indentation to be a multiple of four.
@@ -222,7 +222,7 @@ autopep8 fixes the following issues_ reported by pep8_::
     W604 - Use "repr()" instead of backticks.
     W690 - Fix various deprecated code (via lib2to3).
 
-autopep8 also fixes some issues not found by pep8_.
+autopep8 also fixes some issues not found by pycodestyle_.
 
 - Correct deprecated or non-idiomatic Python code (via ``lib2to3``). Use this
   for making Python 2.6 and 2.7 code more compatible with Python 3. (This is
@@ -235,14 +235,15 @@ autopep8 also fixes some issues not found by pep8_.
 - Remove blank lines between a function declaration and its docstring. (Enabled
   with ``E303``.)
 
-autopep8 avoids fixing some issues found by pep8_.
+autopep8 avoids fixing some issues found by pycodestyle_.
 
 - ``E112``/``E113`` for non comments are reports of bad indentation that break
   syntax rules. These should not be modified at all.
 - ``E265``, which refers to spacing after comment hash, is ignored if the
   comment looks like code. autopep8 avoids modifying these since they are not
-  real comments. If you really want to get rid of the pep8_ warning, consider
-  just removing the commented-out code. (This can be automated via eradicate_.)
+  real comments. If you really want to get rid of the pycodestyle_ warning,
+  consider just removing the commented-out code. (This can be automated via
+  eradicate_.)
 
 .. _eradicate: https://github.com/myint/eradicate
 

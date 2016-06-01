@@ -10,10 +10,10 @@ Issues
 
 When submitting a bug report, please provide the following:
 
-1. Does the ``pep8`` tool behave correctly? If not, then the bug
-   report should be filed at the pep8_ repository instead.
+1. Does the ``pycodestyle`` tool behave correctly? If not, then the bug
+   report should be filed at the pycodestyle_ repository instead.
 2. ``autopep8 --version``
-3. ``pep8 --version``
+3. ``pycodestyle --version``
 4. ``python --version``
 5. ``uname -a`` if on Unix.
 6. The example input that causes the bug.
@@ -29,10 +29,10 @@ Pull requests
 
 When submitting a pull request, please do the following.
 
-1. Does the ``pep8`` tool behave correctly? If not, then a pull request
-   should be filed at the pep8_ repository instead.
+1. Does the ``pycodestyle`` tool behave correctly? If not, then a pull request
+   should be filed at the pycodestyle_ repository instead.
 2. Add a test case to ``test/test_autopep8.py`` that demonstrates what your
    change does.
 3. Make sure all tests pass.
 
-.. _pep8: https://github.com/PyCQA/pycodestyle
+.. _pycodestyle: https://github.com/PyCQA/pycodestyle
