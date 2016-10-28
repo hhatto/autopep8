@@ -3695,6 +3695,34 @@ raise IOError('abc '
                               options=['-aa', '--select=E713']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e713_more(self):
+        line = 'if not "." in y:\n    pass\n'
+        fixed = 'if "." not in y:\n    pass\n'
+        with autopep8_context(line,
+                              options=['-aa', '--select=E713']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e713_with_tuple(self):
+        line = """
+if not role in ("domaincontroller_master",
+                "domaincontroller_backup",
+                "domaincontroller_slave",
+                "memberserver",
+                ):
+    pass
+"""
+        fixed = """
+if role not in ("domaincontroller_master",
+                "domaincontroller_backup",
+                "domaincontroller_slave",
+                "memberserver",
+                ):
+    pass
+"""
+        with autopep8_context(line,
+                              options=['-aa', '--select=E713']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e721(self):
         line = "type('') == type('')\n"
         fixed = "isinstance('', type(''))\n"
