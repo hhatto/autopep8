@@ -76,6 +76,7 @@ CRLF = '\r\n'
 
 PYTHON_SHEBANG_REGEX = re.compile(r'^#!.*\bpython[23]?\b\s*$')
 LAMBDA_REGEX = re.compile(r'([\w.]+)\s=\slambda\s+([\w,\s.]+):')
+COMPARE_NEGATIVE_REGEX = re.compile(r'\b(not)\s+([^][)(}{ ]+)\s+(in|is)\s')
 
 
 # For generating line shortening candidates.
@@ -403,7 +404,7 @@ class FixPEP8(object):
         - e401
         - e502
         - e701,e702
-        - e711
+        - e711,e712,e713,e714
         - e731
         - w291
 
@@ -979,12 +980,26 @@ class FixPEP8(object):
         (line_index, _, target) = get_index_offset_contents(result,
                                                             self.source)
 
-        # Handle very easy case only.
-        if re.match(r'^\s*if not [\w.]+ in [\w.]+:$', target):
-            self.source[line_index] = re.sub(r'if not ([\w.]+) in ([\w.]+):',
-                                             r'if \1 not in \2:',
-                                             target,
-                                             count=1)
+        match = COMPARE_NEGATIVE_REGEX.search(target)
+        if match:
+            if match.group(3) == 'in':
+                pos_start = match.start(1)
+                self.source[line_index] = "{0}{1} {2} {3} {4}".format(
+                    target[:pos_start], match.group(2), match.group(1),
+                    match.group(3), target[match.end():])
+
+    def fix_e714(self, result):
+        """Fix object identity should be 'is not' case."""
+        (line_index, _, target) = get_index_offset_contents(result,
+                                                            self.source)
+
+        match = COMPARE_NEGATIVE_REGEX.search(target)
+        if match:
+            if match.group(3) == 'is':
+                pos_start = match.start(1)
+                self.source[line_index] = "{0}{1} {2} {3} {4}".format(
+                    target[:pos_start], match.group(2), match.group(3),
+                    match.group(1), target[match.end():])
 
     def fix_e731(self, result):
         """Fix do not assign a lambda expression check."""
@@ -2737,7 +2752,7 @@ def filter_results(source, results, aggressive):
                 continue
 
         if aggressive <= 1:
-            if issue_id.startswith(('e712', 'e713')):
+            if issue_id.startswith(('e712', 'e713', 'e714')):
                 continue
 
         if r['line'] in commented_out_code_line_numbers:
