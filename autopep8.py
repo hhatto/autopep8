@@ -986,6 +986,19 @@ class FixPEP8(object):
                         target[:pos_start], match.group(2), match.group(1),
                         match.group(3), target[match.end():])
 
+    def fix_e714(self, result):
+        """Fix object identity should be 'is not' case."""
+        (line_index, _, target) = get_index_offset_contents(result,
+                                                            self.source)
+
+        match = COMPARE_NEGATIVE_REGEX.search(target)
+        if match:
+            if match.group(3) == 'is':
+                pos_start = match.start(1)
+                self.source[line_index] = "%s%s %s %s %s" % (
+                        target[:pos_start], match.group(2), match.group(3),
+                        match.group(1), target[match.end():])
+
     def fix_w291(self, result):
         """Remove trailing whitespace."""
         fixed_line = self.source[result['line'] - 1].rstrip()
@@ -2726,7 +2739,7 @@ def filter_results(source, results, aggressive):
                 continue
 
         if aggressive <= 1:
-            if issue_id.startswith(('e712', 'e713')):
+            if issue_id.startswith(('e712', 'e713', 'e714')):
                 continue
 
         if r['line'] in commented_out_code_line_numbers:
