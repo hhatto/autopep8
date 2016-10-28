@@ -3723,6 +3723,38 @@ if role not in ("domaincontroller_master",
                               options=['-aa', '--select=E713']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e714(self):
+        line = 'if not x is y:\n    pass\n'
+        fixed = 'if x is not y:\n    pass\n'
+        with autopep8_context(line,
+                              options=['-aa', '--select=E714']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e713_and_e714(self):
+        line = """
+if not x is y:
+    pass
+if not role in ("domaincontroller_master",
+                "domaincontroller_backup",
+                "domaincontroller_slave",
+                "memberserver",
+                ):
+    pass
+"""
+        fixed = """
+if x is not y:
+    pass
+if role not in ("domaincontroller_master",
+                "domaincontroller_backup",
+                "domaincontroller_slave",
+                "memberserver",
+                ):
+    pass
+"""
+        with autopep8_context(line,
+                              options=['-aa', '--select=E713,E714']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e721(self):
         line = "type('') == type('')\n"
         fixed = "isinstance('', type(''))\n"
