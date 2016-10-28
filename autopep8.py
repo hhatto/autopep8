@@ -75,6 +75,7 @@ CRLF = '\r\n'
 
 
 PYTHON_SHEBANG_REGEX = re.compile(r'^#!.*\bpython[23]?\b\s*$')
+LAMBDA_REGEX = re.compile(r'([\w.]+)\s=\slambda\s+([\w.]+):')
 
 
 # For generating line shortening candidates.
@@ -403,6 +404,7 @@ class FixPEP8(object):
         - e502
         - e701,e702
         - e711
+        - e731
         - w291
 
     """
@@ -983,6 +985,16 @@ class FixPEP8(object):
                                              r'if \1 not in \2:',
                                              target,
                                              count=1)
+
+    def fix_e731(self, result):
+        """Fix do not assign a lambda expression check."""
+        (line_index, _, target) = get_index_offset_contents(result,
+                                                            self.source)
+        match = LAMBDA_REGEX.search(target)
+        if match:
+            end = match.end()
+            self.source[line_index] = "def {0}({1}): return {2}".format(
+                match.group(1), match.group(2), target[end:])
 
     def fix_w291(self, result):
         """Remove trailing whitespace."""

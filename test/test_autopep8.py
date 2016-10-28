@@ -3713,6 +3713,12 @@ raise IOError('abc '
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e731(self):
+        line = 'a = lambda x: x * 2\n'
+        fixed = 'def a(x): return x * 2\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e901_should_cause_indentation_screw_up(self):
         line = """\
 def tmp(g):
