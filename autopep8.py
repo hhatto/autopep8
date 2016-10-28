@@ -982,9 +982,9 @@ class FixPEP8(object):
         if match:
             if match.group(3) == 'in':
                 pos_start = match.start(1)
-                self.source[line_index] = "%s%s %s %s %s" % (
-                        target[:pos_start], match.group(2), match.group(1),
-                        match.group(3), target[match.end():])
+                self.source[line_index] = "{0}{1} {2} {3} {4}".format(
+                    target[:pos_start], match.group(2), match.group(1),
+                    match.group(3), target[match.end():])
 
     def fix_e714(self, result):
         """Fix object identity should be 'is not' case."""
@@ -995,9 +995,9 @@ class FixPEP8(object):
         if match:
             if match.group(3) == 'is':
                 pos_start = match.start(1)
-                self.source[line_index] = "%s%s %s %s %s" % (
-                        target[:pos_start], match.group(2), match.group(3),
-                        match.group(1), target[match.end():])
+                self.source[line_index] = "{0}{1} {2} {3} {4}".format(
+                    target[:pos_start], match.group(2), match.group(3),
+                    match.group(1), target[match.end():])
 
     def fix_w291(self, result):
         """Remove trailing whitespace."""
