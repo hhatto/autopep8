@@ -75,6 +75,7 @@ CRLF = '\r\n'
 
 
 PYTHON_SHEBANG_REGEX = re.compile(r'^#!.*\bpython[23]?\b\s*$')
+COMPARE_NEGATIVE_REGEX = re.compile(r'\b(not)\s+([^][)(}{ ]+)\s+(in|is)\s')
 
 
 # For generating line shortening candidates.
@@ -977,12 +978,13 @@ class FixPEP8(object):
         (line_index, _, target) = get_index_offset_contents(result,
                                                             self.source)
 
-        # Handle very easy case only.
-        if re.match(r'^\s*if not [\w.]+ in [\w.]+:$', target):
-            self.source[line_index] = re.sub(r'if not ([\w.]+) in ([\w.]+):',
-                                             r'if \1 not in \2:',
-                                             target,
-                                             count=1)
+        match = COMPARE_NEGATIVE_REGEX.search(target)
+        if match:
+            if match.group(3) == 'in':
+                pos_start = match.start(1)
+                self.source[line_index] = "%s%s %s %s %s" % (
+                        target[:pos_start], match.group(2), match.group(1),
+                        match.group(3), target[match.end():])
 
     def fix_w291(self, result):
         """Remove trailing whitespace."""
