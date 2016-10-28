@@ -16,18 +16,18 @@ if X not in Y:
 if X.B not in Y:
     pass
 #: E713
-if not X in Y and Z == "zero":
+if X not in Y and Z == "zero":
     pass
 #: E713
-if X == "zero" or not Y in Z:
+if X == "zero" or Y not in Z:
     pass
 
 #
 #: E714
-if not X is Y:
+if X is not Y:
     pass
 #: E714
-if not X.B is Y:
+if X.B is not Y:
     pass
 #: Okay
 if x not in y:
