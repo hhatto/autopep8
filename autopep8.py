@@ -993,8 +993,8 @@ class FixPEP8(object):
         match = LAMBDA_REGEX.search(target)
         if match:
             end = match.end()
-            self.source[line_index] = "def {0}({1}): return {2}".format(
-                match.group(1), match.group(2), target[end:])
+            self.source[line_index] = "{0}def {1}({2}): return {3}".format(
+                target[:match.start(0)], match.group(1), match.group(2), target[end:])
 
     def fix_w291(self, result):
         """Remove trailing whitespace."""
