@@ -16,7 +16,7 @@ z = x[0] + 3
 #: E221:3:14
 text = """
     bar
-    foo %s"""  % rofl
+    foo %s""" % rofl
 #: Okay
 x = 1
 y = 2
