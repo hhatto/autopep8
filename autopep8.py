@@ -76,7 +76,7 @@ CRLF = '\r\n'
 
 PYTHON_SHEBANG_REGEX = re.compile(r'^#!.*\bpython[23]?\b\s*$')
 LAMBDA_REGEX = re.compile(r'([\w.]+)\s=\slambda\s+([\w,\s.]+):')
-COMPARE_NEGATIVE_REGEX = re.compile(r'\b(not)\s+([^][)(}{ ]+)\s+(in|is)\s')
+COMPARE_NEGATIVE_REGEX = re.compile(r'\b(not)\s+([^][)(}{]+)\s+(in|is)\s')
 
 
 # For generating line shortening candidates.

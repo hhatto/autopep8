@@ -3755,6 +3755,20 @@ if role not in ("domaincontroller_master",
                               options=['-aa', '--select=E713,E714']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e713_with_single_quote(self):
+        line = "if not 'DC IP' in info:\n"
+        fixed = "if 'DC IP' not in info:\n"
+        with autopep8_context(line,
+                              options=['-aa', '--select=E713,E714']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e714_with_single_quote(self):
+        line = "if not 'DC IP' is info:\n"
+        fixed = "if 'DC IP' is not info:\n"
+        with autopep8_context(line,
+                              options=['-aa', '--select=E713,E714']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e721(self):
         line = "type('') == type('')\n"
         fixed = "isinstance('', type(''))\n"
