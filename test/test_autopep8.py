@@ -3941,6 +3941,23 @@ else:
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w503(self):
+        line = '(width == 0\n + height == 0)\n'
+        fixed = '(width == 0 +\n height == 0)\n'
+        with autopep8_context(line, options=['-aaa']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_w503_skip_default(self):
+        line = '(width == 0\n + height == 0)\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
+    def test_w503_and_or(self):
+        line = '(width == 0\n and height == 0\n or name == "")\n'
+        fixed = '(width == 0 and\n height == 0 or\n name == "")\n'
+        with autopep8_context(line, options=['-aaa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w601(self):
         line = 'a = {0: 1}\na.has_key(0)\n'
         fixed = 'a = {0: 1}\n0 in a\n'

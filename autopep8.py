@@ -90,7 +90,7 @@ SHORTEN_OPERATOR_GROUPS = frozenset([
 ])
 
 
-DEFAULT_IGNORE = 'E24'
+DEFAULT_IGNORE = 'E24,W503'
 DEFAULT_INDENT_SIZE = 4
 
 
@@ -407,6 +407,7 @@ class FixPEP8(object):
         - e711,e712,e713,e714
         - e731
         - w291
+        - w503
 
     """
 
@@ -1025,6 +1026,26 @@ class FixPEP8(object):
         self.source = self.source[:original_length - blank_count]
         return range(1, 1 + original_length)
 
+    def fix_w503(self, result):
+        (line_index, _, target) = get_index_offset_contents(result,
+                                                            self.source)
+        one_string_token = target.split()[0]
+        try:
+            ts = generate_tokens(one_string_token)
+        except tokenize.TokenError:
+            return
+        if not _is_binary_operator(ts[0][0], one_string_token):
+            return
+        i = target.index(one_string_token)
+        self.source[line_index] = "{0}{1}".format(
+                target[:i], target[i+len(one_string_token):])
+        nl = find_newline(self.source[line_index-1:line_index])
+        before_line = self.source[line_index-1]
+        bl = before_line.index(nl)
+        self.source[line_index-1] = "{0} {1}{2}".format(
+                before_line[:bl], one_string_token,
+                before_line[bl:])
+
 
 def get_index_offset_contents(result, source):
     """Return (line_index, column_offset, line_contents)."""
@@ -1507,6 +1528,10 @@ def _shorten_line(tokens, source, indentation, indent_word,
                             if aggressive else fixed):
                 yield indentation + fixed
 
+
+def _is_binary_operator(token_type, text):
+    return ((token_type == tokenize.OP or text in ['and', 'or']) and
+            text not in "()[]{},:.;@=%~")
 
 # A convenient way to handle tokens.
 Token = collections.namedtuple('Token', ['token_type', 'token_string',
@@ -2746,7 +2771,11 @@ def filter_results(source, results, aggressive):
                 continue
 
         if aggressive <= 1:
-            if issue_id.startswith(('e712', 'e713', 'e714')):
+            if issue_id.startswith(('e712', 'e713', 'e714', 'w5')):
+                continue
+
+        if aggressive <= 2:
+            if issue_id.startswith(('w5')):
                 continue
 
         if r['line'] in commented_out_code_line_numbers:
