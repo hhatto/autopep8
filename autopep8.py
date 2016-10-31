@@ -625,9 +625,6 @@ class FixPEP8(object):
         target = self.source[line_index]
         offset = result['column'] - 1
 
-        if is_probably_part_of_multiline(target):
-            return []
-
         fixed = fix_whitespace(target,
                                offset=offset,
                                replacement='')

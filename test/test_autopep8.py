@@ -1720,8 +1720,7 @@ while True:
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    def test_e202_skip_multiline(self):
-        """We skip this since pep8 reports the error as being on line 1."""
+    def test_e202_multiline(self):
         line = """\
 
 ('''
@@ -1730,8 +1729,16 @@ b
 c
 ''' )
 """
+        fixed = """\
+
+('''
+a
+b
+c
+''')
+"""
         with autopep8_context(line) as result:
-            self.assertEqual(line, result)
+            self.assertEqual(fixed, result)
 
     def test_e202_skip_multiline_with_escaped_newline(self):
         line = r"""
