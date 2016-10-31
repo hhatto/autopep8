@@ -2087,6 +2087,12 @@ bar[zap[0][0]:zig[0][0], :]
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e271_with_multiline(self):
+        line = 'if True and  False \\\n        True:\n    pass\n'
+        fixed = 'if True and False \\\n        True:\n    pass\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e272(self):
         line = 'True  and False\n'
         fixed = 'True and False\n'
