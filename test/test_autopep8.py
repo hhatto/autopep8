@@ -1790,7 +1790,7 @@ c
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    def test_e221_should_skip_multiline(self):
+    def test_e221_do_not_skip_multiline(self):
         line = '''\
 def javascript(self):
     return u"""
@@ -1809,8 +1809,26 @@ $(function(){
     """  % {
     }
 '''
+        fixed = '''\
+def javascript(self):
+    return u"""
+<script type="text/javascript" src="++resource++ptg.shufflegallery/jquery.promptu-menu.js"></script>
+<script type="text/javascript">
+$(function(){
+    $('ul.promptu-menu').promptumenu({width: %(width)i, height: %(height)i, rows: %(rows)i, columns: %(columns)i, direction: '%(direction)s', intertia: %(inertia)i, pages: %(pages)i});
+\t$('ul.promptu-menu a').click(function(e) {
+        e.preventDefault();
+    });
+    $('ul.promptu-menu a').dblclick(function(e) {
+        window.location.replace($(this).attr("href"));
+    });
+});
+</script>
+    """ % {
+    }
+'''
         with autopep8_context(line) as result:
-            self.assertEqual(line, result)
+            self.assertEqual(fixed, result)
 
     def test_e222(self):
         line = 'a = 1 +  1\n'
