@@ -3420,12 +3420,13 @@ def line_shortening_rank(candidate, indent_word, max_line_length,
             ):
                 rank += 100
 
-            # Avoid the ugliness of ", [\n".
+            # Avoid the ugliness of "something[\n".
             if (
                 current_line.endswith('[') and
-                current_line[:-1].rstrip().isalnum()
+                len(current_line) > 1 and
+                current_line[-2].isalnum()
             ):
-                rank += 100
+                rank += 200
 
             # Also avoid the ugliness of "foo.\nbar"
             if current_line.endswith('.'):
