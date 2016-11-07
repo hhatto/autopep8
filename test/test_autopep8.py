@@ -3505,6 +3505,22 @@ GYakymOSMc = GYakymOSMW(GYakymOSMJ, GYakymOSMA, GYakymOSMr,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_avoid_breaking_at_multi_level_slice(self):
+        """
+        Prevents line break on slice notation, dict access in this example:
+            GYakymOSMc=GYakymOSMW(GYakymOSMJ,GYakymOSMA,GYakymOSMr,GYakymOSMw['abc'][
+            'def'],GYakymOSMU,GYakymOSMq,GYakymOSMH,GYakymOSMl,svygreNveyvarf=GYakymOSME)
+        """
+        line = """\
+GYakymOSMc=GYakymOSMW(GYakymOSMJ,GYakymOSMA,GYakymOSMr,GYakymOSMw['abc']['def'],GYakymOSMU,GYakymOSMq,GYakymOSMH,GYakymOSMl,svygreNveyvarf=GYakymOSME)
+"""
+        fixed = """\
+GYakymOSMc = GYakymOSMW(GYakymOSMJ, GYakymOSMA, GYakymOSMr,
+                        GYakymOSMw['abc']['def'], GYakymOSMU, GYakymOSMq, GYakymOSMH, GYakymOSMl, svygreNveyvarf=GYakymOSME)
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
 
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
