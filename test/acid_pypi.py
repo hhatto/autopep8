@@ -133,6 +133,7 @@ def main():
         print('\nTested packages:\n    ' + '\n    '.join(checked_packages),
               file=sys.stderr)
 
+
 if __name__ == '__main__':
     try:
         sys.exit(main())

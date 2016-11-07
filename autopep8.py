@@ -181,6 +181,8 @@ def extended_blank_lines(logical_line,
             '(self' in logical_line
         ):
             yield (0, 'E301 expected 1 blank line, found 0')
+
+
 pycodestyle.register_check(extended_blank_lines)
 
 
@@ -368,6 +370,8 @@ def continued_indentation(logical_line, tokens, indent_level, indent_char,
             yield (pos, 'E129 {0}'.format(desired_indent))
         else:
             yield (pos, 'E125 {0}'.format(desired_indent))
+
+
 del pycodestyle._checks['logical_line'][pycodestyle.continued_indentation]
 pycodestyle.register_check(continued_indentation)
 
@@ -512,8 +516,8 @@ class FixPEP8(object):
                 elif modified_lines == []:  # Empty list means no fix
                     if self.options.verbose >= 2:
                         print(
-                            '--->  Not fixing {f} on line {l}'.format(
-                                f=result['id'], l=result['line']),
+                            '--->  Not fixing {error} on line {line}'.format(
+                                error=result['id'], line=result['line']),
                             file=sys.stderr)
                 else:  # We assume one-line fix when None.
                     completed_lines.add(result['line'])
@@ -979,7 +983,7 @@ class FixPEP8(object):
         if match:
             if match.group(3) == 'in':
                 pos_start = match.start(1)
-                self.source[line_index] = "{0}{1} {2} {3} {4}".format(
+                self.source[line_index] = '{0}{1} {2} {3} {4}'.format(
                     target[:pos_start], match.group(2), match.group(1),
                     match.group(3), target[match.end():])
 
@@ -992,7 +996,7 @@ class FixPEP8(object):
         if match:
             if match.group(3) == 'is':
                 pos_start = match.start(1)
-                self.source[line_index] = "{0}{1} {2} {3} {4}".format(
+                self.source[line_index] = '{0}{1} {2} {3} {4}'.format(
                     target[:pos_start], match.group(2), match.group(3),
                     match.group(1), target[match.end():])
 
@@ -1003,7 +1007,7 @@ class FixPEP8(object):
         match = LAMBDA_REGEX.search(target)
         if match:
             end = match.end()
-            self.source[line_index] = "{0}def {1}({2}): return {3}".format(
+            self.source[line_index] = '{0}def {1}({2}): return {3}'.format(
                 target[:match.start(0)], match.group(1), match.group(2),
                 target[end:])
 
@@ -1037,14 +1041,14 @@ class FixPEP8(object):
         if not _is_binary_operator(ts[0][0], one_string_token):
             return
         i = target.index(one_string_token)
-        self.source[line_index] = "{0}{1}".format(
-                target[:i], target[i+len(one_string_token):])
-        nl = find_newline(self.source[line_index-1:line_index])
-        before_line = self.source[line_index-1]
+        self.source[line_index] = '{0}{1}'.format(
+            target[:i], target[i + len(one_string_token):])
+        nl = find_newline(self.source[line_index - 1:line_index])
+        before_line = self.source[line_index - 1]
         bl = before_line.index(nl)
-        self.source[line_index-1] = "{0} {1}{2}".format(
-                before_line[:bl], one_string_token,
-                before_line[bl:])
+        self.source[line_index - 1] = '{0} {1}{2}'.format(
+            before_line[:bl], one_string_token,
+            before_line[bl:])
 
 
 def get_index_offset_contents(result, source):
@@ -1531,7 +1535,8 @@ def _shorten_line(tokens, source, indentation, indent_word,
 
 def _is_binary_operator(token_type, text):
     return ((token_type == tokenize.OP or text in ['and', 'or']) and
-            text not in "()[]{},:.;@=%~")
+            text not in '()[]{},:.;@=%~')
+
 
 # A convenient way to handle tokens.
 Token = collections.namedtuple('Token', ['token_type', 'token_string',
@@ -2650,9 +2655,9 @@ class Reindenter(object):
 def _reindent_stats(tokens):
     """Return list of (lineno, indentlevel) pairs.
 
-    One for each stmt and comment line. indentlevel is -1 for comment lines, as
-    a signal that tokenize doesn't know what to do about them; indeed, they're
-    our headache!
+    One for each stmt and comment line. indentlevel is -1 for comment
+    lines, as a signal that tokenize doesn't know what to do about them;
+    indeed, they're our headache!
 
     """
     find_stmt = 1  # Next token begins a fresh stmt?
@@ -2827,8 +2832,8 @@ def multiline_string_lines(source, include_docstrings=False):
 def commented_out_code_lines(source):
     """Return line numbers of comments that are likely code.
 
-    Commented-out code is bad practice, but modifying it just adds even more
-    clutter.
+    Commented-out code is bad practice, but modifying it just adds even
+    more clutter.
 
     """
     line_numbers = []
@@ -3720,6 +3725,7 @@ class CachedTokenizer(object):
             )
             self.last_text = text
         return self.last_tokens
+
 
 _cached_tokenizer = CachedTokenizer()
 generate_tokens = _cached_tokenizer.generate_tokens
