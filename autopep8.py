@@ -456,6 +456,8 @@ class FixPEP8(object):
         self.fix_e273 = self.fix_e271
         self.fix_e274 = self.fix_e271
         self.fix_e309 = self.fix_e301
+        self.fix_e305 = self.fix_e301
+        self.fix_e306 = self.fix_e301
         self.fix_e501 = (
             self.fix_long_line_logically if
             options and (options.aggressive >= 2 or options.experimental) else
