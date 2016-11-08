@@ -46,7 +46,8 @@ def colored(text, color):
 def run(filename, command, max_line_length=79,
         ignore='', check_ignore='', verbose=False,
         comparison_function=None,
-        aggressive=0, experimental=False, line_range=None, random_range=False):
+        aggressive=0, experimental=False, line_range=None, random_range=False,
+        pycodestyle=True):
     """Run autopep8 on file at filename.
 
     Return True on success.
@@ -73,8 +74,8 @@ def run(filename, command, max_line_length=79,
             sys.stderr.write('autopep8 crashed on ' + filename + '\n')
             return False
 
-        if subprocess.call(
-            ['pycodestyle',
+        if pycodestyle and subprocess.call(
+            [pycodestyle,
              '--ignore=' + ','.join([x for x in ignore.split(',') +
                                      check_ignore.split(',') if x]),
              '--show-source', tmp_file.name],
@@ -146,6 +147,9 @@ def process_args():
                         help='pass --line-range to autope8')
     parser.add_argument('--random-range', action='store_true',
                         help='pass random --line-range to autope8')
+    parser.add_argument('--pycodestyle', default='pycodestyle',
+                        help='location of pycodestyle; '
+                             'set to empty string to disable this check')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='print verbose messages')
     parser.add_argument('paths', nargs='*',
@@ -231,7 +235,8 @@ def check(paths, args):
                            aggressive=args.aggressive,
                            experimental=args.experimental,
                            line_range=args.line_range,
-                           random_range=args.random_range):
+                           random_range=args.random_range,
+                           pycodestyle=args.pycodestyle):
                     return False
         except (UnicodeDecodeError, UnicodeEncodeError) as exception:
             # Ignore annoying codec problems on Python 2.
