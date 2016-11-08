@@ -2600,7 +2600,6 @@ someverylongindenttionwhatnot().foo().bar().baz(
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-
     def test_e501_with_logical_fix(self):
         line = """\
 xxxxxxxxxxxxxxxxxxxxxxxxxxxx(aaaaaaaaaaaaaaaaaaaaaaa,
@@ -3488,7 +3487,6 @@ while xxxxxxxxxxxx(
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
-
     def test_e501_avoid_breaking_at_opening_slice(self):
         """
         Prevents line break on slice notation, dict access in this example:
@@ -3521,13 +3519,11 @@ GYakymOSMc = GYakymOSMW(GYakymOSMJ, GYakymOSMA, GYakymOSMr,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
-
 
     def test_e701(self):
         line = 'if True: print True\n'
