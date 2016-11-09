@@ -26,12 +26,16 @@ class X:
 def a():
     pass
 #: E302:2:1
+
+
 """Main module."""
 
 
 def _main():
     pass
 #: E302:2:1
+
+
 import sys
 
 

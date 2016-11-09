@@ -53,6 +53,8 @@ def long_function_name(
         var_four):
     print(var_one)
 #: E101 W191
+
+
 if ((row < 0 or self.moduleCount <= row or
      col < 0 or self.moduleCount <= col)):
     raise Exception("%s,%s - %s" % (row, col, self.moduleCount))
@@ -141,6 +143,8 @@ def test_keys(self):
         u'V\xe4sterbotten',
     ])
 #: W191
+
+
 x = [
     'abc'
 ]

@@ -1191,6 +1191,7 @@ def foo_bar(baz, frop,
     fizz, bang):  # E128
     pass
 
+
 if True:
     x = {
          }  # E123
