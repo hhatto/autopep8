@@ -3289,8 +3289,15 @@ def read_config(args, parser):
                     break
                 (parent, tail) = os.path.split(parent)
 
-        defaults = dict((k.lstrip('-').replace('-', '_'), v)
-                        for k, v in config.items('pep8'))
+        defaults = dict()
+
+        for section in ['pep8', 'pycodestyle']:
+            if config.has_section(section):
+                defaults.update(dict(
+                    (k.lstrip('-').replace('-', '_'), v)
+                    for k, v in config.items(section)
+                ))
+
         parser.set_defaults(**defaults)
     except Error:
         # Ignore for now.
