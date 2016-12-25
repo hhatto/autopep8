@@ -11,7 +11,7 @@ from setuptools import setup
 
 
 INSTALL_REQUIRES = (
-    ['pycodestyle >= 2.0'] +
+    ['pycodestyle >= 2.2'] +
     (['argparse'] if sys.version_info < (2, 7) else [])
 )
 
