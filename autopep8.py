@@ -404,7 +404,7 @@ class FixPEP8(object):
         - e251
         - e261,e262
         - e271,e272,e273,e274
-        - e301,e302,e303
+        - e301,e302,e303,e304,e305
         - e401
         - e502
         - e701,e702
@@ -459,6 +459,7 @@ class FixPEP8(object):
         self.fix_e272 = self.fix_e271
         self.fix_e273 = self.fix_e271
         self.fix_e274 = self.fix_e271
+        self.fix_e305 = self.fix_e301
         self.fix_e309 = self.fix_e301
         self.fix_e501 = (
             self.fix_long_line_logically if

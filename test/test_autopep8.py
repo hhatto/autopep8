@@ -1193,6 +1193,7 @@ def foo_bar(baz, frop,
     fizz, bang):  # E128
     pass
 
+
 if True:
     x = {
          }  # E123
@@ -1224,6 +1225,7 @@ print "E128", ("under-",
 def foo_bar(baz, frop,
             fizz, bang):  # E128
     pass
+
 
 if True:
     x = {
@@ -2201,6 +2203,12 @@ def foo():
     def test_e304_with_comment(self):
         line = '@contextmanager\n# comment\n\ndef f():\n    print 1\n'
         fixed = '@contextmanager\n# comment\ndef f():\n    print 1\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e305(self):
+        line = 'def a():\n    pass\na()\n'
+        fixed = 'def a():\n    pass\n\n\na()\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
