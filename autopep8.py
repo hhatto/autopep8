@@ -765,10 +765,10 @@ class FixPEP8(object):
         while True:
             if offset < 0:
                 break
-            l = self.source[offset].lstrip()
-            if len(l) == 0:
+            line = self.source[offset].lstrip()
+            if len(line) == 0:
                 break
-            if l[0] != '#':
+            if line[0] != '#':
                 break
             offset -= 1
         offset += 1
