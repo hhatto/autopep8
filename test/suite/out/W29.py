@@ -8,6 +8,8 @@ print
 class Foo(object):
 
     bang = 12
+
+
 #: W291
 '''multiline
 string with trailing whitespace'''

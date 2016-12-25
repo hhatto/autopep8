@@ -27,6 +27,7 @@ class TestP4Poller(unittest.TestCase):
     def tearDown(self):
         pass
 
+
 #
 #: E101 W191 W191
 if True:

@@ -52,6 +52,8 @@ def long_function_name(
         var_one, var_two, var_three,
         var_four):
     print(var_one)
+
+
 #: E101 W191
 if ((row < 0 or self.moduleCount <= row or
      col < 0 or self.moduleCount <= col)):
@@ -140,6 +142,8 @@ def test_keys(self):
         u'Norrbotten',
         u'V\xe4sterbotten',
     ])
+
+
 #: W191
 x = [
     'abc'

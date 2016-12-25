@@ -107,6 +107,8 @@ c = (a + b) * (a - b)
 
 def squares(n):
     return (i**2 for i in range(n))
+
+
 #: E227
 _1kB = _1MB >> 10
 #: E227

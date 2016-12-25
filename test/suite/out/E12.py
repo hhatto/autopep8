@@ -195,6 +195,8 @@ def qualify_by_address(
         self, cr, uid, ids, context=None,
         params_to_check=frozenset(QUALIF_BY_ADDRESS_PARAM)):
     """ This gets called by the web server """
+
+
 #: E129
 if (a == 2 or
     b == "abc def ghi"

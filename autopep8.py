@@ -459,7 +459,6 @@ class FixPEP8(object):
         self.fix_e272 = self.fix_e271
         self.fix_e273 = self.fix_e271
         self.fix_e274 = self.fix_e271
-        self.fix_e305 = self.fix_e301
         self.fix_e309 = self.fix_e301
         self.fix_e501 = (
             self.fix_long_line_logically if
@@ -757,6 +756,23 @@ class FixPEP8(object):
         line = result['line'] - 2
         if not self.source[line].strip():
             self.source[line] = ''
+
+    def fix_e305(self, result):
+        """Add missing 2 blank lines after end of function or class."""
+        cr = '\n'
+        # check comment line
+        offset = 2
+        while True:
+            if (result['line'] - offset) < 0:
+                break
+            l = self.source[result['line'] - offset].lstrip()
+            if len(l) == 0:
+                break
+            if self.source[result['line'] - offset].lstrip()[0] != '#':
+                break
+            offset += 1
+        offset -= 1
+        self.source[result['line'] - offset] = cr + self.source[result['line'] - offset]
 
     def fix_e401(self, result):
         """Put imports on separate lines."""
