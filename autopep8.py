@@ -93,6 +93,7 @@ SHORTEN_OPERATOR_GROUPS = frozenset([
 DEFAULT_IGNORE = 'E24,W503'
 DEFAULT_INDENT_SIZE = 4
 
+MULTIPLE_RANGES_RE = re.compile('^(\d+(-\d+)?)(,\d+(-\d+)?)*$')
 
 # W602 is handled separately due to the need to avoid "with_traceback".
 CODE_TO_2TO3 = {
@@ -125,6 +126,62 @@ PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8')
 
 
 MAX_PYTHON_FILE_DETECTION_BYTES = 1024
+
+
+class MultipleRanges(object):
+    """
+    Parse and check that a line is in specific line ranges.
+
+    line ranges definition should use dashes to represent a range, and commas
+    to separate two ranges. A range can be a single digit.Ranges should not
+    overlap and should be strictly increasing.
+
+    Example:
+
+        MultipleRanges('4-8,15,16,23-42')
+
+    represent lines 4 to 8 (both ends included) , 15 and 16, and lines 23 to 42
+    (both ends included)
+    """
+
+    def __init__(self, definition):
+        if not MULTIPLE_RANGES_RE.match(definition):
+            raise ValueError('Invalid format : %r' % definition)
+        ranges = definition.split(',')
+        self._definition = definition
+        self.slices = []
+        current = 0
+        for r in ranges:
+            limits = [int(_) for _ in r.split('-')]
+            if limits[0] < current:
+                    raise ValueError('Only strictly increasing line numbers'
+                                     'ranges supported. %s < %s in  %r' % (
+                                         current, limit[0], definition)
+                                     )
+            if len(limits) == 1:
+                self.slices.append(range(limits[0], limits[0] + 1))
+                current = limits[0]
+            elif len(limits) == 2:
+                if limits[0] >= limits[1]:
+                    raise ValueError('End of interval is before beginning: '
+                                     '%s-%s in  %r' % (limit[0],
+                                                       limit[1], definition)
+                                     )
+                current = limits[1]
+                self. slices.append(range(limits[0], limits[1] + 1))
+            else:
+                raise ValueError('Invalid range: %r' % definition)
+
+    def __contains__(self, item):
+        for sl in self.slices:
+            if item in sl:
+                return True
+            elif item < sl.start:
+                return False
+        return False
+
+    def __repr__(self):
+        return '<%s %r at 0x%02x>' % (self.__class__.__name__, self._definition, id(self))
 
 
 def open_with_encoding(filename,
@@ -556,6 +613,9 @@ class FixPEP8(object):
             start, end = self.options.line_range
             results = [r for r in results
                        if start <= r['line'] <= end]
+        elif self.options.line_ranges:
+            ranges = MultipleRanges(self.options.line_ranges[0])
+            results = [r for r in results if r['line'] in ranges]
 
         self._fix_source(filter_results(source=''.join(self.source),
                                         results=results,
@@ -3197,6 +3257,13 @@ def create_parser():
                         help='only fix errors found within this inclusive '
                              'range of line numbers (e.g. 1 99); '
                              'line numbers are indexed at 1')
+
+    parser.add_argument('--line-ranges', metavar='ranges',
+                        default=None, type=str, nargs=1,
+                        help='only fix errors found within this inclusive '
+                        'ranges of line numbers, use dashes within ranges '
+                        'and commas between ranges. E.g: 4-8,15,16-23,42 '
+                        'line numbers are indexed at 1')
     parser.add_argument('--indent-size', default=DEFAULT_INDENT_SIZE,
                         type=int, help=argparse.SUPPRESS)
     parser.add_argument('files', nargs='*',
