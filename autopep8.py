@@ -164,11 +164,7 @@ def extended_blank_lines(logical_line,
                          indent_level,
                          previous_logical):
     """Check for missing blank lines after class declaration."""
-    if previous_logical.startswith('class '):
-        if logical_line.startswith(('def ', 'class ', '@')):
-            if indent_level and not blank_lines and not blank_before:
-                yield (0, 'E309 expected 1 blank line after class declaration')
-    elif previous_logical.startswith('def '):
+    if previous_logical.startswith('def '):
         if blank_lines and pycodestyle.DOCSTRING_REGEX.match(logical_line):
             yield (0, 'E303 too many blank lines ({0})'.format(blank_lines))
     elif pycodestyle.DOCSTRING_REGEX.match(previous_logical):
