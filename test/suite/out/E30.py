@@ -25,6 +25,8 @@ class X:
 # -*- coding: utf-8 -*-
 def a():
     pass
+
+
 #: E302:2:1
 
 
@@ -33,6 +35,8 @@ def a():
 
 def _main():
     pass
+
+
 #: E302:2:1
 
 

@@ -19,13 +19,13 @@ p4change = {
 
 
 class TestP4Poller(unittest.TestCase):
-
     def setUp(self):
         self.setUpGetProcessOutput()
         return self.setUpChangeSource()
 
     def tearDown(self):
         pass
+
 
 #
 #: E101 W191 W191

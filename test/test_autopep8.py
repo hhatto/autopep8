@@ -42,7 +42,9 @@ import autopep8
 
 
 FAKE_CONFIGURATION = os.path.join(ROOT_DIR, 'test', 'fake_configuration')
-
+FAKE_PYCODESTYLE_CONFIGURATION = os.path.join(
+    ROOT_DIR, 'test', 'fake_pycodestyle_configuration'
+)
 
 if 'AUTOPEP8_COVERAGE' in os.environ and int(os.environ['AUTOPEP8_COVERAGE']):
     AUTOPEP8_CMD_TUPLE = ('coverage', 'run', '--branch', '--parallel',
@@ -1224,6 +1226,7 @@ def foo_bar(baz, frop,
             fizz, bang):  # E128
     pass
 
+
 if True:
     x = {
     }  # E123
@@ -2203,31 +2206,11 @@ def foo():
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    def test_e309(self):
-        line = """
-class Foo:
-    def bar():
-        print 1
-"""
-        fixed = """
-class Foo:
-
-    def bar():
-        print 1
-"""
+    def test_e305(self):
+        line = 'def a():\n    pass\na()\n'
+        fixed = 'def a():\n    pass\n\n\na()\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
-
-    def test_not_e309_with_comment(self):
-        line = """
-class Foo:
-
-    # A comment.
-    def bar():
-        print 1
-"""
-        with autopep8_context(line) as result:
-            self.assertEqual(line, result)
 
     def test_e401(self):
         line = 'import os, sys\n'
@@ -4632,6 +4615,13 @@ class ConfigurationTests(unittest.TestCase):
             apply_config=True)
         self.assertEqual(args.global_config, 'False')
         self.assertEqual(args.indent_size, 2)
+
+    def test_local_pycodestyle_config_line_length(self):
+        args = autopep8.parse_args(
+            [os.path.join(FAKE_PYCODESTYLE_CONFIGURATION, 'foo.py'),
+             '--global-config={0}'.format(os.devnull)],
+            apply_config=True)
+        self.assertEqual(args.max_line_length, 40)
 
     def test_config_false_with_local_autocomplete(self):
         args = autopep8.parse_args(

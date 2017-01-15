@@ -164,11 +164,7 @@ def extended_blank_lines(logical_line,
                          indent_level,
                          previous_logical):
     """Check for missing blank lines after class declaration."""
-    if previous_logical.startswith('class '):
-        if logical_line.startswith(('def ', 'class ', '@')):
-            if indent_level and not blank_lines and not blank_before:
-                yield (0, 'E309 expected 1 blank line after class declaration')
-    elif previous_logical.startswith('def '):
+    if previous_logical.startswith('def '):
         if blank_lines and pycodestyle.DOCSTRING_REGEX.match(logical_line):
             yield (0, 'E303 too many blank lines ({0})'.format(blank_lines))
     elif pycodestyle.DOCSTRING_REGEX.match(previous_logical):
@@ -404,7 +400,7 @@ class FixPEP8(object):
         - e251
         - e261,e262
         - e271,e272,e273,e274
-        - e301,e302,e303
+        - e301,e302,e303,e304,e305
         - e401
         - e502
         - e701,e702
@@ -459,7 +455,6 @@ class FixPEP8(object):
         self.fix_e272 = self.fix_e271
         self.fix_e273 = self.fix_e271
         self.fix_e274 = self.fix_e271
-        self.fix_e309 = self.fix_e301
         self.fix_e305 = self.fix_e301
         self.fix_e306 = self.fix_e301
         self.fix_e501 = (
@@ -758,6 +753,23 @@ class FixPEP8(object):
         line = result['line'] - 2
         if not self.source[line].strip():
             self.source[line] = ''
+
+    def fix_e305(self, result):
+        """Add missing 2 blank lines after end of function or class."""
+        cr = '\n'
+        # check comment line
+        offset = result['line'] - 2
+        while True:
+            if offset < 0:
+                break
+            line = self.source[offset].lstrip()
+            if len(line) == 0:
+                break
+            if line[0] != '#':
+                break
+            offset -= 1
+        offset += 1
+        self.source[offset] = cr + self.source[offset]
 
     def fix_e401(self, result):
         """Put imports on separate lines."""
@@ -3291,8 +3303,15 @@ def read_config(args, parser):
                     break
                 (parent, tail) = os.path.split(parent)
 
-        defaults = dict((k.lstrip('-').replace('-', '_'), v)
-                        for k, v in config.items('pep8'))
+        defaults = dict()
+
+        for section in ['pep8', 'pycodestyle']:
+            if config.has_section(section):
+                defaults.update(dict(
+                    (k.lstrip('-').replace('-', '_'), v)
+                    for k, v in config.items(section)
+                ))
+
         parser.set_defaults(**defaults)
     except Error:
         # Ignore for now.

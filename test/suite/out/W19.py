@@ -52,6 +52,8 @@ def long_function_name(
         var_one, var_two, var_three,
         var_four):
     print(var_one)
+
+
 #: E101 W191
 
 
@@ -142,6 +144,8 @@ def test_keys(self):
         u'Norrbotten',
         u'V\xe4sterbotten',
     ])
+
+
 #: W191
 
 
