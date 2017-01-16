@@ -204,6 +204,7 @@ autopep8 fixes the following issues_ reported by pycodestyle_::
     E302 - Add missing 2 blank lines.
     E303 - Remove extra blank lines.
     E304 - Remove blank line following function decorator.
+    E306 - Expected 1 blank line before a nested definition
     E309 - Add missing blank line (after class declaration).
     E401 - Put imports on separate lines.
     E501 - Try to make lines fit within --max-line-length characters.
