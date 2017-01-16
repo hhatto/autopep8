@@ -204,7 +204,6 @@ autopep8 fixes the following issues_ reported by pycodestyle_::
     E302 - Add missing 2 blank lines.
     E303 - Remove extra blank lines.
     E304 - Remove blank line following function decorator.
-    E309 - Add missing blank line (after class declaration).
     E401 - Put imports on separate lines.
     E501 - Try to make lines fit within --max-line-length characters.
     E502 - Remove extraneous escape of newline.
@@ -228,8 +227,6 @@ autopep8 also fixes some issues not found by pycodestyle_.
   for making Python 2.6 and 2.7 code more compatible with Python 3. (This is
   triggered if ``W690`` is enabled.)
 - Normalize files with mixed line endings.
-- Put a blank line between a class declaration and its first method
-  declaration. (Enabled with ``E309``.)
 - Put a blank line between a class docstring and its first method
   declaration. (Enabled with ``E301``.)
 - Remove blank lines between a function declaration and its docstring. (Enabled
