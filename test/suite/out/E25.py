@@ -5,6 +5,8 @@ def foo(bar=False):
 
 
 #: E251
+
+
 foo(bar=True)
 #: E251
 foo(bar=True)

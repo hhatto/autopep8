@@ -29,6 +29,8 @@ class TestP4Poller(unittest.TestCase):
 
 #
 #: E101 W191 W191
+
+
 if True:
     foo(1,
         2)

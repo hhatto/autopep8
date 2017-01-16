@@ -28,6 +28,8 @@ def a():
 
 
 #: E302:2:1
+
+
 """Main module."""
 
 
@@ -36,6 +38,8 @@ def _main():
 
 
 #: E302:2:1
+
+
 import sys
 
 

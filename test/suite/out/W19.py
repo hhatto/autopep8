@@ -55,6 +55,8 @@ def long_function_name(
 
 
 #: E101 W191
+
+
 if ((row < 0 or self.moduleCount <= row or
      col < 0 or self.moduleCount <= col)):
     raise Exception("%s,%s - %s" % (row, col, self.moduleCount))
@@ -145,6 +147,8 @@ def test_keys(self):
 
 
 #: W191
+
+
 x = [
     'abc'
 ]

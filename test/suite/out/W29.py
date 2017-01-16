@@ -11,6 +11,8 @@ class Foo(object):
 
 
 #: W291
+
+
 '''multiline
 string with trailing whitespace'''
 #: W292

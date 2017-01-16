@@ -198,6 +198,8 @@ def qualify_by_address(
 
 
 #: E129
+
+
 if (a == 2 or
     b == "abc def ghi"
         "jkl mno"):
