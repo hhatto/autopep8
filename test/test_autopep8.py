@@ -2115,6 +2115,40 @@ bar[zap[0][0]:zig[0][0], :]
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e306(self):
+        line = """
+def test_descriptors(self):
+
+        class descriptor(object):
+            def __init__(self, fn):
+                self.fn = fn
+            def __get__(self, obj, owner):
+                if obj is not None:
+                    return self.fn(obj, obj)
+                else:
+                    return self
+            def method(self):
+                return 'method'
+"""
+        fixed = """
+def test_descriptors(self):
+
+    class descriptor(object):
+        def __init__(self, fn):
+            self.fn = fn
+
+        def __get__(self, obj, owner):
+            if obj is not None:
+                return self.fn(obj, obj)
+            else:
+                return self
+
+        def method(self):
+            return 'method'
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e301(self):
         line = 'class k:\n    s = 0\n    def f():\n        print 1\n'
         fixed = 'class k:\n    s = 0\n\n    def f():\n        print 1\n'

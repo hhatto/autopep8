@@ -89,6 +89,24 @@ def a():
     print
 #:
 
+#: E306
+
+
+def test_descriptors(arg):
+
+    class descriptor(object):
+        def __init__(self, fn):
+            self.fn = fn
+
+        def __get__(self, obj, owner):
+            if obj is not None:
+                return self.fn(obj, obj)
+            else:
+                return self
+
+        def method(self):
+            return 'method'
+
 
 #: E304:3:1
 @decorator
