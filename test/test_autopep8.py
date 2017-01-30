@@ -1148,7 +1148,40 @@ if True:
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    def test_e112(self):
+    def test_e112_should_leave_bad_syntax_alone(self):
+        line = """\
+if True:
+pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
+    def test_e113_should_not_modify_string_content(self):
+        line = """\
+a = 1
+    b = 2
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
+    def test_e113_should_leave_bad_syntax_alone(self):
+        line = """\
+    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
+    def test_e114(self):
+        line = """\
+   # a = 1
+"""
+        fixed = """\
+# a = 1
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e115(self):
         line = """\
 if True:
 # A comment.
@@ -1162,30 +1195,17 @@ if True:
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    def test_e112_should_leave_bad_syntax_alone(self):
+    def test_e116(self):
         line = """\
-if True:
-pass
-"""
-        with autopep8_context(line) as result:
-            self.assertEqual(line, result)
-
-    def test_e113(self):
-        line = """\
-      # A comment.
+a = 1
+    # b = 2
 """
         fixed = """\
-# A comment.
+a = 1
+# b = 2
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
-
-    def test_e113_should_leave_bad_syntax_alone(self):
-        line = """\
-    pass
-"""
-        with autopep8_context(line) as result:
-            self.assertEqual(line, result)
 
     def test_e12_reindent(self):
         line = """\
