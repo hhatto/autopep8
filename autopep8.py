@@ -392,6 +392,7 @@ class FixPEP8(object):
     information.
 
     [fixed method list]
+        - e111,e114,e115,e116
         - e121,e122,e123,e124,e125,e126,e127,e128,e129
         - e201,e202,e203
         - e211
