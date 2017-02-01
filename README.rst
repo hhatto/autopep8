@@ -178,6 +178,7 @@ Features
 autopep8 fixes the following issues_ reported by pycodestyle_::
 
     E101 - Reindent all lines.
+    E11  - Fix indentation. (not include E112 and E113)
     E121 - Fix indentation to be a multiple of four.
     E122 - Add absent indentation for hanging indentation.
     E123 - Align closing bracket to match opening bracket.
