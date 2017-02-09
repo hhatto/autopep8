@@ -214,6 +214,7 @@ autopep8 fixes the following issues_ reported by pycodestyle_::
     E711 - Fix comparison with None.
     E712 - Fix comparison with boolean.
     E721 - Use "isinstance()" instead of comparing types directly.
+    E722 - Fix bare except.
     W291 - Remove trailing whitespace.
     W293 - Remove trailing whitespace on blank line.
     W391 - Remove trailing blank lines.

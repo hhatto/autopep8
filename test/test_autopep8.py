@@ -3890,6 +3890,17 @@ if role not in ("domaincontroller_master",
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e722(self):
+        line = "try:\n    print(a)\nexcept:\n    pass\n"
+        fixed = "try:\n    print(a)\nexcept Exception:\n    pass\n"
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e722_non_aggressive(self):
+        line = "try:\n    print(a)\nexcept:\n    pass\n"
+        with autopep8_context(line, options=[]) as result:
+            self.assertEqual(line, result)
+
     def test_e731(self):
         line = 'a = lambda x: x * 2\n'
         fixed = 'def a(x): return x * 2\n'

@@ -77,6 +77,7 @@ CRLF = '\r\n'
 PYTHON_SHEBANG_REGEX = re.compile(r'^#!.*\bpython[23]?\b\s*$')
 LAMBDA_REGEX = re.compile(r'([\w.]+)\s=\slambda\s+([\w,\s.]+):')
 COMPARE_NEGATIVE_REGEX = re.compile(r'\b(not)\s+([^][)(}{]+)\s+(in|is)\s')
+BARE_EXCEPT_REGEX = re.compile(r"except\s*:")
 
 
 # For generating line shortening candidates.
@@ -406,6 +407,7 @@ class FixPEP8(object):
         - e502
         - e701,e702
         - e711,e712,e713,e714
+        - e722
         - e731
         - w291
         - w503
@@ -1013,6 +1015,14 @@ class FixPEP8(object):
                 self.source[line_index] = '{0}{1} {2} {3} {4}'.format(
                     target[:pos_start], match.group(2), match.group(3),
                     match.group(1), target[match.end():])
+
+    def fix_e722(self, result):
+        """fix bare except"""
+        (line_index, _, target) = get_index_offset_contents(result,
+                                                            self.source)
+        if BARE_EXCEPT_REGEX.search(target):
+            self.source[line_index] = '{0}{1}'.format(
+                    target[:result['column'] - 1], "except Exception:")
 
     def fix_e731(self, result):
         """Fix do not assign a lambda expression check."""
@@ -2786,7 +2796,7 @@ def filter_results(source, results, aggressive):
                 continue
 
         if aggressive <= 0:
-            if issue_id.startswith(('e711', 'w6')):
+            if issue_id.startswith(('e711', 'e72', 'w6')):
                 continue
 
         if aggressive <= 1:
