@@ -1022,7 +1022,7 @@ class FixPEP8(object):
                                                             self.source)
         if BARE_EXCEPT_REGEX.search(target):
             self.source[line_index] = '{0}{1}'.format(
-                    target[:result['column'] - 1], "except Exception:")
+                target[:result['column'] - 1], "except Exception:")
 
     def fix_e731(self, result):
         """Fix do not assign a lambda expression check."""
