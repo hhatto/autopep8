@@ -216,6 +216,7 @@ autopep8 fixes the following issues_ reported by pycodestyle_::
     E721 - Use "isinstance()" instead of comparing types directly.
     E722 - Fix bare except.
     W291 - Remove trailing whitespace.
+    W292 - Add a single newline at the end of the file.
     W293 - Remove trailing whitespace on blank line.
     W391 - Remove trailing blank lines.
     W601 - Use "in" rather than "has_key()".
