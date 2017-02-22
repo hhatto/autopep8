@@ -4726,6 +4726,14 @@ class ConfigurationTests(unittest.TestCase):
                 apply_config=True)
             self.assertEqual(args.indent_size, 3)
 
+    def test_config_local_int_value(self):
+        with temporary_file_context('[pep8]\naggressive=1\n') as filename:
+            args = autopep8.parse_args(
+                [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+                 '--global-config={0}'.format(filename)],
+                apply_config=True)
+            self.assertEqual(args.aggressive, 1)
+
 
 class ExperimentalSystemTests(unittest.TestCase):
 

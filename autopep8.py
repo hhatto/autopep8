@@ -3314,13 +3314,22 @@ def read_config(args, parser):
                 (parent, tail) = os.path.split(parent)
 
         defaults = dict()
+        option_list = dict([(o.dest, o.type or type(o.default))
+                            for o in parser._actions])
 
         for section in ['pep8', 'pycodestyle']:
-            if config.has_section(section):
-                defaults.update(dict(
-                    (k.lstrip('-').replace('-', '_'), v)
-                    for k, v in config.items(section)
-                ))
+            if not config.has_section(section):
+                continue
+            for k, v in config.items(section):
+                norm_opt = k.lstrip('-').replace('-', '_')
+                opt_type = option_list[norm_opt]
+                if opt_type is int:
+                    value = config.getint(section, k)
+                elif opt_type is bool:
+                    value = config.getboolean(section, k)
+                else:
+                    value = config.get(section, k)
+                defaults[norm_opt] = value
 
         parser.set_defaults(**defaults)
     except Error:
