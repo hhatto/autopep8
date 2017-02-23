@@ -935,7 +935,8 @@ class FixPEP8(object):
         match = STARTSWITH_DEF_REGEX.match(target)
         if match:
             self.source[line_index] = '{0}\n{1}{2}'.format(
-                    match.group(0), _get_indentation(target) + self.indent_word,
+                    match.group(0),
+                    _get_indentation(target) + self.indent_word,
                     target[match.end(0):].lstrip())
 
     def fix_e711(self, result):
