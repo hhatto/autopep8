@@ -1860,6 +1860,12 @@ $(function(){
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e222_with_multiline(self):
+        line = 'a =   \"\"\"bar\nbaz\"\"\"\n'
+        fixed = 'a = \"\"\"bar\nbaz\"\"\"\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e223(self):
         line = 'a = 1	+ 1\n'  # include TAB
         fixed = 'a = 1 + 1\n'
