@@ -3721,6 +3721,17 @@ raise IOError('abc '
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e704(self):
+        line = 'def f(x): return 2*x\n'
+        fixed = 'def f(x):\n    return 2 * x\n'
+        with autopep8_context(line, options=['-aaa']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e704_not_work_with_aa_option(self):
+        line = 'def f(x): return 2*x\n'
+        with autopep8_context(line, options=['-aa', '--select=E704']) as result:
+            self.assertEqual(line, result)
+
     def test_e711(self):
         line = 'foo == None\n'
         fixed = 'foo is None\n'

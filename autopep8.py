@@ -77,7 +77,8 @@ CRLF = '\r\n'
 PYTHON_SHEBANG_REGEX = re.compile(r'^#!.*\bpython[23]?\b\s*$')
 LAMBDA_REGEX = re.compile(r'([\w.]+)\s=\slambda\s+([\w,\s.]+):')
 COMPARE_NEGATIVE_REGEX = re.compile(r'\b(not)\s+([^][)(}{]+)\s+(in|is)\s')
-BARE_EXCEPT_REGEX = re.compile(r"except\s*:")
+BARE_EXCEPT_REGEX = re.compile(r'except\s*:')
+STARTSWITH_DEF_REGEX = re.compile(r'^(async\s+def|def)\s.*\):')
 
 
 # For generating line shortening candidates.
@@ -405,7 +406,7 @@ class FixPEP8(object):
         - e301,e302,e303,e304,e306
         - e401
         - e502
-        - e701,e702
+        - e701,e702,e703,e704
         - e711,e712,e713,e714
         - e722
         - e731
@@ -926,6 +927,17 @@ class FixPEP8(object):
         else:
             self.source[line_index] = first + '\n' + second
         return [line_index + 1]
+
+    def fix_e704(self, result):
+        """Fix multiple statements on one line def"""
+        (line_index, _, target) = get_index_offset_contents(result,
+                                                            self.source)
+        match = STARTSWITH_DEF_REGEX.match(target)
+        if match:
+            self.source[line_index] = '{0}\n{1}{2}'.format(
+                    match.group(0),
+                    _get_indentation(target) + self.indent_word,
+                    target[match.end(0):].lstrip())
 
     def fix_e711(self, result):
         """Fix comparison with None."""
@@ -2804,7 +2816,7 @@ def filter_results(source, results, aggressive):
                 continue
 
         if aggressive <= 2:
-            if issue_id.startswith(('w5')):
+            if issue_id.startswith(('e704', 'w5')):
                 continue
 
         if r['line'] in commented_out_code_line_numbers:
