@@ -3155,6 +3155,11 @@ def extract_code_from_function(function):
     return code
 
 
+def _get_package_version():
+    packages = ["pycodestyle: {0}".format(pycodestyle.__version__)]
+    return ", ".join(packages)
+
+
 def create_parser():
     """Return command-line parser."""
     # Do import locally to be friendly to those who use autopep8 as a library
@@ -3164,7 +3169,8 @@ def create_parser():
     parser = argparse.ArgumentParser(description=docstring_summary(__doc__),
                                      prog='autopep8')
     parser.add_argument('--version', action='version',
-                        version='%(prog)s ' + __version__)
+                        version='%(prog)s {0} ({1})'.format(
+                            __version__, _get_package_version()))
     parser.add_argument('-v', '--verbose', action='count',
                         default=0,
                         help='print verbose messages; '
