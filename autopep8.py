@@ -633,7 +633,6 @@ class FixPEP8(object):
         target = self.source[line_index]
 
         spaces_to_add = num_indent_spaces - len(_get_indentation(target))
-        modified_lines = []
 
         if spaces_to_add >= 0:
             self.source[line_index] = (' ' * spaces_to_add +
