@@ -287,6 +287,8 @@ def continued_indentation(logical_line, tokens, indent_level, indent_char,
                     error = ('E122', one_indented)
                 elif indent[depth]:
                     error = ('E127', indent[depth])
+                elif not close_bracket and hangs[depth]:
+                    error = ('E131', one_indented)
                 elif hang > DEFAULT_INDENT_SIZE:
                     error = ('E126', one_indented)
                 else:
@@ -623,6 +625,21 @@ class FixPEP8(object):
             line_index -= 1
 
         return modified_lines
+
+    def fix_e131(self, result):
+        """Fix indentation undistinguish from the next logical line."""
+        num_indent_spaces = int(result['info'].split()[1])
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+
+        spaces_to_add = num_indent_spaces - len(_get_indentation(target))
+        modified_lines = []
+
+        if spaces_to_add >= 0:
+            self.source[line_index] = (' ' * spaces_to_add +
+                                       self.source[line_index])
+        else:
+            self.source[line_index] = self.source[line_index][spaces_to_add*-1:]
 
     def fix_e201(self, result):
         """Remove extraneous whitespace."""

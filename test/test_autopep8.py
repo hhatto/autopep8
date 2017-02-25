@@ -1732,6 +1732,18 @@ while True:
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e131_with_select_option(self):
+        line = 'd = f(\n    a="hello"\n        "world",\n    b=1)\n'
+        fixed = 'd = f(\n    a="hello"\n    "world",\n    b=1)\n'
+        with autopep8_context(line, options=['--select=E131']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e131_invalid_indent_with_select_option(self):
+        line = 'd = (\n    "hello"\n  "world")\n'
+        fixed = 'd = (\n    "hello"\n    "world")\n'
+        with autopep8_context(line, options=['--select=E131']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e201(self):
         line = '(   1)\n'
         fixed = '(1)\n'
