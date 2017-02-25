@@ -639,7 +639,8 @@ class FixPEP8(object):
             self.source[line_index] = (' ' * spaces_to_add +
                                        self.source[line_index])
         else:
-            self.source[line_index] = self.source[line_index][spaces_to_add*-1:]
+            offset = abs(spaces_to_add)
+            self.source[line_index] = self.source[line_index][offset:]
 
     def fix_e201(self, result):
         """Remove extraneous whitespace."""
@@ -952,9 +953,9 @@ class FixPEP8(object):
         match = STARTSWITH_DEF_REGEX.match(target)
         if match:
             self.source[line_index] = '{0}\n{1}{2}'.format(
-                    match.group(0),
-                    _get_indentation(target) + self.indent_word,
-                    target[match.end(0):].lstrip())
+                match.group(0),
+                _get_indentation(target) + self.indent_word,
+                target[match.end(0):].lstrip())
 
     def fix_e711(self, result):
         """Fix comparison with None."""
