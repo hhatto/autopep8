@@ -2299,6 +2299,12 @@ def foo():
         with autopep8_context(line, options=['--select=E401']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e402(self):
+        line = 'a = 1\nimport os\n'
+        fixed = 'import os\na = 1\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_basic(self):
         line = """\
 

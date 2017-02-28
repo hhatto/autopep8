@@ -806,6 +806,13 @@ class FixPEP8(object):
                  indentation + 'import ' + target[offset:].lstrip('\t ,'))
         self.source[line_index] = fixed
 
+    def fix_e402(self, result):
+        (line_index, offset, target) = get_index_offset_contents(result,
+                                                                 self.source)
+        mod_offset = get_module_imports_on_top_of_file(self.source)
+        self.source[mod_offset] = target + self.source[mod_offset]
+        self.source[line_index] = target[-1]
+
     def fix_long_line_logically(self, result, logical):
         """Try to make lines fit within --max-line-length characters."""
         if (
@@ -1102,6 +1109,32 @@ class FixPEP8(object):
         self.source[line_index - 1] = '{0} {1}{2}'.format(
             before_line[:bl], one_string_token,
             before_line[bl:])
+
+
+def get_module_imports_on_top_of_file(source):
+    def is_string_literal(line):
+        if line[0] in 'uUbB':
+            line = line[1:]
+        if line and line[0] in 'rR':
+            line = line[1:]
+        return line and (line[0] == '"' or line[0] == "'")
+    allowed_try_keywords = ('try', 'except', 'else', 'finally')
+    for cnt, line in enumerate(source):
+        if not line.rstrip():
+            continue
+        elif line.startswith('#'):
+            continue
+        if line.startswith('import ') or line.startswith('from '):
+            return cnt
+        elif pycodestyle.DUNDER_REGEX.match(line):
+            continue
+        elif any(line.startswith(kw) for kw in allowed_try_keywords):
+            continue
+        elif is_string_literal(line):
+            return cnt
+        else:
+            return cnt
+    return 0
 
 
 def get_index_offset_contents(result, source):
