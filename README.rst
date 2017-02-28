@@ -207,6 +207,7 @@ autopep8 fixes the following issues_ reported by pycodestyle_::
     E304 - Remove blank line following function decorator.
     E306 - Expected 1 blank line before a nested definition
     E401 - Put imports on separate lines.
+    E402 - Fix module level import not at top of file
     E501 - Try to make lines fit within --max-line-length characters.
     E502 - Remove extraneous escape of newline.
     E701 - Put colon-separated compound statement on separate lines.
