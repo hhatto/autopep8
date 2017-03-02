@@ -2915,6 +2915,26 @@ def commented_out_code_lines(source):
     return line_numbers
 
 
+def recenter_comment(line, decorator):
+    """Re-center comments decorated with '#', just because otherwise
+    it's ugly.
+
+    """
+    stripped = line.strip()
+    try:
+        decorated_comment = r'#' + decorator + '+([^' + decorator +\
+                                '\\n]+)\\' + decorator + '+'
+        if re.match(decorated_comment, stripped):
+            content = re.search(decorated_comment,
+                                stripped).group(1)
+            medium_pos = len(stripped) / 2 - (len(content) / 2)
+            return _get_indentation(line) + decorator * medium_pos + content +\
+                decorator * medium_pos
+    except Exception:
+        pass
+    return line
+
+
 def shorten_comment(line, max_line_length, last_comment=False):
     """Return trimmed or split long comment line.
 
@@ -2937,7 +2957,7 @@ def shorten_comment(line, max_line_length, last_comment=False):
         not line[-1].isalnum()
     ):
         # Trim comments that end with things like ---------
-        return line[:max_line_length] + '\n'
+        return recenter_comment(line[:max_line_length] + '\n', line[-1])
     elif last_comment and re.match(r'\s*#+\s*\w+', line):
         split_lines = textwrap.wrap(line.lstrip(' \t#'),
                                     initial_indent=indentation,
