@@ -3916,6 +3916,12 @@ if role not in ("domaincontroller_master",
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e731_with_tuple_arg(self):
+        line = 'a = lambda (x, y), z: x * 2\n'
+        fixed = 'def a((x, y), z): return x * 2\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e731_with_args(self):
         line = 'a = lambda x, y: x * 2 + y\n'
         fixed = 'def a(x, y): return x * 2 + y\n'
