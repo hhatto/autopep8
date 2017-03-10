@@ -916,6 +916,12 @@ class FixPEP8(object):
             return []  # pragma: no cover
         logical_lines = logical[2]
 
+        # Avoid applying this when indented.
+        # https://docs.python.org/reference/compound_stmts.html
+        for line in logical_lines:
+            if ':' in line:
+                return []
+
         line_index = result['line'] - 1
         target = self.source[line_index]
 

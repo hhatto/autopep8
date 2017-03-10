@@ -3587,6 +3587,12 @@ GYakymOSMc = GYakymOSMW(GYakymOSMJ, GYakymOSMA, GYakymOSMr,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e702_after_colon_should_be_untouched(self):
+        # https://docs.python.org/2/reference/compound_stmts.html
+        line = 'def foo(): print(1); print(2)\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
     def test_e702_with_semicolon_at_end(self):
         line = 'print 1;\n'
         fixed = 'print 1\n'
