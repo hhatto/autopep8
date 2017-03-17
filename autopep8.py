@@ -673,6 +673,21 @@ class FixPEP8(object):
             _get_indentation(fixed) == _get_indentation(target)
         ):
             self.source[result['line'] - 1] = fixed
+            error_code = result.get('id', 0)
+            try:
+                ts = generate_tokens(fixed)
+            except tokenize.TokenError:
+                return
+            if not check_syntax(fixed.lstrip()):
+                return
+            re = [e for e in pycodestyle.missing_whitespace_around_operator(fixed, ts)]
+            re.reverse()
+            for e in re:
+                if error_code != e[1].split()[0]:
+                    continue
+                offset = e[0][1]
+                fixed = fixed[:offset] + ' ' + fixed[offset:]
+            self.source[result['line'] - 1] = fixed
         else:
             return []
 
