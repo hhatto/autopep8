@@ -680,10 +680,9 @@ class FixPEP8(object):
                 return
             if not check_syntax(fixed.lstrip()):
                 return
-            re = [e for e in pycodestyle.missing_whitespace_around_operator(
-                  fixed, ts)]
-            re.reverse()
-            for e in re:
+            errors = list(
+                pycodestyle.missing_whitespace_around_operator(fixed, ts))
+            for e in reversed(errors):
                 if error_code != e[1].split()[0]:
                     continue
                 offset = e[0][1]
