@@ -2842,7 +2842,7 @@ if True:
 # The following is ugly commented-out code and should not be touched.
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
 """
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_with_comment_should_not_modify_docstring(self):
@@ -2852,7 +2852,7 @@ def foo():
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
     """
 '''
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(line, result)
 
     def test_e501_should_only_modify_last_comment(self):
@@ -2882,7 +2882,7 @@ if True:
                         # will wrap it using textwrap to be within 72
                         # characters.
 """
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_should_not_interfere_with_non_comment(self):
@@ -2892,7 +2892,7 @@ if True:
 # not actually a comment %d. 12345678901234567890, 12345678901234567890, 12345678901234567890.
 """ % (0,)
 '''
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(line, result)
 
     def test_e501_should_cut_comment_pattern(self):
@@ -2904,7 +2904,7 @@ if True:
 # -- Useless lines -------------------------------------------------------
 321
 """
-        with autopep8_context(line) as result:
+        with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_with_function_should_not_break_on_colon(self):
@@ -5051,10 +5051,13 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx(aaaaaaaaaaaaaaaaaaaaaaa,
         fixed = """\
 # ------ -----------------------------------------------------------------
 xxxxxxxxxxxxxxxxxxxxxxxxxxxx(
-    aaaaaaaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbbbbbbbbbbbbbb,
-    cccccccccccccccccccccccccccc, dddddddddddddddddddddddd)
+    aaaaaaaaaaaaaaaaaaaaaaa,
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbb,
+    cccccccccccccccccccccccccccc,
+    dddddddddddddddddddddddd)
 """
-        with autopep8_context(line, options=['--experimental']) as result:
+        with autopep8_context(line, options=['--experimental',
+                                             '--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_with_logical_fix_and_adjacent_strings(self):
@@ -5172,7 +5175,8 @@ if True:
 # The following is ugly commented-out code and should not be touched.
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
 """
-        with autopep8_context(line, options=['--experimental']) as result:
+        with autopep8_context(line, options=['--experimental',
+                                             '--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_experimental_with_comment_should_not_modify_docstring(self):
@@ -5182,7 +5186,8 @@ def foo():
                         # This is a long comment that should be wrapped. I will wrap it using textwrap to be within 72 characters.
     """
 '''
-        with autopep8_context(line, options=['--experimental']) as result:
+        with autopep8_context(line, options=['--experimental',
+                                             '--aggressive']) as result:
             self.assertEqual(line, result)
 
     def test_e501_experimental_should_only_modify_last_comment(self):
@@ -5212,7 +5217,8 @@ if True:
                         # will wrap it using textwrap to be within 72
                         # characters.
 """
-        with autopep8_context(line, options=['--experimental']) as result:
+        with autopep8_context(line, options=['--experimental',
+                                             '--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_experimental_should_not_interfere_with_non_comment(self):
@@ -5221,7 +5227,8 @@ if True:
 # not actually a comment %d. 12345678901234567890, 12345678901234567890, 12345678901234567890.
 """ % (0,)
 '''
-        with autopep8_context(line, options=['--experimental']) as result:
+        with autopep8_context(line, options=['--experimental',
+                                             '--aggressive']) as result:
             self.assertEqual(line, result)
 
     def test_e501_experimental_should_cut_comment_pattern(self):
@@ -5233,7 +5240,8 @@ if True:
 # -- Useless lines -------------------------------------------------------
 321
 """
-        with autopep8_context(line, options=['--experimental']) as result:
+        with autopep8_context(line, options=['--experimental',
+                                             '--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_experimental_with_function_should_not_break_on_colon(self):
@@ -5327,7 +5335,8 @@ from . import (
         fixed = """\
 # ------ -----------------------------------------------------------------
 """
-        with autopep8_context(line, options=['--experimental']) as result:
+        with autopep8_context(line, options=['--experimental',
+                                             '--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_e501_with_experimental_and_escaped_newline(self):

@@ -886,7 +886,7 @@ class FixPEP8(object):
         if cache_entry in self.long_line_ignore_cache:
             return []
 
-        if target.lstrip().startswith('#'):
+        if self.options.aggressive and target.lstrip().startswith('#'):
             # Wrap commented lines.
             return shorten_comment(
                 line=target,
