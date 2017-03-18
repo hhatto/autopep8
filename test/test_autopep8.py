@@ -3946,7 +3946,6 @@ if role not in ("domaincontroller_master",
         with autopep8_context(line, options=['--select=E731']) as result:
             self.assertEqual(fixed, result)
 
-
     def test_e901_should_cause_indentation_screw_up(self):
         line = """\
 def tmp(g):
