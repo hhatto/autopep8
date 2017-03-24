@@ -1070,9 +1070,11 @@ class FixPEP8(object):
         """fix bare except"""
         (line_index, _, target) = get_index_offset_contents(result,
                                                             self.source)
-        if BARE_EXCEPT_REGEX.search(target):
-            self.source[line_index] = '{0}{1}'.format(
-                target[:result['column'] - 1], "except BaseException:")
+        match = BARE_EXCEPT_REGEX.search(target)
+        if match:
+            self.source[line_index] = '{0}{1}{2}'.format(
+                target[:result['column'] - 1], "except BaseException:",
+                target[match.end():])
 
     def fix_e731(self, result):
         """Fix do not assign a lambda expression check."""
