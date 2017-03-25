@@ -3911,6 +3911,12 @@ if role not in ("domaincontroller_master",
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e722_with_if_else_stmt(self):
+        line = "try:\n    print(a)\nexcept:\n    if a==b:\n        print(a)\n    else:\n        print(b)\n"
+        fixed = "try:\n    print(a)\nexcept BaseException:\n    if a == b:\n        print(a)\n    else:\n        print(b)\n"
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e722_non_aggressive(self):
         line = "try:\n    print(a)\nexcept:\n    pass\n"
         with autopep8_context(line, options=[]) as result:
