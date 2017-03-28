@@ -3783,6 +3783,9 @@ def main(argv=None, apply_config=True):
     try:
         args = parse_args(argv[1:], apply_config=apply_config)
 
+        global DEFAULT_INDENT_SIZE
+        DEFAULT_INDENT_SIZE = args.indent_size
+
         if args.list_fixes:
             for code, description in sorted(supported_fixes()):
                 print('{code} - {description}'.format(
