@@ -13,6 +13,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import os.path
 import re
 import sys
 
@@ -6024,6 +6025,41 @@ if True:
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
+
+
+class ReturnValueTest(unittest.TestCase):
+
+    def test_no_changes_files_returns_0(self):
+        with temporary_file_context('print("Hello World")\n') as filename:
+            ret = autopep8.fix_multiple_files(
+                [filename],
+                autopep8.parse_args([filename]),
+            )
+            self.assertEqual(ret, 0)
+
+    def test_changes_files_returns_1(self):
+        with temporary_file_context('print(1    + 1)\n') as filename:
+            ret = autopep8.fix_multiple_files(
+                [filename],
+                autopep8.parse_args([filename]),
+            )
+            self.assertEqual(ret, 1)
+
+    def test_no_changes_files_multiprocess_returns_0(self):
+        with temporary_file_context('print("Hello World")\n') as filename:
+            ret = autopep8.fix_multiple_files(
+                [filename],
+                autopep8.parse_args([filename, '-i', '-j', '2']),
+            )
+            self.assertEqual(ret, 0)
+
+    def test_changes_files_multiprocess_retunrs_1(self):
+        with temporary_file_context('print(1    + 1)\n') as filename:
+            ret = autopep8.fix_multiple_files(
+                [filename],
+                autopep8.parse_args([filename, '-i', '-j', '2']),
+            )
+            self.assertEqual(ret, 1)
 
 
 @contextlib.contextmanager
