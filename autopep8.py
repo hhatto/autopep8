@@ -2828,6 +2828,14 @@ def filter_results(source, results, aggressive):
 
     has_e901 = any(result['id'].lower() == 'e901' for result in results)
 
+    if len(results) > 1:
+        for i, pair in enumerate(zip(results, results[1:])):
+            code1 = pair[0]['id'].lower()
+            code2 = pair[1]['id'].lower()
+            if code2 == 'e231' and code1 == 'w291':
+                del results[i+1]
+                del results[i]
+
     for r in results:
         issue_id = r['id'].lower()
 
