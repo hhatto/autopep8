@@ -798,7 +798,7 @@ class FixPEP8(object):
             if offset < 0:
                 break
             line = self.source[offset].lstrip()
-            if len(line) == 0:
+            if not line:
                 break
             if line[0] != '#':
                 break
@@ -853,8 +853,8 @@ class FixPEP8(object):
                 self.source[line_index] = ''
             self.source[start_line_index] = fixed
             return range(start_line_index + 1, end_line_index + 1)
-        else:
-            return []
+
+        return []
 
     def fix_long_line_physically(self, result):
         """Try to make lines fit within --max-line-length characters."""
@@ -876,8 +876,8 @@ class FixPEP8(object):
         if fixed:
             self.source[line_index] = fixed
             return [line_index + 1]
-        else:
-            return []
+
+        return []
 
     def fix_long_line(self, target, previous_line,
                       next_line, original):
@@ -901,11 +901,12 @@ class FixPEP8(object):
             aggressive=self.options.aggressive,
             experimental=self.options.experimental,
             verbose=self.options.verbose)
+
         if fixed and not code_almost_equal(original, fixed):
             return fixed
-        else:
-            self.long_line_ignore_cache.add(cache_entry)
-            return None
+
+        self.long_line_ignore_cache.add(cache_entry)
+        return None
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""
@@ -1174,11 +1175,12 @@ def get_fixed_long_line(target, previous_line, original,
 
     if candidates:
         best_candidate = candidates[0]
+
         # Don't allow things to get longer.
         if longest_line_length(best_candidate) > longest_line_length(original):
             return None
-        else:
-            return best_candidate
+
+        return best_candidate
 
 
 def longest_line_length(code):
@@ -1274,8 +1276,8 @@ def _get_logical(source_lines, result, logical_start, logical_end):
 def get_item(items, index, default=None):
     if 0 <= index < len(items):
         return items[index]
-    else:
-        return default
+
+    return default
 
 
 def reindent(source, indent_size):
@@ -1446,8 +1448,8 @@ def _get_indentation(line):
     if line.strip():
         non_whitespace_index = len(line) - len(line.lstrip())
         return line[:non_whitespace_index]
-    else:
-        return ''
+
+    return ''
 
 
 def get_diff_text(old, new, filename):
@@ -1916,17 +1918,18 @@ class ReformattedLines(object):
             return
 
         last_space = None
-        for item in reversed(self._lines):
+        for current_item in reversed(self._lines):
             if (
                 last_space and
-                (not isinstance(item, Atom) or not item.is_colon)
+                (not isinstance(current_item, Atom) or
+                 not current_item.is_colon)
             ):
                 break
             else:
                 last_space = None
-            if isinstance(item, self._Space):
-                last_space = item
-            if isinstance(item, (self._LineBreak, self._Indent)):
+            if isinstance(current_item, self._Space):
+                last_space = current_item
+            if isinstance(current_item, (self._LineBreak, self._Indent)):
                 return
 
         if not last_space:
@@ -2497,8 +2500,8 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
     if check_syntax(normalize_multiline(fixed)
                     if aggressive > 1 else fixed):
         return indentation + fixed
-    else:
-        return None
+
+    return None
 
 
 def token_offsets(tokens):
@@ -2548,8 +2551,8 @@ def normalize_multiline(line):
         return line + ' pass'
     elif line.startswith(('if ', 'elif ', 'for ', 'while ')):
         return line + ' pass'
-    else:
-        return line
+
+    return line
 
 
 def fix_whitespace(line, offset, replacement):
@@ -2559,8 +2562,8 @@ def fix_whitespace(line, offset, replacement):
     right = line[offset:].lstrip('\n\r \t\\')
     if right.startswith('#'):
         return line
-    else:
-        return left + replacement + right
+
+    return left + replacement + right
 
 
 def _execute_pep8(pep8_options, source):
@@ -2969,8 +2972,8 @@ def shorten_comment(line, max_line_length, last_comment=False):
                                     break_long_words=False,
                                     break_on_hyphens=False)
         return '\n'.join(split_lines) + '\n'
-    else:
-        return line + '\n'
+
+    return line + '\n'
 
 
 def normalize_line_endings(lines, newline):
@@ -3378,7 +3381,7 @@ def read_config(args, parser):
         for section in ['pep8', 'pycodestyle']:
             if not config.has_section(section):
                 continue
-            for k, v in config.items(section):
+            for (k, _) in config.items(section):
                 norm_opt = k.lstrip('-').replace('-', '_')
                 opt_type = option_list[norm_opt]
                 if opt_type is int:
@@ -3406,8 +3409,8 @@ def decode_filename(filename):
     """Return Unicode filename."""
     if isinstance(filename, unicode):
         return filename
-    else:
-        return filename.decode(sys.getfilesystemencoding())
+
+    return filename.decode(sys.getfilesystemencoding())
 
 
 def supported_fixes():
