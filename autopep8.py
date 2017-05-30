@@ -3369,10 +3369,10 @@ def read_config(args, parser):
             parent = tail = args.files and os.path.abspath(
                 os.path.commonprefix(args.files))
             while tail:
+                (parent, tail) = os.path.split(parent)
                 if config.read([os.path.join(parent, fn)
                                 for fn in PROJECT_CONFIG]):
                     break
-                (parent, tail) = os.path.split(parent)
 
         defaults = dict()
         option_list = dict([(o.dest, o.type or type(o.default))
