@@ -3199,6 +3199,16 @@ class Migration(SchemaMigration):
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_shorten_comment_without_aggressive(self):
+        """Do nothing without aggressive."""
+        line = """\
+def foo():
+    pass
+# --------- ----------------------------------------------------------------------
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
     def test_e501_with_aggressive_and_escaped_newline(self):
         line = """\
 if True or \\
