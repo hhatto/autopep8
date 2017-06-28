@@ -4074,6 +4074,12 @@ else:
         with autopep8_context(line, options=['-aaa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w503_with_comment(self):
+        line = '(width == 0  # this is comment\n + height == 0)\n'
+        fixed = '(width == 0 +  # this is comment\n height == 0)\n'
+        with autopep8_context(line, options=['-aaa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w601(self):
         line = 'a = {0: 1}\na.has_key(0)\n'
         fixed = 'a = {0: 1}\n0 in a\n'
