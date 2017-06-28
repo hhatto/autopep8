@@ -3199,6 +3199,16 @@ class Migration(SchemaMigration):
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_shorten_comment_without_aggressive(self):
+        """Do nothing without aggressive."""
+        line = """\
+def foo():
+    pass
+# --------- ----------------------------------------------------------------------
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
     def test_e501_with_aggressive_and_escaped_newline(self):
         line = """\
 if True or \\
@@ -3908,6 +3918,12 @@ if role not in ("domaincontroller_master",
     def test_e722(self):
         line = "try:\n    print(a)\nexcept:\n    pass\n"
         fixed = "try:\n    print(a)\nexcept BaseException:\n    pass\n"
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e722_with_if_else_stmt(self):
+        line = "try:\n    print(a)\nexcept:\n    if a==b:\n        print(a)\n    else:\n        print(b)\n"
+        fixed = "try:\n    print(a)\nexcept BaseException:\n    if a == b:\n        print(a)\n    else:\n        print(b)\n"
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
