@@ -1120,9 +1120,28 @@ class FixPEP8(object):
         nl = find_newline(self.source[line_index - 1:line_index])
         before_line = self.source[line_index - 1]
         bl = before_line.index(nl)
-        self.source[line_index - 1] = '{0} {1}{2}'.format(
-            before_line[:bl], one_string_token,
-            before_line[bl:])
+        # find comment
+        comment_index = None
+        try:
+            ts = generate_tokens(before_line + target)
+            old = None
+            for t in ts:
+                if token.N_TOKENS == t[0] and '#' == t[1][0]:
+                    if old is None:
+                        comment_index = 0
+                    else:
+                        comment_index = old[3][1]
+                    break
+                old = t
+        except Exception:
+            pass
+        if comment_index:
+            self.source[line_index - 1] = '{0} {1}{2}'.format(
+                before_line[:comment_index], one_string_token,
+                before_line[comment_index + 1:])
+        else:
+            self.source[line_index - 1] = '{0} {1}{2}'.format(
+                before_line[:bl], one_string_token, before_line[bl:])
 
 
 def get_index_offset_contents(result, source):
