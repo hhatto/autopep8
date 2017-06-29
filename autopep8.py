@@ -1127,9 +1127,9 @@ class FixPEP8(object):
             if (line_index - i) < 0:
                 break
             from_index = line_index - i - 1
-            to_index = line_index
+            to_index = line_index + 1
             try:
-                ts = generate_tokens("".join(self.source[from_index:to_index]) + target)
+                ts = generate_tokens("".join(self.source[from_index:to_index]))
             except Exception:
                 continue
             newline_count = 0
