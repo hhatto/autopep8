@@ -4096,6 +4096,24 @@ else:
         with autopep8_context(line, options=['-aaa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w503_with_comment_double(self):
+        line = """\
+(
+    1111  # C1
+    and 22222222  # C2
+    and 333333333333  # C3
+)
+"""
+        fixed = """\
+(
+    1111 and  # C1
+    22222222 and  # C2
+    333333333333  # C3
+)
+"""
+        with autopep8_context(line, options=['-aaa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w601(self):
         line = 'a = {0: 1}\na.has_key(0)\n'
         fixed = 'a = {0: 1}\n0 in a\n'
