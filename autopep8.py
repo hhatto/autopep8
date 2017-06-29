@@ -1120,29 +1120,46 @@ class FixPEP8(object):
             return
         if not _is_binary_operator(ts[0][0], one_string_token):
             return
-        i = target.index(one_string_token)
-        self.source[line_index] = '{0}{1}'.format(
-            target[:i], target[i + len(one_string_token):])
-        nl = find_newline(self.source[line_index - 1:line_index])
-        before_line = self.source[line_index - 1]
-        bl = before_line.index(nl)
         # find comment
         comment_index = None
-        try:
-            ts = generate_tokens(before_line + target)
+        for i in range(5):
+            # NOTE: try to parse code in 5 times
+            if (line_index - i) < 0:
+                break
+            from_index = line_index - i - 1
+            to_index = line_index
+            try:
+                ts = generate_tokens("".join(self.source[from_index:to_index]) + target)
+            except Exception:
+                continue
+            newline_count = 0
+            newline_index = []
+            for i, t in enumerate(ts):
+                if t[0] in (tokenize.NEWLINE, tokenize.NL):
+                    newline_index.append(i)
+                    newline_count += 1
+            if newline_count > 2:
+                tts = ts[newline_index[-3]:]
+            else:
+                tts = ts
             old = None
-            for t in ts:
-                if token.N_TOKENS == t[0] and '#' == t[1][0]:
+            for t in tts:
+                if tokenize.COMMENT == t[0]:
                     if old is None:
                         comment_index = 0
                     else:
                         comment_index = old[3][1]
                     break
                 old = t
-        except Exception:
-            pass
+            break
+        i = target.index(one_string_token)
+        self.source[line_index] = '{0}{1}'.format(
+            target[:i], target[i + len(one_string_token):])
+        nl = find_newline(self.source[line_index - 1:line_index])
+        before_line = self.source[line_index - 1]
+        bl = before_line.index(nl)
         if comment_index:
-            self.source[line_index - 1] = '{0} {1}{2}'.format(
+            self.source[line_index - 1] = '{0} {1} {2}'.format(
                 before_line[:comment_index], one_string_token,
                 before_line[comment_index + 1:])
         else:
@@ -1518,7 +1535,8 @@ def _priority_key(pep8_result):
     lowest_priority = [
         # We need to shorten lines last since the logical fixer can get in a
         # loop, which causes us to exit early.
-        'e501'
+        'e501',
+        'w503'
     ]
     key = pep8_result['id'].lower()
     try:
