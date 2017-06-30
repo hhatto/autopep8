@@ -66,7 +66,7 @@ except NameError:
     unicode = str
 
 
-__version__ = '2.0a0'
+__version__ = '1.3.2'
 
 
 CR = '\r'
@@ -75,7 +75,7 @@ CRLF = '\r\n'
 
 
 PYTHON_SHEBANG_REGEX = re.compile(r'^#!.*\bpython[23]?\b\s*$')
-LAMBDA_REGEX = re.compile(r'([\w.]+)\s=\slambda\s+([\w,\s.]+):')
+LAMBDA_REGEX = re.compile(r'([\w.]+)\s=\slambda\s*([\(\)\w,\s.]*):')
 COMPARE_NEGATIVE_REGEX = re.compile(r'\b(not)\s+([^][)(}{]+)\s+(in|is)\s')
 BARE_EXCEPT_REGEX = re.compile(r'except\s*:')
 STARTSWITH_DEF_REGEX = re.compile(r'^(async\s+def|def)\s.*\):')
@@ -673,6 +673,21 @@ class FixPEP8(object):
             _get_indentation(fixed) == _get_indentation(target)
         ):
             self.source[result['line'] - 1] = fixed
+            error_code = result.get('id', 0)
+            try:
+                ts = generate_tokens(fixed)
+            except tokenize.TokenError:
+                return
+            if not check_syntax(fixed.lstrip()):
+                return
+            errors = list(
+                pycodestyle.missing_whitespace_around_operator(fixed, ts))
+            for e in reversed(errors):
+                if error_code != e[1].split()[0]:
+                    continue
+                offset = e[0][1]
+                fixed = fixed[:offset] + ' ' + fixed[offset:]
+            self.source[result['line'] - 1] = fixed
         else:
             return []
 
@@ -783,7 +798,7 @@ class FixPEP8(object):
             if offset < 0:
                 break
             line = self.source[offset].lstrip()
-            if len(line) == 0:
+            if not line:
                 break
             if line[0] != '#':
                 break
@@ -845,8 +860,8 @@ class FixPEP8(object):
                 self.source[line_index] = ''
             self.source[start_line_index] = fixed
             return range(start_line_index + 1, end_line_index + 1)
-        else:
-            return []
+
+        return []
 
     def fix_long_line_physically(self, result):
         """Try to make lines fit within --max-line-length characters."""
@@ -868,8 +883,8 @@ class FixPEP8(object):
         if fixed:
             self.source[line_index] = fixed
             return [line_index + 1]
-        else:
-            return []
+
+        return []
 
     def fix_long_line(self, target, previous_line,
                       next_line, original):
@@ -878,11 +893,14 @@ class FixPEP8(object):
             return []
 
         if target.lstrip().startswith('#'):
-            # Wrap commented lines.
-            return shorten_comment(
-                line=target,
-                max_line_length=self.options.max_line_length,
-                last_comment=not next_line.lstrip().startswith('#'))
+            if self.options.aggressive:
+                # Wrap commented lines.
+                return shorten_comment(
+                    line=target,
+                    max_line_length=self.options.max_line_length,
+                    last_comment=not next_line.lstrip().startswith('#'))
+            else:
+                return []
 
         fixed = get_fixed_long_line(
             target=target,
@@ -893,11 +911,12 @@ class FixPEP8(object):
             aggressive=self.options.aggressive,
             experimental=self.options.experimental,
             verbose=self.options.verbose)
+
         if fixed and not code_almost_equal(original, fixed):
             return fixed
-        else:
-            self.long_line_ignore_cache.add(cache_entry)
-            return None
+
+        self.long_line_ignore_cache.add(cache_entry)
+        return None
 
     def fix_e502(self, result):
         """Remove extraneous escape of newline."""
@@ -922,6 +941,12 @@ class FixPEP8(object):
         if not logical:
             return []  # pragma: no cover
         logical_lines = logical[2]
+
+        # Avoid applying this when indented.
+        # https://docs.python.org/reference/compound_stmts.html
+        for line in logical_lines:
+            if ':' in line:
+                return []
 
         line_index = result['line'] - 1
         target = self.source[line_index]
@@ -1056,9 +1081,11 @@ class FixPEP8(object):
         """fix bare except"""
         (line_index, _, target) = get_index_offset_contents(result,
                                                             self.source)
-        if BARE_EXCEPT_REGEX.search(target):
-            self.source[line_index] = '{0}{1}'.format(
-                target[:result['column'] - 1], "except Exception:")
+        match = BARE_EXCEPT_REGEX.search(target)
+        if match:
+            self.source[line_index] = '{0}{1}{2}'.format(
+                target[:result['column'] - 1], "except BaseException:",
+                target[match.end():])
 
     def fix_e731(self, result):
         """Fix do not assign a lambda expression check."""
@@ -1100,15 +1127,51 @@ class FixPEP8(object):
             return
         if not _is_binary_operator(ts[0][0], one_string_token):
             return
+        # find comment
+        comment_index = None
+        for i in range(5):
+            # NOTE: try to parse code in 5 times
+            if (line_index - i) < 0:
+                break
+            from_index = line_index - i - 1
+            to_index = line_index + 1
+            try:
+                ts = generate_tokens("".join(self.source[from_index:to_index]))
+            except Exception:
+                continue
+            newline_count = 0
+            newline_index = []
+            for i, t in enumerate(ts):
+                if t[0] in (tokenize.NEWLINE, tokenize.NL):
+                    newline_index.append(i)
+                    newline_count += 1
+            if newline_count > 2:
+                tts = ts[newline_index[-3]:]
+            else:
+                tts = ts
+            old = None
+            for t in tts:
+                if tokenize.COMMENT == t[0]:
+                    if old is None:
+                        comment_index = 0
+                    else:
+                        comment_index = old[3][1]
+                    break
+                old = t
+            break
         i = target.index(one_string_token)
         self.source[line_index] = '{0}{1}'.format(
             target[:i], target[i + len(one_string_token):])
         nl = find_newline(self.source[line_index - 1:line_index])
         before_line = self.source[line_index - 1]
         bl = before_line.index(nl)
-        self.source[line_index - 1] = '{0} {1}{2}'.format(
-            before_line[:bl], one_string_token,
-            before_line[bl:])
+        if comment_index:
+            self.source[line_index - 1] = '{0} {1} {2}'.format(
+                before_line[:comment_index], one_string_token,
+                before_line[comment_index + 1:])
+        else:
+            self.source[line_index - 1] = '{0} {1}{2}'.format(
+                before_line[:bl], one_string_token, before_line[bl:])
 
 
 def get_module_imports_on_top_of_file(source):
@@ -1157,6 +1220,7 @@ def get_fixed_long_line(target, previous_line, original,
     indent = _get_indentation(target)
     source = target[len(indent):]
     assert source.lstrip() == source
+    assert not target.lstrip().startswith('#')
 
     # Check for partial multiline.
     tokens = list(generate_tokens(source))
@@ -1184,11 +1248,12 @@ def get_fixed_long_line(target, previous_line, original,
 
     if candidates:
         best_candidate = candidates[0]
+
         # Don't allow things to get longer.
         if longest_line_length(best_candidate) > longest_line_length(original):
             return None
-        else:
-            return best_candidate
+
+        return best_candidate
 
 
 def longest_line_length(code):
@@ -1284,8 +1349,8 @@ def _get_logical(source_lines, result, logical_start, logical_end):
 def get_item(items, index, default=None):
     if 0 <= index < len(items):
         return items[index]
-    else:
-        return default
+
+    return default
 
 
 def reindent(source, indent_size):
@@ -1456,8 +1521,8 @@ def _get_indentation(line):
     if line.strip():
         non_whitespace_index = len(line) - len(line.lstrip())
         return line[:non_whitespace_index]
-    else:
-        return ''
+
+    return ''
 
 
 def get_diff_text(old, new, filename):
@@ -1503,7 +1568,8 @@ def _priority_key(pep8_result):
     lowest_priority = [
         # We need to shorten lines last since the logical fixer can get in a
         # loop, which causes us to exit early.
-        'e501'
+        'e501',
+        'w503'
     ]
     key = pep8_result['id'].lower()
     try:
@@ -1926,17 +1992,18 @@ class ReformattedLines(object):
             return
 
         last_space = None
-        for item in reversed(self._lines):
+        for current_item in reversed(self._lines):
             if (
                 last_space and
-                (not isinstance(item, Atom) or not item.is_colon)
+                (not isinstance(current_item, Atom) or
+                 not current_item.is_colon)
             ):
                 break
             else:
                 last_space = None
-            if isinstance(item, self._Space):
-                last_space = item
-            if isinstance(item, (self._LineBreak, self._Indent)):
+            if isinstance(current_item, self._Space):
+                last_space = current_item
+            if isinstance(current_item, (self._LineBreak, self._Indent)):
                 return
 
         if not last_space:
@@ -2507,8 +2574,8 @@ def _shorten_line_at_tokens(tokens, source, indentation, indent_word,
     if check_syntax(normalize_multiline(fixed)
                     if aggressive > 1 else fixed):
         return indentation + fixed
-    else:
-        return None
+
+    return None
 
 
 def token_offsets(tokens):
@@ -2558,8 +2625,8 @@ def normalize_multiline(line):
         return line + ' pass'
     elif line.startswith(('if ', 'elif ', 'for ', 'while ')):
         return line + ' pass'
-    else:
-        return line
+
+    return line
 
 
 def fix_whitespace(line, offset, replacement):
@@ -2569,8 +2636,8 @@ def fix_whitespace(line, offset, replacement):
     right = line[offset:].lstrip('\n\r \t\\')
     if right.startswith('#'):
         return line
-    else:
-        return left + replacement + right
+
+    return left + replacement + right
 
 
 def _execute_pep8(pep8_options, source):
@@ -2979,8 +3046,8 @@ def shorten_comment(line, max_line_length, last_comment=False):
                                     break_long_words=False,
                                     break_on_hyphens=False)
         return '\n'.join(split_lines) + '\n'
-    else:
-        return line + '\n'
+
+    return line + '\n'
 
 
 def normalize_line_endings(lines, newline):
@@ -3388,7 +3455,7 @@ def read_config(args, parser):
         for section in ['pep8', 'pycodestyle']:
             if not config.has_section(section):
                 continue
-            for k, v in config.items(section):
+            for (k, _) in config.items(section):
                 norm_opt = k.lstrip('-').replace('-', '_')
                 opt_type = option_list[norm_opt]
                 if opt_type is int:
@@ -3416,8 +3483,8 @@ def decode_filename(filename):
     """Return Unicode filename."""
     if isinstance(filename, unicode):
         return filename
-    else:
-        return filename.decode(sys.getfilesystemencoding())
+
+    return filename.decode(sys.getfilesystemencoding())
 
 
 def supported_fixes():

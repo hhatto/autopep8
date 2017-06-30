@@ -33,8 +33,8 @@ def indent_line(line):
     """Indent non-empty lines."""
     if line:
         return 4 * ' ' + line
-    else:
-        return line
+
+    return line
 
 
 def indent(text):
