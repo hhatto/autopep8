@@ -1047,10 +1047,12 @@ class FixPEP8(object):
 
     def fix_e713(self, result):
         """Fix (trivial case of) non-membership check."""
-        (line_index, _, target) = get_index_offset_contents(result,
-                                                            self.source)
+        (line_index, offset, target) = get_index_offset_contents(result,
+                                                                 self.source)
 
         # to convert once 'not in' -> 'in'
+        before_target = target[:offset]
+        target = target[offset:]
         match_notin = COMPARE_NEGATIVE_REGEX_THROUGH.search(target)
         notin_pos_start, notin_pos_end = 0, 0
         if match_notin:
@@ -1059,17 +1061,18 @@ class FixPEP8(object):
             target = '{0}{1} {2}'.format(
                 target[:notin_pos_start], 'in', target[notin_pos_end:])
 
+        # fix 'not in'
         match = COMPARE_NEGATIVE_REGEX.search(target)
         if match:
             if match.group(3) == 'in':
                 pos_start = match.start(1)
-                new_target = '{0}{1} {2} {3} {4}'.format(
+                new_target = '{5}{0}{1} {2} {3} {4}'.format(
                     target[:pos_start], match.group(2), match.group(1),
-                    match.group(3), target[match.end():])
+                    match.group(3), target[match.end():], before_target)
                 if match_notin:
                     # revert 'in' -> 'not in'
-                    pos_start = notin_pos_start
-                    pos_end = notin_pos_end - 4     # len('not ')
+                    pos_start = notin_pos_start + offset
+                    pos_end = notin_pos_end + offset - 4     # len('not ')
                     new_target = '{0}{1} {2}'.format(
                         new_target[:pos_start], 'not in', new_target[pos_end:])
                 self.source[line_index] = new_target
