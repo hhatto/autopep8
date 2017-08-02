@@ -77,6 +77,7 @@ CRLF = '\r\n'
 PYTHON_SHEBANG_REGEX = re.compile(r'^#!.*\bpython[23]?\b\s*$')
 LAMBDA_REGEX = re.compile(r'([\w.]+)\s=\slambda\s*([\(\)\w,\s.]*):')
 COMPARE_NEGATIVE_REGEX = re.compile(r'\b(not)\s+([^][)(}{]+)\s+(in|is)\s')
+COMPARE_NEGATIVE_REGEX_THROUGH = re.compile(r'\b(not\s+in)\s')
 BARE_EXCEPT_REGEX = re.compile(r'except\s*:')
 STARTSWITH_DEF_REGEX = re.compile(r'^(async\s+def|def)\s.*\):')
 
@@ -1049,13 +1050,29 @@ class FixPEP8(object):
         (line_index, _, target) = get_index_offset_contents(result,
                                                             self.source)
 
+        # to convert once 'not in' -> 'in'
+        match_notin = COMPARE_NEGATIVE_REGEX_THROUGH.search(target)
+        notin_pos_start, notin_pos_end = 0, 0
+        if match_notin:
+            notin_pos_start = match_notin.start(1)
+            notin_pos_end = match_notin.end()
+            target = '{0}{1} {2}'.format(
+                target[:notin_pos_start], 'in', target[notin_pos_end:])
+
         match = COMPARE_NEGATIVE_REGEX.search(target)
         if match:
             if match.group(3) == 'in':
                 pos_start = match.start(1)
-                self.source[line_index] = '{0}{1} {2} {3} {4}'.format(
+                new_target = '{0}{1} {2} {3} {4}'.format(
                     target[:pos_start], match.group(2), match.group(1),
                     match.group(3), target[match.end():])
+                if match_notin:
+                    # revert 'in' -> 'not in'
+                    pos_start = notin_pos_start
+                    pos_end = notin_pos_end - 4     # len('not ')
+                    new_target = '{0}{1} {2}'.format(
+                        new_target[:pos_start], 'not in', new_target[pos_end:])
+                self.source[line_index] = new_target
 
     def fix_e714(self, result):
         """Fix object identity should be 'is not' case."""
