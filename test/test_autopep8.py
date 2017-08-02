@@ -3851,6 +3851,13 @@ if role not in ("domaincontroller_master",
                               options=['-aa', '--select=E713']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e713_chain(self):
+        line = 'if "@" not in x or not "/" in y:\n    pass\n'
+        fixed = 'if "@" not in x or "/" not in y:\n    pass\n'
+        with autopep8_context(line,
+                              options=['-aa', '--select=E713']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e714(self):
         line = 'if not x is y:\n    pass\n'
         fixed = 'if x is not y:\n    pass\n'
