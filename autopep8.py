@@ -806,6 +806,7 @@ class FixPEP8(object):
             offset -= 1
         offset += 1
         self.source[offset] = cr + self.source[offset]
+        return [1 + offset]  # Line indexed at 1.
 
     def fix_e401(self, result):
         """Put imports on separate lines."""
