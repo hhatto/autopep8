@@ -13,5 +13,6 @@ bdist_egg.write_safety_flag(cmd.egg_info, safe)
 #: E703
 import shlex
 #: E702 E703
-del a[:]; a.append(42);
+del a[:]
+a.append(42)
 #:
