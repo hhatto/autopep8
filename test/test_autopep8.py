@@ -3729,6 +3729,22 @@ raise IOError('abc '
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e702_with_dict_semicolon(self):
+        line = """\
+MY_CONST = [
+    {'A': 1},
+    {'B': 2}
+];
+"""
+        fixed = """\
+MY_CONST = [
+    {'A': 1},
+    {'B': 2}
+]
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e703_with_inline_comment(self):
         line = 'a = 5;    # inline comment\n'
         fixed = 'a = 5    # inline comment\n'
