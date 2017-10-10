@@ -1439,16 +1439,21 @@ def refactor(source, fixer_names, ignore=None, filename=''):
     return new_text
 
 
-def code_to_2to3(select, ignore):
+def code_to_2to3(select, ignore, where='', verbose=False):
     fixes = set()
     for code, fix in CODE_TO_2TO3.items():
         if code_match(code, select=select, ignore=ignore):
+            if verbose:
+                print('--->  Applying {0} fix for {1}'.format(where,
+                                                              code.upper()),
+                      file=sys.stderr)
             fixes |= set(fix)
     return fixes
 
 
 def fix_2to3(source,
-             aggressive=True, select=None, ignore=None, filename=''):
+             aggressive=True, select=None, ignore=None, filename='',
+             where='global', verbose=False):
     """Fix various deprecated code (via lib2to3)."""
     if not aggressive:
         return source
@@ -1458,7 +1463,9 @@ def fix_2to3(source,
 
     return refactor(source,
                     code_to_2to3(select=select,
-                                 ignore=ignore),
+                                 ignore=ignore,
+                                 where=where,
+                                 verbose=verbose),
                     filename=filename)
 
 
@@ -3238,7 +3245,9 @@ def apply_global_fixes(source, options, where='global', filename=''):
                       aggressive=options.aggressive,
                       select=options.select,
                       ignore=options.ignore,
-                      filename=filename)
+                      filename=filename,
+                      where=where,
+                      verbose=options.verbose)
 
     return source
 
