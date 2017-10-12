@@ -4383,6 +4383,29 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(line, result)
 
+    def test_w602_invalid_2to3_fixed_case(self):
+        line = """\
+raise (ValueError
+       if True else TypeError)
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(line, result)
+
+    @unittest.skip('TODO')
+    def test_w602_invalid_2to3_fixed_case_with_valid_syntax(self):
+        line = """\
+raise (ValueError
+       if True else TypeError)
+raise ValueError, "error"
+"""
+        fixed = """\
+raise (ValueError
+       if True else TypeError)
+raise ValueError("error")
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w603(self):
         line = 'if 2 <> 2:\n    print False'
         fixed = 'if 2 != 2:\n    print False\n'
