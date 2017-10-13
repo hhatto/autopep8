@@ -96,6 +96,7 @@ SHORTEN_OPERATOR_GROUPS = frozenset([
 DEFAULT_IGNORE = 'E24,W503'
 DEFAULT_INDENT_SIZE = 4
 
+SELECTED_GLOBAL_FIXED_METHOD_CODES = ['W602', ]
 
 # W602 is handled separately due to the need to avoid "with_traceback".
 CODE_TO_2TO3 = {
@@ -1474,8 +1475,7 @@ def fix_w602(source, aggressive=True):
     if not aggressive:
         return source
 
-    return refactor(source, ['raise'],
-                    ignore='with_traceback')
+    return refactor(source, ['raise'], ignore='with_traceback')
 
 
 def find_newline(source):
@@ -3128,10 +3128,21 @@ def fix_lines(source_lines, options, filename=''):
         # Disable "apply_local_fixes()" for now due to issue #175.
         fixed_source = tmp_source
     else:
+        pep8_options = {
+            'ignore': options.ignore,
+            'select': options.select,
+            'max_line_length': options.max_line_length,
+        }
+        sio = io.StringIO(tmp_source)
+        contents = sio.readlines()
+        results = _execute_pep8(pep8_options, contents)
+        codes = set([result['id'] for result in results
+                     if result['id'] in SELECTED_GLOBAL_FIXED_METHOD_CODES])
         # Apply global fixes only once (for efficiency).
         fixed_source = apply_global_fixes(tmp_source,
                                           options,
-                                          filename=filename)
+                                          filename=filename,
+                                          codes=codes)
 
     passes = 0
     long_line_ignore_cache = set()
@@ -3220,7 +3231,7 @@ def _get_parameters(function):
         return inspect.getargspec(function)[0]
 
 
-def apply_global_fixes(source, options, where='global', filename=''):
+def apply_global_fixes(source, options, where='global', filename='', codes=[]):
     """Run global fixes on source code.
 
     These are fixes that only need be done once (unlike those in
@@ -3233,6 +3244,9 @@ def apply_global_fixes(source, options, where='global', filename=''):
                           indent_size=options.indent_size)
 
     for (code, function) in global_fixes():
+        if code.upper() in SELECTED_GLOBAL_FIXED_METHOD_CODES \
+                and code.upper() not in codes:
+            continue
         if code_match(code, select=options.select, ignore=options.ignore):
             if options.verbose:
                 print('--->  Applying {0} fix for {1}'.format(where,
