@@ -3468,6 +3468,8 @@ def read_config(args, parser):
                 continue
             for (k, _) in config.items(section):
                 norm_opt = k.lstrip('-').replace('-', '_')
+                if not option_list.get(norm_opt):
+                    continue
                 opt_type = option_list[norm_opt]
                 if opt_type is int:
                     value = config.getint(section, k)
@@ -3475,6 +3477,9 @@ def read_config(args, parser):
                     value = config.getboolean(section, k)
                 else:
                     value = config.get(section, k)
+                if args.verbose:
+                    print("enable config: section={}, key={}, value={}".format(
+                        section, k, value))
                 defaults[norm_opt] = value
 
         parser.set_defaults(**defaults)
