@@ -2880,7 +2880,7 @@ def refactor_with_2to3(source_text, fixer_names, filename=''):
 def check_syntax(code):
     """Return True if syntax is okay."""
     try:
-        return compile(code, '<string>', 'exec')
+        return compile(code, '<string>', 'exec', dont_inherit=True)
     except (SyntaxError, TypeError, UnicodeDecodeError):
         return False
 
