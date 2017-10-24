@@ -4867,6 +4867,19 @@ class ConfigurationTests(unittest.TestCase):
                 apply_config=True)
             self.assertEqual(args.aggressive, 1)
 
+    def test_config_local_inclue_invalid_key(self):
+        configstr = """\
+[pep8]
+count=True
+aggressive=1
+"""
+        with temporary_file_context(configstr) as filename:
+            args = autopep8.parse_args(
+                [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+                 '--global-config={0}'.format(filename)],
+                apply_config=True)
+            self.assertEqual(args.aggressive, 1)
+
 
 class ExperimentalSystemTests(unittest.TestCase):
 
