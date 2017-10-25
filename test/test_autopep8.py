@@ -6132,6 +6132,7 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    @unittest.skipIf(sys.version_info >= (3, ), 'syntax error in Python3')
     def test_e501_print_isnot_function(self):
         line = """\
 
