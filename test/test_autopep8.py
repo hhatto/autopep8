@@ -5496,9 +5496,9 @@ def f():
         fixed = '''\
 def f():
     email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
-<b>Czar: </b>""" + despot["Nicholas"] + """<br>
-<b>Minion: </b>""" + serf["Dmitri"] + """<br>
-<b>Residence: </b>""" + palace["Winter"] + """<br>
+<b>Czar: </b>"""+despot["Nicholas"]+"""<br>
+<b>Minion: </b>"""+serf["Dmitri"]+"""<br>
+<b>Residence: </b>"""+palace["Winter"]+"""<br>
 </body>
 </html>"""
 '''
@@ -5519,9 +5519,9 @@ def f():
 def f():
     email_text += (
         """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
-<b>Czar: </b>""" + despot["Nicholas"] + """<br>
-<b>Minion: </b>""" + serf["Dmitri"] + """<br>
-<b>Residence: </b>""" + palace["Winter"] + """<br>
+<b>Czar: </b>"""+despot["Nicholas"]+"""<br>
+<b>Minion: </b>"""+serf["Dmitri"]+"""<br>
+<b>Residence: </b>"""+palace["Winter"]+"""<br>
 </body>
 </html>""")
 '''
@@ -5624,13 +5624,13 @@ def f():
         line = """\
 def f(self):
     self._xxxxxxxx(aaaaaa, bbbbbbbbb, cccccccccccccccccc,
-                   [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzz/_DDDDD)], eee, 'ff')
+                   [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzzz/_DDDDDD)], eee, 'ff')
 """
         fixed = """\
 def f(self):
     self._xxxxxxxx(
         aaaaaa, bbbbbbbbb, cccccccccccccccccc,
-        [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzz / _DDDDD)],
+        [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzzz / _DDDDDD)],
         eee, 'ff')
 """
         with autopep8_context(line, options=['--experimental']) as result:
@@ -5742,7 +5742,7 @@ def f():
         fixed = """\
 def f():
   self.aaaaaaaaa(bbbbbb, ccccccccc, dddddddddddddddd,
-                 ((x, y / eeeeeee) for x, y in self.outputs.total.iteritems()),
+                 ((x, y/eeeeeee) for x, y in self.outputs.total.iteritems()),
                  fff, 'GG')
 """
         with autopep8_context(line, options=['--experimental',
