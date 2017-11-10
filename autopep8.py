@@ -682,7 +682,7 @@ class FixPEP8(object):
             error_code = result.get('id', 0)
             try:
                 ts = generate_tokens(fixed)
-            except tokenize.TokenError:
+            except (SyntaxError, tokenize.TokenError):
                 return
             if not check_syntax(fixed.lstrip()):
                 return
@@ -899,8 +899,7 @@ class FixPEP8(object):
                     line=target,
                     max_line_length=self.options.max_line_length,
                     last_comment=not next_line.lstrip().startswith('#'))
-            else:
-                return []
+            return []
 
         fixed = get_fixed_long_line(
             target=target,
@@ -1142,7 +1141,7 @@ class FixPEP8(object):
         one_string_token = target.split()[0]
         try:
             ts = generate_tokens(one_string_token)
-        except tokenize.TokenError:
+        except (SyntaxError, tokenize.TokenError):
             return
         if not _is_binary_operator(ts[0][0], one_string_token):
             return
@@ -1156,13 +1155,13 @@ class FixPEP8(object):
             to_index = line_index + 1
             try:
                 ts = generate_tokens("".join(self.source[from_index:to_index]))
-            except Exception:
+            except (SyntaxError, tokenize.TokenError):
                 continue
             newline_count = 0
             newline_index = []
-            for i, t in enumerate(ts):
+            for index, t in enumerate(ts):
                 if t[0] in (tokenize.NEWLINE, tokenize.NL):
-                    newline_index.append(i)
+                    newline_index.append(index)
                     newline_count += 1
             if newline_count > 2:
                 tts = ts[newline_index[-3]:]
@@ -3239,13 +3238,16 @@ def _get_parameters(function):
         return inspect.getargspec(function)[0]
 
 
-def apply_global_fixes(source, options, where='global', filename='', codes=[]):
+def apply_global_fixes(source, options, where='global', filename='',
+                       codes=None):
     """Run global fixes on source code.
 
     These are fixes that only need be done once (unlike those in
     FixPEP8, which are dependent on pycodestyle).
 
     """
+    if codes is None:
+        codes = []
     if any(code_match(code, select=options.select, ignore=options.ignore)
            for code in ['E101', 'E111']):
         source = reindent(source,
