@@ -1698,6 +1698,32 @@ if True:
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e133(self):
+        line = """\
+if True:
+    e = [
+        1, 2
+    ]
+"""
+        fixed = """\
+if True:
+    e = [
+        1, 2
+        ]
+"""
+        with autopep8_context(line, options=['--hang-closing']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e133_not_effected(self):
+        line = """\
+if True:
+    e = [
+        1, 2
+        ]
+"""
+        with autopep8_context(line, options=['--hang-closing']) as result:
+            self.assertEqual(line, result)
+
     def test_w191(self):
         line = """\
 while True:
@@ -3735,6 +3761,22 @@ raise IOError('abc '
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e702_with_dict_semicolon(self):
+        line = """\
+MY_CONST = [
+    {'A': 1},
+    {'B': 2}
+];
+"""
+        fixed = """\
+MY_CONST = [
+    {'A': 1},
+    {'B': 2}
+]
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e703_with_inline_comment(self):
         line = 'a = 5;    # inline comment\n'
         fixed = 'a = 5    # inline comment\n'
@@ -3853,6 +3895,27 @@ if role not in ("domaincontroller_master",
                 ):
     pass
 """
+        with autopep8_context(line,
+                              options=['-aa', '--select=E713']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e713_chain(self):
+        line = 'if "@" not in x or not "/" in y:\n    pass\n'
+        fixed = 'if "@" not in x or "/" not in y:\n    pass\n'
+        with autopep8_context(line,
+                              options=['-aa', '--select=E713']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e713_chain2(self):
+        line = 'if "@" not in x or "[" not in x or not "/" in y:\n    pass\n'
+        fixed = 'if "@" not in x or "[" not in x or "/" not in y:\n    pass\n'
+        with autopep8_context(line,
+                              options=['-aa', '--select=E713']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e713_chain3(self):
+        line = 'if not "@" in x or "[" not in x or not "/" in y:\n    pass\n'
+        fixed = 'if "@" not in x or "[" not in x or "/" not in y:\n    pass\n'
         with autopep8_context(line,
                               options=['-aa', '--select=E713']) as result:
             self.assertEqual(fixed, result)
@@ -4352,6 +4415,29 @@ correct = 'good syntax ?' in dict()
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(line, result)
 
+    def test_w602_invalid_2to3_fixed_case(self):
+        line = """\
+raise (ValueError
+       if True else TypeError)
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(line, result)
+
+    @unittest.skip('TODO')
+    def test_w602_invalid_2to3_fixed_case_with_valid_syntax(self):
+        line = """\
+raise (ValueError
+       if True else TypeError)
+raise ValueError, "error"
+"""
+        fixed = """\
+raise (ValueError
+       if True else TypeError)
+raise ValueError("error")
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w603(self):
         line = 'if 2 <> 2:\n    print False'
         fixed = 'if 2 != 2:\n    print False\n'
@@ -4807,6 +4893,19 @@ class ConfigurationTests(unittest.TestCase):
 
     def test_config_local_int_value(self):
         with temporary_file_context('[pep8]\naggressive=1\n') as filename:
+            args = autopep8.parse_args(
+                [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+                 '--global-config={0}'.format(filename)],
+                apply_config=True)
+            self.assertEqual(args.aggressive, 1)
+
+    def test_config_local_inclue_invalid_key(self):
+        configstr = """\
+[pep8]
+count=True
+aggressive=1
+"""
+        with temporary_file_context(configstr) as filename:
             args = autopep8.parse_args(
                 [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
                  '--global-config={0}'.format(filename)],
@@ -5429,9 +5528,9 @@ def f():
         fixed = '''\
 def f():
     email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
-<b>Czar: </b>""" + despot["Nicholas"] + """<br>
-<b>Minion: </b>""" + serf["Dmitri"] + """<br>
-<b>Residence: </b>""" + palace["Winter"] + """<br>
+<b>Czar: </b>"""+despot["Nicholas"]+"""<br>
+<b>Minion: </b>"""+serf["Dmitri"]+"""<br>
+<b>Residence: </b>"""+palace["Winter"]+"""<br>
 </body>
 </html>"""
 '''
@@ -5452,9 +5551,9 @@ def f():
 def f():
     email_text += (
         """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
-<b>Czar: </b>""" + despot["Nicholas"] + """<br>
-<b>Minion: </b>""" + serf["Dmitri"] + """<br>
-<b>Residence: </b>""" + palace["Winter"] + """<br>
+<b>Czar: </b>"""+despot["Nicholas"]+"""<br>
+<b>Minion: </b>"""+serf["Dmitri"]+"""<br>
+<b>Residence: </b>"""+palace["Winter"]+"""<br>
 </body>
 </html>""")
 '''
@@ -5557,13 +5656,13 @@ def f():
         line = """\
 def f(self):
     self._xxxxxxxx(aaaaaa, bbbbbbbbb, cccccccccccccccccc,
-                   [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzz/_DDDDD)], eee, 'ff')
+                   [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzzz/_DDDDDD)], eee, 'ff')
 """
         fixed = """\
 def f(self):
     self._xxxxxxxx(
         aaaaaa, bbbbbbbbb, cccccccccccccccccc,
-        [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzz / _DDDDD)],
+        [('mmmmmmmmmm', self.yyyyyyyyyy.zzzzzzzz / _DDDDDD)],
         eee, 'ff')
 """
         with autopep8_context(line, options=['--experimental']) as result:
@@ -5675,7 +5774,7 @@ def f():
         fixed = """\
 def f():
   self.aaaaaaaaa(bbbbbb, ccccccccc, dddddddddddddddd,
-                 ((x, y / eeeeeee) for x, y in self.outputs.total.iteritems()),
+                 ((x, y/eeeeeee) for x, y in self.outputs.total.iteritems()),
                  fff, 'GG')
 """
         with autopep8_context(line, options=['--experimental',
@@ -6065,6 +6164,22 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    @unittest.skipIf(sys.version_info >= (3, ), 'syntax error in Python3')
+    def test_e501_print_isnot_function(self):
+        line = """\
+
+def d():
+    print "%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d" % (111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
+"""
+        fixed = """\
+
+def d():
+    print "%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d" % (
+        111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
+        333, 333, 333)
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
