@@ -186,8 +186,8 @@ def extended_blank_lines(logical_line,
 pycodestyle.register_check(extended_blank_lines)
 
 
-def continued_indentation(logical_line, tokens, indent_level, indent_char,
-                          noqa):
+def continued_indentation(logical_line, tokens, indent_level, hang_closing,
+                          indent_char, noqa):
     """Override pycodestyle's function to provide indentation information."""
     first_row = tokens[0][2][0]
     nrows = 1 + tokens[-1][2][0] - first_row
@@ -263,7 +263,9 @@ def continued_indentation(logical_line, tokens, indent_level, indent_char,
                 if start[1] != indent[depth]:
                     yield (start, 'E124 {0}'.format(indent[depth]))
             elif close_bracket and not hang:
-                pass
+                # closing bracket matches indentation of opening bracket's line
+                if hang_closing:
+                    yield (start, 'E133 {0}'.format(indent[depth]))
             elif indent[depth] and start[1] < indent[depth]:
                 # Visual indent is broken.
                 yield (start, 'E128 {0}'.format(indent[depth]))
@@ -271,7 +273,7 @@ def continued_indentation(logical_line, tokens, indent_level, indent_char,
                   (indent_next and
                    rel_indent[row] == 2 * DEFAULT_INDENT_SIZE)):
                 # Hanging indent is verified.
-                if close_bracket:
+                if close_bracket and not hang_closing:
                     yield (start, 'E123 {0}'.format(indent_level +
                                                     rel_indent[open_row]))
                 hangs[depth] = hang
@@ -448,6 +450,7 @@ class FixPEP8(object):
         self.fix_e127 = self._fix_reindent
         self.fix_e128 = self._fix_reindent
         self.fix_e129 = self._fix_reindent
+        self.fix_e133 = self.fix_e131
         self.fix_e202 = self.fix_e201
         self.fix_e203 = self.fix_e201
         self.fix_e211 = self.fix_e201
@@ -544,6 +547,7 @@ class FixPEP8(object):
             'ignore': self.options.ignore,
             'select': self.options.select,
             'max_line_length': self.options.max_line_length,
+            'hang_closing': self.options.hang_closing,
         }
         results = _execute_pep8(pep8_options, self.source)
 
@@ -1649,7 +1653,10 @@ def _shorten_line(tokens, source, indentation, indent_word,
             first = source[:end_offset]
 
             second_indent = indentation
-            if first.rstrip().endswith('('):
+            if (first.rstrip().endswith('(') and
+               source[end_offset:].lstrip().startswith(')')):
+                pass
+            elif first.rstrip().endswith('('):
                 second_indent += indent_word
             elif '(' in first:
                 second_indent += ' ' * (1 + first.find('('))
@@ -3132,6 +3139,7 @@ def fix_lines(source_lines, options, filename=''):
             'ignore': options.ignore,
             'select': options.select,
             'max_line_length': options.max_line_length,
+            'hang_closing': options.hang_closing,
         }
         sio = io.StringIO(tmp_source)
         contents = sio.readlines()
@@ -3352,6 +3360,8 @@ def create_parser():
                              'line numbers are indexed at 1')
     parser.add_argument('--indent-size', default=DEFAULT_INDENT_SIZE,
                         type=int, help=argparse.SUPPRESS)
+    parser.add_argument('--hang-closing', action='store_true',
+                        help='hang-closing option passed to pycodestyle')
     parser.add_argument('files', nargs='*',
                         help="files to format or '-' for standard in")
 

@@ -1698,6 +1698,32 @@ if True:
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e133(self):
+        line = """\
+if True:
+    e = [
+        1, 2
+    ]
+"""
+        fixed = """\
+if True:
+    e = [
+        1, 2
+        ]
+"""
+        with autopep8_context(line, options=['--hang-closing']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e133_not_effected(self):
+        line = """\
+if True:
+    e = [
+        1, 2
+        ]
+"""
+        with autopep8_context(line, options=['--hang-closing']) as result:
+            self.assertEqual(line, result)
+
     def test_w191(self):
         line = """\
 while True:
