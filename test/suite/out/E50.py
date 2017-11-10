@@ -1,4 +1,5 @@
 #: E501
+import this
 a = '12345678901234567890123456789012345678901234567890123456789012345678901234567890'
 #: E502
 a = ('123456789012345678901234567890123456789012345678901234567890123456789'
@@ -91,7 +92,6 @@ This
 #
 #     http://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx
 
-import this
 
 # longnospaceslongnospaceslongnospaceslongnospaceslongnospaceslongnospaceslongnospaceslongnospaces
 
