@@ -1215,7 +1215,6 @@ def get_module_imports_on_top_of_file(source, import_line_index):
             line = line[1:]
         return line and (line[0] == '"' or line[0] == "'")
     allowed_try_keywords = ('try', 'except', 'else', 'finally')
-    found_first_string_literal = False
     for cnt, line in enumerate(source):
         if not line.rstrip():
             continue
@@ -1230,10 +1229,9 @@ def get_module_imports_on_top_of_file(source, import_line_index):
         elif any(line.startswith(kw) for kw in allowed_try_keywords):
             continue
         elif is_string_literal(line):
-            if not found_first_string_literal:
-                found_first_string_literal = True
-                continue
-            return cnt + 1
+            return cnt
+        else:
+            return cnt
     return 0
 
 

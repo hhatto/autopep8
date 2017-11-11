@@ -4567,7 +4567,7 @@ if True:
         target_line_index = 11
         result = get_module_imports_on_top_of_file(line.splitlines(),
                                                    target_line_index)
-        self.assertEqual(result, 9)
+        self.assertEqual(result, 5)
 
 
 class CommandLineTests(unittest.TestCase):
