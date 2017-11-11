@@ -39,7 +39,7 @@ ROOT_DIR = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
 
 sys.path.insert(0, ROOT_DIR)
 import autopep8
-
+from autopep8 import get_module_imports_on_top_of_file
 
 FAKE_CONFIGURATION = os.path.join(ROOT_DIR, 'test', 'fake_configuration')
 FAKE_PYCODESTYLE_CONFIGURATION = os.path.join(
@@ -4529,6 +4529,45 @@ if True:
 """
         with autopep8_context(line, options=['--line-range', '1', '1']) as result:
             self.assertEqual(line, result)
+
+
+class UtilityFunctionTests(unittest.TestCase):
+
+    def test_get_module_imports(self):
+        line = """\
+import os
+import sys
+
+if True:
+    print(1)
+"""
+        target_line_index = 8
+        result = get_module_imports_on_top_of_file(line.splitlines(),
+                                                   target_line_index)
+        self.assertEqual(result, 0)
+
+    def test_get_module_imports_case_of_autopep8(self):
+        line = """\
+#!/usr/bin/python
+
+# comment
+# comment
+
+'''this module ...
+
+this module ...
+'''
+
+import os
+import sys
+
+if True:
+    print(1)
+"""
+        target_line_index = 11
+        result = get_module_imports_on_top_of_file(line.splitlines(),
+                                                   target_line_index)
+        self.assertEqual(result, 9)
 
 
 class CommandLineTests(unittest.TestCase):
