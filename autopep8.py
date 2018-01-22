@@ -1018,11 +1018,11 @@ class FixPEP8(object):
                                                                  self.source)
 
         # Handle very easy "not" special cases.
-        if re.match(r'^\s*if [\w.]+ == False:$', target):
-            self.source[line_index] = re.sub(r'if ([\w.]+) == False:',
+        if re.match(r'^\s*if [\w."\'\[\]]+ == False:$', target):
+            self.source[line_index] = re.sub(r'if ([\w."\'\[\]]+) == False:',
                                              r'if not \1:', target, count=1)
-        elif re.match(r'^\s*if [\w.]+ != True:$', target):
-            self.source[line_index] = re.sub(r'if ([\w.]+) != True:',
+        elif re.match(r'^\s*if [\w."\'\[\]]+ != True:$', target):
+            self.source[line_index] = re.sub(r'if ([\w."\'\[\]]+) != True:',
                                              r'if not \1:', target, count=1)
         else:
             right_offset = offset + 2
