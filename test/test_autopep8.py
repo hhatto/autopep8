@@ -3847,6 +3847,13 @@ MY_CONST = [
                               options=['-aa', '--select=E712']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e712_with_dict_value(self):
+        line = 'if d["key"] != True:\n    pass\n'
+        fixed = 'if not d["key"]:\n    pass\n'
+        with autopep8_context(line,
+                              options=['-aa', '--select=E712']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e712_only_if_aggressive_level_2(self):
         line = 'foo == True\n'
         with autopep8_context(line, options=['-a']) as result:
