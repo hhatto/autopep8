@@ -3475,7 +3475,7 @@ def read_config(args, parser):
         option_list = dict([(o.dest, o.type or type(o.default))
                             for o in parser._actions])
 
-        for section in ['pep8', 'pycodestyle']:
+        for section in ['pep8', 'pycodestyle', 'flake8']:
             if not config.has_section(section):
                 continue
             for (k, _) in config.items(section):
