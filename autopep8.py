@@ -2680,7 +2680,8 @@ def _execute_pep8(pep8_options, source):
 
 
 def _remove_leading_and_normalize(line):
-    return line.lstrip().rstrip(CR + LF) + '\n'
+    # ignore FF in first lstrip()
+    return line.lstrip(' \t\v').rstrip(CR + LF) + '\n'
 
 
 class Reindenter(object):
