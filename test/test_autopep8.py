@@ -564,6 +564,16 @@ sys.maxint
         self.assertEqual('  #\nif True:\n    pass\n',
                          reindenter.run())
 
+    def test_reindenter_not_affect_with_formfeed(self):
+        lines = """print('hello')
+
+print('python')
+"""
+        reindenter = autopep8.Reindenter(lines)
+
+        self.assertEqual(lines,
+                         reindenter.run())
+
     def test_fix_e225_avoid_failure(self):
         fix_pep8 = autopep8.FixPEP8(filename='',
                                     options=autopep8.parse_args(['']),
