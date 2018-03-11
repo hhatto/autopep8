@@ -40,6 +40,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import argparse
 import codecs
 import collections
 import copy
@@ -3301,10 +3302,6 @@ def _get_package_version():
 
 def create_parser():
     """Return command-line parser."""
-    # Do import locally to be friendly to those who use autopep8 as a library
-    # and are supporting Python 2.6.
-    import argparse
-
     parser = argparse.ArgumentParser(description=docstring_summary(__doc__),
                                      prog='autopep8')
     parser.add_argument('--version', action='version',

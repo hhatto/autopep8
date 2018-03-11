@@ -16,11 +16,6 @@ import os
 import re
 import sys
 
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
-
 import contextlib
 import io
 import shutil
@@ -28,6 +23,7 @@ from subprocess import Popen, PIPE
 from tempfile import mkstemp
 import tempfile
 import tokenize
+import unittest
 import warnings
 
 try:
@@ -4263,8 +4259,6 @@ a.has_key(
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
-    @unittest.skipIf(sys.version_info < (2, 6, 4),
-                     'older versions of 2.6 may be buggy')
     def test_w601_with_non_ascii(self):
         line = """\
 # -*- coding: utf-8 -*-
@@ -6191,6 +6185,7 @@ def d():
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
