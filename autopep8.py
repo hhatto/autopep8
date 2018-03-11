@@ -3418,14 +3418,14 @@ def parse_args(arguments, apply_config=False):
     elif not args.select:
         if args.aggressive:
             # Enable everything by default if aggressive.
-            args.select = set(['E', 'W'])
+            args.select = {'E', 'W'}
         else:
             args.ignore = _split_comma_separated(DEFAULT_IGNORE)
 
     if args.exclude:
         args.exclude = _split_comma_separated(args.exclude)
     else:
-        args.exclude = set([])
+        args.exclude = {}
 
     if args.jobs < 1:
         # Do not import multiprocessing globally in case it is not supported
