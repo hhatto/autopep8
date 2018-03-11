@@ -1043,7 +1043,7 @@ try:
         # report properly, the below command will take a long time.
         p = Popen(list(AUTOPEP8_CMD_TUPLE) +
                   ['-vvv', '--select=E101', '--diff',
-                   '--global-config={0}'.format(os.devnull),
+                   '--global-config={}'.format(os.devnull),
                    os.path.join(ROOT_DIR, 'test', 'e101_example.py')],
                   stdout=PIPE, stderr=PIPE)
         output = [x.decode('utf-8') for x in p.communicate()][0]
@@ -4824,7 +4824,7 @@ class ConfigurationTests(unittest.TestCase):
     def test_local_config(self):
         args = autopep8.parse_args(
             [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
-             '--global-config={0}'.format(os.devnull)],
+             '--global-config={}'.format(os.devnull)],
             apply_config=True)
         self.assertEqual(args.indent_size, 2)
 
@@ -4854,7 +4854,7 @@ class ConfigurationTests(unittest.TestCase):
     def test_local_pycodestyle_config_line_length(self):
         args = autopep8.parse_args(
             [os.path.join(FAKE_PYCODESTYLE_CONFIGURATION, 'foo.py'),
-             '--global-config={0}'.format(os.devnull)],
+             '--global-config={}'.format(os.devnull)],
             apply_config=True)
         self.assertEqual(args.max_line_length, 40)
 
@@ -4868,7 +4868,7 @@ class ConfigurationTests(unittest.TestCase):
 
     def test_config_false_without_local(self):
         args = autopep8.parse_args(['/nowhere/foo.py',
-                                    '--global-config={0}'.format(os.devnull)],
+                                    '--global-config={}'.format(os.devnull)],
                                    apply_config=True)
         self.assertEqual(args.indent_size, 4)
 
@@ -4876,7 +4876,7 @@ class ConfigurationTests(unittest.TestCase):
         with temporary_file_context('[pep8]\nindent-size=3\n') as filename:
             args = autopep8.parse_args(
                 [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
-                 '--global-config={0}'.format(filename)],
+                 '--global-config={}'.format(filename)],
                 apply_config=True)
             self.assertEqual(args.indent_size, 2)
 
@@ -4884,7 +4884,7 @@ class ConfigurationTests(unittest.TestCase):
         with temporary_file_context('[pep8]\nindent-size=3\n') as filename:
             args = autopep8.parse_args(
                 [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
-                 '--global-config={0}'.format(filename),
+                 '--global-config={}'.format(filename),
                  '--ignore-local-config'],
                 apply_config=True)
             self.assertEqual(args.indent_size, 3)
@@ -4892,7 +4892,7 @@ class ConfigurationTests(unittest.TestCase):
     def test_global_config_without_locals(self):
         with temporary_file_context('[pep8]\nindent-size=3\n') as filename:
             args = autopep8.parse_args(
-                ['/nowhere/foo.py', '--global-config={0}'.format(filename)],
+                ['/nowhere/foo.py', '--global-config={}'.format(filename)],
                 apply_config=True)
             self.assertEqual(args.indent_size, 3)
 
@@ -4900,7 +4900,7 @@ class ConfigurationTests(unittest.TestCase):
         with temporary_file_context('[pep8]\naggressive=1\n') as filename:
             args = autopep8.parse_args(
                 [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
-                 '--global-config={0}'.format(filename)],
+                 '--global-config={}'.format(filename)],
                 apply_config=True)
             self.assertEqual(args.aggressive, 1)
 
@@ -4913,7 +4913,7 @@ aggressive=1
         with temporary_file_context(configstr) as filename:
             args = autopep8.parse_args(
                 [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
-                 '--global-config={0}'.format(filename)],
+                 '--global-config={}'.format(filename)],
                 apply_config=True)
             self.assertEqual(args.aggressive, 1)
 
