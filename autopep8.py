@@ -3145,8 +3145,8 @@ def fix_lines(source_lines, options, filename=''):
         sio = io.StringIO(tmp_source)
         contents = sio.readlines()
         results = _execute_pep8(pep8_options, contents)
-        codes = set([result['id'] for result in results
-                     if result['id'] in SELECTED_GLOBAL_FIXED_METHOD_CODES])
+        codes = {result['id'] for result in results
+                 if result['id'] in SELECTED_GLOBAL_FIXED_METHOD_CODES}
         # Apply global fixes only once (for efficiency).
         fixed_source = apply_global_fixes(tmp_source,
                                           options,
