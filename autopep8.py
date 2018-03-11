@@ -3469,7 +3469,7 @@ def read_config(args, parser):
                     break
                 (parent, tail) = os.path.split(parent)
 
-        defaults = dict()
+        defaults = {}
         option_list = dict([(o.dest, o.type or type(o.default))
                             for o in parser._actions])
 
