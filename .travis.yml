@@ -2,7 +2,6 @@ language: python
 
 python:
     - "2.7"
-    - "3.3"
     - "3.4"
     - "3.5"
     - "3.6"
@@ -30,7 +29,7 @@ script:
     - python test/acid.py -aaa --experimental test/example.py
     - python test/acid.py -aaa --experimental test/example_with_reduce.py
 
-    - if [ "$TRAVIS_PYTHON_VERSION" == "3.3" ]; then python -m doctest -v README.rst; fi
+    - if [ "$TRAVIS_PYTHON_VERSION" == "3.6" ]; then python -m doctest -v README.rst; fi
 
     - if [[ "$TRAVIS_PYTHON_VERSION" != "pypy"* ]]; then pycodestyle autopep8.py; fi
     - if [[ "$TRAVIS_PYTHON_VERSION" != "pypy"* ]]; then pip install pyflakes; pyflakes autopep8.py; fi

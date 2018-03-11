@@ -17,14 +17,14 @@ ENCODING = vim.eval('&fileencoding')
 
 
 def encode(text):
-    if sys.version_info[0] >= 3:
+    if sys.version_info.major >= 3:
         return text
     else:
         return text.encode(ENCODING)
 
 
 def decode(text):
-    if sys.version_info[0] >= 3:
+    if sys.version_info.major >= 3:
         return text
     else:
         return text.decode(ENCODING)

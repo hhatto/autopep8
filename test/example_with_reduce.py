@@ -66,7 +66,7 @@ from os import open as os_open
 from os.path import isdir, split
 
 # Avoid try/except due to potential problems with delayed import mechanisms.
-if sys.version_info >= (3, 3) and sys.implementation.name == "cpython":
+if sys.version_info.major >= 3 and sys.implementation.name == "cpython":
     import importlib._bootstrap as importlib_bootstrap
 else:
     importlib_bootstrap = None
@@ -1292,7 +1292,7 @@ class NullProvider:
     def has_metadata(self, name):
         return self.egg_info and self._has(self._fn(self.egg_info,name))
 
-    if sys.version_info <= (3,):
+    if sys.version_info.major == 2:
         def get_metadata(self, name):
             if not self.egg_info:
                 return ""
