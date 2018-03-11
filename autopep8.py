@@ -3470,8 +3470,8 @@ def read_config(args, parser):
                 (parent, tail) = os.path.split(parent)
 
         defaults = {}
-        option_list = dict([(o.dest, o.type or type(o.default))
-                            for o in parser._actions])
+        option_list = {o.dest: o.type or type(o.default)
+                       for o in parser._actions}
 
         for section in ['pep8', 'pycodestyle', 'flake8']:
             if not config.has_section(section):
