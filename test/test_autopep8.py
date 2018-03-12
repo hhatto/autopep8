@@ -16,11 +16,6 @@ import os
 import re
 import sys
 
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
-
 import contextlib
 import io
 import shutil
@@ -28,6 +23,7 @@ from subprocess import Popen, PIPE
 from tempfile import mkstemp
 import tempfile
 import tokenize
+import unittest
 import warnings
 
 try:
@@ -1047,7 +1043,7 @@ try:
         # report properly, the below command will take a long time.
         p = Popen(list(AUTOPEP8_CMD_TUPLE) +
                   ['-vvv', '--select=E101', '--diff',
-                   '--global-config={0}'.format(os.devnull),
+                   '--global-config={}'.format(os.devnull),
                    os.path.join(ROOT_DIR, 'test', 'e101_example.py')],
                   stdout=PIPE, stderr=PIPE)
         output = [x.decode('utf-8') for x in p.communicate()][0]
@@ -4263,8 +4259,6 @@ a.has_key(
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
-    @unittest.skipIf(sys.version_info < (2, 6, 4),
-                     'older versions of 2.6 may be buggy')
     def test_w601_with_non_ascii(self):
         line = """\
 # -*- coding: utf-8 -*-
@@ -4830,7 +4824,7 @@ class ConfigurationTests(unittest.TestCase):
     def test_local_config(self):
         args = autopep8.parse_args(
             [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
-             '--global-config={0}'.format(os.devnull)],
+             '--global-config={}'.format(os.devnull)],
             apply_config=True)
         self.assertEqual(args.indent_size, 2)
 
@@ -4860,7 +4854,7 @@ class ConfigurationTests(unittest.TestCase):
     def test_local_pycodestyle_config_line_length(self):
         args = autopep8.parse_args(
             [os.path.join(FAKE_PYCODESTYLE_CONFIGURATION, 'foo.py'),
-             '--global-config={0}'.format(os.devnull)],
+             '--global-config={}'.format(os.devnull)],
             apply_config=True)
         self.assertEqual(args.max_line_length, 40)
 
@@ -4874,7 +4868,7 @@ class ConfigurationTests(unittest.TestCase):
 
     def test_config_false_without_local(self):
         args = autopep8.parse_args(['/nowhere/foo.py',
-                                    '--global-config={0}'.format(os.devnull)],
+                                    '--global-config={}'.format(os.devnull)],
                                    apply_config=True)
         self.assertEqual(args.indent_size, 4)
 
@@ -4882,7 +4876,7 @@ class ConfigurationTests(unittest.TestCase):
         with temporary_file_context('[pep8]\nindent-size=3\n') as filename:
             args = autopep8.parse_args(
                 [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
-                 '--global-config={0}'.format(filename)],
+                 '--global-config={}'.format(filename)],
                 apply_config=True)
             self.assertEqual(args.indent_size, 2)
 
@@ -4890,7 +4884,7 @@ class ConfigurationTests(unittest.TestCase):
         with temporary_file_context('[pep8]\nindent-size=3\n') as filename:
             args = autopep8.parse_args(
                 [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
-                 '--global-config={0}'.format(filename),
+                 '--global-config={}'.format(filename),
                  '--ignore-local-config'],
                 apply_config=True)
             self.assertEqual(args.indent_size, 3)
@@ -4898,7 +4892,7 @@ class ConfigurationTests(unittest.TestCase):
     def test_global_config_without_locals(self):
         with temporary_file_context('[pep8]\nindent-size=3\n') as filename:
             args = autopep8.parse_args(
-                ['/nowhere/foo.py', '--global-config={0}'.format(filename)],
+                ['/nowhere/foo.py', '--global-config={}'.format(filename)],
                 apply_config=True)
             self.assertEqual(args.indent_size, 3)
 
@@ -4906,7 +4900,7 @@ class ConfigurationTests(unittest.TestCase):
         with temporary_file_context('[pep8]\naggressive=1\n') as filename:
             args = autopep8.parse_args(
                 [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
-                 '--global-config={0}'.format(filename)],
+                 '--global-config={}'.format(filename)],
                 apply_config=True)
             self.assertEqual(args.aggressive, 1)
 
@@ -4919,7 +4913,7 @@ aggressive=1
         with temporary_file_context(configstr) as filename:
             args = autopep8.parse_args(
                 [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
-                 '--global-config={0}'.format(filename)],
+                 '--global-config={}'.format(filename)],
                 apply_config=True)
             self.assertEqual(args.aggressive, 1)
 
@@ -5679,8 +5673,6 @@ def f(self):
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    @unittest.skipIf(sys.version_info < (2, 7),
-                     'Python 2.6 does not support dictionary comprehensions')
     def test_e501_experimental_with_complex_reformat(self):
         line = """\
 bork(111, 111, 111, 111, 222, 222, 222, { 'foo': 222, 'qux': 222 }, ((['hello', 'world'], ['yo', 'stella', "how's", 'it'], ['going']), {str(i): i for i in range(10)}, {'bork':((x, x**x) for x in range(10))}), 222, 222, 222, 222, 333, 333, 333, 333)
@@ -6175,7 +6167,7 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    @unittest.skipIf(sys.version_info >= (3, ), 'syntax error in Python3')
+    @unittest.skipIf(sys.version_info.major >= 3, 'syntax error in Python3')
     def test_e501_print_isnot_function(self):
         line = """\
 
@@ -6191,6 +6183,7 @@ def d():
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
