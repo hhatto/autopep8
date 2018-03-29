@@ -1407,7 +1407,9 @@ def fix_e265(source, aggressive=False):  # pylint: disable=unused-argument
                             if c != '#'))
                 if (
                     # Leave multiple spaces like '#    ' alone.
-                    (line[:pos].count('#') > 1 or line[1].isalnum()) and
+                    (line[:pos].count('#') > 1 or line[1].isalnum() or
+                        not line[1].isspace()) and
+                    line[1] not in ':!' and
                     # Leave stylistic outlined blocks alone.
                     not line.rstrip().endswith('#')
                 ):
