@@ -3487,12 +3487,13 @@ class AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA(
     def test_e501_aggressive_long_comment_and_long_line(self):
         line = """\
 def foo():
-    #. This is not a novel to be tossed aside lightly. It should be throw with great force.
+    # This is not a novel to be tossed aside lightly. It should be throw with great force.
     self.xxxxxxxxx(_('yyyyyyyyyyyyy yyyyyyyyyyyy yyyyyyyy yyyyyyyy y'), 'zzzzzzzzzzzzzzzzzzz', bork='urgent')
 """
         fixed = """\
 def foo():
-    #. This is not a novel to be tossed aside lightly. It should be throw with great force.
+    # This is not a novel to be tossed aside lightly. It should be throw with
+    # great force.
     self.xxxxxxxxx(
         _('yyyyyyyyyyyyy yyyyyyyyyyyy yyyyyyyy yyyyyyyy y'),
         'zzzzzzzzzzzzzzzzzzz',
