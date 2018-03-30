@@ -564,6 +564,7 @@ sys.maxint
         self.assertEqual('  #\nif True:\n    pass\n',
                          reindenter.run())
 
+    @unittest.skipIf('AUTOPEP8_COVERAGE' in os.environ, 'exists form-feed')
     def test_reindenter_not_affect_with_formfeed(self):
         lines = """print('hello')
 
