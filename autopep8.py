@@ -2906,7 +2906,7 @@ def check_syntax(code):
     """Return True if syntax is okay."""
     try:
         return compile(code, '<string>', 'exec', dont_inherit=True)
-    except (SyntaxError, TypeError, UnicodeDecodeError):
+    except (SyntaxError, TypeError, ValueError):
         return False
 
 

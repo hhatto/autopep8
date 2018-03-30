@@ -58,6 +58,10 @@ class UnitTests(unittest.TestCase):
 
     maxDiff = None
 
+    def test_compile_value_error(self):
+        source = '"\\xhh" \\'
+        self.assertFalse(autopep8.check_syntax(source))
+
     def test_find_newline_only_cr(self):
         source = ['print 1\r', 'print 2\r', 'print3\r']
         self.assertEqual(autopep8.CR, autopep8.find_newline(source))
