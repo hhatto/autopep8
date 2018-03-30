@@ -77,8 +77,8 @@ CRLF = '\r\n'
 
 PYTHON_SHEBANG_REGEX = re.compile(r'^#!.*\bpython[23]?\b\s*$')
 LAMBDA_REGEX = re.compile(r'([\w.]+)\s=\slambda\s*([\(\)\w,\s.]*):')
-COMPARE_NEGATIVE_REGEX = re.compile(r'\b(not)\s+([^][)(}{]+)\s+(in|is)\s')
-COMPARE_NEGATIVE_REGEX_THROUGH = re.compile(r'\b(not\s+in)\s')
+COMPARE_NEGATIVE_REGEX = re.compile(r'\b(not)\s+([^][)(}{]+?)\s+(in|is)\s')
+COMPARE_NEGATIVE_REGEX_THROUGH = re.compile(r'\b(not\s+in|is\s+not)\s')
 BARE_EXCEPT_REGEX = re.compile(r'except\s*:')
 STARTSWITH_DEF_REGEX = re.compile(r'^(async\s+def|def)\s.*\):')
 
@@ -1085,16 +1085,34 @@ class FixPEP8(object):
 
     def fix_e714(self, result):
         """Fix object identity should be 'is not' case."""
-        (line_index, _, target) = get_index_offset_contents(result,
-                                                            self.source)
+        (line_index, offset, target) = get_index_offset_contents(result,
+                                                                 self.source)
+
+        # to convert once 'is not' -> 'is'
+        before_target = target[:offset]
+        target = target[offset:]
+        match_isnot = COMPARE_NEGATIVE_REGEX_THROUGH.search(target)
+        isnot_pos_start, isnot_pos_end = 0, 0
+        if match_isnot:
+            isnot_pos_start = match_isnot.start(1)
+            isnot_pos_end = match_isnot.end()
+            target = '{}{} {}'.format(
+                target[:isnot_pos_start], 'in', target[isnot_pos_end:])
 
         match = COMPARE_NEGATIVE_REGEX.search(target)
         if match:
-            if match.group(3) == 'is':
+            if match.group(3).startswith('is'):
                 pos_start = match.start(1)
-                self.source[line_index] = '{}{} {} {} {}'.format(
+                new_target = '{5}{0}{1} {2} {3} {4}'.format(
                     target[:pos_start], match.group(2), match.group(3),
-                    match.group(1), target[match.end():])
+                    match.group(1), target[match.end():], before_target)
+                if match_isnot:
+                    # revert 'is' -> 'is not'
+                    pos_start = isnot_pos_start + offset
+                    pos_end = isnot_pos_end + offset - 4     # len('not ')
+                    new_target = '{}{} {}'.format(
+                        new_target[:pos_start], 'is not', new_target[pos_end:])
+                self.source[line_index] = new_target
 
     def fix_e722(self, result):
         """fix bare except"""
