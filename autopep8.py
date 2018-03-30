@@ -1147,7 +1147,7 @@ class FixPEP8(object):
         if not _is_binary_operator(ts[0][0], one_string_token):
             return
         # find comment
-        comment_index = None
+        comment_index = 0
         for i in range(5):
             # NOTE: try to parse code in 5 times
             if (line_index - i) < 0:
@@ -1168,13 +1168,10 @@ class FixPEP8(object):
                 tts = ts[newline_index[-3]:]
             else:
                 tts = ts
-            old = None
+            old = []
             for t in tts:
-                if tokenize.COMMENT == t[0]:
-                    if old is None:
-                        comment_index = 0
-                    else:
-                        comment_index = old[3][1]
+                if tokenize.COMMENT == t[0] and old:
+                    comment_index = old[3][1]
                     break
                 old = t
             break
