@@ -3890,6 +3890,13 @@ MY_CONST = [
                               options=['-aa', '--select=E713']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e713_with_in(self):
+        line = 'if not "." in y and "," in y:\n    pass\n'
+        fixed = 'if "." not in y and "," in y:\n    pass\n'
+        with autopep8_context(line,
+                              options=['-aa', '--select=E713']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e713_with_tuple(self):
         line = """
 if not role in ("domaincontroller_master",
@@ -3932,9 +3939,30 @@ if role not in ("domaincontroller_master",
                               options=['-aa', '--select=E713']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e713_chain4(self):
+        line = 'if not "." in y and not "," in y:\n    pass\n'
+        fixed = 'if "." not in y and "," not in y:\n    pass\n'
+        with autopep8_context(line,
+                              options=['-aa', '--select=E713']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e714(self):
         line = 'if not x is y:\n    pass\n'
         fixed = 'if x is not y:\n    pass\n'
+        with autopep8_context(line,
+                              options=['-aa', '--select=E714']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e714_with_is(self):
+        line = 'if not x is y or x is z:\n    pass\n'
+        fixed = 'if x is not y or x is z:\n    pass\n'
+        with autopep8_context(line,
+                              options=['-aa', '--select=E714']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e714_chain(self):
+        line = 'if not x is y or not x is z:\n    pass\n'
+        fixed = 'if x is not y or x is not z:\n    pass\n'
         with autopep8_context(line,
                               options=['-aa', '--select=E714']) as result:
             self.assertEqual(fixed, result)
