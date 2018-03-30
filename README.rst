@@ -2,6 +2,10 @@
 autopep8
 ========
 
+.. image:: https://img.shields.io/pypi/v/autopep8.svg
+    :target: https://pypi.python.org/pypi/autopep8
+    :alt: PyPI Version
+
 .. image:: https://travis-ci.org/hhatto/autopep8.svg?branch=master
     :target: https://travis-ci.org/hhatto/autopep8
     :alt: Build status
