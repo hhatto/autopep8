@@ -4076,6 +4076,12 @@ if role not in ("domaincontroller_master",
         with autopep8_context(line, options=['--select=E731']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e731_with_default_arguments(self):
+        line = 'a = lambda k, d=None: bar.get("%s/%s" % (prefix, k), d)\n'
+        fixed = 'def a(k, d=None): return bar.get("%s/%s" % (prefix, k), d)\n'
+        with autopep8_context(line, options=['--select=E731']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e901_should_cause_indentation_screw_up(self):
         line = """\
 def tmp(g):
