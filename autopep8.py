@@ -3712,7 +3712,7 @@ def line_shortening_rank(candidate, indent_word, max_line_length,
 
 
 def standard_deviation(numbers):
-    """Return standard devation."""
+    """Return standard deviation."""
     numbers = list(numbers)
     if not numbers:
         return 0
