@@ -4234,6 +4234,32 @@ else:
         with autopep8_context(line, options=['-aaa']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w503_over_5lines(self):
+        line = """\
+X = (
+    1  # 1
+    + 2  # 2
+    + 3  # 3
+    + 4  # 4
+    + 5  # 5
+    + 6  # 6
+    + 7  # 7
+)
+"""
+        fixed = """\
+X = (
+    1 +  # 1
+    2 +  # 2
+    3 +  # 3
+    4 +  # 4
+    5 +  # 5
+    6 +  # 6
+    7  # 7
+)
+"""
+        with autopep8_context(line, options=['-aaa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w601(self):
         line = 'a = {0: 1}\na.has_key(0)\n'
         fixed = 'a = {0: 1}\n0 in a\n'
