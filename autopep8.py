@@ -1195,7 +1195,7 @@ class FixPEP8(object):
             break
         i = target.index(one_string_token)
         self.source[line_index] = '{}{}'.format(
-            target[:i], target[i + len(one_string_token):])
+            target[:i], target[i + len(one_string_token):].lstrip())
         nl = find_newline(self.source[line_index - 1:line_index])
         before_line = self.source[line_index - 1]
         bl = before_line.index(nl)
