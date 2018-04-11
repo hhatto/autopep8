@@ -1966,13 +1966,13 @@ class Foo():
 class Foo(object):
 
   def bar(self):
-    return self.elephant is not None
+    return self.elephant!='test'
 """
         fixed = """\
 class Foo(object):
 
     def bar(self):
-        return self.elephant is not None
+        return self.elephant != 'test'
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
