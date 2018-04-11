@@ -407,7 +407,7 @@ class FixPEP8(object):
         - e211
         - e221,e222,e223,e224,e225
         - e231
-        - e251
+        - e251,e252
         - e261,e262
         - e271,e272,e273,e274
         - e301,e302,e303,e304,e306
@@ -463,6 +463,7 @@ class FixPEP8(object):
         self.fix_e228 = self.fix_e225
         self.fix_e241 = self.fix_e271
         self.fix_e242 = self.fix_e224
+        self.fix_e252 = self.fix_e225
         self.fix_e261 = self.fix_e262
         self.fix_e272 = self.fix_e271
         self.fix_e273 = self.fix_e271
