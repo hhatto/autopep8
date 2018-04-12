@@ -2084,6 +2084,24 @@ bar[zap[0][0]:zig[0][0], :]
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e252(self):
+        line = 'def a(arg1: int=1, arg2: int =1, arg3: int= 1):\n    print arg\n'
+        fixed = 'def a(arg1: int = 1, arg2: int = 1, arg3: int = 1):\n    print arg\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e252_with_argument_on_next_line(self):
+        line = 'def a(arg: int\n=1):\n    print arg\n'
+        fixed = 'def a(arg: int\n= 1):\n    print arg\n'
+        with autopep8_context(line, options=['--select=E252']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e252_with_escaped_newline(self):
+        line = 'def a(arg: int\\\n=1):\n    print arg\n'
+        fixed = 'def a(arg: int\\\n= 1):\n    print arg\n'
+        with autopep8_context(line, options=['--select=E252']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e261(self):
         line = "print 'a b '# comment\n"
         fixed = "print 'a b '  # comment\n"

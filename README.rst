@@ -202,6 +202,7 @@ autopep8 fixes the following issues_ reported by pycodestyle_::
     E241 - Fix extraneous whitespace around keywords.
     E242 - Remove extraneous whitespace around operator.
     E251 - Remove whitespace around parameter '=' sign.
+    E252 - Missing whitespace around parameter equals.
     E26  - Fix spacing after comment hash for inline comments.
     E265 - Fix spacing after comment hash for block comments.
     E27  - Fix extraneous whitespace around keywords.
