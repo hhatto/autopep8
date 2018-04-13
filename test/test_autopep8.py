@@ -4555,6 +4555,12 @@ raise ValueError("error")
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w605_simple(self):
+        line = "escape = '\.jpg'\n"
+        fixed = "escape = r'\.jpg'\n"
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_trailing_whitespace_in_multiline_string(self):
         line = 'x = """ \nhello"""    \n'
         fixed = 'x = """ \nhello"""\n'
