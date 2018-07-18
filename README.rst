@@ -3,7 +3,7 @@ autopep8
 ========
 
 .. image:: https://img.shields.io/pypi/v/autopep8.svg
-    :target: https://pypi.python.org/pypi/autopep8
+    :target: https://pypi.org/project/autopep8/
     :alt: PyPI Version
 
 .. image:: https://travis-ci.org/hhatto/autopep8.svg?branch=master
@@ -323,7 +323,7 @@ Test cases are in ``test/test_autopep8.py``. They can be run directly via
 testing against multiple Python interpreters. (We currently test against
 CPython versions 2.7, 3.4, 3.5 and 3.6. We also test against PyPy.)
 
-.. _`tox`: https://pypi.python.org/pypi/tox
+.. _`tox`: https://pypi.org/project/tox/
 
 Broad spectrum testing is available via ``test/acid.py``. This script runs
 autopep8 against Python code and checks for correctness and completeness of the
@@ -355,7 +355,7 @@ Links
 * `Travis CI`_
 * Coveralls_
 
-.. _PyPI: https://pypi.python.org/pypi/autopep8/
+.. _PyPI: https://pypi.org/project/autopep8/
 .. _GitHub: https://github.com/hhatto/autopep8
 .. _`Travis CI`: https://travis-ci.org/hhatto/autopep8
 .. _`Coveralls`: https://coveralls.io/r/hhatto/autopep8
