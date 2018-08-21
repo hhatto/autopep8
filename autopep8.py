@@ -442,7 +442,6 @@ class FixPEP8(object):
         # Many fixers are the same even though pycodestyle categorizes them
         # differently.
         self.fix_e115 = self.fix_e112
-        self.fix_e116 = self.fix_e113
         self.fix_e121 = self._fix_reindent
         self.fix_e122 = self._fix_reindent
         self.fix_e123 = self._fix_reindent
@@ -603,6 +602,14 @@ class FixPEP8(object):
         self.source[line_index] = self.indent_word + target
 
     def fix_e113(self, result):
+        """Fix unexpected indentation."""
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+        indent = _get_indentation(target)
+        stripped = target.lstrip()
+        self.source[line_index] = indent[1:] + stripped
+
+    def fix_e116(self, result):
         """Fix over-indented comments."""
         line_index = result['line'] - 1
         target = self.source[line_index]
