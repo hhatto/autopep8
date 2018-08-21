@@ -1171,20 +1171,27 @@ pass
         with autopep8_context(line) as result:
             self.assertEqual(line, result)
 
-    def test_e113_should_not_modify_string_content(self):
+    def test_e113(self):
         line = """\
 a = 1
     b = 2
 """
+        fixed = """\
+a = 1
+b = 2
+"""
         with autopep8_context(line) as result:
-            self.assertEqual(line, result)
+            self.assertEqual(fixed, result)
 
-    def test_e113_should_leave_bad_syntax_alone(self):
+    def test_e113_bad_syntax(self):
         line = """\
     pass
 """
+        fixed = """\
+pass
+"""
         with autopep8_context(line) as result:
-            self.assertEqual(line, result)
+            self.assertEqual(fixed, result)
 
     def test_e114(self):
         line = """\
@@ -3772,8 +3779,8 @@ def foo():
             self.assertEqual(fixed, result)
 
     def test_e702_with_triple_quote_and_indent(self):
-        line = '    """\n      hello\n   """; 1\n'
-        fixed = '    """\n      hello\n   """\n    1\n'
+        line = 'def f():\n    """\n      hello\n   """; 1\n'
+        fixed = 'def f():\n    """\n      hello\n   """\n    1\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -5923,6 +5930,7 @@ class AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA(
 
     def test_e501_experimental_no_line_change(self):
         line = """\
+def f():
     return '<a href="javascript:;" class="copy-to-clipboard-button" data-clipboard-text="%s" title="copy url to clipboard">Copy Link</a>' % url
 """
         with autopep8_context(line, options=['--experimental']) as result:
