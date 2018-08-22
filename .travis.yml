@@ -6,10 +6,7 @@ python:
     - "3.5"
     - "3.6"
     - "pypy"
-    # commenting "pypy3" because it's been broken on TravisCI for several months
-    # using alpha target instead
-    # https://github.com/travis-ci/travis-ci/issues/6277
-    - "pypy3.3-5.5-alpha"  #- "pypy3" 
+    - "pypy3.5" 
 
 env:
     - LANG=
