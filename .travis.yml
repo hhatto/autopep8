@@ -6,7 +6,7 @@ python:
     - "3.5"
     - "3.6"
     - "pypy"
-    - "pypy3.5" 
+    - "pypy3.5"
 
 env:
     - LANG=
@@ -16,6 +16,10 @@ env:
 matrix:
     allow_failures:
         - env: PEP8_VERSION=github
+    include:
+        - python: 3.7
+          dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
+          sudo: required  # required for Python 3.7 (travis-ci/travis-ci#9069)
 
 install:
     - if [ "$PEP8_VERSION" == "github" ]; then pip install git+https://github.com/PyCQA/pycodestyle; fi
@@ -26,7 +30,7 @@ script:
     - python test/acid.py -aaa --experimental test/example.py
     - python test/acid.py -aaa --experimental test/example_with_reduce.py
 
-    - if [ "$TRAVIS_PYTHON_VERSION" == "3.6" ]; then python -m doctest -v README.rst; fi
+    - if [ "$TRAVIS_PYTHON_VERSION" == "3.7" ]; then python -m doctest -v README.rst; fi
 
     - if [[ "$TRAVIS_PYTHON_VERSION" != "pypy"* ]]; then pycodestyle autopep8.py; fi
     - if [[ "$TRAVIS_PYTHON_VERSION" != "pypy"* ]]; then pip install pyflakes; pyflakes autopep8.py; fi
