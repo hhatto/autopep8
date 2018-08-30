@@ -410,7 +410,7 @@ class FixPEP8(object):
         - e251,e252
         - e261,e262
         - e271,e272,e273,e274
-        - e301,e302,e303,e304,e306
+        - e301,e302,e303,e304,e305,e306
         - e401
         - e502
         - e701,e702,e703,e704
@@ -806,21 +806,36 @@ class FixPEP8(object):
 
     def fix_e305(self, result):
         """Add missing 2 blank lines after end of function or class."""
-        cr = '\n'
-        # check comment line
+        add_delete_linenum = 2 - int(result['info'].split()[-1])
+        cnt = 0
         offset = result['line'] - 2
-        while True:
-            if offset < 0:
-                break
-            line = self.source[offset].lstrip()
-            if not line:
-                break
-            if line[0] != '#':
-                break
-            offset -= 1
-        offset += 1
-        self.source[offset] = cr + self.source[offset]
-        return [1 + offset]  # Line indexed at 1.
+        modified_lines = []
+        if add_delete_linenum < 0:
+            # delete cr
+            add_delete_linenum = abs(add_delete_linenum)
+            while cnt < add_delete_linenum and offset >= 0:
+                if not self.source[offset].strip():
+                    self.source[offset] = ''
+                    modified_lines.append(1 + offset)  # Line indexed at 1
+                    cnt += 1
+                offset -= 1
+        else:
+            # add cr
+            cr = '\n'
+            # check comment line
+            while True:
+                if offset < 0:
+                    break
+                line = self.source[offset].lstrip()
+                if not line:
+                    break
+                if line[0] != '#':
+                    break
+                offset -= 1
+            offset += 1
+            self.source[offset] = cr + self.source[offset]
+            modified_lines.append(1 + offset)   # Line indexed at 1.
+        return modified_lines
 
     def fix_e401(self, result):
         """Put imports on separate lines."""
