@@ -2312,6 +2312,27 @@ def foo():
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e303_with_e305(self):
+        line = """\
+def foo():
+    pass
+
+
+
+# comment   (E303)
+a = 1     # (E305)
+"""
+        fixed = """\
+def foo():
+    pass
+
+
+# comment   (E303)
+a = 1     # (E305)
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e304(self):
         line = '@contextmanager\n\ndef f():\n    print 1\n'
         fixed = '@contextmanager\ndef f():\n    print 1\n'
