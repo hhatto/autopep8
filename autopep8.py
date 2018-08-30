@@ -1650,7 +1650,6 @@ def _priority_key(pep8_result):
         # We need to shorten lines last since the logical fixer can get in a
         # loop, which causes us to exit early.
         'e501',
-        'w503'
     ]
     key = pep8_result['id'].lower()
     try:
