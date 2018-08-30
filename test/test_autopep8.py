@@ -1553,6 +1553,20 @@ x = \
         with autopep8_context(line, options=['--select=E12']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e128_with_aaa_option(self):
+        line = """\
+def extractBlocks(self):
+    addLine = (self.matchMultiple(linesIncludePatterns, line)
+       and not self.matchMultiple(linesExcludePatterns, line)) or emptyLine
+"""
+        fixed = """\
+def extractBlocks(self):
+    addLine = (self.matchMultiple(linesIncludePatterns, line) and
+               not self.matchMultiple(linesExcludePatterns, line)) or emptyLine
+"""
+        with autopep8_context(line, options=['-aaa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e129(self):
         line = """\
 if (a and
