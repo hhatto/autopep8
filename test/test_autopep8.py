@@ -1561,8 +1561,8 @@ def extractBlocks(self):
 """
         fixed = """\
 def extractBlocks(self):
-    addLine = (self.matchMultiple(linesIncludePatterns, line)
-               and not self.matchMultiple(linesExcludePatterns, line)) or emptyLine
+    addLine = (self.matchMultiple(linesIncludePatterns, line) and
+               not self.matchMultiple(linesExcludePatterns, line)) or emptyLine
 """
         with autopep8_context(line, options=['-aaa']) as result:
             self.assertEqual(fixed, result)
