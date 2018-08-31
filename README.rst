@@ -111,7 +111,6 @@ After running autopep8.
 
 
     class Example3(object):
-
         def __init__(self, bar):
             # Comments should have a space after the hash.
             if bar:
@@ -131,7 +130,7 @@ Options::
                     [--ignore-local-config] [-r] [-j n] [-p n] [-a]
                     [--experimental] [--exclude globs] [--list-fixes]
                     [--ignore errors] [--select errors] [--max-line-length n]
-                    [--line-range line line]
+                    [--line-range line line] [--hang-closing]
                     [files [files ...]]
 
     Automatically formats Python code to conform to the PEP 8 style guide.
@@ -167,13 +166,15 @@ Options::
       --exclude globs       exclude file/directory names that match these comma-
                             separated globs
       --list-fixes          list codes for fixes; used by --ignore and --select
-      --ignore errors       do not fix these errors/warnings (default: E24)
+      --ignore errors       do not fix these errors/warnings (default:
+                            E226,E24,W503)
       --select errors       fix only these errors/warnings (e.g. E4,W)
       --max-line-length n   set maximum allowed line length (default: 79)
       --line-range line line, --range line line
                             only fix errors found within this inclusive range of
                             line numbers (e.g. 1 99); line numbers are indexed at
                             1
+      --hang-closing        hang-closing option passed to pycodestyle
 
 
 Features
