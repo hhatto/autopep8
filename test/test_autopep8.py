@@ -3853,6 +3853,16 @@ MY_CONST = [
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e703_in_example_of_readme(self):
+        line = """\
+def example2(): return ('' in {'f': 2}) in {'has_key() is deprecated': True};
+"""
+        fixed = """\
+def example2(): return ('' in {'f': 2}) in {'has_key() is deprecated': True}
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e704(self):
         line = 'def f(x): return 2*x\n'
         fixed = 'def f(x):\n    return 2 * x\n'
