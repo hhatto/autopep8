@@ -968,7 +968,8 @@ class FixPEP8(object):
         # Avoid applying this when indented.
         # https://docs.python.org/reference/compound_stmts.html
         for line in logical_lines:
-            if result['id'] == 'E702' and ':' in line and STARTSWITH_DEF_REGEX.match(line):
+            if (result['id'] == 'E702' and ':' in line
+                    and STARTSWITH_DEF_REGEX.match(line)):
                 return []
 
         line_index = result['line'] - 1
