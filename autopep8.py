@@ -1258,7 +1258,6 @@ class FixPEP8(object):
                 tts = ts
             old = []
             for t in tts:
-                print(t)
                 if tokenize.COMMENT == t[0] and old:
                     comment_index = old[3][1]
                     break
