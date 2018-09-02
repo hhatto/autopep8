@@ -418,7 +418,7 @@ class FixPEP8(object):
         - e722
         - e731
         - w291
-        - w503
+        - w503,504
 
     """
 
@@ -1230,6 +1230,58 @@ class FixPEP8(object):
         else:
             self.source[line_index - 1] = '{} {}{}'.format(
                 before_line[:bl], one_string_token, before_line[bl:])
+
+    def fix_w504(self, result):
+        (line_index, _, target) = get_index_offset_contents(result,
+                                                            self.source)
+        # NOTE: is not collect pointed out in pycodestyle==2.4.0
+        comment_index = 0
+        operator_position = None    # (start_position, end_position)
+        for i in range(1, 6):
+            to_index = line_index + i
+            try:
+                ts = generate_tokens("".join(self.source[line_index:to_index]))
+            except (SyntaxError, tokenize.TokenError):
+                continue
+            newline_count = 0
+            newline_index = []
+            for index, t in enumerate(ts):
+                if t[0] == tokenize.OP:
+                    if t[2][0] == 1 and t[3][0] == 1:
+                        operator_position = (t[2][1], t[3][1])
+                elif t[0] in (tokenize.NEWLINE, tokenize.NL):
+                    newline_index.append(index)
+                    newline_count += 1
+            if newline_count > 2:
+                tts = ts[:newline_index[-3]]
+            else:
+                tts = ts
+            old = []
+            for t in tts:
+                print(t)
+                if tokenize.COMMENT == t[0] and old:
+                    comment_index = old[3][1]
+                    break
+                old = t
+            break
+        target_operator = target[operator_position[0]:operator_position[1]]
+        if comment_index:
+            self.source[line_index] = '{}{}'.format(
+                target[:operator_position[0]].rstrip(),
+                target[comment_index:])
+        else:
+            self.source[line_index] = '{}{}{}'.format(
+                target[:operator_position[0]].rstrip(),
+                target[operator_position[1]:].lstrip(),
+                target[operator_position[1]:])
+        next_line = self.source[line_index + 1]
+        next_line_indent = 0
+        m = re.match(r'\s*', next_line)
+        if m:
+            next_line_indent = m.span()[1]
+        self.source[line_index + 1] = '{}{} {}'.format(
+                next_line[:next_line_indent], target_operator,
+                next_line[next_line_indent:])
 
     def fix_w605(self, result):
         (line_index, _, target) = get_index_offset_contents(result,
@@ -3014,11 +3066,11 @@ def filter_results(source, results, aggressive):
                 continue
 
         if aggressive <= 1:
-            if issue_id.startswith(('e712', 'e713', 'e714', 'w5')):
+            if issue_id.startswith(('e712', 'e713', 'e714')):
                 continue
 
         if aggressive <= 2:
-            if issue_id.startswith(('e704', 'w5')):
+            if issue_id.startswith(('e704')):
                 continue
 
         if r['line'] in commented_out_code_line_numbers:
@@ -3500,7 +3552,7 @@ def parse_args(arguments, apply_config=False):
     elif not args.select:
         if args.aggressive:
             # Enable everything by default if aggressive.
-            args.select = {'E', 'W'}
+            args.select = {'E', 'W1', 'W2', 'W3', 'W6'}
         else:
             args.ignore = _split_comma_separated(DEFAULT_IGNORE)
 
