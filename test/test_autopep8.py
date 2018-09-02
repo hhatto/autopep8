@@ -1561,8 +1561,12 @@ def extractBlocks(self):
 """
         fixed = """\
 def extractBlocks(self):
-    addLine = (self.matchMultiple(linesIncludePatterns, line) and
-               not self.matchMultiple(linesExcludePatterns, line)) or emptyLine
+    addLine = (
+        self.matchMultiple(
+            linesIncludePatterns,
+            line) and not self.matchMultiple(
+            linesExcludePatterns,
+            line)) or emptyLine
 """
         with autopep8_context(line, options=['-aaa']) as result:
             self.assertEqual(fixed, result)
@@ -4266,7 +4270,7 @@ else:
     def test_w503(self):
         line = '(width == 0\n + height == 0)\n'
         fixed = '(width == 0 +\n height == 0)\n'
-        with autopep8_context(line, options=['-aaa']) as result:
+        with autopep8_context(line, options=['--select=W503']) as result:
             self.assertEqual(fixed, result)
 
     def test_w503_skip_default(self):
@@ -4277,13 +4281,13 @@ else:
     def test_w503_and_or(self):
         line = '(width == 0\n and height == 0\n or name == "")\n'
         fixed = '(width == 0 and\n height == 0 or\n name == "")\n'
-        with autopep8_context(line, options=['-aaa']) as result:
+        with autopep8_context(line, options=['--select=W503']) as result:
             self.assertEqual(fixed, result)
 
     def test_w503_with_comment(self):
         line = '(width == 0  # this is comment\n + height == 0)\n'
         fixed = '(width == 0 +  # this is comment\n height == 0)\n'
-        with autopep8_context(line, options=['-aaa']) as result:
+        with autopep8_context(line, options=['--select=W503']) as result:
             self.assertEqual(fixed, result)
 
     def test_w503_with_comment_double(self):
@@ -4301,7 +4305,7 @@ else:
     333333333333  # C3
 )
 """
-        with autopep8_context(line, options=['-aaa']) as result:
+        with autopep8_context(line, options=['--select=W503']) as result:
             self.assertEqual(fixed, result)
 
     def test_w503_over_5lines(self):
@@ -4327,7 +4331,27 @@ X = (
     7  # 7
 )
 """
-        with autopep8_context(line, options=['-aaa']) as result:
+        with autopep8_context(line, options=['--select=W503']) as result:
+            self.assertEqual(fixed, result)
+
+    @unittest.skip('TODO')
+    def test_w503_with_line_comment(self):
+        line = '(width == 0\n # this is comment\n + height == 0)\n'
+        fixed = '(width == 0 +\n # this is comment\n height == 0)\n'
+        with autopep8_context(line, options=['--select=W503', '--ignore=E']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_w504(self):
+        line = '(width == 0 +\n height == 0)\n'
+        fixed = '(width == 0\n + height == 0)\n'
+        with autopep8_context(line, options=['--select=W504', '--ignore=E']) as result:
+            self.assertEqual(fixed, result)
+
+    @unittest.skip('TODO')
+    def test_w504_with_line_comment(self):
+        line = '(width == 0 +\n # this is comment\n height == 0)\n'
+        fixed = '(width == 0\n # this is comment\n + height == 0)\n'
+        with autopep8_context(line, options=['--select=W504', '--ignore=E']) as result:
             self.assertEqual(fixed, result)
 
     def test_w601(self):
