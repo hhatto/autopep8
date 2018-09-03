@@ -1287,7 +1287,10 @@ class FixPEP8(object):
     def fix_w605(self, result):
         (line_index, _, target) = get_index_offset_contents(result,
                                                             self.source)
-        tokens = list(generate_tokens(target))
+        try:
+            tokens = list(generate_tokens(target))
+        except (SyntaxError, tokenize.TokenError):
+            return
         for (pos, _msg) in get_w605_position(tokens):
             self.source[line_index] = '{}r{}'.format(
                     target[:pos], target[pos:])
