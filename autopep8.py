@@ -1263,6 +1263,8 @@ class FixPEP8(object):
                     break
                 old = t
             break
+        if not operator_position:
+            return
         target_operator = target[operator_position[0]:operator_position[1]]
         if comment_index:
             self.source[line_index] = '{}{}'.format(
