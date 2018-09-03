@@ -4334,10 +4334,15 @@ X = (
         with autopep8_context(line, options=['--select=W503']) as result:
             self.assertEqual(fixed, result)
 
-    @unittest.skip('TODO')
     def test_w503_with_line_comment(self):
         line = '(width == 0\n # this is comment\n + height == 0)\n'
         fixed = '(width == 0 +\n # this is comment\n height == 0)\n'
+        with autopep8_context(line, options=['--select=W503', '--ignore=E']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_w503_with_line_comments(self):
+        line = '(width == 0\n # this is comment\n # comment2\n + height == 0)\n'
+        fixed = '(width == 0 +\n # this is comment\n # comment2\n height == 0)\n'
         with autopep8_context(line, options=['--select=W503', '--ignore=E']) as result:
             self.assertEqual(fixed, result)
 
