@@ -1190,12 +1190,16 @@ class FixPEP8(object):
             return
         # find comment
         comment_index = 0
+        comment_only_linenum = 0
         for i in range(5):
             # NOTE: try to parse code in 5 times
             if (line_index - i) < 0:
                 break
             from_index = line_index - i - 1
             to_index = line_index + 1
+            if self.source[from_index].lstrip()[0] == '#':
+                comment_only_linenum += 1
+                continue
             try:
                 ts = generate_tokens("".join(self.source[from_index:to_index]))
             except (SyntaxError, tokenize.TokenError):
@@ -1210,25 +1214,26 @@ class FixPEP8(object):
                 tts = ts[newline_index[-3]:]
             else:
                 tts = ts
-            old = []
+            old = None
             for t in tts:
-                if tokenize.COMMENT == t[0] and old:
+                if tokenize.COMMENT == t[0] and old and old[0] != tokenize.NL:
                     comment_index = old[3][1]
                     break
                 old = t
             break
         i = target.index(one_string_token)
+        fix_target_line = line_index - 1 - comment_only_linenum
         self.source[line_index] = '{}{}'.format(
             target[:i], target[i + len(one_string_token):].lstrip())
-        nl = find_newline(self.source[line_index - 1:line_index])
-        before_line = self.source[line_index - 1]
+        nl = find_newline(self.source[fix_target_line:line_index])
+        before_line = self.source[fix_target_line]
         bl = before_line.index(nl)
         if comment_index:
-            self.source[line_index - 1] = '{} {} {}'.format(
+            self.source[fix_target_line] = '{} {} {}'.format(
                 before_line[:comment_index], one_string_token,
                 before_line[comment_index + 1:])
         else:
-            self.source[line_index - 1] = '{} {}{}'.format(
+            self.source[fix_target_line] = '{} {}{}'.format(
                 before_line[:bl], one_string_token, before_line[bl:])
 
     def fix_w504(self, result):
