@@ -3224,14 +3224,17 @@ def code_match(code, select, ignore):
     return True
 
 
-def fix_code(source_io, options=None, encoding=None, apply_config=False):
+def fix_code(source, options=None, encoding=None, apply_config=False):
     """Return fixed source code.
 
     "encoding" will be used to decode "source" if it is a byte string.
 
     """
     options = _get_options(options, apply_config)
-    return fix_lines(source_io.readlines(), options=options)
+    if isinstance(source, unicode):
+        return fix_lines(source, options=options)
+    else:
+        return fix_lines(source.readlines(), options=options)
 
 
 def _get_options(raw_options, apply_config):
@@ -4036,7 +4039,10 @@ def main(argv=None, apply_config=True):
             assert not args.in_place
 
             from lib2to3.pgen2 import tokenize as lib2to3_tokenize
-            data = sys.stdin.buffer.read()
+            if hasattr(sys.stdin, 'buffer'):
+                data = sys.stdin.buffer.read()
+            else:
+                data = sys.stdin.read()
             bytes_stdin_io = io.BytesIO(data)
 
             # detect encoding dynamic
