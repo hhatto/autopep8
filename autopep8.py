@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Copyright (C) 2010-2011 Hideo Hattori
 # Copyright (C) 2011-2013 Hideo Hattori, Steven Myint
 # Copyright (C) 2013-2016 Hideo Hattori, Steven Myint, Bill Wendling
@@ -1286,8 +1284,8 @@ class FixPEP8(object):
         if m:
             next_line_indent = m.span()[1]
         self.source[line_index + 1] = '{}{} {}'.format(
-                next_line[:next_line_indent], target_operator,
-                next_line[next_line_indent:])
+            next_line[:next_line_indent], target_operator,
+            next_line[next_line_indent:])
 
     def fix_w605(self, result):
         (line_index, _, target) = get_index_offset_contents(result,
@@ -1298,7 +1296,7 @@ class FixPEP8(object):
             return
         for (pos, _msg) in get_w605_position(tokens):
             self.source[line_index] = '{}r{}'.format(
-                    target[:pos], target[pos:])
+                target[:pos], target[pos:])
 
 
 def get_w605_position(tokens):
@@ -1797,7 +1795,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
 
             second_indent = indentation
             if (first.rstrip().endswith('(') and
-               source[end_offset:].lstrip().startswith(')')):
+                    source[end_offset:].lstrip().startswith(')')):
                 pass
             elif first.rstrip().endswith('('):
                 second_indent += indent_word
@@ -3226,19 +3224,14 @@ def code_match(code, select, ignore):
     return True
 
 
-def fix_code(source, options=None, encoding=None, apply_config=False):
+def fix_code(source_io, options=None, encoding=None, apply_config=False):
     """Return fixed source code.
 
     "encoding" will be used to decode "source" if it is a byte string.
 
     """
     options = _get_options(options, apply_config)
-
-    if not isinstance(source, unicode):
-        source = source.decode(encoding or get_encoding())
-
-    sio = io.StringIO(source)
-    return fix_lines(sio.readlines(), options=options)
+    return fix_lines(source_io.readlines(), options=options)
 
 
 def _get_options(raw_options, apply_config):
@@ -3505,6 +3498,8 @@ def create_parser():
                         type=int, help=argparse.SUPPRESS)
     parser.add_argument('--hang-closing', action='store_true',
                         help='hang-closing option passed to pycodestyle')
+    parser.add_argument('--input-encoding', default='', help='specify intput encoding')
+    parser.add_argument('--output-encoding', default='', help='specify output encoding')
     parser.add_argument('files', nargs='*',
                         help="files to format or '-' for standard in")
 
@@ -4009,6 +4004,10 @@ def wrap_output(output, encoding):
                                       else output)
 
 
+def wrap_input(input, encoding):
+    return codecs.getreader(encoding)(input.buffer if hasattr(input, 'buffer') else input)
+
+
 def get_encoding():
     """Return preferred encoding."""
     return locale.getpreferredencoding() or sys.getdefaultencoding()
@@ -4038,12 +4037,20 @@ def main(argv=None, apply_config=True):
         if args.files == ['-']:
             assert not args.in_place
 
-            encoding = sys.stdin.encoding or get_encoding()
+            from lib2to3.pgen2 import tokenize as lib2to3_tokenize
+            data = sys.stdin.buffer.read()
+            bytes_stdin_io = io.BytesIO(data)
 
+            # detect encoding dynamic
+            input_encoding = lib2to3_tokenize.detect_encoding(bytes_stdin_io.readline)[0]
+            output_encoding = sys.stdin.encoding or get_encoding()
+
+            bytes_stdin_io = io.BytesIO(data)
+            stdin = wrap_input(bytes_stdin_io, input_encoding)
+            stdout = wrap_output(sys.stdout, output_encoding)
             # LineEndingWrapper is unnecessary here due to the symmetry between
             # standard in and standard out.
-            wrap_output(sys.stdout, encoding=encoding).write(
-                fix_code(sys.stdin.read(), args, encoding=encoding))
+            stdout.write(fix_code(stdin, args))
         else:
             if args.in_place or args.diff:
                 args.files = list(set(args.files))
