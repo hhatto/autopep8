@@ -3231,14 +3231,14 @@ def fix_code(source, options=None, encoding=None, apply_config=False):
 
     """
     options = _get_options(options, apply_config)
-    if not isinstance(source, unicode):
-        source = source.decode(encoding or get_encoding())
 
     if hasattr(source, 'readlines'):
         return fix_lines(source.readlines(), options=options)
-    else:
-        sio = io.StringIO(source)
-        return fix_lines(sio.readlines(), options=options)
+
+    if not isinstance(source, unicode):
+        source = source.decode(encoding or get_encoding())
+    sio = io.StringIO(source)
+    return fix_lines(sio.readlines(), options=options)
 
 
 def _get_options(raw_options, apply_config):
