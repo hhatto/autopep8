@@ -3498,8 +3498,6 @@ def create_parser():
                         type=int, help=argparse.SUPPRESS)
     parser.add_argument('--hang-closing', action='store_true',
                         help='hang-closing option passed to pycodestyle')
-    parser.add_argument('--input-encoding', default='', help='specify intput encoding')
-    parser.add_argument('--output-encoding', default='', help='specify output encoding')
     parser.add_argument('files', nargs='*',
                         help="files to format or '-' for standard in")
 
