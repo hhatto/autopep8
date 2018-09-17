@@ -4010,7 +4010,8 @@ def wrap_output(output, encoding):
 
 
 def wrap_input(input, encoding):
-    return codecs.getreader(encoding)(input.buffer if hasattr(input, 'buffer') else input)
+    reader_getter = codecs.getreader(encoding)
+    return reader_getter(input.buffer if hasattr(input, 'buffer') else input)
 
 
 def get_encoding():
@@ -4050,7 +4051,8 @@ def main(argv=None, apply_config=True):
             bytes_stdin_io = io.BytesIO(data)
 
             # detect encoding dynamic
-            input_encoding = lib2to3_tokenize.detect_encoding(bytes_stdin_io.readline)[0]
+            input_encoding = \
+                lib2to3_tokenize.detect_encoding(bytes_stdin_io.readline)[0]
             output_encoding = sys.stdin.encoding or get_encoding()
 
             bytes_stdin_io = io.BytesIO(data)
