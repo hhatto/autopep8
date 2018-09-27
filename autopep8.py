@@ -122,10 +122,10 @@ CODE_TO_2TO3 = {
 
 
 if sys.platform == 'win32':  # pragma: no cover
-    DEFAULT_CONFIG = os.path.expanduser(r'~\.pep8')
+    DEFAULT_CONFIG = os.path.expanduser(r'~\.pycodestyle')
 else:
     DEFAULT_CONFIG = os.path.join(os.getenv('XDG_CONFIG_HOME') or
-                                  os.path.expanduser('~/.config'), 'pep8')
+                                  os.path.expanduser('~/.config'), 'pycodestyle')
 PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8')
 
 
