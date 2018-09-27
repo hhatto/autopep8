@@ -125,7 +125,8 @@ if sys.platform == 'win32':  # pragma: no cover
     DEFAULT_CONFIG = os.path.expanduser(r'~\.pycodestyle')
 else:
     DEFAULT_CONFIG = os.path.join(os.getenv('XDG_CONFIG_HOME') or
-                                  os.path.expanduser('~/.config'), 'pycodestyle')
+                                  os.path.expanduser('~/.config'),
+                                  'pycodestyle')
 PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8', '.flake8')
 
 
@@ -1286,8 +1287,8 @@ class FixPEP8(object):
         if m:
             next_line_indent = m.span()[1]
         self.source[line_index + 1] = '{}{} {}'.format(
-                next_line[:next_line_indent], target_operator,
-                next_line[next_line_indent:])
+            next_line[:next_line_indent], target_operator,
+            next_line[next_line_indent:])
 
     def fix_w605(self, result):
         (line_index, _, target) = get_index_offset_contents(result,
@@ -1298,7 +1299,7 @@ class FixPEP8(object):
             return
         for (pos, _msg) in get_w605_position(tokens):
             self.source[line_index] = '{}r{}'.format(
-                    target[:pos], target[pos:])
+                target[:pos], target[pos:])
 
 
 def get_w605_position(tokens):
@@ -1797,7 +1798,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
 
             second_indent = indentation
             if (first.rstrip().endswith('(') and
-               source[end_offset:].lstrip().startswith(')')):
+                    source[end_offset:].lstrip().startswith(')')):
                 pass
             elif first.rstrip().endswith('('):
                 second_indent += indent_word
