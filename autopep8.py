@@ -126,7 +126,7 @@ if sys.platform == 'win32':  # pragma: no cover
 else:
     DEFAULT_CONFIG = os.path.join(os.getenv('XDG_CONFIG_HOME') or
                                   os.path.expanduser('~/.config'), 'pycodestyle')
-PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8')
+PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8', '.flake8')
 
 
 MAX_PYTHON_FILE_DETECTION_BYTES = 1024
