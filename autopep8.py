@@ -3342,8 +3342,7 @@ def fix_file(filename, options=None, output=None, apply_config=False):
         if output:
             output.write(diff)
             output.flush()
-        else:
-            return diff
+        return diff
     elif options.in_place:
         fp = open_with_encoding(filename, encoding=encoding, mode='w')
         fp.write(fixed_source)
@@ -3944,7 +3943,7 @@ def _fix_file(parameters):
     if parameters[1].verbose:
         print('[file:{}]'.format(parameters[0]), file=sys.stderr)
     try:
-        fix_file(*parameters)
+        return fix_file(*parameters)
     except IOError as error:
         print(unicode(error), file=sys.stderr)
 
@@ -3955,15 +3954,18 @@ def fix_multiple_files(filenames, options, output=None):
     Optionally fix files recursively.
 
     """
+    results = []
     filenames = find_files(filenames, options.recursive, options.exclude)
     if options.jobs > 1:
         import multiprocessing
         pool = multiprocessing.Pool(options.jobs)
-        pool.map(_fix_file,
-                 [(name, options) for name in filenames])
+        pool.map(_fix_file, [(name, options) for name in filenames])
     else:
         for name in filenames:
-            _fix_file((name, options, output))
+            ret = _fix_file((name, options, output))
+            if ret:
+                results.append(ret)
+    return results
 
 
 def is_python_file(filename):
@@ -4051,7 +4053,9 @@ def main(argv=None, apply_config=True):
                 assert len(args.files) == 1
                 assert not args.recursive
 
-            fix_multiple_files(args.files, args, sys.stdout)
+            ret = fix_multiple_files(args.files, args, sys.stdout)
+            if args.diff and len(ret) > 0:
+                return 1
     except KeyboardInterrupt:
         return 1  # pragma: no cover
 
