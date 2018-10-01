@@ -435,6 +435,14 @@ class FixPEP8(object):
         self.options = options
         self.indent_word = _get_indentword(''.join(self.source))
 
+        # collect imports line
+        self.imports = {}
+        for i, line in enumerate(self.source):
+            if line.find("import ") == 0 or line.find("from ") == 0:
+                if line not in self.imports:
+                    # collect only import statements that first appeared
+                    self.imports[line] = i
+
         self.long_line_ignore_cache = (
             set() if long_line_ignore_cache is None
             else long_line_ignore_cache)
@@ -855,9 +863,11 @@ class FixPEP8(object):
     def fix_e402(self, result):
         (line_index, offset, target) = get_index_offset_contents(result,
                                                                  self.source)
-        mod_offset = get_module_imports_on_top_of_file(self.source, line_index)
-        self.source[mod_offset] = target + self.source[mod_offset]
-        self.source[line_index] = target[-1]
+        if not (target in self.imports and self.imports[target] != line_index):
+            mod_offset = get_module_imports_on_top_of_file(self.source,
+                                                           line_index)
+            self.source[mod_offset] = target + self.source[mod_offset]
+        self.source[line_index] = ''
 
     def fix_long_line_logically(self, result, logical):
         """Try to make lines fit within --max-line-length characters."""
