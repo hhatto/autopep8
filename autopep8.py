@@ -438,10 +438,10 @@ class FixPEP8(object):
         # collect imports line
         self.imports = {}
         for i, line in enumerate(self.source):
-            if line.find("import ") == 0 or line.find("from ") == 0:
-                if line not in self.imports:
-                    # collect only import statements that first appeared
-                    self.imports[line] = i
+            if (line.find("import ") == 0 or line.find("from ") == 0) and \
+                    line not in self.imports:
+                # collect only import statements that first appeared
+                self.imports[line] = i
 
         self.long_line_ignore_cache = (
             set() if long_line_ignore_cache is None
