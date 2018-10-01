@@ -1,7 +1,5 @@
 #: E721
 import types
-import types
-import types
 if isinstance(res, type(42)):
     pass
 #: E721
@@ -9,11 +7,9 @@ if not isinstance(res, type("")):
     pass
 #: E721
 
-
 if res == types.IntType:
     pass
 #: E721
-
 
 if not isinstance(res, types.ListType):
     pass
@@ -42,7 +38,6 @@ assert isinstance(res, type((0, )))
 #:
 
 #: Okay
-
 
 if isinstance(res, int):
     pass

@@ -2410,6 +2410,12 @@ a = 1     # (E305)
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e402_duplicate_module(self):
+        line = 'a = 1\nimport os\nprint(os)\nimport os\n'
+        fixed = 'import os\na = 1\nprint(os)\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_basic(self):
         line = """\
 
