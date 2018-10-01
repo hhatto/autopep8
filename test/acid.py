@@ -60,7 +60,7 @@ def run(filename, command, max_line_length=79,
         line_range = [first, random.randint(first, line_range[1])]
 
     command = (shlex.split(command) + (['--verbose'] if verbose else []) +
-               ['--max-line-length={0}'.format(max_line_length),
+               ['--max-line-length={}'.format(max_line_length),
                 '--ignore=' + ignore, filename] +
                aggressive * ['--aggressive'] +
                (['--experimental'] if experimental else []) +
@@ -122,8 +122,8 @@ def process_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--command',
-        default='{0} {1}'.format(sys.executable,
-                                 os.path.join(ROOT_PATH, 'autopep8.py')),
+        default='{} {}'.format(sys.executable,
+                               os.path.join(ROOT_PATH, 'autopep8.py')),
         help='autopep8 command (default: %(default)s)')
     parser.add_argument('--ignore',
                         help='comma-separated errors to ignore',

@@ -2,6 +2,10 @@
 autopep8
 ========
 
+.. image:: https://img.shields.io/pypi/v/autopep8.svg
+    :target: https://pypi.org/project/autopep8/
+    :alt: PyPI Version
+
 .. image:: https://travis-ci.org/hhatto/autopep8.svg?branch=master
     :target: https://travis-ci.org/hhatto/autopep8
     :alt: Build status
@@ -107,7 +111,6 @@ After running autopep8.
 
 
     class Example3(object):
-
         def __init__(self, bar):
             # Comments should have a space after the hash.
             if bar:
@@ -127,7 +130,7 @@ Options::
                     [--ignore-local-config] [-r] [-j n] [-p n] [-a]
                     [--experimental] [--exclude globs] [--list-fixes]
                     [--ignore errors] [--select errors] [--max-line-length n]
-                    [--line-range line line]
+                    [--line-range line line] [--hang-closing]
                     [files [files ...]]
 
     Automatically formats Python code to conform to the PEP 8 style guide.
@@ -163,13 +166,15 @@ Options::
       --exclude globs       exclude file/directory names that match these comma-
                             separated globs
       --list-fixes          list codes for fixes; used by --ignore and --select
-      --ignore errors       do not fix these errors/warnings (default: E24)
+      --ignore errors       do not fix these errors/warnings (default:
+                            E226,E24,W503)
       --select errors       fix only these errors/warnings (e.g. E4,W)
       --max-line-length n   set maximum allowed line length (default: 79)
       --line-range line line, --range line line
                             only fix errors found within this inclusive range of
                             line numbers (e.g. 1 99); line numbers are indexed at
                             1
+      --hang-closing        hang-closing option passed to pycodestyle
 
 
 Features
@@ -198,6 +203,7 @@ autopep8 fixes the following issues_ reported by pycodestyle_::
     E241 - Fix extraneous whitespace around keywords.
     E242 - Remove extraneous whitespace around operator.
     E251 - Remove whitespace around parameter '=' sign.
+    E252 - Missing whitespace around parameter equals.
     E26  - Fix spacing after comment hash for inline comments.
     E265 - Fix spacing after comment hash for block comments.
     E27  - Fix extraneous whitespace around keywords.
@@ -229,8 +235,8 @@ autopep8 fixes the following issues_ reported by pycodestyle_::
 autopep8 also fixes some issues not found by pycodestyle_.
 
 - Correct deprecated or non-idiomatic Python code (via ``lib2to3``). Use this
-  for making Python 2.6 and 2.7 code more compatible with Python 3. (This is
-  triggered if ``W690`` is enabled.)
+  for making Python 2.7 code more compatible with Python 3. (This is triggered
+  if ``W690`` is enabled.)
 - Normalize files with mixed line endings.
 - Put a blank line between a class docstring and its first method
   declaration. (Enabled with ``E301``.)
@@ -317,9 +323,9 @@ Testing
 Test cases are in ``test/test_autopep8.py``. They can be run directly via
 ``python test/test_autopep8.py`` or via tox_. The latter is useful for
 testing against multiple Python interpreters. (We currently test against
-CPython versions 2.6, 2.7, 3.3, 3.4, 3.5 and 3.6. We also test against PyPy.)
+CPython versions 2.7, 3.4, 3.5, 3.6 and 3.7. We also test against PyPy.)
 
-.. _`tox`: https://pypi.python.org/pypi/tox
+.. _`tox`: https://pypi.org/project/tox/
 
 Broad spectrum testing is available via ``test/acid.py``. This script runs
 autopep8 against Python code and checks for correctness and completeness of the
@@ -351,7 +357,7 @@ Links
 * `Travis CI`_
 * Coveralls_
 
-.. _PyPI: https://pypi.python.org/pypi/autopep8/
+.. _PyPI: https://pypi.org/project/autopep8/
 .. _GitHub: https://github.com/hhatto/autopep8
 .. _`Travis CI`: https://travis-ci.org/hhatto/autopep8
 .. _`Coveralls`: https://coveralls.io/r/hhatto/autopep8

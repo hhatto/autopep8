@@ -66,7 +66,7 @@ from os import open as os_open
 from os.path import isdir, split
 
 # Avoid try/except due to potential problems with delayed import mechanisms.
-if sys.version_info >= (3, 3) and sys.implementation.name == "cpython":
+if sys.version_info.major >= 3 and sys.implementation.name == "cpython":
     import importlib._bootstrap as importlib_bootstrap
 else:
     importlib_bootstrap = None
@@ -256,12 +256,7 @@ def get_build_platform():
     XXX Currently this is the same as ``distutils.util.get_platform()``, but it
     needs some hacks for Linux and Mac OS X.
     """
-    try:
-        # Python 2.7 or >=3.2
-        from sysconfig import get_platform
-    except ImportError:
-        from distutils.util import get_platform
-
+    from sysconfig import get_platform
     plat = get_platform()
     if sys.platform == "darwin" and not plat.startswith('macosx-'):
         try:
@@ -1297,7 +1292,7 @@ class NullProvider:
     def has_metadata(self, name):
         return self.egg_info and self._has(self._fn(self.egg_info,name))
 
-    if sys.version_info <= (3,):
+    if sys.version_info.major == 2:
         def get_metadata(self, name):
             if not self.egg_info:
                 return ""

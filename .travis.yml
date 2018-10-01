@@ -1,17 +1,12 @@
 language: python
 
 python:
-    - "2.6"
     - "2.7"
-    - "3.3"
     - "3.4"
     - "3.5"
     - "3.6"
     - "pypy"
-    # commenting "pypy3" because it's been broken on TravisCI for several months
-    # using alpha target instead
-    # https://github.com/travis-ci/travis-ci/issues/6277
-    - "pypy3.3-5.5-alpha"  #- "pypy3" 
+    - "pypy3.5"
 
 env:
     - LANG=
@@ -21,9 +16,20 @@ env:
 matrix:
     allow_failures:
         - env: PEP8_VERSION=github
+    include:
+        - python: 3.7
+          dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
+          sudo: required  # required for Python 3.7 (travis-ci/travis-ci#9069)
+        - python: 3.7
+          dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
+          sudo: required  # required for Python 3.7 (travis-ci/travis-ci#9069)
+          env: PEP8_VERSION=pypi
+        - python: 3.7
+          dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
+          sudo: required  # required for Python 3.7 (travis-ci/travis-ci#9069)
+          env: PEP8_VERSION=github
 
 install:
-    - if [ "$TRAVIS_PYTHON_VERSION" == "2.6" ]; then pip install unittest2; fi
     - if [ "$PEP8_VERSION" == "github" ]; then pip install git+https://github.com/PyCQA/pycodestyle; fi
     - python setup.py build --build-base=".build-$TRAVIS_PYTHON_VERSION" install
 
@@ -32,7 +38,7 @@ script:
     - python test/acid.py -aaa --experimental test/example.py
     - python test/acid.py -aaa --experimental test/example_with_reduce.py
 
-    - if [ "$TRAVIS_PYTHON_VERSION" == "3.3" ]; then python -m doctest -v README.rst; fi
+    - if [ "$TRAVIS_PYTHON_VERSION" == "3.7" ]; then python -m doctest -v README.rst; fi
 
     - if [[ "$TRAVIS_PYTHON_VERSION" != "pypy"* ]]; then pycodestyle autopep8.py; fi
     - if [[ "$TRAVIS_PYTHON_VERSION" != "pypy"* ]]; then pip install pyflakes; pyflakes autopep8.py; fi
