@@ -5,9 +5,9 @@ if not header or header[:6] != 'bytes=': return
 #: E702
 a = False; b = True
 #: E702
-import bdist_egg; bdist_egg.write_safety_flag(cmd.egg_info, safe)
+print(1); bdist_egg.write_safety_flag(cmd.egg_info, safe)
 #: E703
-import shlex;
+print(1);
 #: E702 E703
 del a[:]; a.append(42);
 #:
