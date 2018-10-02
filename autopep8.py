@@ -3564,6 +3564,10 @@ def create_parser():
                         type=int, help=argparse.SUPPRESS)
     parser.add_argument('--hang-closing', action='store_true',
                         help='hang-closing option passed to pycodestyle')
+    parser.add_argument('--exit-code', action='store_true',
+                        help='change to behavior of exit code.'
+                             '(0: no differences, 1: error exit, '
+                             '2: exists differences)')
     parser.add_argument('files', nargs='*',
                         help="files to format or '-' for standard in")
 
