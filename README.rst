@@ -342,7 +342,7 @@ configuration file.
 
 ``pep8``, ``pycodestyle``, and ``flake8`` can be used as a section.
 
-configuration file example:
+configuration file example::
 
     [pycodestyle]
     max_line_length = 120
