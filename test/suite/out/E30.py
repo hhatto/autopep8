@@ -1,4 +1,7 @@
 #: E301:5:5
+import sys
+
+
 class X:
 
     def a():
@@ -34,9 +37,7 @@ def a():
 def _main():
     pass
 
-
 #: E302:2:1
-import sys
 
 
 def get_sys_path():
