@@ -122,11 +122,18 @@ CODE_TO_2TO3 = {
 
 
 if sys.platform == 'win32':  # pragma: no cover
-    DEFAULT_CONFIG = os.path.expanduser(r'~\.pep8')
+    DEFAULT_CONFIG = os.path.expanduser(r'~\.pycodestyle')
 else:
     DEFAULT_CONFIG = os.path.join(os.getenv('XDG_CONFIG_HOME') or
-                                  os.path.expanduser('~/.config'), 'pep8')
-PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8')
+                                  os.path.expanduser('~/.config'),
+                                  'pycodestyle')
+# fallback, use .pep8
+if not os.path.exists(DEFAULT_CONFIG):  # pragma: no cover
+    if sys.platform == 'win32':
+        DEFAULT_CONFIG = os.path.expanduser(r'~\.pep8')
+    else:
+        DEFAULT_CONFIG = os.path.join(os.path.expanduser('~/.config'), 'pep8')
+PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8', '.flake8')
 
 
 MAX_PYTHON_FILE_DETECTION_BYTES = 1024
@@ -411,7 +418,7 @@ class FixPEP8(object):
         - e261,e262
         - e271,e272,e273,e274
         - e301,e302,e303,e304,e305,e306
-        - e401
+        - e401,e402
         - e502
         - e701,e702,e703,e704
         - e711,e712,e713,e714
@@ -434,6 +441,14 @@ class FixPEP8(object):
             self.source = sio.readlines()
         self.options = options
         self.indent_word = _get_indentword(''.join(self.source))
+
+        # collect imports line
+        self.imports = {}
+        for i, line in enumerate(self.source):
+            if (line.find("import ") == 0 or line.find("from ") == 0) and \
+                    line not in self.imports:
+                # collect only import statements that first appeared
+                self.imports[line] = i
 
         self.long_line_ignore_cache = (
             set() if long_line_ignore_cache is None
@@ -851,6 +866,15 @@ class FixPEP8(object):
         fixed = (target[:offset].rstrip('\t ,') + '\n' +
                  indentation + 'import ' + target[offset:].lstrip('\t ,'))
         self.source[line_index] = fixed
+
+    def fix_e402(self, result):
+        (line_index, offset, target) = get_index_offset_contents(result,
+                                                                 self.source)
+        if not (target in self.imports and self.imports[target] != line_index):
+            mod_offset = get_module_imports_on_top_of_file(self.source,
+                                                           line_index)
+            self.source[mod_offset] = target + self.source[mod_offset]
+        self.source[line_index] = ''
 
     def fix_long_line_logically(self, result, logical):
         """Try to make lines fit within --max-line-length characters."""
@@ -1286,8 +1310,8 @@ class FixPEP8(object):
         if m:
             next_line_indent = m.span()[1]
         self.source[line_index + 1] = '{}{} {}'.format(
-                next_line[:next_line_indent], target_operator,
-                next_line[next_line_indent:])
+            next_line[:next_line_indent], target_operator,
+            next_line[next_line_indent:])
 
     def fix_w605(self, result):
         (line_index, _, target) = get_index_offset_contents(result,
@@ -1298,7 +1322,7 @@ class FixPEP8(object):
             return
         for (pos, _msg) in get_w605_position(tokens):
             self.source[line_index] = '{}r{}'.format(
-                    target[:pos], target[pos:])
+                target[:pos], target[pos:])
 
 
 def get_w605_position(tokens):
@@ -1333,6 +1357,42 @@ def get_w605_position(tokens):
                             string[pos],
                         )
                     pos = string.find('\\', pos + 1)
+
+
+def get_module_imports_on_top_of_file(source, import_line_index):
+    """return import or from keyword position
+
+    example:
+      > 0: import sys
+        1: import os
+        2:
+        3: def function():
+    """
+    def is_string_literal(line):
+        if line[0] in 'uUbB':
+            line = line[1:]
+        if line and line[0] in 'rR':
+            line = line[1:]
+        return line and (line[0] == '"' or line[0] == "'")
+    allowed_try_keywords = ('try', 'except', 'else', 'finally')
+    for cnt, line in enumerate(source):
+        if not line.rstrip():
+            continue
+        elif line.startswith('#'):
+            continue
+        if line.startswith('import ') or line.startswith('from '):
+            if cnt == import_line_index:
+                continue
+            return cnt
+        elif pycodestyle.DUNDER_REGEX.match(line):
+            continue
+        elif any(line.startswith(kw) for kw in allowed_try_keywords):
+            continue
+        elif is_string_literal(line):
+            return cnt
+        else:
+            return cnt
+    return 0
 
 
 def get_index_offset_contents(result, source):
@@ -1797,7 +1857,7 @@ def _shorten_line(tokens, source, indentation, indent_word,
 
             second_indent = indentation
             if (first.rstrip().endswith('(') and
-               source[end_offset:].lstrip().startswith(')')):
+                    source[end_offset:].lstrip().startswith(')')):
                 pass
             elif first.rstrip().endswith('('):
                 second_indent += indent_word
