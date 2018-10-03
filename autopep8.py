@@ -3405,18 +3405,22 @@ def fix_file(filename, options=None, output=None, apply_config=False):
         if output:
             output.write(diff)
             output.flush()
+        return diff
     elif options.in_place:
         fp = open_with_encoding(filename, encoding=encoding, mode='w')
         fp.write(fixed_source)
         fp.close()
+        original = "".join(original_source).splitlines()
+        fixed = fixed_source.splitlines()
+        if original != fixed:
+            return fixed_source
+        else:
+            return None
     else:
         if output:
             output.write(fixed_source)
             output.flush()
-    original = "".join(original_source).splitlines()
-    fixed = fixed_source.splitlines()
-    if original != fixed:
-        return fixed_source
+    return fixed_source
 
 
 def global_fixes():
@@ -4032,8 +4036,15 @@ def fix_multiple_files(filenames, options, output=None):
     else:
         for name in filenames:
             ret = _fix_file((name, options, output))
-            if ret:
-                results.append(ret)
+            if ret is None:
+                continue
+            if options.diff:
+                if ret != '':
+                    results.append(ret)
+            else:
+                original_source = readlines_from_file(name)
+                if "".join(original_source).splitlines() != ret.splitlines():
+                    results.append(ret)
     return results
 
 
