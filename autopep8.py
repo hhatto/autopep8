@@ -82,6 +82,9 @@ COMPARE_NEGATIVE_REGEX_THROUGH = re.compile(r'\b(not\s+in|is\s+not)\s')
 BARE_EXCEPT_REGEX = re.compile(r'except\s*:')
 STARTSWITH_DEF_REGEX = re.compile(r'^(async\s+def|def)\s.*\):')
 
+EXIT_CODE_OK = 0
+EXIT_CODE_ERROR = 1
+EXIT_CODE_EXISTS_DIFF = 2
 
 # For generating line shortening candidates.
 SHORTEN_OPERATOR_GROUPS = frozenset([
@@ -3402,7 +3405,6 @@ def fix_file(filename, options=None, output=None, apply_config=False):
         if output:
             output.write(diff)
             output.flush()
-        return diff
     elif options.in_place:
         fp = open_with_encoding(filename, encoding=encoding, mode='w')
         fp.write(fixed_source)
@@ -3411,8 +3413,10 @@ def fix_file(filename, options=None, output=None, apply_config=False):
         if output:
             output.write(fixed_source)
             output.flush()
-        else:
-            return fixed_source
+    original = "".join(original_source).splitlines()
+    fixed = fixed_source.splitlines()
+    if original != fixed:
+        return fixed_source
 
 
 def global_fixes():
@@ -4023,7 +4027,8 @@ def fix_multiple_files(filenames, options, output=None):
     if options.jobs > 1:
         import multiprocessing
         pool = multiprocessing.Pool(options.jobs)
-        pool.map(_fix_file, [(name, options) for name in filenames])
+        ret = pool.map(_fix_file, [(name, options) for name in filenames])
+        results.extend(filter(lambda x: x is not None, ret))
     else:
         for name in filenames:
             ret = _fix_file((name, options, output))
@@ -4099,7 +4104,7 @@ def main(argv=None, apply_config=True):
             for code, description in sorted(supported_fixes()):
                 print('{code} - {description}'.format(
                     code=code, description=description))
-            return 0
+            return EXIT_CODE_OK
 
         if args.files == ['-']:
             assert not args.in_place
@@ -4118,10 +4123,10 @@ def main(argv=None, apply_config=True):
                 assert not args.recursive
 
             ret = fix_multiple_files(args.files, args, sys.stdout)
-            if args.diff and len(ret) > 0:
-                return 1
+            if args.exit_code and len(ret) > 0:
+                return EXIT_CODE_EXISTS_DIFF
     except KeyboardInterrupt:
-        return 1  # pragma: no cover
+        return EXIT_CODE_ERROR  # pragma: no cover
 
 
 class CachedTokenizer(object):
