@@ -3415,7 +3415,7 @@ def fix_file(filename, options=None, output=None, apply_config=False):
         if original != fixed:
             return fixed_source
         else:
-            return None
+            return ''
     else:
         if output:
             output.write(fixed_source)
@@ -4038,7 +4038,7 @@ def fix_multiple_files(filenames, options, output=None):
             ret = _fix_file((name, options, output))
             if ret is None:
                 continue
-            if options.diff:
+            if options.diff or options.in_place:
                 if ret != '':
                     results.append(ret)
             else:
