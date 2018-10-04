@@ -82,6 +82,9 @@ COMPARE_NEGATIVE_REGEX_THROUGH = re.compile(r'\b(not\s+in|is\s+not)\s')
 BARE_EXCEPT_REGEX = re.compile(r'except\s*:')
 STARTSWITH_DEF_REGEX = re.compile(r'^(async\s+def|def)\s.*\):')
 
+EXIT_CODE_OK = 0
+EXIT_CODE_ERROR = 1
+EXIT_CODE_EXISTS_DIFF = 2
 
 # For generating line shortening candidates.
 SHORTEN_OPERATOR_GROUPS = frozenset([
@@ -3402,18 +3405,22 @@ def fix_file(filename, options=None, output=None, apply_config=False):
         if output:
             output.write(diff)
             output.flush()
-        else:
-            return diff
+        return diff
     elif options.in_place:
         fp = open_with_encoding(filename, encoding=encoding, mode='w')
         fp.write(fixed_source)
         fp.close()
+        original = "".join(original_source).splitlines()
+        fixed = fixed_source.splitlines()
+        if original != fixed:
+            return fixed_source
+        else:
+            return ''
     else:
         if output:
             output.write(fixed_source)
             output.flush()
-        else:
-            return fixed_source
+    return fixed_source
 
 
 def global_fixes():
@@ -3565,6 +3572,11 @@ def create_parser():
                         type=int, help=argparse.SUPPRESS)
     parser.add_argument('--hang-closing', action='store_true',
                         help='hang-closing option passed to pycodestyle')
+    parser.add_argument('--exit-code', action='store_true',
+                        help='change to behavior of exit code.'
+                             ' default behavior of return value, 0 is no '
+                             'differences, 1 is error exit. return 2 when'
+                             ' add this option. 2 is exists differences.')
     parser.add_argument('files', nargs='*',
                         help="files to format or '-' for standard in")
 
@@ -4004,7 +4016,7 @@ def _fix_file(parameters):
     if parameters[1].verbose:
         print('[file:{}]'.format(parameters[0]), file=sys.stderr)
     try:
-        fix_file(*parameters)
+        return fix_file(*parameters)
     except IOError as error:
         print(unicode(error), file=sys.stderr)
 
@@ -4015,15 +4027,26 @@ def fix_multiple_files(filenames, options, output=None):
     Optionally fix files recursively.
 
     """
+    results = []
     filenames = find_files(filenames, options.recursive, options.exclude)
     if options.jobs > 1:
         import multiprocessing
         pool = multiprocessing.Pool(options.jobs)
-        pool.map(_fix_file,
-                 [(name, options) for name in filenames])
+        ret = pool.map(_fix_file, [(name, options) for name in filenames])
+        results.extend(filter(lambda x: x is not None, ret))
     else:
         for name in filenames:
-            _fix_file((name, options, output))
+            ret = _fix_file((name, options, output))
+            if ret is None:
+                continue
+            if options.diff or options.in_place:
+                if ret != '':
+                    results.append(ret)
+            else:
+                original_source = readlines_from_file(name)
+                if "".join(original_source).splitlines() != ret.splitlines():
+                    results.append(ret)
+    return results
 
 
 def is_python_file(filename):
@@ -4093,7 +4116,7 @@ def main(argv=None, apply_config=True):
             for code, description in sorted(supported_fixes()):
                 print('{code} - {description}'.format(
                     code=code, description=description))
-            return 0
+            return EXIT_CODE_OK
 
         if args.files == ['-']:
             assert not args.in_place
@@ -4111,9 +4134,11 @@ def main(argv=None, apply_config=True):
                 assert len(args.files) == 1
                 assert not args.recursive
 
-            fix_multiple_files(args.files, args, sys.stdout)
+            ret = fix_multiple_files(args.files, args, sys.stdout)
+            if args.exit_code and len(ret) > 0:
+                return EXIT_CODE_EXISTS_DIFF
     except KeyboardInterrupt:
-        return 1  # pragma: no cover
+        return EXIT_CODE_ERROR  # pragma: no cover
 
 
 class CachedTokenizer(object):
