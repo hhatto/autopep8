@@ -130,7 +130,7 @@ Options::
                     [--ignore-local-config] [-r] [-j n] [-p n] [-a]
                     [--experimental] [--exclude globs] [--list-fixes]
                     [--ignore errors] [--select errors] [--max-line-length n]
-                    [--line-range line line] [--hang-closing]
+                    [--line-range line line] [--hang-closing] [--exit-code]
                     [files [files ...]]
 
     Automatically formats Python code to conform to the PEP 8 style guide.
@@ -167,7 +167,7 @@ Options::
                             separated globs
       --list-fixes          list codes for fixes; used by --ignore and --select
       --ignore errors       do not fix these errors/warnings (default:
-                            E226,E24,W503)
+                            E226,E24,W50,W690)
       --select errors       fix only these errors/warnings (e.g. E4,W)
       --max-line-length n   set maximum allowed line length (default: 79)
       --line-range line line, --range line line
@@ -175,6 +175,10 @@ Options::
                             line numbers (e.g. 1 99); line numbers are indexed at
                             1
       --hang-closing        hang-closing option passed to pycodestyle
+      --exit-code           change to behavior of exit code. default behavior of
+                            return value, 0 is no differences, 1 is error exit.
+                            return 2 when add this option. 2 is exists
+                            differences.
 
 
 Features
