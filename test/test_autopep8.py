@@ -4364,6 +4364,25 @@ X = (
         with autopep8_context(line, options=['--select=W504', '--ignore=E']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w504_with_e265_ignore_option(self):
+        line = '(width == 0 +\n height == 0)\n'
+        with autopep8_context(line, options=['--ignore=E265']) as result:
+            self.assertEqual(line, result)
+
+    def test_w504_with_e265_ignore_option_regression(self):
+        line = """\
+if True:
+    if True:
+        if (
+                link.is_wheel and
+                isinstance(link.comes_from, HTMLPage) and
+                link.comes_from.url.startswith(index_url)
+        ):
+            _store_wheel_in_cache(file_path, index_url)
+"""
+        with autopep8_context(line, options=['--ignore=E265']) as result:
+            self.assertEqual(line, result)
+
     @unittest.skip('TODO')
     def test_w504_with_line_comment(self):
         line = '(width == 0 +\n # this is comment\n height == 0)\n'
