@@ -1278,7 +1278,10 @@ class FixPEP8(object):
             newline_count = 0
             newline_index = []
             for index, t in enumerate(ts):
-                if t[0] == tokenize.OP:
+                if t[0] == tokenize.OP and t[1] not in ".,(){}":
+                    if t[2][0] == 1 and t[3][0] == 1:
+                        operator_position = (t[2][1], t[3][1])
+                elif t[0] == tokenize.NAME and t[1] in ("and", "or"):
                     if t[2][0] == 1 and t[3][0] == 1:
                         operator_position = (t[2][1], t[3][1])
                 elif t[0] in (tokenize.NEWLINE, tokenize.NL):
