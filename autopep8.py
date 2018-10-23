@@ -1217,16 +1217,24 @@ class FixPEP8(object):
             return
         # find comment
         comment_index = 0
+        found_not_comment_only_line = False
         comment_only_linenum = 0
         for i in range(5):
             # NOTE: try to parse code in 5 times
             if (line_index - i) < 0:
                 break
             from_index = line_index - i - 1
+            if from_index < 0 or len(self.source) <= from_index:
+                break
             to_index = line_index + 1
-            if self.source[from_index].lstrip()[0] == '#':
+            strip_line = self.source[from_index].lstrip()
+            if (
+                not found_not_comment_only_line and
+                strip_line and strip_line[0] == '#'
+            ):
                 comment_only_linenum += 1
                 continue
+            found_not_comment_only_line = True
             try:
                 ts = generate_tokens("".join(self.source[from_index:to_index]))
             except (SyntaxError, tokenize.TokenError):
