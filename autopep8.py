@@ -1228,7 +1228,10 @@ class FixPEP8(object):
                 break
             to_index = line_index + 1
             strip_line = self.source[from_index].lstrip()
-            if not found_not_comment_only_line and strip_line and strip_line[0] == '#':
+            if (
+                not found_not_comment_only_line and
+                strip_line and strip_line[0] == '#'
+            ):
                 comment_only_linenum += 1
                 continue
             found_not_comment_only_line = True
