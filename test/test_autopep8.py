@@ -4352,6 +4352,26 @@ X = (
         with autopep8_context(line, options=['--select=W503', '--ignore=E']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w503_with_empty_line(self):
+        line = """\
+
+# this is comment
+a = 2
+b = (1 +
+     2 +
+     3) / 2.0
+"""
+        fixed = """\
+
+# this is comment
+a = 2
+b = (1 +
+     2 +
+     3) / 2.0
+"""
+        with autopep8_context(line, options=['--ignore=E721']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w503_with_line_comments(self):
         line = '(width == 0\n # this is comment\n # comment2\n + height == 0)\n'
         fixed = '(width == 0 +\n # this is comment\n # comment2\n height == 0)\n'
