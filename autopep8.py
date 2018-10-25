@@ -1251,6 +1251,10 @@ class FixPEP8(object):
                 tts = ts
             old = None
             for t in tts:
+                if t[0] in (tokenize.NEWLINE, tokenize.NL):
+                    newline_count -= 1
+                if newline_count <= 1:
+                    break
                 if tokenize.COMMENT == t[0] and old and old[0] != tokenize.NL:
                     comment_index = old[3][1]
                     break

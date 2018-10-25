@@ -4302,6 +4302,24 @@ else:
         with autopep8_context(line, options=['--select=W503']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w503_with_comment_into_point_out_line(self):
+        line = """\
+def test():
+    return (
+        True not in []
+        and False  # comment required
+    )
+"""
+        fixed = """\
+def test():
+    return (
+        True not in [] and
+        False  # comment required
+    )
+"""
+        with autopep8_context(line, options=['--select=W503']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w503_with_comment_double(self):
         line = """\
 (
