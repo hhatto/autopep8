@@ -2416,6 +2416,29 @@ a = 1     # (E305)
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e402_import_some_modules(self):
+        line = """\
+a = 1
+from csv import (
+    reader,
+    writer,
+)
+import os
+print(os, reader, writer)
+import os
+"""
+        fixed = """\
+import os
+from csv import (
+    reader,
+    writer,
+)
+a = 1
+print(os, reader, writer)
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_basic(self):
         line = """\
 
