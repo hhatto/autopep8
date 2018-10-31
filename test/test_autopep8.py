@@ -4734,6 +4734,25 @@ raise ValueError("error")
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w605_identical_token(self):
+        # ***NOTE***: The --pep8-passes option is requred to prevent an infinite loop in
+        # the old, failing code. DO NOT REMOVE.
+        line = "escape = foo('\.bar', '\.kilroy')\n"
+        fixed = "escape = foo(r'\.bar', r'\.kilroy')\n"
+        with autopep8_context(line, options=['--aggressive', '--pep8-passes', '5']) as result:
+            self.assertEqual(fixed, result, "Two tokens get r added")
+
+        line = "escape = foo('\.bar', r'\.kilroy')\n"
+        fixed = "escape = foo(r'\.bar', r'\.kilroy')\n"
+        with autopep8_context(line, options=['--aggressive', '--pep8-passes', '5']) as result:
+            self.assertEqual(fixed, result, "r not added if already there")
+
+        # Test Case to catch bad behavior reported in Issue #449
+        line = "escape = foo('\.bar', '\.bar')\n"
+        fixed = "escape = foo(r'\.bar', r'\.bar')\n"
+        with autopep8_context(line, options=['--aggressive', '--pep8-passes', '5']) as result:
+            self.assertEqual(fixed, result)
+
     def test_trailing_whitespace_in_multiline_string(self):
         line = 'x = """ \nhello"""    \n'
         fixed = 'x = """ \nhello"""\n'
