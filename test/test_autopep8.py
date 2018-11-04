@@ -4821,6 +4821,36 @@ if True:
         with autopep8_context(line, options=['--line-range', '1', '1']) as result:
             self.assertEqual(line, result)
 
+    def test_column_range_changes_one_column(self):
+        line = 'print( 1, a( 2))\n'
+        fixed = 'print(1, a( 2))\n'
+        with autopep8_context(line, options=['--column-range', '7', '7']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_column_range_changes_small_range(self):
+        line = 'print( 1, a( 2))\n'
+        fixed = 'print(1, a(2))\n'
+        with autopep8_context(line, options=['--column-range', '7', '13']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_column_range_longer_than_line(self):
+        line = 'print( 1, a( 2))\n'
+        fixed = 'print(1, a(2))\n'
+        with autopep8_context(line, options=['--column-range', '7', '100']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_column_range_multiline_changes_one_column(self):
+        line = 'print( 1, a( 2))\nprint( 3, b( 4))\n'
+        fixed = 'print(1, a( 2))\nprint(3, b( 4))\n'
+        with autopep8_context(line, options=['--column-range', '7', '7']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_column_range_multiline_changes_small_range(self):
+        line = 'print( 1, a( 2))\nprint(3 , b (4))\n'
+        fixed = 'print(1, a(2))\nprint(3, b(4))\n'
+        with autopep8_context(line, options=['--column-range', '7', '13']) as result:
+            self.assertEqual(fixed, result)
+
 
 class UtilityFunctionTests(unittest.TestCase):
 
@@ -5117,6 +5147,9 @@ class CommandLineTests(unittest.TestCase):
                             ['--line-range', '0', '2', filename],
                             ['--line-range', '2', '1', filename],
                             ['--line-range', '-1', '-1', filename],
+                            ['--column-range', '0', '2', filename],
+                            ['--column-range', '2', '1', filename],
+                            ['--column-range', '-1', '-1', filename],
                             ]:
                 p = Popen(list(AUTOPEP8_CMD_TUPLE) + options,
                           stderr=PIPE)

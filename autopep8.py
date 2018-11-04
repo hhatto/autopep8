@@ -584,6 +584,11 @@ class FixPEP8(object):
             results = [r for r in results
                        if start <= r['line'] <= end]
 
+        if self.options.column_range:
+            start, end = self.options.column_range
+            results = [r for r in results
+                       if start <= r['column'] <= end]
+
         self._fix_source(filter_results(source=''.join(self.source),
                                         results=results,
                                         aggressive=self.options.aggressive))
@@ -3592,6 +3597,11 @@ def create_parser():
                         help='only fix errors found within this inclusive '
                              'range of line numbers (e.g. 1 99); '
                              'line numbers are indexed at 1')
+    parser.add_argument('--column-range', metavar='column',
+                        default=None, type=int, nargs=2,
+                        help='only fix errors found within this inclusive '
+                             'range of column numbers (e.g. 1 99); '
+                             'column numbers are indexed at 1')
     parser.add_argument('--indent-size', default=DEFAULT_INDENT_SIZE,
                         type=int, help=argparse.SUPPRESS)
     parser.add_argument('--hang-closing', action='store_true',
@@ -3677,10 +3687,17 @@ def parse_args(arguments, apply_config=False):
 
     if args.line_range:
         if args.line_range[0] <= 0:
-            parser.error('--range must be positive numbers')
+            parser.error('--line-range must be positive numbers')
         if args.line_range[0] > args.line_range[1]:
-            parser.error('First value of --range should be less than or equal '
-                         'to the second')
+            parser.error('First value of --line-range should be less than '
+                         'or equal to the second')
+
+    if args.column_range:
+        if args.column_range[0] <= 0:
+            parser.error('--column-range must be positive numbers')
+        if args.column_range[0] > args.column_range[1]:
+            parser.error('First value of --column-range should be less than '
+                         'or equal to the second')
 
     return args
 
