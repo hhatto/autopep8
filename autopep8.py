@@ -3431,12 +3431,11 @@ def fix_file(filename, options=None, output=None, apply_config=False):
             output.flush()
         return diff
     elif options.in_place:
-        fp = open_with_encoding(filename, encoding=encoding, mode='w')
-        fp.write(fixed_source)
-        fp.close()
         original = "".join(original_source).splitlines()
         fixed = fixed_source.splitlines()
         if original != fixed:
+            with open_with_encoding(filename, 'w', encoding=encoding) as fp:
+                fp.write(fixed_source)
             return fixed_source
         else:
             return ''
