@@ -34,8 +34,8 @@ except ImportError:
 ROOT_DIR = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
 
 sys.path.insert(0, ROOT_DIR)
-import autopep8
-from autopep8 import get_module_imports_on_top_of_file
+import autopep8     # NOQA: E402
+from autopep8 import get_module_imports_on_top_of_file  # NOQA: E402
 
 FAKE_CONFIGURATION = os.path.join(ROOT_DIR, 'test', 'fake_configuration')
 FAKE_PYCODESTYLE_CONFIGURATION = os.path.join(
