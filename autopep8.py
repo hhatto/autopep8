@@ -1257,7 +1257,7 @@ class FixPEP8(object):
                 tts = ts[newline_index[-3]:]
             else:
                 tts = ts
-            old = None
+            old = []
             for t in tts:
                 if t[0] in (tokenize.NEWLINE, tokenize.NL):
                     newline_count -= 1
@@ -1363,7 +1363,7 @@ def get_w605_position(tokens):
         'N', 'u', 'U',
     ]
 
-    for token_type, text, start_pos, end_pos, line in tokens:
+    for token_type, text, start_pos, _end_pos, _line in tokens:
         if token_type == tokenize.STRING:
             quote = text[-3:] if text[-3:] in ('"""', "'''") else text[-1]
             # Extract string modifiers (e.g. u or r)
@@ -3438,8 +3438,7 @@ def fix_file(filename, options=None, output=None, apply_config=False):
         fixed = fixed_source.splitlines()
         if original != fixed:
             return fixed_source
-        else:
-            return ''
+        return ''
     else:
         if output:
             output.write(fixed_source)
@@ -4057,7 +4056,7 @@ def fix_multiple_files(filenames, options, output=None):
         import multiprocessing
         pool = multiprocessing.Pool(options.jobs)
         ret = pool.map(_fix_file, [(name, options) for name in filenames])
-        results.extend(filter(lambda x: x is not None, ret))
+        results.extend([x for x in ret if x is not None])
     else:
         for name in filenames:
             ret = _fix_file((name, options, output))
@@ -4159,7 +4158,7 @@ def main(argv=None, apply_config=True):
                 assert not args.recursive
 
             ret = fix_multiple_files(args.files, args, sys.stdout)
-            if args.exit_code and len(ret) > 0:
+            if args.exit_code and ret:
                 return EXIT_CODE_EXISTS_DIFF
     except KeyboardInterrupt:
         return EXIT_CODE_ERROR  # pragma: no cover
