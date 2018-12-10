@@ -73,8 +73,10 @@ open_readme: readme
 
 check:
 	pycodestyle \
-		--ignore=E402 \
+		--ignore=E402,E226,E24,W50 \
 		autopep8.py setup.py test/acid.py test/acid_pypi.py update_readme.py
+	pycodestyle \
+		--max-line-length=300 test/test_autopep8.py
 	pylint \
 		--reports=no \
 		--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
