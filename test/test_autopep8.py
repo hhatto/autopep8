@@ -4956,6 +4956,18 @@ class CommandLineTests(unittest.TestCase):
                 self.assertEqual(fixed, f.read())
             self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
 
+    def test_in_place_no_modifications_no_writes(self):
+        with temporary_file_context('import os\n') as filename:
+            # ensure that noops do not do writes by making writing an error
+            os.chmod(filename, 0o444)
+            p = Popen(
+                list(AUTOPEP8_CMD_TUPLE) + [filename, '--in-place'],
+                stderr=PIPE,
+            )
+            _, err = p.communicate()
+            self.assertEqual(err, b'')
+            self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
+
     def test_in_place_with_exit_code_option(self):
         line = "'abc'  \n"
         fixed = "'abc'\n"

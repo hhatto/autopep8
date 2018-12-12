@@ -142,8 +142,7 @@ PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8', '.flake8')
 MAX_PYTHON_FILE_DETECTION_BYTES = 1024
 
 
-def open_with_encoding(filename,
-                       encoding=None, mode='r', limit_byte_check=-1):
+def open_with_encoding(filename, mode='r', encoding=None, limit_byte_check=-1):
     """Return opened file with a specific encoding."""
     if not encoding:
         encoding = detect_encoding(filename, limit_byte_check=limit_byte_check)
@@ -159,7 +158,7 @@ def detect_encoding(filename, limit_byte_check=-1):
             from lib2to3.pgen2 import tokenize as lib2to3_tokenize
             encoding = lib2to3_tokenize.detect_encoding(input_file.readline)[0]
 
-        with open_with_encoding(filename, encoding) as test_file:
+        with open_with_encoding(filename, encoding=encoding) as test_file:
             test_file.read(limit_byte_check)
 
         return encoding
@@ -3431,12 +3430,11 @@ def fix_file(filename, options=None, output=None, apply_config=False):
             output.flush()
         return diff
     elif options.in_place:
-        fp = open_with_encoding(filename, encoding=encoding, mode='w')
-        fp.write(fixed_source)
-        fp.close()
         original = "".join(original_source).splitlines()
         fixed = fixed_source.splitlines()
         if original != fixed:
+            with open_with_encoding(filename, 'w', encoding=encoding) as fp:
+                fp.write(fixed_source)
             return fixed_source
         return ''
     else:
