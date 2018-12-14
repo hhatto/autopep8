@@ -3436,7 +3436,7 @@ def fix_file(filename, options=None, output=None, apply_config=False):
             with open_with_encoding(filename, 'w', encoding=encoding) as fp:
                 fp.write(fixed_source)
             return fixed_source
-        return ''
+        return None
     else:
         if output:
             output.write(fixed_source)
@@ -4060,9 +4060,11 @@ def fix_multiple_files(filenames, options, output=None):
             ret = _fix_file((name, options, output))
             if ret is None:
                 continue
-            if options.diff or options.in_place:
+            if options.diff:
                 if ret != '':
                     results.append(ret)
+            elif options.in_place:
+                results.append(ret)
             else:
                 original_source = readlines_from_file(name)
                 if "".join(original_source).splitlines() != ret.splitlines():
