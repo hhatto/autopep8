@@ -4981,6 +4981,19 @@ class CommandLineTests(unittest.TestCase):
                 self.assertEqual(fixed, f.read())
             self.assertEqual(p.returncode, autopep8.EXIT_CODE_EXISTS_DIFF)
 
+    def test_in_place_with_exit_code_option_with_w391(self):
+        line = "\n\n\n"
+        fixed = ""
+
+        with temporary_file_context(line) as filename:
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename,
+                                                  '--in-place',
+                                                  '--exit-code'])
+            p.wait()
+            with open(filename) as f:
+                self.assertEqual(fixed, f.read())
+            self.assertEqual(p.returncode, autopep8.EXIT_CODE_EXISTS_DIFF)
+
     def test_parallel_jobs(self):
         line = "'abc'  \n"
         fixed = "'abc'\n"
