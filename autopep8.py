@@ -57,6 +57,7 @@ import sys
 import textwrap
 import token
 import tokenize
+import ast
 
 import pycodestyle
 
@@ -1400,6 +1401,14 @@ def get_module_imports_on_top_of_file(source, import_line_index):
         if line and line[0] in 'rR':
             line = line[1:]
         return line and (line[0] == '"' or line[0] == "'")
+
+    def is_future_import(line):
+        nodes = ast.parse(line)
+        for n in nodes.body:
+            if isinstance(n, ast.ImportFrom) and n.module == '__future__':
+                return True
+        return False
+
     allowed_try_keywords = ('try', 'except', 'else', 'finally')
     for cnt, line in enumerate(source):
         if not line.rstrip():
@@ -1407,7 +1416,7 @@ def get_module_imports_on_top_of_file(source, import_line_index):
         elif line.startswith('#'):
             continue
         if line.startswith('import ') or line.startswith('from '):
-            if cnt == import_line_index:
+            if cnt == import_line_index or is_future_import(line):
                 continue
             return cnt
         elif pycodestyle.DUNDER_REGEX.match(line):

@@ -2416,6 +2416,12 @@ a = 1     # (E305)
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e402_with_future_import(self):
+        line = 'from __future__ import print_function\na = 1\nimport os\n'
+        fixed = 'from __future__ import print_function\nimport os\na = 1\n'
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e402_import_some_modules(self):
         line = """\
 a = 1
