@@ -1313,14 +1313,15 @@ class FixPEP8(object):
             old = []
             for t in tts:
                 if tokenize.COMMENT == t[0] and old:
-                    comment_index = old[3][1]
+                    comment_row, comment_index = old[3]
                     break
                 old = t
             break
         if not operator_position:
             return
         target_operator = target[operator_position[0]:operator_position[1]]
-        if comment_index:
+
+        if comment_index and comment_row == 1:
             self.source[line_index] = '{}{}'.format(
                 target[:operator_position[0]].rstrip(),
                 target[comment_index:])
@@ -1329,6 +1330,7 @@ class FixPEP8(object):
                 target[:operator_position[0]].rstrip(),
                 target[operator_position[1]:].lstrip(),
                 target[operator_position[1]:])
+
         next_line = self.source[line_index + 1]
         next_line_indent = 0
         m = re.match(r'\s*', next_line)

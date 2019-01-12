@@ -4425,6 +4425,24 @@ b = (1 +
         with autopep8_context(line, options=['--select=W504', '--ignore=E']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w504_comment_on_first_line(self):
+        line = 'x = (1 | # test\n2)\n'
+        fixed = 'x = (1 # test\n| 2)\n'
+        with autopep8_context(line, options=['--select=W504', '--ignore=E']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_w504_comment_on_second_line(self):
+        line = 'x = (1 |\n2) # test\n'
+        fixed = 'x = (1\n| 2) # test\n'
+        with autopep8_context(line, options=['--select=W504', '--ignore=E']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_w504_comment_on_each_lines(self):
+        line = 'x = (1 |# test\n2 |# test\n3) # test\n'
+        fixed = 'x = (1# test\n| 2# test\n| 3) # test\n'
+        with autopep8_context(line, options=['--select=W504', '--ignore=E']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w504_with_e265_ignore_option(self):
         line = '(width == 0 +\n height == 0)\n'
         with autopep8_context(line, options=['--ignore=E265']) as result:
