@@ -4475,6 +4475,24 @@ if True:
         with autopep8_context(line, options=['--select=W504', '--ignore=E']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w504_not_applied_by_default_when_modifying_with_ignore(self):
+        line = """\
+q = 1
+
+
+
+
+def x(y, z):
+    if (
+            y and
+            z
+    ):
+        pass
+"""
+        fixed = line.replace('\n\n\n\n', '\n\n')
+        with autopep8_context(line, options=['--ignore=E265']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w601(self):
         line = 'a = {0: 1}\na.has_key(0)\n'
         fixed = 'a = {0: 1}\n0 in a\n'

@@ -100,6 +100,9 @@ SHORTEN_OPERATOR_GROUPS = frozenset([
 
 DEFAULT_IGNORE = 'E226,E24,W50,W690'    # TODO: use pycodestyle.DEFAULT_IGNORE
 DEFAULT_INDENT_SIZE = 4
+# these fixes conflict with each other, if the `--ignore` setting causes both
+# to be enabled, disable both of them
+CONFLICTING_CODES = ('W503', 'W504')
 
 SELECTED_GLOBAL_FIXED_METHOD_CODES = ['W602', ]
 
@@ -3662,6 +3665,14 @@ def parse_args(arguments, apply_config=False):
 
     if args.ignore:
         args.ignore = _split_comma_separated(args.ignore)
+        if not all(
+                any(
+                    conflicting_code.startswith(ignore_code)
+                    for ignore_code in args.ignore
+                )
+                for conflicting_code in CONFLICTING_CODES
+        ):
+            args.ignore.update(CONFLICTING_CODES)
     elif not args.select:
         if args.aggressive:
             # Enable everything by default if aggressive.
