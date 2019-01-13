@@ -82,6 +82,7 @@ COMPARE_NEGATIVE_REGEX = re.compile(r'\b(not)\s+([^][)(}{]+?)\s+(in|is)\s')
 COMPARE_NEGATIVE_REGEX_THROUGH = re.compile(r'\b(not\s+in|is\s+not)\s')
 BARE_EXCEPT_REGEX = re.compile(r'except\s*:')
 STARTSWITH_DEF_REGEX = re.compile(r'^(async\s+def|def)\s.*\):')
+DOCSTRING_START_REGEX = re.compile(r'^u?r?(?P<kind>["\']{3})')
 
 EXIT_CODE_OK = 0
 EXIT_CODE_ERROR = 1
@@ -1412,11 +1413,28 @@ def get_module_imports_on_top_of_file(source, import_line_index):
         return False
 
     allowed_try_keywords = ('try', 'except', 'else', 'finally')
+    in_docstring = False
+    docstring_kind = '"""'
     for cnt, line in enumerate(source):
+        if not in_docstring:
+            m = DOCSTRING_START_REGEX.match(line.lstrip())
+            if m is not None:
+                in_docstring = True
+                docstring_kind = m.group('kind')
+                remain = line[m.end(): m.endpos].rstrip()
+                if remain[-3:] == docstring_kind:  # one line doc
+                    in_docstring = False
+                continue
+        if in_docstring:
+            if line.rstrip()[-3:] == docstring_kind:
+                in_docstring = False
+            continue
+
         if not line.rstrip():
             continue
         elif line.startswith('#'):
             continue
+
         if line.startswith('import ') or line.startswith('from '):
             if cnt == import_line_index or is_future_import(line):
                 continue

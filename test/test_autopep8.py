@@ -2422,6 +2422,20 @@ a = 1     # (E305)
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e402_with_module_doc(self):
+        line1 = '"""\nmodule doc\n"""\na = 1\nimport os\n'
+        fixed1 = '"""\nmodule doc\n"""\nimport os\na = 1\n'
+        line2 = '# comment\nr"""\nmodule doc\n"""\na = 1\nimport os\n'
+        fixed2 = '# comment\nr"""\nmodule doc\n"""\nimport os\na = 1\n'
+        line3 = "u'''one line module doc'''\na = 1\nimport os\n"
+        fixed3 = "u'''one line module doc'''\nimport os\na = 1\n"
+        line4 = "'''\n\"\"\"\ndoc'''\na = 1\nimport os\n"
+        fixed4 = "'''\n\"\"\"\ndoc'''\nimport os\na = 1\n"
+        for line, fixed in [(line1, fixed1), (line2, fixed2),
+                            (line3, fixed3), (line4, fixed4)]:
+            with autopep8_context(line) as result:
+                self.assertEqual(fixed, result)
+
     def test_e402_import_some_modules(self):
         line = """\
 a = 1
@@ -4882,7 +4896,7 @@ if True:
         target_line_index = 11
         result = get_module_imports_on_top_of_file(line.splitlines(),
                                                    target_line_index)
-        self.assertEqual(result, 5)
+        self.assertEqual(result, 10)
 
 
 class CommandLineTests(unittest.TestCase):
