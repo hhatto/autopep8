@@ -3022,8 +3022,8 @@ class Reindenter(object):
                                 if have == _leading_space_count(lines[jline]):
                                     want = jlevel * indent_size
                                 break
-                    if want < 0:            # Maybe it's a hanging
-                                            # comment like this one,
+                    # Maybe it's a hanging comment like this one,
+                    if want < 0:
                         # in which case we should shift it like its base
                         # line got shifted.
                         for j in range(i - 1, -1, -1):
