@@ -3933,6 +3933,12 @@ def example2(): return ('' in {'f': 2}) in {'has_key() is deprecated': True}
         with autopep8_context(line, options=['-aa', '--select=E704']) as result:
             self.assertEqual(line, result)
 
+    def test_e704_indented(self):
+        line = 'class C:\n    def f(x): return 2*x\n'
+        fixed = 'class C:\n    def f(x):\n        return 2 * x\n'
+        with autopep8_context(line, options=['-aaa']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e711(self):
         line = 'foo == None\n'
         fixed = 'foo is None\n'
