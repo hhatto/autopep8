@@ -336,9 +336,10 @@ Or with options:
 Configuration
 =============
 
-By default, if ``$HOME/.config/.pycodestyle`` (``~\.pycodestyle`` in Windows
-environment) exists, it will be used as global configuration file. It can
-specify the configuration file with the ``--global-config`` option.
+By default, if ``$HOME/.config/pycodestyle`` (``~\.pycodestyle`` in Windows
+environment) exists, it will be used as global configuration file.
+Alternatively, you can specify the global configuration file with the
+``--global-config`` option.
 
 Also, if ``setup.cfg``, ``tox.ini``, ``.pep8`` and ``.flake8`` files exist
 in the directory where the target file exists, it will be used as the
