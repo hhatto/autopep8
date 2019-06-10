@@ -16,6 +16,7 @@ env:
 matrix:
     allow_failures:
         - env: PEP8_VERSION=github
+        - python: "3.8dev"
     include:
         - python: 3.7
           dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
@@ -31,7 +32,6 @@ matrix:
         - python: "3.8dev"
           dist: xenial    # required for Python 3.8dev
           sudo: required  # required for Python 3.8dev
-          env: PEP8_VERSION=github
 
 install:
     - if [ "$PEP8_VERSION" == "github" ]; then pip install git+https://github.com/PyCQA/pycodestyle; fi
