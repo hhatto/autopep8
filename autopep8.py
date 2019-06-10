@@ -645,6 +645,16 @@ class FixPEP8(object):
 
         self.source[line_index] = indent[1:] + stripped
 
+    def fix_e117(self, result):
+        """Fix over-indented."""
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+
+        indent = _get_indentation(target)
+        stripped = target.lstrip()
+
+        self.source[line_index] = indent[1:] + stripped
+
     def fix_e125(self, result):
         """Fix indentation undistinguish from the next logical line."""
         num_indent_spaces = int(result['info'].split()[1])
