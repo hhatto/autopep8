@@ -1229,6 +1229,22 @@ a = 1
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e117(self):
+        line = """\
+for a in [1, 2, 3]:
+    print('hello world')
+    for b in [1, 2, 3]:
+            print(a, b)
+"""
+        fixed = """\
+for a in [1, 2, 3]:
+    print('hello world')
+    for b in [1, 2, 3]:
+        print(a, b)
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e12_reindent(self):
         line = """\
 def foo_bar(baz, frop,
