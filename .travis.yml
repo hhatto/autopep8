@@ -32,6 +32,14 @@ matrix:
         - python: "3.8dev"
           dist: xenial    # required for Python 3.8dev
           sudo: required  # required for Python 3.8dev
+        - python: "3.8dev"
+          dist: xenial    # required for Python 3.8dev
+          sudo: required  # required for Python 3.8dev
+          env: PEP8_VERSION=pypi
+        - python: "3.8dev"
+          dist: xenial    # required for Python 3.8dev
+          sudo: required  # required for Python 3.8dev
+          env: PEP8_VERSION=github
 
 install:
     - if [ "$PEP8_VERSION" == "github" ]; then pip install git+https://github.com/PyCQA/pycodestyle; fi
