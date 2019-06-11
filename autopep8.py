@@ -651,6 +651,9 @@ class FixPEP8(object):
         target = self.source[line_index]
 
         indent = _get_indentation(target)
+        if indent == '\t':
+            return []
+
         stripped = target.lstrip()
 
         self.source[line_index] = indent[1:] + stripped
