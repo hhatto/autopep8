@@ -2422,6 +2422,56 @@ a = 1     # (E305)
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e401_with_multiline_from_import(self):
+        line = """\
+from os import (
+    chroot
+)
+def f():
+    pass
+from a import b
+from b import c
+from c import d
+"""
+        fixed = """\
+from a import b
+from c import d
+from b import c
+from os import (
+    chroot
+)
+
+
+def f():
+    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e402_with_multiline_from_future_import(self):
+        line = """\
+from __future__ import (
+    absolute_import,
+    print_function
+)
+def f():
+    pass
+import os
+"""
+        fixed = """\
+from __future__ import (
+    absolute_import,
+    print_function
+)
+import os
+
+
+def f():
+    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e402_with_module_doc(self):
         line1 = '"""\nmodule doc\n"""\na = 1\nimport os\n'
         fixed1 = '"""\nmodule doc\n"""\nimport os\na = 1\n'
