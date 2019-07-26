@@ -852,6 +852,10 @@ lambda xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
                     re.sub(r'\s', '', text),
                     re.sub(r'\s', '', candidate))
 
+    def test_get_fixed_long_line_empty(self):
+        line = ''
+        self.assertEqual(line, autopep8.get_fixed_long_line(line, line, line))
+
 
 class SystemTests(unittest.TestCase):
 
@@ -4876,6 +4880,20 @@ if True:
 """
         with autopep8_context(line, options=['--line-range', '1', '1']) as result:
             self.assertEqual(line, result)
+
+    def test_long_import_line(self):
+        line = """\
+s
+from t import a, \
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbb, ccccccccccccccccccccccccccccccc, ddddddddddddddddddddddddddddddddddd
+"""
+        fixed = """\
+from t import a, \
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbb, ccccccccccccccccccccccccccccccc, ddddddddddddddddddddddddddddddddddd
+s
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
 
 
 class UtilityFunctionTests(unittest.TestCase):
