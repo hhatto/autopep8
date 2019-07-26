@@ -4877,6 +4877,17 @@ if True:
         with autopep8_context(line, options=['--line-range', '1', '1']) as result:
             self.assertEqual(line, result)
 
+    def test_exchange_multiple_imports_with_def(self):
+        line = """\
+def f(n):
+    return n
+from a import fa
+from b import fb
+from c import fc
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(result[:4], 'from')
+
 
 class UtilityFunctionTests(unittest.TestCase):
 
