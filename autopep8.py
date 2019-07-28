@@ -1514,6 +1514,8 @@ def get_fixed_long_line(target, previous_line, original,
 
 def longest_line_length(code):
     """Return length of longest line."""
+    if len(code) == 0:
+        return 0
     return max(len(line) for line in code.splitlines())
 
 
