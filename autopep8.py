@@ -1410,10 +1410,7 @@ def get_module_imports_on_top_of_file(source, import_line_index):
         return line and (line[0] == '"' or line[0] == "'")
 
     def is_future_import(line):
-        try:
-            nodes = ast.parse(line)
-        except SyntaxError:
-            return False
+        nodes = ast.parse(line)
         for n in nodes.body:
             if isinstance(n, ast.ImportFrom) and n.module == '__future__':
                 return True
