@@ -615,7 +615,7 @@ print('python')
                                     contents='None == x\n')
 
         self.assertEqual(
-            [],
+            None,
             fix_pep8.fix_e711({'line': 1,
                                'column': 6}))
 
