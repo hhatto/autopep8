@@ -11,6 +11,7 @@
 .build-*/
 README.html
 __pycache__
+.mypy_cache/
 build
 .coverage
 coverage.xml

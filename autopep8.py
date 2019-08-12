@@ -48,6 +48,7 @@ import difflib
 import fnmatch
 import inspect
 import io
+import itertools
 import keyword
 import locale
 import os
@@ -1422,19 +1423,30 @@ def get_module_imports_on_top_of_file(source, import_line_index):
         return line and (line[0] == '"' or line[0] == "'")
 
     def is_future_import(line):
-        try:
-            nodes = ast.parse(line)
-        except SyntaxError:
-            return False
+        nodes = ast.parse(line)
         for n in nodes.body:
             if isinstance(n, ast.ImportFrom) and n.module == '__future__':
                 return True
         return False
 
+    def has_future_import(source):
+        offset = 0
+        line = ''
+        for _, next_line in source:
+            for line_part in next_line.strip().splitlines(True):
+                line = line + line_part
+                try:
+                    return is_future_import(line), offset
+                except SyntaxError:
+                    continue
+            offset += 1
+        return False, offset
+
     allowed_try_keywords = ('try', 'except', 'else', 'finally')
     in_docstring = False
     docstring_kind = '"""'
-    for cnt, line in enumerate(source):
+    source_stream = iter(enumerate(source))
+    for cnt, line in source_stream:
         if not in_docstring:
             m = DOCSTRING_START_REGEX.match(line.lstrip())
             if m is not None:
@@ -1454,9 +1466,19 @@ def get_module_imports_on_top_of_file(source, import_line_index):
         elif line.startswith('#'):
             continue
 
-        if line.startswith('import ') or line.startswith('from '):
-            if cnt == import_line_index or is_future_import(line):
+        if line.startswith('import '):
+            if cnt == import_line_index:
                 continue
+            return cnt
+        elif line.startswith('from '):
+            if cnt == import_line_index:
+                continue
+            hit, offset = has_future_import(
+                itertools.chain([(cnt, line)], source_stream)
+            )
+            if hit:
+                # move to the back
+                return cnt + offset + 1
             return cnt
         elif pycodestyle.DUNDER_REGEX.match(line):
             continue
