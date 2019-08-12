@@ -1078,9 +1078,6 @@ class FixPEP8(object):
         center = target[offset:right_offset]
         right = target[right_offset:].lstrip()
 
-        if not right.startswith('None'):
-            return []
-
         if center.strip() == '==':
             new_center = 'is'
         elif center.strip() == '!=':
