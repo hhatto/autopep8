@@ -68,8 +68,16 @@ try:
 except NameError:
     unicode = str
 
+try:
+	from email import message_from_string
+	from pkg_resources import get_distribution
+	pkgInfo = get_distribution(os.path.splitext(os.path.basename(__file__))[0]).get_metadata('PKG-INFO')
 
-__version__ = '1.5a1'
+	__metadata__ = message_from_string(pkgInfo)
+	del pkgInfo
+	__version__ = __metadata__['Version']
+except:
+	pass
 
 
 CR = '\r'
