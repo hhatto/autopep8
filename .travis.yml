@@ -4,6 +4,7 @@ python:
     - "2.7"
     - "3.5"
     - "3.6"
+    - "3.7"
     - "pypy"
     - "pypy3.5"
 
@@ -17,17 +18,6 @@ matrix:
         - env: PEP8_VERSION=github
         - python: "3.8-dev"
     include:
-        - python: 3.7
-          dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
-          sudo: required  # required for Python 3.7 (travis-ci/travis-ci#9069)
-        - python: 3.7
-          dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
-          sudo: required  # required for Python 3.7 (travis-ci/travis-ci#9069)
-          env: PEP8_VERSION=pypi
-        - python: 3.7
-          dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
-          sudo: required  # required for Python 3.7 (travis-ci/travis-ci#9069)
-          env: PEP8_VERSION=github
         - python: "3.8-dev"
           dist: xenial    # required for Python 3.8dev
           sudo: required  # required for Python 3.8dev
