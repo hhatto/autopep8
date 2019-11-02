@@ -5,6 +5,7 @@ python:
     - "3.5"
     - "3.6"
     - "3.7"
+    - "3.8"
     - "pypy"
     - "pypy3.5"
 
@@ -16,19 +17,7 @@ env:
 matrix:
     allow_failures:
         - env: PEP8_VERSION=github
-        - python: "3.8-dev"
-    include:
-        - python: "3.8-dev"
-          dist: xenial    # required for Python 3.8dev
-          sudo: required  # required for Python 3.8dev
-        - python: "3.8-dev"
-          dist: xenial    # required for Python 3.8dev
-          sudo: required  # required for Python 3.8dev
-          env: PEP8_VERSION=pypi
-        - python: "3.8-dev"
-          dist: xenial    # required for Python 3.8dev
-          sudo: required  # required for Python 3.8dev
-          env: PEP8_VERSION=github
+        - python: "3.8"
 
 install:
     - if [ "$PEP8_VERSION" == "github" ]; then pip install git+https://github.com/PyCQA/pycodestyle; fi
