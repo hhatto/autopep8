@@ -615,7 +615,7 @@ print('python')
                                     contents='None == x\n')
 
         self.assertEqual(
-            [],
+            None,
             fix_pep8.fix_e711({'line': 1,
                                'column': 6}))
 
@@ -4009,9 +4009,14 @@ def example2(): return ('' in {'f': 2}) in {'has_key() is deprecated': True}
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+        line = 'None == foo\n'
+        fixed = 'None is foo\n'
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e711_in_conditional(self):
         line = 'if foo == None and None == foo:\npass\n'
-        fixed = 'if foo is None and None == foo:\npass\n'
+        fixed = 'if foo is None and None is foo:\npass\n'
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
