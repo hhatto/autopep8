@@ -3834,7 +3834,8 @@ def read_pyproject_toml(args, parser):
                 (parent, tail) = os.path.split(parent)
 
         defaults = {}
-        option_list = {o.dest: o.type or type(o.default) for o in parser._actions}
+        option_list = {o.dest: o.type or type(o.default)
+                       for o in parser._actions}
 
         for section in ["tool.autopep8"]:
             if not config.has_section(section):
@@ -3851,8 +3852,8 @@ def read_pyproject_toml(args, parser):
                 else:
                     value = config.get(section, k)
                 if args.verbose:
-                    print("enable pyproject.toml config: section={}, key={}, value={}".format(
-                        section, k, value))
+                    print("enable pyproject.toml config: section={}, "
+                          "key={}, value={}".format(section, k, value))
                 defaults[norm_opt] = value
 
         parser.set_defaults(**defaults)
