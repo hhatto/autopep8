@@ -59,6 +59,12 @@ import textwrap
 import token
 import tokenize
 import ast
+try:
+    from configparser import ConfigParser as SafeConfigParser
+    from configparser import Error
+except ImportError:
+    from ConfigParser import SafeConfigParser
+    from ConfigParser import Error
 
 import pycodestyle
 
@@ -142,7 +148,7 @@ if not os.path.exists(DEFAULT_CONFIG):  # pragma: no cover
         DEFAULT_CONFIG = os.path.expanduser(r'~\.pep8')
     else:
         DEFAULT_CONFIG = os.path.join(os.path.expanduser('~/.config'), 'pep8')
-PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8', '.flake8')
+PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8', '.flake8', 'pyproject.toml')
 
 
 MAX_PYTHON_FILE_DETECTION_BYTES = 1024
@@ -3688,6 +3694,9 @@ def parse_args(arguments, apply_config=False):
 
     if apply_config:
         parser = read_config(args, parser)
+        parser_with_toml = read_pyproject_toml(args, parser)
+        if parser_with_toml:
+            parser = parser_with_toml
         args = parser.parse_args(arguments)
         args.files = [decode_filename(name) for name in args.files]
 
@@ -3764,13 +3773,6 @@ def parse_args(arguments, apply_config=False):
 
 def read_config(args, parser):
     """Read both user configuration and local configuration."""
-    try:
-        from configparser import ConfigParser as SafeConfigParser
-        from configparser import Error
-    except ImportError:
-        from ConfigParser import SafeConfigParser
-        from ConfigParser import Error
-
     config = SafeConfigParser()
 
     try:
@@ -3812,6 +3814,50 @@ def read_config(args, parser):
     except Error:
         # Ignore for now.
         pass
+
+    return parser
+
+
+def read_pyproject_toml(args, parser):
+    """Read pyproject.toml and load configuration."""
+    config = SafeConfigParser()
+
+    try:
+        config.read(args.global_config)
+
+        if not args.ignore_local_config:
+            parent = tail = args.files and os.path.abspath(
+                os.path.commonprefix(args.files))
+            while tail:
+                if config.read([os.path.join(parent, "pyproject.toml"), ]):
+                    break
+                (parent, tail) = os.path.split(parent)
+
+        defaults = {}
+        option_list = {o.dest: o.type or type(o.default) for o in parser._actions}
+
+        for section in ["tool.autopep8"]:
+            if not config.has_section(section):
+                continue
+            for (k, _) in config.items(section):
+                norm_opt = k.lstrip('-').replace('-', '_')
+                if not option_list.get(norm_opt):
+                    continue
+                opt_type = option_list[norm_opt]
+                if opt_type is int:
+                    value = config.getint(section, k)
+                elif opt_type is bool:
+                    value = config.getboolean(section, k)
+                else:
+                    value = config.get(section, k)
+                if args.verbose:
+                    print("enable pyproject.toml config: section={}, key={}, value={}".format(
+                        section, k, value))
+                defaults[norm_opt] = value
+
+        parser.set_defaults(**defaults)
+    except Error:
+        return None
 
     return parser
 
