@@ -148,7 +148,7 @@ if not os.path.exists(DEFAULT_CONFIG):  # pragma: no cover
         DEFAULT_CONFIG = os.path.expanduser(r'~\.pep8')
     else:
         DEFAULT_CONFIG = os.path.join(os.path.expanduser('~/.config'), 'pep8')
-PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8', '.flake8', 'pyproject.toml')
+PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8', '.flake8')
 
 
 MAX_PYTHON_FILE_DETECTION_BYTES = 1024
