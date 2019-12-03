@@ -3694,6 +3694,7 @@ def parse_args(arguments, apply_config=False):
 
     if apply_config:
         parser = read_config(args, parser)
+        # prioritize settings when exist pyproject.toml's tool.autopep8 section
         parser_with_toml = read_pyproject_toml(args, parser)
         if parser_with_toml:
             parser = parser_with_toml
