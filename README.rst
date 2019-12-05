@@ -311,6 +311,13 @@ messages::
 
     $ autopep8 -v <filename>
 
+Passing in ``--experimental`` enables the following functionality:
+
+- Shortens code lines by taking its length into account
+
+::
+
+$ autopep8 --experimental <filename>
 
 Use as a module
 ===============
