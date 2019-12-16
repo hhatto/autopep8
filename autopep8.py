@@ -1373,7 +1373,8 @@ class FixPEP8(object):
             if target[pos - 1] == "r":
                 # ignore special case
                 if self.options.verbose:
-                    print("invalid line: line_number={}, line: {}".format(line_index + 1, target))
+                    print("invalid line: line_number={}, line: {}".format(
+                        line_index + 1, target))
                 return
             self.source[line_index] = '{}r{}'.format(
                 target[:pos], target[pos:])
