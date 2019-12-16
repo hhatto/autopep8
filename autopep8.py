@@ -1370,6 +1370,11 @@ class FixPEP8(object):
         except (SyntaxError, tokenize.TokenError):
             return
         for (pos, _msg) in get_w605_position(tokens):
+            if target[pos - 1] == "r":
+                # ignore special case
+                if self.options.verbose:
+                    print("invalid line: line_number={}, line: {}".format(line_index + 1, target))
+                return
             self.source[line_index] = '{}r{}'.format(
                 target[:pos], target[pos:])
 
