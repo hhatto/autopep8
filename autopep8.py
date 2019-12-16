@@ -1295,8 +1295,14 @@ class FixPEP8(object):
                 before_line[:comment_index], one_string_token,
                 before_line[comment_index + 1:])
         else:
-            self.source[fix_target_line] = '{} {}{}'.format(
-                before_line[:bl], one_string_token, before_line[bl:])
+            if before_line[:bl].endswith("#"):
+                # special case
+                # see: https://github.com/hhatto/autopep8/issues/503
+                self.source[fix_target_line] = '{}{} {}'.format(
+                    before_line[:bl-2], one_string_token, before_line[bl-2:])
+            else:
+                self.source[fix_target_line] = '{} {}{}'.format(
+                    before_line[:bl], one_string_token, before_line[bl:])
 
     def fix_w504(self, result):
         (line_index, _, target) = get_index_offset_contents(result,

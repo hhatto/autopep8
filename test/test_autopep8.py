@@ -4456,6 +4456,22 @@ def test():
         with autopep8_context(line, options=['--select=W503']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w503_with_comment_with_only_comment_block_charactor(self):
+        line = """\
+if (True  #
+    and True
+    and True):
+    print(1)
+"""
+        fixed = """\
+if (True and  #
+    True and
+    True):
+    print(1)
+"""
+        with autopep8_context(line, options=['--select=W503']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w503_over_5lines(self):
         line = """\
 X = (
