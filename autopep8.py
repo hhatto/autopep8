@@ -3772,6 +3772,21 @@ def parse_args(arguments, apply_config=False):
     return args
 
 
+def _get_normalize_options(config, section, option_list):
+    for (k, _) in config.items(section):
+        norm_opt = k.lstrip('-').replace('-', '_')
+        if not option_list.get(norm_opt):
+            continue
+        opt_type = option_list[norm_opt]
+        if opt_type is int:
+            value = config.getint(section, k)
+        elif opt_type is bool:
+            value = config.getboolean(section, k)
+        else:
+            value = config.get(section, k)
+        yield norm_opt, k, value
+
+
 def read_config(args, parser):
     """Read both user configuration and local configuration."""
     config = SafeConfigParser()
@@ -3795,17 +3810,8 @@ def read_config(args, parser):
         for section in ['pep8', 'pycodestyle', 'flake8']:
             if not config.has_section(section):
                 continue
-            for (k, _) in config.items(section):
-                norm_opt = k.lstrip('-').replace('-', '_')
-                if not option_list.get(norm_opt):
-                    continue
-                opt_type = option_list[norm_opt]
-                if opt_type is int:
-                    value = config.getint(section, k)
-                elif opt_type is bool:
-                    value = config.getboolean(section, k)
-                else:
-                    value = config.get(section, k)
+            for norm_opt, k, value in _get_normalize_options(config, section,
+                                                             option_list):
                 if args.verbose:
                     print("enable config: section={}, key={}, value={}".format(
                         section, k, value))
@@ -3841,23 +3847,16 @@ def read_pyproject_toml(args, parser):
         for section in ["tool.autopep8"]:
             if not config.has_section(section):
                 continue
-            for (k, _) in config.items(section):
-                norm_opt = k.lstrip('-').replace('-', '_')
-                if not option_list.get(norm_opt):
-                    continue
-                opt_type = option_list[norm_opt]
-                if opt_type is int:
-                    value = config.getint(section, k)
-                elif opt_type is bool:
-                    value = config.getboolean(section, k)
-                else:
-                    value = config.get(section, k)
+            for norm_opt, k, value in _get_normalize_options(config, section,
+                                                             option_list):
                 if args.verbose:
                     print("enable pyproject.toml config: section={}, "
                           "key={}, value={}".format(section, k, value))
                 defaults[norm_opt] = value
 
-        parser.set_defaults(**defaults)
+        if defaults:
+            # set value when exists key-value in defaults dict
+            parser.set_defaults(**defaults)
     except Error:
         return None
 
