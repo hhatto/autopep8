@@ -20,7 +20,7 @@ import contextlib
 import io
 import shutil
 from subprocess import Popen, PIPE
-from tempfile import mkstemp
+from tempfile import mkstemp, mkdtemp
 import tempfile
 import tokenize
 import unittest
@@ -5451,6 +5451,49 @@ aggressive=1
                 apply_config=True)
             self.assertEqual(args.aggressive, 1)
 
+    def test_pyproject_toml_config_local_int_value(self):
+        with temporary_file_context('[tool.autopep8]\naggressive=2\n') as filename:
+            args = autopep8.parse_args(
+                [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+                 '--global-config={}'.format(filename)],
+                apply_config=True)
+            self.assertEqual(args.aggressive, 2)
+
+
+class ConfigurationFileTests(unittest.TestCase):
+
+    def test_pyproject_toml_with_flake8_config(self):
+        """override to flake8 config"""
+        line = "a =  1\n"
+        dot_flake8 = """[pep8]\naggressive=0\n"""
+        pyproject_toml = """[tool.autopep8]\naggressvie=2\nignore=E,W\n"""
+        with temporary_project_directory() as dirname:
+            with open(os.path.join(dirname, "pyproject.toml"), "w") as fp:
+                fp.write(pyproject_toml)
+            with open(os.path.join(dirname, ".flake8"), "w") as fp:
+                fp.write(dot_flake8)
+            target_filename = os.path.join(dirname, "foo.py")
+            with open(target_filename, "w") as fp:
+                fp.write(line)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename], stdout=PIPE)
+            self.assertEqual(p.communicate()[0].decode("utf-8"), line)
+            self.assertEqual(p.returncode, 0)
+
+    def test_pyproject_toml_with_verbose_option(self):
+        """override to flake8 config"""
+        line = "a =  1\n"
+        verbose_line = "enable pyproject.toml config: section=tool.autopep8, key=ignore, value=E,W\n"
+        pyproject_toml = """[tool.autopep8]\naggressvie=2\nignore=E,W\n"""
+        with temporary_project_directory() as dirname:
+            with open(os.path.join(dirname, "pyproject.toml"), "w") as fp:
+                fp.write(pyproject_toml)
+            target_filename = os.path.join(dirname, "foo.py")
+            with open(target_filename, "w") as fp:
+                fp.write(line)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename, "-vvv"], stdout=PIPE)
+            self.assertEqual(p.communicate()[0].decode("utf-8"), "".join([line, verbose_line]))
+            self.assertEqual(p.returncode, 0)
+
 
 class ExperimentalSystemTests(unittest.TestCase):
 
@@ -6748,6 +6791,13 @@ def temporary_file_context(text, suffix='', prefix=''):
         temp_file.write(text)
     yield temporary[1]
     os.remove(temporary[1])
+
+
+@contextlib.contextmanager
+def temporary_project_directory(prefix="autopep8test"):
+    temporary = mkdtemp(prefix=prefix)
+    yield temporary
+    shutil.rmtree(temporary)
 
 
 @contextlib.contextmanager
