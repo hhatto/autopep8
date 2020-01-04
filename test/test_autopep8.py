@@ -20,8 +20,7 @@ import contextlib
 import io
 import shutil
 from subprocess import Popen, PIPE
-from tempfile import mkstemp
-import tempfile
+from tempfile import mkstemp, mkdtemp
 import tokenize
 import unittest
 import warnings
@@ -455,7 +454,7 @@ sys.maxint
                             msg=filename)
 
     def test_find_files(self):
-        temp_directory = tempfile.mkdtemp()
+        temp_directory = mkdtemp()
         try:
             target = os.path.join(temp_directory, 'dir')
             os.mkdir(target)
@@ -5226,7 +5225,7 @@ class CommandLineTests(unittest.TestCase):
         self.assertIn('--in-place and --diff are mutually exclusive', result)
 
     def test_recursive(self):
-        temp_directory = tempfile.mkdtemp(dir='.')
+        temp_directory = mkdtemp(dir='.')
         try:
             with open(os.path.join(temp_directory, 'a.py'), 'w') as output:
                 output.write("'abc'  \n")
@@ -5252,7 +5251,7 @@ class CommandLineTests(unittest.TestCase):
             shutil.rmtree(temp_directory)
 
     def test_recursive_should_not_crash_on_unicode_filename(self):
-        temp_directory = tempfile.mkdtemp(dir='.')
+        temp_directory = mkdtemp(dir='.')
         try:
             for filename in ['x.py', 'é.py', 'é.txt']:
                 with open(os.path.join(temp_directory, filename), 'w'):
@@ -5269,8 +5268,8 @@ class CommandLineTests(unittest.TestCase):
             shutil.rmtree(temp_directory)
 
     def test_recursive_should_ignore_hidden(self):
-        temp_directory = tempfile.mkdtemp(dir='.')
-        temp_subdirectory = tempfile.mkdtemp(prefix='.', dir=temp_directory)
+        temp_directory = mkdtemp(dir='.')
+        temp_subdirectory = mkdtemp(prefix='.', dir=temp_directory)
         try:
             with open(os.path.join(temp_subdirectory, 'a.py'), 'w') as output:
                 output.write("'abc'  \n")
@@ -5286,7 +5285,7 @@ class CommandLineTests(unittest.TestCase):
             shutil.rmtree(temp_directory)
 
     def test_exclude(self):
-        temp_directory = tempfile.mkdtemp(dir='.')
+        temp_directory = mkdtemp(dir='.')
         try:
             with open(os.path.join(temp_directory, 'a.py'), 'w') as output:
                 output.write("'abc'  \n")
@@ -5477,6 +5476,51 @@ aggressive=1
                  '--global-config={}'.format(filename)],
                 apply_config=True)
             self.assertEqual(args.aggressive, 1)
+
+    def test_pyproject_toml_config_local_int_value(self):
+        with temporary_file_context('[tool.autopep8]\naggressive=2\n') as filename:
+            args = autopep8.parse_args(
+                [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+                 '--global-config={}'.format(filename)],
+                apply_config=True)
+            self.assertEqual(args.aggressive, 2)
+
+
+class ConfigurationFileTests(unittest.TestCase):
+
+    def test_pyproject_toml_with_flake8_config(self):
+        """override to flake8 config"""
+        line = "a =  1\n"
+        dot_flake8 = """[pep8]\naggressive=0\n"""
+        pyproject_toml = """[tool.autopep8]\naggressvie=2\nignore=E,W\n"""
+        with temporary_project_directory() as dirname:
+            with open(os.path.join(dirname, "pyproject.toml"), "w") as fp:
+                fp.write(pyproject_toml)
+            with open(os.path.join(dirname, ".flake8"), "w") as fp:
+                fp.write(dot_flake8)
+            target_filename = os.path.join(dirname, "foo.py")
+            with open(target_filename, "w") as fp:
+                fp.write(line)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename], stdout=PIPE)
+            self.assertEqual(p.communicate()[0].decode("utf-8"), line)
+            self.assertEqual(p.returncode, 0)
+
+    def test_pyproject_toml_with_verbose_option(self):
+        """override to flake8 config"""
+        line = "a =  1\n"
+        verbose_line = "enable pyproject.toml config: section=tool.autopep8, key=ignore, value=E,W\n"
+        pyproject_toml = """[tool.autopep8]\naggressvie=2\nignore=E,W\n"""
+        with temporary_project_directory() as dirname:
+            with open(os.path.join(dirname, "pyproject.toml"), "w") as fp:
+                fp.write(pyproject_toml)
+            target_filename = os.path.join(dirname, "foo.py")
+            with open(target_filename, "w") as fp:
+                fp.write(line)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename, "-vvv"], stdout=PIPE)
+            output = p.communicate()[0].decode("utf-8")
+            self.assertTrue(line in output)
+            self.assertTrue(verbose_line in output)
+            self.assertEqual(p.returncode, 0)
 
 
 class ExperimentalSystemTests(unittest.TestCase):
@@ -6775,6 +6819,13 @@ def temporary_file_context(text, suffix='', prefix=''):
         temp_file.write(text)
     yield temporary[1]
     os.remove(temporary[1])
+
+
+@contextlib.contextmanager
+def temporary_project_directory(prefix="autopep8test"):
+    temporary = mkdtemp(prefix=prefix)
+    yield temporary
+    shutil.rmtree(temporary)
 
 
 @contextlib.contextmanager

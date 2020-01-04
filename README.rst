@@ -360,6 +360,18 @@ configuration file example::
     max_line_length = 120
     ignore = E501
 
+pyproject.toml
+~~~~~~~~~~~~~~
+autopep8 can also use `pyproject.toml`.
+section must use `[tool.autopep8]`, and `pyproject.toml` takes precedence
+over any other configuration files.
+
+configuration file example::
+
+    [tool.autopep8]
+    max_line_length = 120
+    ignore = E501
+
 
 Testing
 =======
