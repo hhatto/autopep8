@@ -5490,7 +5490,9 @@ class ConfigurationFileTests(unittest.TestCase):
             with open(target_filename, "w") as fp:
                 fp.write(line)
             p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename, "-vvv"], stdout=PIPE)
-            self.assertEqual(p.communicate()[0].decode("utf-8"), "".join([line, verbose_line]))
+            output = p.communicate()[0].decode("utf-8")
+            self.assertTrue(line in output)
+            self.assertTrue(verbose_line in output)
             self.assertEqual(p.returncode, 0)
 
 
