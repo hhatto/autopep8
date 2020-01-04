@@ -21,7 +21,6 @@ import io
 import shutil
 from subprocess import Popen, PIPE
 from tempfile import mkstemp, mkdtemp
-import tempfile
 import tokenize
 import unittest
 import warnings
@@ -455,7 +454,7 @@ sys.maxint
                             msg=filename)
 
     def test_find_files(self):
-        temp_directory = tempfile.mkdtemp()
+        temp_directory = mkdtemp()
         try:
             target = os.path.join(temp_directory, 'dir')
             os.mkdir(target)
@@ -2988,12 +2987,12 @@ if True:
         line = """\
 
 if True:
-    long_variable_name = tempfile.mkstemp(prefix='abcdefghijklmnopqrstuvwxyz0123456789')
+    long_variable_name = mkstemp(prefix='abcdefghijklmnopqrstuvwxyz0123456789')
 """
         fixed = """\
 
 if True:
-    long_variable_name = tempfile.mkstemp(
+    long_variable_name = mkstemp(
         prefix='abcdefghijklmnopqrstuvwxyz0123456789')
 """
         with autopep8_context(line) as result:
@@ -5199,7 +5198,7 @@ class CommandLineTests(unittest.TestCase):
         self.assertIn('--in-place and --diff are mutually exclusive', result)
 
     def test_recursive(self):
-        temp_directory = tempfile.mkdtemp(dir='.')
+        temp_directory = mkdtemp(dir='.')
         try:
             with open(os.path.join(temp_directory, 'a.py'), 'w') as output:
                 output.write("'abc'  \n")
@@ -5225,7 +5224,7 @@ class CommandLineTests(unittest.TestCase):
             shutil.rmtree(temp_directory)
 
     def test_recursive_should_not_crash_on_unicode_filename(self):
-        temp_directory = tempfile.mkdtemp(dir='.')
+        temp_directory = mkdtemp(dir='.')
         try:
             for filename in ['x.py', 'é.py', 'é.txt']:
                 with open(os.path.join(temp_directory, filename), 'w'):
@@ -5242,8 +5241,8 @@ class CommandLineTests(unittest.TestCase):
             shutil.rmtree(temp_directory)
 
     def test_recursive_should_ignore_hidden(self):
-        temp_directory = tempfile.mkdtemp(dir='.')
-        temp_subdirectory = tempfile.mkdtemp(prefix='.', dir=temp_directory)
+        temp_directory = mkdtemp(dir='.')
+        temp_subdirectory = mkdtemp(prefix='.', dir=temp_directory)
         try:
             with open(os.path.join(temp_subdirectory, 'a.py'), 'w') as output:
                 output.write("'abc'  \n")
@@ -5259,7 +5258,7 @@ class CommandLineTests(unittest.TestCase):
             shutil.rmtree(temp_directory)
 
     def test_exclude(self):
-        temp_directory = tempfile.mkdtemp(dir='.')
+        temp_directory = mkdtemp(dir='.')
         try:
             with open(os.path.join(temp_directory, 'a.py'), 'w') as output:
                 output.write("'abc'  \n")
@@ -5822,11 +5821,11 @@ foo_bar_zap_bing_bang_boom(
         # violates PEP 8.
         line = """\
 if True:
-    long_variable_name = tempfile.mkstemp(prefix='abcdefghijklmnopqrstuvwxyz0123456789')
+    long_variable_name = mkstemp(prefix='abcdefghijklmnopqrstuvwxyz0123456789')
 """
         fixed = """\
 if True:
-    long_variable_name = tempfile.mkstemp(
+    long_variable_name = mkstemp(
         prefix='abcdefghijklmnopqrstuvwxyz0123456789')
 """
         with autopep8_context(line, options=['--experimental']) as result:
