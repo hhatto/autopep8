@@ -2987,12 +2987,12 @@ if True:
         line = """\
 
 if True:
-    long_variable_name = mkstemp(prefix='abcdefghijklmnopqrstuvwxyz0123456789')
+    long_variable_name = tempfile.mkstemp(prefix='abcdefghijklmnopqrstuvwxyz0123456789')
 """
         fixed = """\
 
 if True:
-    long_variable_name = mkstemp(
+    long_variable_name = tempfile.mkstemp(
         prefix='abcdefghijklmnopqrstuvwxyz0123456789')
 """
         with autopep8_context(line) as result:
@@ -5823,11 +5823,11 @@ foo_bar_zap_bing_bang_boom(
         # violates PEP 8.
         line = """\
 if True:
-    long_variable_name = mkstemp(prefix='abcdefghijklmnopqrstuvwxyz0123456789')
+    long_variable_name = tempfile.mkstemp(prefix='abcdefghijklmnopqrstuvwxyz0123456789')
 """
         fixed = """\
 if True:
-    long_variable_name = mkstemp(
+    long_variable_name = tempfile.mkstemp(
         prefix='abcdefghijklmnopqrstuvwxyz0123456789')
 """
         with autopep8_context(line, options=['--experimental']) as result:
