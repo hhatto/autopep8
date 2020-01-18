@@ -202,7 +202,7 @@ class UnknownExtra(ResolutionError):
     """Distribution doesn't have an "extra feature" of the given name"""
 _provider_factories = {}
 
-PY_MAJOR = sys.version[:3]
+PY_MAJOR = "{}.{}".format(*sys.version_info)
 EGG_DIST = 3
 BINARY_DIST = 2
 SOURCE_DIST = 1
