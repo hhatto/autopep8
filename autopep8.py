@@ -75,7 +75,7 @@ except NameError:
     unicode = str
 
 
-__version__ = '1.5a1'
+__version__ = '1.5'
 
 
 CR = '\r'
