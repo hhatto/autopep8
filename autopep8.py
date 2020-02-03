@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Copyright (C) 2010-2011 Hideo Hattori
 # Copyright (C) 2011-2013 Hideo Hattori, Steven Myint
 # Copyright (C) 2013-2016 Hideo Hattori, Steven Myint, Bill Wendling
@@ -3407,9 +3405,11 @@ def fix_code(source, options=None, encoding=None, apply_config=False):
     """
     options = _get_options(options, apply_config)
 
+    if hasattr(source, 'readlines'):
+        return fix_lines(source.readlines(), options=options)
+
     if not isinstance(source, unicode):
         source = source.decode(encoding or get_encoding())
-
     sio = io.StringIO(source)
     return fix_lines(sio.readlines(), options=options)
 
@@ -4251,6 +4251,11 @@ def wrap_output(output, encoding):
                                       else output)
 
 
+def wrap_input(input, encoding):
+    reader_getter = codecs.getreader(encoding)
+    return reader_getter(input.buffer if hasattr(input, 'buffer') else input)
+
+
 def get_encoding():
     """Return preferred encoding."""
     return locale.getpreferredencoding() or sys.getdefaultencoding()
@@ -4280,12 +4285,24 @@ def main(argv=None, apply_config=True):
         if args.files == ['-']:
             assert not args.in_place
 
-            encoding = sys.stdin.encoding or get_encoding()
+            from lib2to3.pgen2 import tokenize as lib2to3_tokenize
+            if hasattr(sys.stdin, 'buffer'):
+                data = sys.stdin.buffer.read()
+            else:
+                data = sys.stdin.read()
+            bytes_stdin_io = io.BytesIO(data)
 
+            # detect encoding dynamic
+            input_encoding = \
+                lib2to3_tokenize.detect_encoding(bytes_stdin_io.readline)[0]
+            output_encoding = sys.stdin.encoding or get_encoding()
+
+            bytes_stdin_io = io.BytesIO(data)
+            stdin = wrap_input(bytes_stdin_io, input_encoding)
+            stdout = wrap_output(sys.stdout, output_encoding)
             # LineEndingWrapper is unnecessary here due to the symmetry between
             # standard in and standard out.
-            wrap_output(sys.stdout, encoding=encoding).write(
-                fix_code(sys.stdin.read(), args, encoding=encoding))
+            stdout.write(fix_code(stdin, args))
         else:
             if args.in_place or args.diff:
                 args.files = list(set(args.files))
