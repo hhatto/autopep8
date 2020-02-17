@@ -4402,6 +4402,32 @@ else:
         with autopep8_context(line, options=['--select=W503']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w503_with_ignore_w504(self):
+        line = '(width == 0\n + height == 0)\n'
+        fixed = '(width == 0 +\n height == 0)\n'
+        with autopep8_context(line, options=['--ignore=E,W504']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_w504_with_ignore_w503(self):
+        line = '(width == 0 +\n height == 0)\n'
+        fixed = '(width == 0\n + height == 0)\n'
+        with autopep8_context(line, options=['--ignore=E,W503']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_w503_w504_none_ignored(self):
+        line = '(width == 0 +\n height == 0\n+ depth == 0)\n'
+        fixed = '(width == 0 +\n height == 0\n+ depth == 0)\n'
+        with autopep8_context(line, options=['--ignore=E']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_w503_w504_both_ignored(self):
+        line = '(width == 0 +\n height == 0\n+ depth == 0)\n'
+        fixed = '(width == 0 +\n height == 0\n+ depth == 0)\n'
+        with autopep8_context(
+            line, options=['--ignore=E,W503, W504'],
+        ) as result:
+            self.assertEqual(fixed, result)
+
     def test_w503_skip_default(self):
         line = '(width == 0\n + height == 0)\n'
         with autopep8_context(line) as result:
