@@ -5378,6 +5378,17 @@ class CommandLineTests(unittest.TestCase):
             fixed,
             process.communicate(line.encode('utf-8'))[0].decode('utf-8'))
 
+    def test_exit_code_should_be_set_when_standard_in(self):
+        line = 'print( 1 )\n'
+        process = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                        ['--exit-code', '-'],
+                        stdout=PIPE,
+                        stdin=PIPE)
+        process.communicate(line.encode('utf-8'))[0].decode('utf-8')
+        self.assertEqual(
+            process.returncode,
+            autopep8.EXIT_CODE_EXISTS_DIFF)
+
 
 class ConfigurationTests(unittest.TestCase):
 
