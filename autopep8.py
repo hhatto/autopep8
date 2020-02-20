@@ -4281,11 +4281,16 @@ def main(argv=None, apply_config=True):
             assert not args.in_place
 
             encoding = sys.stdin.encoding or get_encoding()
+            read_stdin = sys.stdin.read()
+            fixed_stdin = fix_code(read_stdin, args, encoding=encoding)
 
             # LineEndingWrapper is unnecessary here due to the symmetry between
             # standard in and standard out.
-            wrap_output(sys.stdout, encoding=encoding).write(
-                fix_code(sys.stdin.read(), args, encoding=encoding))
+            wrap_output(sys.stdout, encoding=encoding).write(fixed_stdin)
+
+            if hash(read_stdin) != hash(fixed_stdin):
+                if args.exit_code:
+                    return EXIT_CODE_EXISTS_DIFF
         else:
             if args.in_place or args.diff:
                 args.files = list(set(args.files))
