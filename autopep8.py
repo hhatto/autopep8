@@ -3742,8 +3742,8 @@ def parse_args(arguments, apply_config=False):
 
     if args.ignore:
         args.ignore = _split_comma_separated(args.ignore)
-        if not all(
-                any(
+        if all(
+                not any(
                     conflicting_code.startswith(ignore_code)
                     for ignore_code in args.ignore
                 )
