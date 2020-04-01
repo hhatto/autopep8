@@ -1496,7 +1496,7 @@ def get_module_imports_on_top_of_file(source, import_line_index):
                 return cnt + offset + 1
             return cnt
         elif pycodestyle.DUNDER_REGEX.match(line):
-            continue
+            return cnt
         elif any(line.startswith(kw) for kw in allowed_try_keywords):
             continue
         elif is_string_literal(line):
