@@ -2528,6 +2528,48 @@ print(os, reader, writer)
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e402_with_dunder(self):
+        line = """\
+__all__ = ["a", "b"]
+def f():
+    pass
+import os
+"""
+        fixed = """\
+import os
+__all__ = ["a", "b"]
+
+
+def f():
+    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e402_with_dunder_lines(self):
+        line = """\
+__all__ = [
+    "a",
+    "b",
+]
+def f():
+    pass
+import os
+"""
+        fixed = """\
+import os
+__all__ = [
+    "a",
+    "b",
+]
+
+
+def f():
+    pass
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_basic(self):
         line = """\
 
