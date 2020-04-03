@@ -3691,6 +3691,32 @@ def create_parser():
     return parser
 
 
+def _expand_codes(codes):
+    """expand to individual E/W codes"""
+    ret = set()
+
+    is_conflict = False
+    if all(
+            any(
+                conflicting_code.startswith(code)
+                for code in codes
+            )
+            for conflicting_code in CONFLICTING_CODES
+    ):
+        is_conflict = True
+
+    for code in codes:
+        if code == "W":
+            ret.update({"W1", "W2", "W3", "W503", "W505", "W6"})
+        elif code in ("W5", "W50"):
+            ret.update({"W503", "W505"})
+        elif code in ("W503", "W504") and is_conflict:
+            pass
+        else:
+            ret.add(code)
+    return ret
+
+
 def parse_args(arguments, apply_config=False):
     """Parse command-line options."""
     parser = create_parser()
@@ -3738,7 +3764,7 @@ def parse_args(arguments, apply_config=False):
         parser.error('--max-line-length must be greater than 0')
 
     if args.select:
-        args.select = _split_comma_separated(args.select)
+        args.select = _expand_codes(_split_comma_separated(args.select))
 
     if args.ignore:
         args.ignore = _split_comma_separated(args.ignore)
