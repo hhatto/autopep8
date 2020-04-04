@@ -4640,7 +4640,6 @@ if True:
         with autopep8_context(line, options=['--ignore=E265']) as result:
             self.assertEqual(line, result)
 
-    @unittest.skip('TODO')
     def test_w504_with_line_comment(self):
         line = '(width == 0 +\n # this is comment\n height == 0)\n'
         fixed = '(width == 0\n # this is comment\n + height == 0)\n'
