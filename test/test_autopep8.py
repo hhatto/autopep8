@@ -4665,6 +4665,29 @@ def x(y, z):
         with autopep8_context(line, options=['--ignore=E265']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w503_and_w504_conflict(self):
+        line = """\
+if True:
+    if True:
+        assert_equal(self.nodes[0].getbalance(
+        ), bal + Decimal('50.00000000') + Decimal('2.19000000'))  # block reward + tx
+"""
+        fixed = """\
+if True:
+    if True:
+        assert_equal(
+            self.nodes[0].getbalance(),
+            bal +
+            Decimal('50.00000000') +
+            Decimal('2.19000000'))  # block reward + tx
+"""
+        with autopep8_context(line, options=['-aa', '--select=E,W']) as result:
+            self.assertEqual(fixed, result)
+        with autopep8_context(line, options=['-aa', '--select=E,W5']) as result:
+            self.assertEqual(fixed, result)
+        with autopep8_context(line, options=['-aa', '--select=E,W50']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w601(self):
         line = 'a = {0: 1}\na.has_key(0)\n'
         fixed = 'a = {0: 1}\n0 in a\n'
