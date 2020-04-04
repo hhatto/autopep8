@@ -3710,9 +3710,7 @@ def _expand_codes(codes):
             ret.update({"W1", "W2", "W3", "W503", "W505", "W6"})
         elif code in ("W5", "W50"):
             ret.update({"W503", "W505"})
-        elif code in ("W503", "W504") and is_conflict:
-            pass
-        else:
+        elif not (code in ("W503", "W504") and is_conflict):
             ret.add(code)
     return ret
 
