@@ -3691,7 +3691,7 @@ def create_parser():
     return parser
 
 
-def _expand_codes(codes):
+def _expand_codes(codes, ignore_codes):
     """expand to individual E/W codes"""
     ret = set()
 
@@ -3705,13 +3705,27 @@ def _expand_codes(codes):
     ):
         is_conflict = True
 
+    is_ignore_w503 = "W503" in ignore_codes
+    is_ignore_w504 = "W504" in ignore_codes
+
     for code in codes:
         if code == "W":
-            ret.update({"W1", "W2", "W3", "W503", "W505", "W6"})
+            if is_ignore_w503 and is_ignore_w504:
+                ret.update({"W1", "W2", "W3", "W505", "W6"})
+            elif is_ignore_w503:
+                ret.update({"W1", "W2", "W3", "W504", "W505", "W6"})
+            else:
+                ret.update({"W1", "W2", "W3", "W503", "W505", "W6"})
         elif code in ("W5", "W50"):
-            ret.update({"W503", "W505"})
+            if is_ignore_w503 and is_ignore_w504:
+                ret.update({"W505"})
+            elif is_ignore_w503:
+                ret.update({"W504", "W505"})
+            else:
+                ret.update({"W503", "W505"})
         elif not (code in ("W503", "W504") and is_conflict):
             ret.add(code)
+
     return ret
 
 
@@ -3762,7 +3776,11 @@ def parse_args(arguments, apply_config=False):
         parser.error('--max-line-length must be greater than 0')
 
     if args.select:
-        args.select = _expand_codes(_split_comma_separated(args.select))
+        args.select = _expand_codes(_split_comma_separated(args.select),
+                                    (
+                                        _split_comma_separated(args.ignore)
+                                        if args.ignore else []
+                                    ))
 
     if args.ignore:
         args.ignore = _split_comma_separated(args.ignore)
