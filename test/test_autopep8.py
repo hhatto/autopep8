@@ -4597,6 +4597,52 @@ b = (1 +
         with autopep8_context(line, options=['--select=W503', '--ignore=E']) as result:
             self.assertEqual(fixed, result)
 
+    def test_ignore_only_w503_with_select_w(self):
+        line = """\
+a = (
+    11 + 22 +
+    33 +
+    44
+    + 55
+)
+"""
+        fixed = """\
+a = (
+    11 + 22
+    + 33
+    + 44
+    + 55
+)
+"""
+        with autopep8_context(line, options=['--select=W', '--ignore=W503']) as result:
+            self.assertEqual(fixed, result)
+        with autopep8_context(line, options=['--select=W5', '--ignore=W503']) as result:
+            self.assertEqual(fixed, result)
+        with autopep8_context(line, options=['--select=W50', '--ignore=W503']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_ignore_only_w504_with_select_w(self):
+        line = """\
+a = (
+    11 + 22 +
+    33 +
+    44
+    + 55
+)
+"""
+        fixed = """\
+a = (
+    11 + 22 +
+    33 +
+    44 +
+    55
+)
+"""
+        with autopep8_context(line, options=['--select=W', '--ignore=W504']) as result:
+            self.assertEqual(fixed, result)
+        with autopep8_context(line, options=['--select=W5', '--ignore=W504']) as result:
+            self.assertEqual(fixed, result)
+
     def test_w504(self):
         line = '(width == 0 +\n height == 0)\n'
         fixed = '(width == 0\n + height == 0)\n'
