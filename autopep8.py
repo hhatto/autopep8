@@ -3500,7 +3500,7 @@ def fix_file(filename, options=None, output=None, apply_config=False):
 
     fixed_source = original_source
 
-    if options.in_place or output:
+    if options.in_place or options.diff or output:
         encoding = detect_encoding(filename)
 
     if output:
@@ -3515,6 +3515,8 @@ def fix_file(filename, options=None, output=None, apply_config=False):
         if output:
             output.write(diff)
             output.flush()
+        elif options.jobs > 1:
+            diff = diff.encode(encoding)
         return diff
     elif options.in_place:
         original = "".join(original_source).splitlines()
@@ -3810,7 +3812,7 @@ def parse_args(arguments, apply_config=False):
         import multiprocessing
         args.jobs = multiprocessing.cpu_count()
 
-    if args.jobs > 1 and not args.in_place:
+    if args.jobs > 1 and not (args.in_place or args.diff):
         parser.error('parallel jobs requires --in-place')
 
     if args.line_range:
@@ -4232,6 +4234,10 @@ def fix_multiple_files(filenames, options, output=None):
         import multiprocessing
         pool = multiprocessing.Pool(options.jobs)
         ret = pool.map(_fix_file, [(name, options) for name in filenames])
+        if options.diff:
+            for r in ret:
+                sys.stdout.write(r.decode())
+                sys.stdout.flush()
         results.extend([x for x in ret if x is not None])
     else:
         for name in filenames:

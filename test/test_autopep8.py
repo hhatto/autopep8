@@ -5341,6 +5341,31 @@ class CommandLineTests(unittest.TestCase):
                 with open(filename_b) as f:
                     self.assertEqual(fixed, f.read())
 
+    def test_parallel_jobs_with_diff_option(self):
+        line = "'abc'  \n"
+        fixed = "'abc'\n"
+
+        with temporary_file_context(line) as filename_a:
+            with temporary_file_context(line) as filename_b:
+                files = list(set([filename_a, filename_b]))
+                p = Popen(list(AUTOPEP8_CMD_TUPLE) + files +
+                          ['--jobs=3', '--diff'], stdout=PIPE)
+                p.wait()
+                output = p.stdout.read().decode()
+
+                actual_diffs = []
+                for filename in files:
+                    actual_diffs.append("""\
+--- original/{filename}
++++ fixed/{filename}
+@@ -1 +1 @@
+-'abc'  
++'abc'
+""".format(filename=filename))
+                self.assertEqual(0, p.returncode)
+                for actual_diff in actual_diffs:
+                    self.assertIn(actual_diff, output)
+
     def test_parallel_jobs_with_automatic_cpu_count(self):
         line = "'abc'  \n"
         fixed = "'abc'\n"
