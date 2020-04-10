@@ -4209,7 +4209,13 @@ def find_files(filenames, recursive, exclude):
                                   if match_file(os.path.join(root, d),
                                                 exclude)]
         else:
-            yield name
+            is_exclude_match = False
+            for pattern in exclude:
+                if fnmatch.fnmatch(name, pattern):
+                    is_exclude_match = True
+                    break
+            if not is_exclude_match:
+                yield name
 
 
 def _fix_file(parameters):
