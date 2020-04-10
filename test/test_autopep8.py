@@ -5485,6 +5485,28 @@ class CommandLineTests(unittest.TestCase):
         finally:
             shutil.rmtree(temp_directory)
 
+    def test_exclude_with_directly_file_args(self):
+        temp_directory = mkdtemp(dir='.')
+        try:
+            filepath_a = os.path.join(temp_directory, 'a.py')
+            with open(filepath_a, 'w') as output:
+                output.write("'abc'  \n")
+
+            os.mkdir(os.path.join(temp_directory, 'd'))
+            filepath_b = os.path.join(temp_directory, 'd', 'b.py')
+            with open(os.path.join(filepath_b), 'w') as output:
+                output.write('123  \n')
+
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      ['--exclude=*/a.py', '--diff', filepath_a, filepath_b],
+                      stdout=PIPE)
+            result = p.communicate()[0].decode('utf-8')
+
+            self.assertNotIn('abc', result)
+            self.assertIn('123', result)
+        finally:
+            shutil.rmtree(temp_directory)
+
     def test_invalid_option_combinations(self):
         line = "'abc'  \n"
         with temporary_file_context(line) as filename:
