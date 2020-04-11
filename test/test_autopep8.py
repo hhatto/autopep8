@@ -4017,6 +4017,15 @@ MY_CONST = [
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e702_with_e701_and_only_select_e702_option(self):
+        line = """\
+for i in range(3):
+    if i == 1: print i; continue
+    print i
+"""
+        with autopep8_context(line, options=["--select=E702"]) as result:
+            self.assertEqual(line, result)
+
     def test_e703_with_inline_comment(self):
         line = 'a = 5;    # inline comment\n'
         fixed = 'a = 5    # inline comment\n'
