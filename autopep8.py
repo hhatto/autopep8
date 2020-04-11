@@ -3778,11 +3778,10 @@ def parse_args(arguments, apply_config=False):
         parser.error('--max-line-length must be greater than 0')
 
     if args.select:
-        args.select = _expand_codes(_split_comma_separated(args.select),
-                                    (
-                                        _split_comma_separated(args.ignore)
-                                        if args.ignore else []
-                                    ))
+        args.select = _expand_codes(
+            _split_comma_separated(args.select),
+            (_split_comma_separated(args.ignore) if args.ignore else [])
+        )
 
     if args.ignore:
         args.ignore = _split_comma_separated(args.ignore)
