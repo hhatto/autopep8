@@ -4017,6 +4017,15 @@ MY_CONST = [
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e702_with_e701_and_only_select_e702_option(self):
+        line = """\
+for i in range(3):
+    if i == 1: print i; continue
+    print i
+"""
+        with autopep8_context(line, options=["--select=E702"]) as result:
+            self.assertEqual(line, result)
+
     def test_e703_with_inline_comment(self):
         line = 'a = 5;    # inline comment\n'
         fixed = 'a = 5    # inline comment\n'
@@ -5274,6 +5283,19 @@ class CommandLineTests(unittest.TestCase):
                       stdout=PIPE, stderr=PIPE)
             verbose_error = p.communicate()[1].decode('utf-8')
         self.assertIn('------------', verbose_error)
+
+    def test_verbose_with_select_e702(self):
+        line = """\
+for i in range(3):
+    if i == 1: print i; continue
+    print i
+"""
+        with temporary_file_context(line) as filename:
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [filename, '-vvv', '--select=E702'],
+                      stdout=PIPE, stderr=PIPE)
+            verbose_error = p.communicate()[1].decode('utf-8')
+        self.assertIn(" with other compound statements", verbose_error)
 
     def test_in_place(self):
         line = "'abc'  \n"
