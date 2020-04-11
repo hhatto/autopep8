@@ -1033,8 +1033,7 @@ class FixPEP8(object):
                 if self.options.verbose:
                     print(
                         '---> avoid fixing {error} with '
-                        'other compound statements'.format(error=result['id'],
-                                                           ine=result['line']),
+                        'other compound statements'.format(error=result['id']),
                         file=sys.stderr
                     )
                 return []
