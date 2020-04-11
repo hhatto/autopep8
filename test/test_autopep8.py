@@ -5284,6 +5284,19 @@ class CommandLineTests(unittest.TestCase):
             verbose_error = p.communicate()[1].decode('utf-8')
         self.assertIn('------------', verbose_error)
 
+    def test_verbose_with_select_e702(self):
+        line = """\
+for i in range(3):
+    if i == 1: print i; continue
+    print i
+"""
+        with temporary_file_context(line) as filename:
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [filename, '-vvv', '--select=E702'],
+                      stdout=PIPE, stderr=PIPE)
+            verbose_error = p.communicate()[1].decode('utf-8')
+        self.assertIn(" with other compound statements", verbose_error)
+
     def test_in_place(self):
         line = "'abc'  \n"
         fixed = "'abc'\n"
