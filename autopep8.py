@@ -67,6 +67,7 @@ except ImportError:
     from ConfigParser import Error
 
 import pycodestyle
+from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX
 
 
 try:
@@ -1028,7 +1029,14 @@ class FixPEP8(object):
         # https://docs.python.org/reference/compound_stmts.html
         for line in logical_lines:
             if (result['id'] == 'E702' and ':' in line
-                    and STARTSWITH_DEF_REGEX.match(line)):
+                    and STARTSWITH_INDENT_STATEMENT_REGEX.match(line)):
+                if self.options.verbose:
+                    print(
+                        '---> avoid fixing {error} with '
+                        'other compound statements'.format(error=result['id'],
+                                                           ine=result['line']),
+                        file=sys.stderr
+                    )
                 return []
 
         line_index = result['line'] - 1
