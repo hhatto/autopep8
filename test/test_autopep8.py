@@ -5205,6 +5205,24 @@ class CommandLineTests(unittest.TestCase):
 
     maxDiff = None
 
+    def test_e122_and_e302_with_backslash(self):
+        line = """\
+import sys
+\\
+def f():
+    pass
+"""
+        fixed = """\
+import sys
+
+
+def f():
+    pass
+"""
+        with autopep8_subprocess(line, [], timeout=3) as (result, retcode):
+            self.assertEqual(fixed, result)
+            self.assertEqual(retcode, autopep8.EXIT_CODE_OK)
+
     def test_diff(self):
         line = "'abc'  \n"
         fixed = "-'abc'  \n+'abc'\n"
@@ -7036,11 +7054,11 @@ def autopep8_context(line, options=None):
 
 
 @contextlib.contextmanager
-def autopep8_subprocess(line, options):
+def autopep8_subprocess(line, options, timeout=None):
     with temporary_file_context(line) as filename:
         p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename] + options,
                   stdout=PIPE)
-        yield (p.communicate()[0].decode('utf-8'), p.returncode)
+        yield (p.communicate(timeout=timeout)[0].decode('utf-8'), p.returncode)
 
 
 @contextlib.contextmanager
