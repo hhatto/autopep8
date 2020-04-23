@@ -7069,6 +7069,7 @@ def autopep8_subprocess(line, options, timeout=None):
                     time.sleep(0.5)
                     timeout -= 0.5
                 if p.poll() is None:
+                    p.kill()
                     raise Exception("subprocess is timed out")
                 _stdout, _ = p.communicate()
         yield (_stdout.decode('utf-8'), p.returncode)
