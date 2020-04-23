@@ -5216,6 +5216,7 @@ def f():
 import sys
 
 
+\\
 def f():
     pass
 """

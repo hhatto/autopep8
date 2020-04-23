@@ -819,8 +819,13 @@ class FixPEP8(object):
     def fix_e302(self, result):
         """Add missing 2 blank lines."""
         add_linenum = 2 - int(result['info'].split()[-1])
+        offset = 1
+        if self.source[result['line'] - 2].strip() == "\\":
+            offset = 2
         cr = '\n' * add_linenum
-        self.source[result['line'] - 1] = cr + self.source[result['line'] - 1]
+        self.source[result['line'] - offset] = (
+            cr + self.source[result['line'] - offset]
+        )
 
     def fix_e303(self, result):
         """Remove extra blank lines."""
