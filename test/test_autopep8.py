@@ -15,7 +15,7 @@ from __future__ import unicode_literals
 import os
 import re
 import sys
-
+import time
 import contextlib
 import io
 import shutil
@@ -5205,6 +5205,25 @@ class CommandLineTests(unittest.TestCase):
 
     maxDiff = None
 
+    def test_e122_and_e302_with_backslash(self):
+        line = """\
+import sys
+\\
+def f():
+    pass
+"""
+        fixed = """\
+import sys
+
+
+\\
+def f():
+    pass
+"""
+        with autopep8_subprocess(line, [], timeout=3) as (result, retcode):
+            self.assertEqual(fixed, result)
+            self.assertEqual(retcode, autopep8.EXIT_CODE_OK)
+
     def test_diff(self):
         line = "'abc'  \n"
         fixed = "-'abc'  \n+'abc'\n"
@@ -7036,11 +7055,24 @@ def autopep8_context(line, options=None):
 
 
 @contextlib.contextmanager
-def autopep8_subprocess(line, options):
+def autopep8_subprocess(line, options, timeout=None):
     with temporary_file_context(line) as filename:
-        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename] + options,
-                  stdout=PIPE)
-        yield (p.communicate()[0].decode('utf-8'), p.returncode)
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename] + options, stdout=PIPE)
+        if timeout is None:
+            _stdout, _ = p.communicate()
+        else:
+            try:
+                _stdout, _ = p.communicate(timeout=timeout)
+            except TypeError:
+                # for Python2
+                while p.poll() is None and timeout > 0:
+                    time.sleep(0.5)
+                    timeout -= 0.5
+                if p.poll() is None:
+                    p.kill()
+                    raise Exception("subprocess is timed out")
+                _stdout, _ = p.communicate()
+        yield (_stdout.decode('utf-8'), p.returncode)
 
 
 @contextlib.contextmanager
