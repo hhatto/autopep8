@@ -66,6 +66,7 @@ except ImportError:
     from ConfigParser import SafeConfigParser
     from ConfigParser import Error
 
+import toml
 import pycodestyle
 from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX
 
@@ -3756,7 +3757,10 @@ def parse_args(arguments, apply_config=False):
     if apply_config:
         parser = read_config(args, parser)
         # prioritize settings when exist pyproject.toml's tool.autopep8 section
-        parser_with_pyproject_toml = read_pyproject_toml(args, parser)
+        try:
+            parser_with_pyproject_toml = read_pyproject_toml(args, parser)
+        except Exception:
+            parser_with_pyproject_toml = None
         if parser_with_pyproject_toml:
             parser = parser_with_pyproject_toml
         args = parser.parse_args(arguments)
@@ -3891,38 +3895,52 @@ def read_config(args, parser):
 
 def read_pyproject_toml(args, parser):
     """Read pyproject.toml and load configuration."""
-    config = SafeConfigParser()
+    config = None
 
-    try:
-        config.read(args.global_config)
+    if os.path.exists(args.global_config):
+        with open(args.global_config) as fp:
+            config = toml.load(fp)
 
-        if not args.ignore_local_config:
-            parent = tail = args.files and os.path.abspath(
-                os.path.commonprefix(args.files))
-            while tail:
-                if config.read([os.path.join(parent, "pyproject.toml"), ]):
+    if not args.ignore_local_config:
+        parent = tail = args.files and os.path.abspath(
+            os.path.commonprefix(args.files))
+        while tail:
+            pyproject_toml = os.path.join(parent, "pyproject.toml")
+            if os.path.exists(pyproject_toml):
+                with open(pyproject_toml) as fp:
+                    config = toml.load(fp)
                     break
-                (parent, tail) = os.path.split(parent)
+            (parent, tail) = os.path.split(parent)
 
-        defaults = {}
-        option_list = {o.dest: o.type or type(o.default)
-                       for o in parser._actions}
-
-        for section in ["tool.autopep8"]:
-            if not config.has_section(section):
-                continue
-            for norm_opt, k, value in _get_normalize_options(config, section,
-                                                             option_list):
-                if args.verbose:
-                    print("enable pyproject.toml config: section={}, "
-                          "key={}, value={}".format(section, k, value))
-                defaults[norm_opt] = value
-
-        if defaults:
-            # set value when exists key-value in defaults dict
-            parser.set_defaults(**defaults)
-    except Error:
+    if not config:
         return None
+
+    if config.get("tool", {}).get("autopep8") is None:
+        return None
+
+    config = config.get("tool").get("autopep8")
+
+    defaults = {}
+    option_list = {o.dest: o.type or type(o.default)
+                   for o in parser._actions}
+
+    TUPLED_OPTIONS = ("ignore", "select")
+    for (k, v) in config.items():
+        norm_opt = k.lstrip('-').replace('-', '_')
+        if not option_list.get(norm_opt):
+            continue
+        if type(v) in (list, tuple) and norm_opt in TUPLED_OPTIONS:
+            value = ",".join(v)
+        else:
+            value = v
+        if args.verbose:
+            print("enable pyproject.toml config: "
+                  "key={}, value={}".format(k, value))
+        defaults[norm_opt] = value
+
+    if defaults:
+        # set value when exists key-value in defaults dict
+        parser.set_defaults(**defaults)
 
     return parser
 
