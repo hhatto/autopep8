@@ -5244,6 +5244,12 @@ def f():
             self.assertEqual('', '\n'.join(result.split('\n')[3:]))
             self.assertEqual(retcode, autopep8.EXIT_CODE_OK)
 
+    def test_non_diff_with_exit_code_and_jobs_options(self):
+        line = "'abc'\n"
+        with autopep8_subprocess(line, ['-j0', '--diff', '--exit-code']) as (result, retcode):
+            self.assertEqual('', '\n'.join(result.split('\n')[3:]))
+            self.assertEqual(retcode, autopep8.EXIT_CODE_OK)
+
     def test_diff_with_empty_file(self):
         with autopep8_subprocess('', ['--diff']) as (result, retcode):
             self.assertEqual('\n'.join(result.split('\n')[3:]), '')
