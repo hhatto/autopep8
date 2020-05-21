@@ -4363,7 +4363,12 @@ def main(argv=None, apply_config=True):
                 assert len(args.files) == 1
                 assert not args.recursive
 
-            ret = fix_multiple_files(args.files, args, sys.stdout)
+            results = fix_multiple_files(args.files, args, sys.stdout)
+            if args.diff:
+                ret = any([len(ret) != 0 for ret in results])
+            else:
+                # with in-place option
+                ret = any([ret is not None for ret in results])
             if args.exit_code and ret:
                 return EXIT_CODE_EXISTS_DIFF
     except KeyboardInterrupt:
