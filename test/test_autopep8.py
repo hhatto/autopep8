@@ -5751,7 +5751,7 @@ class ConfigurationFileTests(unittest.TestCase):
         """override to flake8 config"""
         line = "a =  1\n"
         dot_flake8 = """[pep8]\naggressive=0\n"""
-        pyproject_toml = """[tool.autopep8]\naggressvie=2\nignore=E,W\n"""
+        pyproject_toml = """[tool.autopep8]\naggressvie=2\nignore="E,W"\n"""
         with temporary_project_directory() as dirname:
             with open(os.path.join(dirname, "pyproject.toml"), "w") as fp:
                 fp.write(pyproject_toml)
@@ -5767,8 +5767,8 @@ class ConfigurationFileTests(unittest.TestCase):
     def test_pyproject_toml_with_verbose_option(self):
         """override to flake8 config"""
         line = "a =  1\n"
-        verbose_line = "enable pyproject.toml config: section=tool.autopep8, key=ignore, value=E,W\n"
-        pyproject_toml = """[tool.autopep8]\naggressvie=2\nignore=E,W\n"""
+        verbose_line = "enable pyproject.toml config: key=ignore, value=E,W\n"
+        pyproject_toml = """[tool.autopep8]\naggressvie=2\nignore="E,W"\n"""
         with temporary_project_directory() as dirname:
             with open(os.path.join(dirname, "pyproject.toml"), "w") as fp:
                 fp.write(pyproject_toml)
@@ -5779,6 +5779,20 @@ class ConfigurationFileTests(unittest.TestCase):
             output = p.communicate()[0].decode("utf-8")
             self.assertTrue(line in output)
             self.assertTrue(verbose_line in output)
+            self.assertEqual(p.returncode, 0)
+
+    def test_pyproject_toml_with_iterable_value(self):
+        line = "a =  1\n"
+        pyproject_toml = """[tool.autopep8]\naggressvie=2\nignore=["E","W"]\n"""
+        with temporary_project_directory() as dirname:
+            with open(os.path.join(dirname, "pyproject.toml"), "w") as fp:
+                fp.write(pyproject_toml)
+            target_filename = os.path.join(dirname, "foo.py")
+            with open(target_filename, "w") as fp:
+                fp.write(line)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename, ], stdout=PIPE)
+            output = p.communicate()[0].decode("utf-8")
+            self.assertTrue(line in output)
             self.assertEqual(p.returncode, 0)
 
 
