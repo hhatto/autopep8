@@ -3646,8 +3646,6 @@ def foobar(sldfkjlsdfsdf, kksdfsdfsf,sdfsdfsdf, sdfsdfkdk, szdfsdfsdf, sdfsdfsdf
     pass
 """
         fixed = """\
-
-
 def foobar(
         sldfkjlsdfsdf,
         kksdfsdfsf,
@@ -5161,6 +5159,22 @@ from c import fc
         with autopep8_context(line) as result:
             self.assertEqual(result[:4], 'from')
 
+    @unittest.skipIf(
+        (sys.version_info.major >= 3 and sys.version_info.minor < 8)
+        or sys.version_info.major < 3,
+        "syntax error in Python3.7 and lower version",
+    )
+    def test_with_walrus_operator(self):
+        """check pycodestyle 2.6.0+"""
+        line = """\
+sql_stmt = ""
+with open(filename) as f:
+    while line := f.readline():
+        sql_stmt += line
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
 
 class UtilityFunctionTests(unittest.TestCase):
 
@@ -6286,7 +6300,7 @@ class Useless(object):
 class Useless(object):
 
     def _table_field_is_plain_widget(self, widget):
-        if widget.__class__ == Widget or(
+        if widget.__class__ == Widget or (
                 widget.__class__ == WidgetMeta and Widget in widget.__bases__):
             return True
 
@@ -6681,8 +6695,6 @@ aaaaaaaaaaaaaaaaaaaaa(
 @foo(('xxxxxxxxxxxxxxxxxxxxxxxxxx', users.xxxxxxxxxxxxxxxxxxxxxxxxxx), ('yyyyyyyyyyyy', users.yyyyyyyyyyyy), ('zzzzzzzzzzzzzz', users.zzzzzzzzzzzzzz))
 """
         fixed = """\
-
-
 @foo(('xxxxxxxxxxxxxxxxxxxxxxxxxx', users.xxxxxxxxxxxxxxxxxxxxxxxxxx),
      ('yyyyyyyyyyyy', users.yyyyyyyyyyyy),
      ('zzzzzzzzzzzzzz', users.zzzzzzzzzzzzzz))

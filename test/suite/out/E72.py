@@ -1,15 +1,16 @@
 #: E721
-import types
 if isinstance(res, type(42)):
     pass
 #: E721
 if not isinstance(res, type("")):
     pass
 #: E721
+import types
 
 if res == types.IntType:
     pass
 #: E721
+import types
 
 if not isinstance(res, types.ListType):
     pass
