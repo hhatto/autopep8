@@ -5159,6 +5159,17 @@ from c import fc
         with autopep8_context(line) as result:
             self.assertEqual(result[:4], 'from')
 
+    def test_with_walrus_operator(self):
+        """check pycodestyle 2.6.0+"""
+        line = """\
+sql_stmt = ""
+with open(filename) as f:
+    while line := f.readline():
+        sql_stmt += line
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
 
 class UtilityFunctionTests(unittest.TestCase):
 
