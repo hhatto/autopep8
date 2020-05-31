@@ -371,7 +371,7 @@ configuration file example::
 
     [tool.autopep8]
     max_line_length = 120
-    ignore = E501
+    ignore = "E501,W6"  # or ["E501", "W6"]
 
 
 Testing
