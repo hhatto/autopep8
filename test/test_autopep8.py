@@ -5159,6 +5159,11 @@ from c import fc
         with autopep8_context(line) as result:
             self.assertEqual(result[:4], 'from')
 
+    @unittest.skipIf(
+        (sys.version_info.major >= 3 and sys.version_info.minor < 8)
+        or sys.version_info.major < 3,
+        "syntax error in Python3.7 and lower version",
+    )
     def test_with_walrus_operator(self):
         """check pycodestyle 2.6.0+"""
         line = """\
