@@ -5066,6 +5066,20 @@ raise ValueError("error")
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w605_with_multilines(self):
+        line = r"""\
+regex = '\d+(\.\d+){3}$'
+foo = validators.RegexValidator(
+     regex='\d+(\.\d+){3}$')
+"""
+        fixed = r"""\
+regex = r'\d+(\.\d+){3}$'
+foo = validators.RegexValidator(
+    regex=r'\d+(\.\d+){3}$')
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_trailing_whitespace_in_multiline_string(self):
         line = 'x = """ \nhello"""    \n'
         fixed = 'x = """ \nhello"""\n'
