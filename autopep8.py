@@ -3534,7 +3534,13 @@ def fix_file(filename, options=None, output=None, apply_config=False):
     elif options.in_place:
         original = "".join(original_source).splitlines()
         fixed = fixed_source.splitlines()
-        if original != fixed:
+        original_source_last_line = (
+            original_source[-1].split("\n")[-1] if original_source else ""
+        )
+        fixed_source_last_line = fixed_source.split("\n")[-1]
+        if original != fixed or (
+            original_source_last_line != fixed_source_last_line
+        ):
             with open_with_encoding(filename, 'w', encoding=encoding) as fp:
                 fp.write(fixed_source)
             return fixed_source
