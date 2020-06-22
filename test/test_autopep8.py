@@ -5357,7 +5357,6 @@ for i in range(3):
                 stderr=PIPE,
             )
             _, err = p.communicate()
-            print(filename, err)
             self.assertEqual(err, b'')
             self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
 
@@ -5370,7 +5369,6 @@ for i in range(3):
                 stderr=PIPE,
             )
             _, err = p.communicate()
-            print(filename, err)
             self.assertEqual(err, b'')
             self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
 
