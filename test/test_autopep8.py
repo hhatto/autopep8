@@ -5357,8 +5357,32 @@ for i in range(3):
                 stderr=PIPE,
             )
             _, err = p.communicate()
+            print(filename, err)
             self.assertEqual(err, b'')
             self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
+
+    def test_in_place_no_modifications_no_writes_with_empty_file(self):
+        with temporary_file_context('') as filename:
+            # ensure that noops do not do writes by making writing an error
+            os.chmod(filename, 0o444)
+            p = Popen(
+                list(AUTOPEP8_CMD_TUPLE) + [filename, '--in-place'],
+                stderr=PIPE,
+            )
+            _, err = p.communicate()
+            print(filename, err)
+            self.assertEqual(err, b'')
+            self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
+
+    def test_in_place_with_w292(self):
+        line = "import os"
+        fixed = "import os\n"
+
+        with temporary_file_context(line) as filename:
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [filename, '--in-place'])
+            p.wait()
+            with open(filename) as f:
+                self.assertEqual(fixed, f.read())
 
     def test_in_place_with_exit_code_option(self):
         line = "'abc'  \n"
