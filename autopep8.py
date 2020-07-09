@@ -92,6 +92,8 @@ COMPARE_NEGATIVE_REGEX_THROUGH = re.compile(r'\b(not\s+in|is\s+not)\s')
 BARE_EXCEPT_REGEX = re.compile(r'except\s*:')
 STARTSWITH_DEF_REGEX = re.compile(r'^(async\s+def|def)\s.*\):')
 DOCSTRING_START_REGEX = re.compile(r'^u?r?(?P<kind>["\']{3})')
+ENABLE_REGEX = re.compile(r'# *(fmt|autopep8): *on')
+DISABLE_REGEX = re.compile(r'# *(fmt|autopep8): *off')
 
 EXIT_CODE_OK = 0
 EXIT_CODE_ERROR = 1
@@ -3237,20 +3239,34 @@ def filter_results(source, results, aggressive):
 
     has_e901 = any(result['id'].lower() == 'e901' for result in results)
 
-    for r in results:
-        issue_id = r['id'].lower()
+    enabled = True
+    result_generator = (r for r in results)
+    current_result = next(result_generator)
+    for line_num, line in enumerate(source):
+        if enabled is True and re.match(DISABLE_REGEX, line):
+            enabled = False
+        elif enabled is False and re.match(ENABLE_REGEX, line):
+            enabled = True
 
-        if r['line'] in non_docstring_string_line_numbers:
+        if line_num < current_result['line']:
+            continue
+        elif line_num > current_result['line']:
+            current_result = next(result_generator)
+
+        issue_id = current_result['id'].lower()
+
+        if current_result['line'] in non_docstring_string_line_numbers:
             if issue_id.startswith(('e1', 'e501', 'w191')):
                 continue
 
-        if r['line'] in all_string_line_numbers:
+        if current_result['line'] in all_string_line_numbers:
             if issue_id in ['e501']:
                 continue
 
         # We must offset by 1 for lines that contain the trailing contents of
         # multiline strings.
-        if not aggressive and (r['line'] + 1) in all_string_line_numbers:
+        if (not aggressive
+            and (current_result['line'] + 1) in all_string_line_numbers):
             # Do not modify multiline strings in non-aggressive mode. Remove
             # trailing whitespace could break doctests.
             if issue_id.startswith(('w29', 'w39')):
@@ -3268,7 +3284,7 @@ def filter_results(source, results, aggressive):
             if issue_id.startswith(('e704')):
                 continue
 
-        if r['line'] in commented_out_code_line_numbers:
+        if current_result['line'] in commented_out_code_line_numbers:
             if issue_id.startswith(('e26', 'e501')):
                 continue
 
@@ -3279,7 +3295,8 @@ def filter_results(source, results, aggressive):
             if issue_id.startswith(('e1', 'e7')):
                 continue
 
-        yield r
+        if enabled:
+            yield current_result
 
 
 def multiline_string_lines(source, include_docstrings=False):
