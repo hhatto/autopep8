@@ -3224,6 +3224,67 @@ def check_syntax(code):
         return False
 
 
+def find_with_line_numbers(pattern, contents, flags=0):
+    """A version of 're.finditer' that returns '(match, line_number)' pairs."""
+    matches = list(re.finditer(pattern, contents, flags))
+    if not matches:
+        return []
+
+    end = matches[-1].start()
+
+    newline_offsets = {-1: 0} # -1 so a failed `rfind` maps to the first line.
+    for line_num, m in enumerate(re.finditer(r'\n', contents), 1):
+        offset = m.start()
+        if offset > end:
+            break
+        newline_offsets[offset] = line_num
+
+    def get_line_num(match, contents):
+        """Get the line number of string in a files contents.
+
+        Failing to find the newline is OK, -1 maps to 0
+
+        """
+        newline_offset = contents.rfind('\n', 0, match.start())
+        return newline_offsets[newline_offset]
+
+    return [get_line_num(match, contents) for match in matches]
+
+
+def get_disabled_ranges(source):
+    """Returns tuples representing the ranges where autopep8 is disabled
+
+    Deals with disabling twice before enabling and enabling when not disabled.
+    If disabled and no re-enable will disable for rest of file.
+    """
+    enable_line_nums = find_with_line_numbers(ENABLE_REGEX, source)
+    disable_line_nums = find_with_line_numbers(DISABLE_REGEX, source)
+    total_lines = len(re.findall("\n", source)) + 1
+
+    enable_commands = {}
+    for num in enable_line_nums:
+        enable_commands[num] = True
+    for num in disable_line_nums:
+        enable_commands[num] = False
+
+    disabled_ranges = []
+    currently_enabled = True
+    disabled_start = None
+
+    for line, commanded_enabled in sorted(enable_commands.items()):
+        if currently_enabled is True and commanded_enabled is False:
+            disabled_start = line
+            currently_enabled = False
+        elif currently_enabled is False and commanded_enabled is True:
+            disabled_ranges.append((disabled_start, line))
+            currently_enabled = True
+
+    if currently_enabled is False:
+        disabled_ranges.append((disabled_start, total_lines))
+
+    return disabled_ranges
+
+
 def filter_results(source, results, aggressive):
     """Filter out spurious reports from pycodestyle.
 
@@ -3237,36 +3298,29 @@ def filter_results(source, results, aggressive):
 
     commented_out_code_line_numbers = commented_out_code_lines(source)
 
+    # Filter out the disabled ranges
+    disabled_ranges = get_disabled_ranges(source)
+    results = [result for result in results
+               if any(result['line'] not in range(*disabled_range)
+                      for disabled_range in disabled_ranges)
+              ]
+
     has_e901 = any(result['id'].lower() == 'e901' for result in results)
 
-    enabled = True
-    result_generator = (r for r in results)
-    current_result = next(result_generator)
-    for line_num, line in enumerate(source):
-        if enabled is True and re.match(DISABLE_REGEX, line):
-            enabled = False
-        elif enabled is False and re.match(ENABLE_REGEX, line):
-            enabled = True
+    for r in results:
+        issue_id = r['id'].lower()
 
-        if line_num < current_result['line']:
-            continue
-        elif line_num > current_result['line']:
-            current_result = next(result_generator)
-
-        issue_id = current_result['id'].lower()
-
-        if current_result['line'] in non_docstring_string_line_numbers:
+        if r['line'] in non_docstring_string_line_numbers:
             if issue_id.startswith(('e1', 'e501', 'w191')):
                 continue
 
-        if current_result['line'] in all_string_line_numbers:
+        if r['line'] in all_string_line_numbers:
             if issue_id in ['e501']:
                 continue
 
         # We must offset by 1 for lines that contain the trailing contents of
         # multiline strings.
-        if (not aggressive
-            and (current_result['line'] + 1) in all_string_line_numbers):
+        if not aggressive and (r['line'] + 1) in all_string_line_numbers:
             # Do not modify multiline strings in non-aggressive mode. Remove
             # trailing whitespace could break doctests.
             if issue_id.startswith(('w29', 'w39')):
@@ -3284,7 +3338,7 @@ def filter_results(source, results, aggressive):
             if issue_id.startswith(('e704')):
                 continue
 
-        if current_result['line'] in commented_out_code_line_numbers:
+        if r['line'] in commented_out_code_line_numbers:
             if issue_id.startswith(('e26', 'e501')):
                 continue
 
@@ -3295,8 +3349,7 @@ def filter_results(source, results, aggressive):
             if issue_id.startswith(('e1', 'e7')):
                 continue
 
-        if enabled:
-            yield current_result
+        yield r
 
 
 def multiline_string_lines(source, include_docstrings=False):
