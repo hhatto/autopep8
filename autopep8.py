@@ -3248,7 +3248,7 @@ def find_with_line_numbers(pattern, contents, flags=0):
         newline_offset = contents.rfind('\n', 0, match.start())
         return newline_offsets[newline_offset]
 
-    return [get_line_num(match, contents) for match in matches]
+    return [get_line_num(match, contents) + 1 for match in matches]
 
 
 def get_disabled_ranges(source):
@@ -3256,6 +3256,7 @@ def get_disabled_ranges(source):
 
     Deals with disabling twice before enabling and enabling when not disabled.
     If disabled and no re-enable will disable for rest of file.
+
     """
     enable_line_nums = find_with_line_numbers(ENABLE_REGEX, source)
     disable_line_nums = find_with_line_numbers(DISABLE_REGEX, source)
