@@ -5385,6 +5385,7 @@ Only actual code should be reindented.
         with autopep8_context(test_code) as result:
             self.assertEqual(expected_output, result)
 
+
 class UtilityFunctionTests(unittest.TestCase):
 
     def test_get_module_imports(self):
@@ -6005,7 +6006,8 @@ class ConfigurationFileTests(unittest.TestCase):
             target_filename = os.path.join(dirname, "foo.py")
             with open(target_filename, "w") as fp:
                 fp.write(line)
-            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename], stdout=PIPE)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [target_filename], stdout=PIPE)
             self.assertEqual(p.communicate()[0].decode("utf-8"), line)
             self.assertEqual(p.returncode, 0)
 
@@ -6020,7 +6022,8 @@ class ConfigurationFileTests(unittest.TestCase):
             target_filename = os.path.join(dirname, "foo.py")
             with open(target_filename, "w") as fp:
                 fp.write(line)
-            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename, "-vvv"], stdout=PIPE)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [target_filename, "-vvv"], stdout=PIPE)
             output = p.communicate()[0].decode("utf-8")
             self.assertTrue(line in output)
             self.assertTrue(verbose_line in output)
@@ -6035,7 +6038,8 @@ class ConfigurationFileTests(unittest.TestCase):
             target_filename = os.path.join(dirname, "foo.py")
             with open(target_filename, "w") as fp:
                 fp.write(line)
-            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename, ], stdout=PIPE)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [target_filename, ], stdout=PIPE)
             output = p.communicate()[0].decode("utf-8")
             self.assertTrue(line in output)
             self.assertEqual(p.returncode, 0)
@@ -7305,6 +7309,7 @@ def d():
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
+
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):

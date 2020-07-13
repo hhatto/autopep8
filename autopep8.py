@@ -3224,9 +3224,12 @@ def check_syntax(code):
         return False
 
 
-def find_with_line_numbers(pattern, contents, flags=0):
-    """A version of 're.finditer' that returns '(match, line_number)' pairs."""
-    matches = list(re.finditer(pattern, contents, flags))
+def find_with_line_numbers(pattern, contents):
+    """A wrapper around 're.finditer' to find line numbers.
+
+    Returns a list of line numbers where pattern was found in contents.
+    """
+    matches = list(re.finditer(pattern, contents))
     if not matches:
         return []
 
@@ -3252,9 +3255,8 @@ def find_with_line_numbers(pattern, contents, flags=0):
 
 
 def get_disabled_ranges(source):
-    """Returns tuples representing the ranges where autopep8 is disabled
+    """Returns a list of tuples representing the disabled ranges.
 
-    Deals with disabling twice before enabling and enabling when not disabled.
     If disabled and no re-enable will disable for rest of file.
 
     """
