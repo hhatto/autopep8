@@ -5175,6 +5175,218 @@ with open(filename) as f:
         with autopep8_context(line) as result:
             self.assertEqual(line, result)
 
+class AutoFormatDisableTests(unittest.TestCase):
+
+    def test_autopep8_disable(self):
+        test_code = """\
+# autopep8: off
+def f():
+    aaaaaaaaaaa.bbbbbbb([
+        ('xxxxxxxxxx', 'yyyyyy',
+         'Heaven hath no wrath like love to hatred turned. Nor hell a fury like a woman scorned.'),
+        ('xxxxxxx', 'yyyyyyyyyyy', "To the last I grapple with thee. From hell's heart I stab at thee. For hate's sake I spit my last breath at thee!")])
+# autopep8: on
+"""
+        expected_output = """\
+# autopep8: off
+def f():
+    aaaaaaaaaaa.bbbbbbb([
+        ('xxxxxxxxxx', 'yyyyyy',
+         'Heaven hath no wrath like love to hatred turned. Nor hell a fury like a woman scorned.'),
+        ('xxxxxxx', 'yyyyyyyyyyy', "To the last I grapple with thee. From hell's heart I stab at thee. For hate's sake I spit my last breath at thee!")])
+# autopep8: on
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
+    def test_fmt_disable(self):
+        test_code = """\
+# fmt: off
+def f():
+    aaaaaaaaaaa.bbbbbbb([
+        ('xxxxxxxxxx', 'yyyyyy',
+         'Heaven hath no wrath like love to hatred turned. Nor hell a fury like a woman scorned.'),
+        ('xxxxxxx', 'yyyyyyyyyyy', "To the last I grapple with thee. From hell's heart I stab at thee. For hate's sake I spit my last breath at thee!")])
+# fmt: on
+"""
+        expected_output = """\
+# fmt: off
+def f():
+    aaaaaaaaaaa.bbbbbbb([
+        ('xxxxxxxxxx', 'yyyyyy',
+         'Heaven hath no wrath like love to hatred turned. Nor hell a fury like a woman scorned.'),
+        ('xxxxxxx', 'yyyyyyyyyyy', "To the last I grapple with thee. From hell's heart I stab at thee. For hate's sake I spit my last breath at thee!")])
+# fmt: on
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
+    def test_general_disable(self):
+        test_code = """\
+# fmt: off
+
+import math, sys;
+
+def example1():
+    # This is a long comment. This should be wrapped to fit within 72 characters.
+    some_tuple=(   1,2, 3,'a'  );
+    some_variable={'long':'Long code lines should be wrapped within 79 characters.',
+    'other':[math.pi, 100,200,300,9876543210,'This is a long string that goes on'],
+    'more':{'inner':'This whole logical line should be wrapped.',some_tuple:[1,
+    20,300,40000,500000000,60000000000000000]}}
+    return (some_tuple, some_variable)
+def example2(): return {'has_key() is deprecated':True}.has_key(
+    {'f':2}.has_key(''));
+class Example3(   object ):
+    def __init__    ( self, bar ):
+    # Comments should have a space after the hash.
+    if bar : bar+=1;  bar=bar* bar   ; return bar
+    else:
+        some_string = '''
+                    Indentation in multiline strings should not be touched.
+Only actual code should be reindented.
+'''
+        return (sys.path, some_string)
+# fmt: on
+
+import math, sys;
+
+def example1():
+    # This is a long comment. This should be wrapped to fit within 72 characters.
+    some_tuple=(   1,2, 3,'a'  );
+    some_variable={'long':'Long code lines should be wrapped within 79 characters.',
+    'other':[math.pi, 100,200,300,9876543210,'This is a long string that goes on'],
+    'more':{'inner':'This whole logical line should be wrapped.',some_tuple:[1,
+    20,300,40000,500000000,60000000000000000]}}
+    return (some_tuple, some_variable)
+def example2(): return {'has_key() is deprecated':True}.has_key(
+    {'f':2}.has_key(''));
+class Example3(   object ):
+    def __init__    ( self, bar ):
+    # Comments should have a space after the hash.
+    if bar : bar+=1;  bar=bar* bar   ; return bar
+    else:
+        some_string = '''
+                    Indentation in multiline strings should not be touched.
+Only actual code should be reindented.
+'''
+        return (sys.path, some_string)
+
+
+"""
+        expected_output = """\
+# fmt: off
+
+import sys
+import math
+import math, sys;
+
+def example1():
+    # This is a long comment. This should be wrapped to fit within 72 characters.
+    some_tuple=(   1,2, 3,'a'  );
+    some_variable={'long':'Long code lines should be wrapped within 79 characters.',
+    'other':[math.pi, 100,200,300,9876543210,'This is a long string that goes on'],
+    'more':{'inner':'This whole logical line should be wrapped.',some_tuple:[1,
+    20,300,40000,500000000,60000000000000000]}}
+    return (some_tuple, some_variable)
+def example2(): return {'has_key() is deprecated':True}.has_key(
+    {'f':2}.has_key(''));
+class Example3(   object ):
+    def __init__    ( self, bar ):
+    # Comments should have a space after the hash.
+    if bar : bar+=1;  bar=bar* bar   ; return bar
+    else:
+        some_string = '''
+                    Indentation in multiline strings should not be touched.
+Only actual code should be reindented.
+'''
+        return (sys.path, some_string)
+# fmt: on
+
+
+def example1():
+    # This is a long comment. This should be wrapped to fit within 72 characters.
+    some_tuple = (1, 2, 3, 'a')
+    some_variable = {'long': 'Long code lines should be wrapped within 79 characters.',
+                     'other': [math.pi, 100, 200, 300, 9876543210, 'This is a long string that goes on'],
+                     'more': {'inner': 'This whole logical line should be wrapped.', some_tuple: [1,
+                                                                                                  20, 300, 40000, 500000000, 60000000000000000]}}
+    return (some_tuple, some_variable)
+
+
+def example2(): return {'has_key() is deprecated': True}.has_key(
+    {'f': 2}.has_key(''))
+
+
+class Example3(object):
+    def __init__(self, bar):
+        # Comments should have a space after the hash.
+    if bar:
+        bar += 1
+        bar = bar * bar
+        return bar
+    else:
+        some_string = '''
+                    Indentation in multiline strings should not be touched.
+Only actual code should be reindented.
+'''
+        return (sys.path, some_string)
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
+    def test_fmt_disable_without_reenable(self):
+        test_code = """\
+# fmt: off
+print(123)
+"""
+        expected_output = """\
+# fmt: off
+print(123)
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
+    def test_fmt_disable_with_double_reenable(self):
+        test_code = """\
+# fmt: off
+print( 123 )
+# fmt: on
+print( 123 )
+# fmt: on
+print( 123 )
+"""
+        expected_output = """\
+# fmt: off
+print( 123 )
+# fmt: on
+print(123)
+# fmt: on
+print(123)
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
+    def test_fmt_double_disable_and_reenable(self):
+        test_code = """\
+# fmt: off
+print( 123 )
+# fmt: off
+print( 123 )
+# fmt: on
+print( 123 )
+"""
+        expected_output = """\
+# fmt: off
+print( 123 )
+# fmt: off
+print( 123 )
+# fmt: on
+print(123)
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
 
 class UtilityFunctionTests(unittest.TestCase):
 
@@ -7096,7 +7308,6 @@ def d():
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
-
 
 @contextlib.contextmanager
 def autopep8_context(line, options=None):
