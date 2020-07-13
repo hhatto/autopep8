@@ -5175,8 +5175,6 @@ with open(filename) as f:
         with autopep8_context(line) as result:
             self.assertEqual(line, result)
 
-class AutoFormatDisableTests(unittest.TestCase):
-
     def test_autopep8_disable(self):
         test_code = """\
 # autopep8: off
@@ -5217,6 +5215,58 @@ def f():
          'Heaven hath no wrath like love to hatred turned. Nor hell a fury like a woman scorned.'),
         ('xxxxxxx', 'yyyyyyyyyyy', "To the last I grapple with thee. From hell's heart I stab at thee. For hate's sake I spit my last breath at thee!")])
 # fmt: on
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
+    def test_fmt_disable_without_reenable(self):
+        test_code = """\
+# fmt: off
+print(123)
+"""
+        expected_output = """\
+# fmt: off
+print(123)
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
+    def test_fmt_disable_with_double_reenable(self):
+        test_code = """\
+# fmt: off
+print( 123 )
+# fmt: on
+print( 123 )
+# fmt: on
+print( 123 )
+"""
+        expected_output = """\
+# fmt: off
+print( 123 )
+# fmt: on
+print(123)
+# fmt: on
+print(123)
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
+    def test_fmt_double_disable_and_reenable(self):
+        test_code = """\
+# fmt: off
+print( 123 )
+# fmt: off
+print( 123 )
+# fmt: on
+print( 123 )
+"""
+        expected_output = """\
+# fmt: off
+print( 123 )
+# fmt: off
+print( 123 )
+# fmt: on
+print(123)
 """
         with autopep8_context(test_code) as result:
             self.assertEqual(expected_output, result)
@@ -5334,59 +5384,6 @@ Only actual code should be reindented.
 """
         with autopep8_context(test_code) as result:
             self.assertEqual(expected_output, result)
-
-    def test_fmt_disable_without_reenable(self):
-        test_code = """\
-# fmt: off
-print(123)
-"""
-        expected_output = """\
-# fmt: off
-print(123)
-"""
-        with autopep8_context(test_code) as result:
-            self.assertEqual(expected_output, result)
-
-    def test_fmt_disable_with_double_reenable(self):
-        test_code = """\
-# fmt: off
-print( 123 )
-# fmt: on
-print( 123 )
-# fmt: on
-print( 123 )
-"""
-        expected_output = """\
-# fmt: off
-print( 123 )
-# fmt: on
-print(123)
-# fmt: on
-print(123)
-"""
-        with autopep8_context(test_code) as result:
-            self.assertEqual(expected_output, result)
-
-    def test_fmt_double_disable_and_reenable(self):
-        test_code = """\
-# fmt: off
-print( 123 )
-# fmt: off
-print( 123 )
-# fmt: on
-print( 123 )
-"""
-        expected_output = """\
-# fmt: off
-print( 123 )
-# fmt: off
-print( 123 )
-# fmt: on
-print(123)
-"""
-        with autopep8_context(test_code) as result:
-            self.assertEqual(expected_output, result)
-
 
 class UtilityFunctionTests(unittest.TestCase):
 
