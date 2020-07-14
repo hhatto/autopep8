@@ -3235,7 +3235,10 @@ def find_with_line_numbers(pattern, contents):
 
     end = matches[-1].start()
 
-    newline_offsets = {-1: 0} # -1 so a failed `rfind` maps to the first line.
+    # -1 so a failed `rfind` maps to the first line.
+    newline_offsets = {
+        -1: 0
+    }
     for line_num, m in enumerate(re.finditer(r'\n', contents), 1):
         offset = m.start()
         if offset > end:
@@ -3307,7 +3310,7 @@ def filter_results(source, results, aggressive):
         results = [result for result in results
                    if any(result['line'] not in range(*disabled_range)
                           for disabled_range in disabled_ranges)
-                  ]
+                   ]
 
     has_e901 = any(result['id'].lower() == 'e901' for result in results)
 
