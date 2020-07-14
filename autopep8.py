@@ -3303,10 +3303,12 @@ def filter_results(source, results, aggressive):
 
     # Filter out the disabled ranges
     disabled_ranges = get_disabled_ranges(source)
-    results = [result for result in results
-               if any(result['line'] not in range(*disabled_range)
-                      for disabled_range in disabled_ranges)
-              ]
+    print("disabled_ranges: {}".format(disabled_ranges))
+    if len(disabled_ranges) > 0:
+        results = [result for result in results
+                   if any(result['line'] not in range(*disabled_range)
+                          for disabled_range in disabled_ranges)
+                  ]
 
     has_e901 = any(result['id'].lower() == 'e901' for result in results)
 
