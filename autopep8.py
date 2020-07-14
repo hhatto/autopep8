@@ -3303,7 +3303,6 @@ def filter_results(source, results, aggressive):
 
     # Filter out the disabled ranges
     disabled_ranges = get_disabled_ranges(source)
-    print("disabled_ranges: {}".format(disabled_ranges))
     if len(disabled_ranges) > 0:
         results = [result for result in results
                    if any(result['line'] not in range(*disabled_range)
