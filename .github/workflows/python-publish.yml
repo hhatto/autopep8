@@ -26,7 +26,7 @@ jobs:
         pip install flake8 pytest
     - name: Lint with flake8
       run: |
-        flake8 . 
+        flake8 autopep8.py
     - name: Test with pytest
       run: |
         pytest

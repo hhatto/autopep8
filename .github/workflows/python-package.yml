@@ -30,7 +30,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
-        flake8 . 
+        flake8 autopep8.py
     - name: Test with pytest
       run: |
         pytest
