@@ -92,6 +92,8 @@ COMPARE_NEGATIVE_REGEX_THROUGH = re.compile(r'\b(not\s+in|is\s+not)\s')
 BARE_EXCEPT_REGEX = re.compile(r'except\s*:')
 STARTSWITH_DEF_REGEX = re.compile(r'^(async\s+def|def)\s.*\):')
 DOCSTRING_START_REGEX = re.compile(r'^u?r?(?P<kind>["\']{3})')
+ENABLE_REGEX = re.compile(r'# *(fmt|autopep8): *on')
+DISABLE_REGEX = re.compile(r'# *(fmt|autopep8): *off')
 
 EXIT_CODE_OK = 0
 EXIT_CODE_ERROR = 1
@@ -3222,6 +3224,73 @@ def check_syntax(code):
         return False
 
 
+def find_with_line_numbers(pattern, contents):
+    """A wrapper around 're.finditer' to find line numbers.
+
+    Returns a list of line numbers where pattern was found in contents.
+    """
+    matches = list(re.finditer(pattern, contents))
+    if not matches:
+        return []
+
+    end = matches[-1].start()
+
+    # -1 so a failed `rfind` maps to the first line.
+    newline_offsets = {
+        -1: 0
+    }
+    for line_num, m in enumerate(re.finditer(r'\n', contents), 1):
+        offset = m.start()
+        if offset > end:
+            break
+        newline_offsets[offset] = line_num
+
+    def get_line_num(match, contents):
+        """Get the line number of string in a files contents.
+
+        Failing to find the newline is OK, -1 maps to 0
+
+        """
+        newline_offset = contents.rfind('\n', 0, match.start())
+        return newline_offsets[newline_offset]
+
+    return [get_line_num(match, contents) + 1 for match in matches]
+
+
+def get_disabled_ranges(source):
+    """Returns a list of tuples representing the disabled ranges.
+
+    If disabled and no re-enable will disable for rest of file.
+
+    """
+    enable_line_nums = find_with_line_numbers(ENABLE_REGEX, source)
+    disable_line_nums = find_with_line_numbers(DISABLE_REGEX, source)
+    total_lines = len(re.findall("\n", source)) + 1
+
+    enable_commands = {}
+    for num in enable_line_nums:
+        enable_commands[num] = True
+    for num in disable_line_nums:
+        enable_commands[num] = False
+
+    disabled_ranges = []
+    currently_enabled = True
+    disabled_start = None
+
+    for line, commanded_enabled in sorted(enable_commands.items()):
+        if currently_enabled is True and commanded_enabled is False:
+            disabled_start = line
+            currently_enabled = False
+        elif currently_enabled is False and commanded_enabled is True:
+            disabled_ranges.append((disabled_start, line))
+            currently_enabled = True
+
+    if currently_enabled is False:
+        disabled_ranges.append((disabled_start, total_lines))
+
+    return disabled_ranges
+
+
 def filter_results(source, results, aggressive):
     """Filter out spurious reports from pycodestyle.
 
@@ -3234,6 +3303,14 @@ def filter_results(source, results, aggressive):
         source, include_docstrings=True)
 
     commented_out_code_line_numbers = commented_out_code_lines(source)
+
+    # Filter out the disabled ranges
+    disabled_ranges = get_disabled_ranges(source)
+    if len(disabled_ranges) > 0:
+        results = [result for result in results
+                   if any(result['line'] not in range(*disabled_range)
+                          for disabled_range in disabled_ranges)
+                   ]
 
     has_e901 = any(result['id'].lower() == 'e901' for result in results)
 
