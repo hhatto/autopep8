@@ -33,12 +33,16 @@ jobs:
       run: |
         flake8 autopep8.py
         pycodestyle autopep8.py
+    - name: doctest for readme
+      with:
+        python-version: [3.7, 3.8, pypy3]
+      run: |
+        python -m doctest -v README.rst
     - name: Test with pytest
       run: |
         pytest
         python test/acid.py -aaa --experimental test/example.py
         python test/acid.py -aaa --experimental test/example_with_reduce.py
-        python -m doctest -v README.rst
         python test/acid.py --pycodestyle= -aaa --compare-bytecode --experimental test/example.py
         python test/acid.py --pycodestyle= --aggressive --line-range 550 610 test/inspect_example.py
         python test/acid.py --pycodestyle= --line-range 289 925 test/vectors_example.py
