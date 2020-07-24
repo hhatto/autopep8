@@ -34,7 +34,7 @@ jobs:
         flake8 autopep8.py
         pycodestyle autopep8.py
     - name: doctest for readme
-      if: matrix.python-version != 2.7 && matrix.python-version != pypy2
+      if: matrix.python-version != 2.7 && matrix.python-version != "pypy2"
       run: |
         python -m doctest -v README.rst
     - name: Test with pytest
