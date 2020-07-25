@@ -39,7 +39,7 @@ jobs:
         python -m doctest -v README.rst
     - name: Test with pytest
       run: |
-        pytest-cov --cov-report xml --cov=autopep8
+        pytest --cov-report xml --cov=autopep8
         python test/acid.py -aaa --experimental test/example.py
         python test/acid.py -aaa --experimental test/example_with_reduce.py
         python test/acid.py --pycodestyle= -aaa --compare-bytecode --experimental test/example.py
