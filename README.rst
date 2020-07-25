@@ -10,6 +10,10 @@ autopep8
     :target: https://github.com/hhatto/autopep8/actions
     :alt: Build status
 
+.. image:: https://codecov.io/gh/hhatto/autopep8/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/hhatto/autopep8
+    :alt: Code Coverage
+
 autopep8 automatically formats Python code to conform to the `PEP 8`_ style
 guide. It uses the pycodestyle_ utility to determine what parts of the code
 needs to be formatted. autopep8 is capable of fixing most of the formatting
