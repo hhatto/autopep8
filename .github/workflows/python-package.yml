@@ -27,7 +27,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install .
-        pip install flake8 pytest pydiff
+        pip install flake8 pytest pytest-cov pydiff
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
@@ -39,14 +39,15 @@ jobs:
         python -m doctest -v README.rst
     - name: Test with pytest
       run: |
-        pytest
+        pytest-cov --cov-report xml --cov=autopep8
         python test/acid.py -aaa --experimental test/example.py
         python test/acid.py -aaa --experimental test/example_with_reduce.py
         python test/acid.py --pycodestyle= -aaa --compare-bytecode --experimental test/example.py
         python test/acid.py --pycodestyle= --aggressive --line-range 550 610 test/inspect_example.py
         python test/acid.py --pycodestyle= --line-range 289 925 test/vectors_example.py
         python test/test_suite.py
-    - name: Coverage Code
-      if: ${{ success() }} && matrix.python-version == 3.7
-      run: |
-        ./coveralls.bash
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      if: matrix.python-version == 3.7 && success()
+      with:
+        fail_ci_if_error: true
