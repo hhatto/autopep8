@@ -6,8 +6,8 @@ autopep8
     :target: https://pypi.org/project/autopep8/
     :alt: PyPI Version
 
-.. image:: https://travis-ci.org/hhatto/autopep8.svg?branch=master
-    :target: https://travis-ci.org/hhatto/autopep8
+.. image:: https://github.com/hhatto/autopep8/workflows/Python%20package/badge.svg
+    :target: https://github.com/hhatto/autopep8/actions
     :alt: Build status
 
 autopep8 automatically formats Python code to conform to the `PEP 8`_ style
