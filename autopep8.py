@@ -58,6 +58,7 @@ import sys
 import textwrap
 import token
 import tokenize
+import warnings
 import ast
 try:
     from configparser import ConfigParser as SafeConfigParser
@@ -3412,12 +3413,18 @@ def commented_out_code_lines(source):
 
             if token_type == tokenize.COMMENT:
                 stripped_line = token_string.lstrip('#').strip()
-                if (
-                    ' ' in stripped_line and
-                    '#' not in stripped_line and
-                    check_syntax(stripped_line)
-                ):
-                    line_numbers.append(start_row)
+                with warnings.catch_warnings():
+                    # ignore SyntaxWarning in Python3.8+
+                    # refs:
+                    #   https://bugs.python.org/issue15248
+                    #   https://docs.python.org/3.8/whatsnew/3.8.html#other-language-changes
+                    warnings.filterwarnings("ignore", category=SyntaxWarning)
+                    if (
+                        ' ' in stripped_line and
+                        '#' not in stripped_line and
+                        check_syntax(stripped_line)
+                    ):
+                        line_numbers.append(start_row)
     except (SyntaxError, tokenize.TokenError):
         pass
 
