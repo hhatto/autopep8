@@ -9,7 +9,6 @@ on:
 
 jobs:
   deploy:
-    needs: test
     runs-on: ubuntu-latest
 
     steps:
