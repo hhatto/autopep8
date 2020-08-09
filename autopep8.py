@@ -67,7 +67,6 @@ except ImportError:
     from ConfigParser import SafeConfigParser
     from ConfigParser import Error
 
-import toml
 import pycodestyle
 from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX
 
@@ -3985,6 +3984,8 @@ def read_config(args, parser):
 
 def read_pyproject_toml(args, parser):
     """Read pyproject.toml and load configuration."""
+    import toml
+
     config = None
 
     if os.path.exists(args.global_config):
