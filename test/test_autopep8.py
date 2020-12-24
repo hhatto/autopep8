@@ -5042,7 +5042,7 @@ raise ValueError("error")
             self.assertEqual(fixed, result)
 
     def test_w605_identical_token(self):
-        # ***NOTE***: The --pep8-passes option is requred to prevent an infinite loop in
+        # ***NOTE***: The --pep8-passes option is required to prevent an infinite loop in
         # the old, failing code. DO NOT REMOVE.
         line = "escape = foo('\\.bar', '\\.kilroy')\n"
         fixed = "escape = foo(r'\\.bar', r'\\.kilroy')\n"
