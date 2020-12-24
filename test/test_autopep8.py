@@ -5037,7 +5037,7 @@ raise ValueError("error")
 
     def test_w605_simple(self):
         line = "escape = '\\.jpg'\n"
-        fixed = "escape = r'\\.jpg'\n"
+        fixed = "escape = '\\\\.jpg'\n"
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
@@ -5045,24 +5045,24 @@ raise ValueError("error")
         # ***NOTE***: The --pep8-passes option is required to prevent an infinite loop in
         # the old, failing code. DO NOT REMOVE.
         line = "escape = foo('\\.bar', '\\.kilroy')\n"
-        fixed = "escape = foo(r'\\.bar', r'\\.kilroy')\n"
+        fixed = "escape = foo('\\\\.bar', '\\\\.kilroy')\n"
         with autopep8_context(line, options=['--aggressive', '--pep8-passes', '5']) as result:
             self.assertEqual(fixed, result, "Two tokens get r added")
 
-        line = "escape = foo('\\.bar', r'\\.kilroy')\n"
-        fixed = "escape = foo(r'\\.bar', r'\\.kilroy')\n"
+        line = "escape = foo('\\.bar', '\\\\.kilroy')\n"
+        fixed = "escape = foo('\\\\.bar', '\\\\.kilroy')\n"
         with autopep8_context(line, options=['--aggressive', '--pep8-passes', '5']) as result:
             self.assertEqual(fixed, result, "r not added if already there")
 
         # Test Case to catch bad behavior reported in Issue #449
         line = "escape = foo('\\.bar', '\\.bar')\n"
-        fixed = "escape = foo(r'\\.bar', r'\\.bar')\n"
+        fixed = "escape = foo('\\\\.bar', '\\\\.bar')\n"
         with autopep8_context(line, options=['--aggressive', '--pep8-passes', '5']) as result:
             self.assertEqual(fixed, result)
 
     def test_w605_with_invalid_syntax(self):
         line = "escape = rr'\\.jpg'\n"
-        fixed = "escape = rr'\\.jpg'\n"
+        fixed = "escape = rr'\\\\.jpg'\n"
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 

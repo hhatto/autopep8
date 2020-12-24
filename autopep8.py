@@ -1384,21 +1384,10 @@ class FixPEP8(object):
             next_line[next_line_indent:])
 
     def fix_w605(self, result):
-        (line_index, _, target) = get_index_offset_contents(result,
-                                                            self.source)
-        try:
-            tokens = list(generate_tokens(target))
-        except (SyntaxError, tokenize.TokenError):
-            return
-        for (pos, _msg) in get_w605_position(tokens):
-            if target[pos - 1] == "r":
-                # ignore special case
-                if self.options.verbose:
-                    print("invalid line: line_number={}, line: {}".format(
-                        line_index + 1, target))
-                return
-            self.source[line_index] = '{}r{}'.format(
-                target[:pos], target[pos:])
+        (line_index, offset, target) = get_index_offset_contents(result,
+                                                                 self.source)
+        self.source[line_index] = '{}\\{}'.format(
+            target[:offset + 1], target[offset + 1:])
 
 
 def get_w605_position(tokens):
