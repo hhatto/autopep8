@@ -1390,41 +1390,6 @@ class FixPEP8(object):
             target[:offset + 1], target[offset + 1:])
 
 
-def get_w605_position(tokens):
-    """workaround get pointing out position by W605."""
-    # TODO: When this PR(*) change is released, use pos of pycodestyle
-    # *: https://github.com/PyCQA/pycodestyle/pull/747
-    valid = [
-        '\n', '\\', '\'', '"', 'a', 'b', 'f', 'n', 'r', 't', 'v',
-        '0', '1', '2', '3', '4', '5', '6', '7', 'x',
-
-        # Escape sequences only recognized in string literals
-        'N', 'u', 'U',
-    ]
-
-    for token_type, text, start_pos, _end_pos, _line in tokens:
-        if token_type == tokenize.STRING:
-            quote = text[-3:] if text[-3:] in ('"""', "'''") else text[-1]
-            # Extract string modifiers (e.g. u or r)
-            quote_pos = text.index(quote)
-            prefix = text[:quote_pos].lower()
-            start = quote_pos + len(quote)
-            string = text[start:-len(quote)]
-
-            if 'r' not in prefix:
-                pos = string.find('\\')
-                while pos >= 0:
-                    pos += 1
-                    if string[pos] not in valid:
-                        yield (
-                            # No need to search line, token stores position
-                            start_pos[1],
-                            "W605 invalid escape sequence '\\%s'" %
-                            string[pos],
-                        )
-                    pos = string.find('\\', pos + 1)
-
-
 def get_module_imports_on_top_of_file(source, import_line_index):
     """return import or from keyword position
 
