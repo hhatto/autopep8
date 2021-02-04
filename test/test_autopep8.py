@@ -856,6 +856,17 @@ lambda xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         self.assertEqual(line, autopep8.get_fixed_long_line(line, line, line))
 
 
+class AvoidLib2To3Tests(unittest.TestCase):
+
+    def test_ignore_throw(self):
+        line = """\
+appe.throw(_("The Coupon {} expired on {}").format(
+    coupon, coupon_doc.valid_to), exc=CouponExpired)
+"""
+        with autopep8_context(line, options=["-aaa"]) as result:
+            self.assertEqual(line, result)
+
+
 class SystemTests(unittest.TestCase):
 
     maxDiff = None

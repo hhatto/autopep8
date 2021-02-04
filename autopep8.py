@@ -135,7 +135,6 @@ CODE_TO_2TO3 = {
              'renames',
              'standarderror',
              'sys_exc',
-             'throw',
              'tuple_params',
              'xreadlines']}
 
