@@ -119,8 +119,9 @@ mutant:
 	@mut.py --disable-operator RIL -t autopep8 -u test.test_autopep8 -mc
 
 pypireg:
-	${PYTHON} setup.py register
-	${PYTHON} setup.py sdist upload
+	${PYTHON} -m pip install twine build
+	${PYTHON} -m build
+	${PYTHON} -m twine upload dist/*
 
 clean:
 	rm -rf .tmp.test.py temp *.pyc *egg-info dist build \
