@@ -316,8 +316,9 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
                 if hang_closing:
                     yield (start, 'E133 {}'.format(indent[depth]))
             elif indent[depth] and start[1] < indent[depth]:
-                # Visual indent is broken.
-                yield (start, 'E128 {}'.format(indent[depth]))
+                if visual_indent is not True:
+                    # Visual indent is broken.
+                    yield (start, 'E128 {}'.format(indent[depth]))
             elif (hanging_indent or
                   (indent_next and
                    rel_indent[row] == 2 * DEFAULT_INDENT_SIZE)):
