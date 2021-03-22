@@ -4345,8 +4345,8 @@ def fix_multiple_files(filenames, options, output=None):
         pool.close()
         pool.join()
         if options.diff:
-            for r in ret:
-                sys.stdout.write(r.decode())
+            for r in rets:
+                sys.stdout.write(r.get().decode())
                 sys.stdout.flush()
         results.extend([x.get() for x in rets if x is not None])
     else:
