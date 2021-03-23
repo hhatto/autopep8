@@ -4324,6 +4324,7 @@ def _fix_file(parameters):
         return fix_file(*parameters)
     except IOError as error:
         print(unicode(error), file=sys.stderr)
+        raise error
 
 
 def fix_multiple_files(filenames, options, output=None):
@@ -4337,12 +4338,17 @@ def fix_multiple_files(filenames, options, output=None):
     if options.jobs > 1:
         import multiprocessing
         pool = multiprocessing.Pool(options.jobs)
-        ret = pool.map(_fix_file, [(name, options) for name in filenames])
+        rets = []
+        for name in filenames:
+            ret = pool.apply_async(_fix_file, ((name, options),))
+            rets.append(ret)
+        pool.close()
+        pool.join()
         if options.diff:
-            for r in ret:
-                sys.stdout.write(r.decode())
+            for r in rets:
+                sys.stdout.write(r.get().decode())
                 sys.stdout.flush()
-        results.extend([x for x in ret if x is not None])
+        results.extend([x.get() for x in rets if x is not None])
     else:
         for name in filenames:
             ret = _fix_file((name, options, output))
@@ -4458,6 +4464,8 @@ def main(argv=None, apply_config=True):
                 ret = any([ret is not None for ret in results])
             if args.exit_code and ret:
                 return EXIT_CODE_EXISTS_DIFF
+    except IOError:
+        return EXIT_CODE_ERROR
     except KeyboardInterrupt:
         return EXIT_CODE_ERROR  # pragma: no cover
 
