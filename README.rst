@@ -370,16 +370,15 @@ pyproject.toml
 autopep8 can also use ``pyproject.toml``.
 The section must use ``[tool.autopep8]``, and ``pyproject.toml`` takes precedence
 over any other configuration files.
-Boolean commandline options can be specified as integer 1/0.
 
 configuration file example::
 
     [tool.autopep8]
     max_line_length = 120
     ignore = "E501,W6"  # or ["E501", "W6"]
-    in-place = 1
-    recursive = 1
-    aggressive = 1
+    in-place = true
+    recursive = true
+    aggressive = true
 
 
 Testing
