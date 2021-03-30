@@ -5883,7 +5883,7 @@ for i in range(3):
             except SystemExit as e:
                 exception = e
         self.assertTrue(exception)
-        self.assertEqual(exception.code, 2)
+        self.assertEqual(exception.code, autopep8.EXIT_CODE_ARGPARSE_ERROR)
 
     def test_standard_out_should_use_native_line_ending(self):
         line = '1\r\n2\r\n3\r\n'
