@@ -121,6 +121,7 @@ DISABLE_REGEX = re.compile(r'# *(fmt|autopep8): *off')
 EXIT_CODE_OK = 0
 EXIT_CODE_ERROR = 1
 EXIT_CODE_EXISTS_DIFF = 2
+EXIT_CODE_ARGPARSE_ERROR = 99
 
 # For generating line shortening candidates.
 SHORTEN_OPERATOR_GROUPS = frozenset([
@@ -3817,7 +3818,7 @@ def parse_args(arguments, apply_config=False):
     args = parser.parse_args(arguments)
 
     if not args.files and not args.list_fixes:
-        parser.error('incorrect number of arguments')
+        parser.exit(EXIT_CODE_ARGPARSE_ERROR, 'incorrect number of arguments')
 
     args.files = [decode_filename(name) for name in args.files]
 
@@ -3835,30 +3836,53 @@ def parse_args(arguments, apply_config=False):
 
     if '-' in args.files:
         if len(args.files) > 1:
-            parser.error('cannot mix stdin and regular files')
+            parser.exit(
+                EXIT_CODE_ARGPARSE_ERROR,
+                'cannot mix stdin and regular files',
+            )
 
         if args.diff:
-            parser.error('--diff cannot be used with standard input')
+            parser.exit(
+                EXIT_CODE_ARGPARSE_ERROR,
+                '--diff cannot be used with standard input',
+            )
 
         if args.in_place:
-            parser.error('--in-place cannot be used with standard input')
+            parser.exit(
+                EXIT_CODE_ARGPARSE_ERROR,
+                '--in-place cannot be used with standard input',
+            )
 
         if args.recursive:
-            parser.error('--recursive cannot be used with standard input')
+            parser.exit(
+                EXIT_CODE_ARGPARSE_ERROR,
+                '--recursive cannot be used with standard input',
+            )
 
     if len(args.files) > 1 and not (args.in_place or args.diff):
-        parser.error('autopep8 only takes one filename as argument '
-                     'unless the "--in-place" or "--diff" args are '
-                     'used')
+        parser.exit(
+            EXIT_CODE_ARGPARSE_ERROR,
+            'autopep8 only takes one filename as argument '
+            'unless the "--in-place" or "--diff" args are used',
+        )
 
     if args.recursive and not (args.in_place or args.diff):
-        parser.error('--recursive must be used with --in-place or --diff')
+        parser.exit(
+            EXIT_CODE_ARGPARSE_ERROR,
+            '--recursive must be used with --in-place or --diff',
+        )
 
     if args.in_place and args.diff:
-        parser.error('--in-place and --diff are mutually exclusive')
+        parser.exit(
+            EXIT_CODE_ARGPARSE_ERROR,
+            '--in-place and --diff are mutually exclusive',
+        )
 
     if args.max_line_length <= 0:
-        parser.error('--max-line-length must be greater than 0')
+        parser.exit(
+            EXIT_CODE_ARGPARSE_ERROR,
+            '--max-line-length must be greater than 0',
+        )
 
     if args.select:
         args.select = _expand_codes(
@@ -3895,14 +3919,23 @@ def parse_args(arguments, apply_config=False):
         args.jobs = multiprocessing.cpu_count()
 
     if args.jobs > 1 and not (args.in_place or args.diff):
-        parser.error('parallel jobs requires --in-place')
+        parser.exit(
+            EXIT_CODE_ARGPARSE_ERROR,
+            'parallel jobs requires --in-place',
+        )
 
     if args.line_range:
         if args.line_range[0] <= 0:
-            parser.error('--range must be positive numbers')
+            parser.exit(
+                EXIT_CODE_ARGPARSE_ERROR,
+                '--range must be positive numbers',
+            )
         if args.line_range[0] > args.line_range[1]:
-            parser.error('First value of --range should be less than or equal '
-                         'to the second')
+            parser.exit(
+                EXIT_CODE_ARGPARSE_ERROR,
+                'First value of --range should be less than or equal '
+                'to the second',
+            )
 
     return args
 
