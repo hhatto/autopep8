@@ -3884,6 +3884,12 @@ def parse_args(arguments, apply_config=False):
             '--max-line-length must be greater than 0',
         )
 
+    if args.indent_size <= 0:
+        parser.exit(
+            EXIT_CODE_ARGPARSE_ERROR,
+            '--indent-size must be greater than 0',
+        )
+
     if args.select:
         args.select = _expand_codes(
             _split_comma_separated(args.select),

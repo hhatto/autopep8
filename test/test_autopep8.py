@@ -874,15 +874,6 @@ while True:
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    def test_e101_with_indent_size_0(self):
-        line = """\
-while True:
-    if True:
-    \t1
-"""
-        with autopep8_context(line, options=['--indent-size=0']) as result:
-            self.assertEqual(line, result)
-
     def test_e101_with_indent_size_1(self):
         line = """\
 while True:
@@ -5502,6 +5493,11 @@ def f():
                   stdout=PIPE, stderr=PIPE)
         error = p.communicate()[1].decode('utf-8')
         self.assertIn('cannot', error)
+
+    def test_indent_size_is_zero(self):
+        line = "'abc'\n"
+        with autopep8_subprocess(line, ['--indent-size=0']) as (result, retcode):
+            self.assertEqual(retcode, autopep8.EXIT_CODE_ARGPARSE_ERROR)
 
     def test_pep8_passes(self):
         line = "'abc'  \n"
