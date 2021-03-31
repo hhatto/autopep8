@@ -368,7 +368,7 @@ pyproject.toml
 --------------
 
 autopep8 can also use ``pyproject.toml``.
-section must use ``[tool.autopep8]``, and ``pyproject.toml`` takes precedence
+The section must be ``[tool.autopep8]``, and ``pyproject.toml`` takes precedence
 over any other configuration files.
 
 configuration file example::
@@ -376,6 +376,9 @@ configuration file example::
     [tool.autopep8]
     max_line_length = 120
     ignore = "E501,W6"  # or ["E501", "W6"]
+    in-place = true
+    recursive = true
+    aggressive = 3
 
 
 Testing

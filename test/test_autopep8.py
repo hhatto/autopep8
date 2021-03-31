@@ -19,6 +19,7 @@ import time
 import contextlib
 import io
 import shutil
+import stat
 from subprocess import Popen, PIPE
 from tempfile import mkstemp, mkdtemp
 import tokenize
@@ -5499,6 +5500,15 @@ def f():
         with autopep8_subprocess(line, ['--indent-size=0']) as (result, retcode):
             self.assertEqual(retcode, autopep8.EXIT_CODE_ARGPARSE_ERROR)
 
+    def test_exit_code_with_io_error(self):
+        line = "import sys\ndef a():\n    print(1)\n"
+        with readonly_temporary_file_context(line) as filename:
+            print(filename)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['--in-place', filename],
+                      stdout=PIPE, stderr=PIPE)
+            result = p.communicate()
+            self.assertEqual(p.returncode, 1)
+
     def test_pep8_passes(self):
         line = "'abc'  \n"
         fixed = "'abc'\n"
@@ -5666,6 +5676,28 @@ for i in range(3):
                 self.assertEqual(0, p.returncode)
                 for actual_diff in actual_diffs:
                     self.assertIn(actual_diff, output)
+
+    def test_parallel_jobs_with_inplace_option_and_io_error(self):
+        temp_directory = mkdtemp(dir='.')
+        try:
+            file_a = os.path.join(temp_directory, 'a.py')
+            with open(file_a, 'w') as output:
+                output.write("'abc'  \n")
+            os.chmod(file_a, stat.S_IRUSR)  # readonly
+
+            os.mkdir(os.path.join(temp_directory, 'd'))
+            file_b = os.path.join(temp_directory, 'd', 'b.py')
+            with open(file_b, 'w') as output:
+                output.write('123  \n')
+            os.chmod(file_b, stat.S_IRUSR)
+
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [temp_directory, '--recursive', '--in-place'],
+                      stdout=PIPE, stderr=PIPE)
+            result = p.communicate()[0].decode('utf-8')
+            self.assertEqual(p.returncode, 1)
+        finally:
+            shutil.rmtree(temp_directory)
 
     def test_parallel_jobs_with_automatic_cpu_count(self):
         line = "'abc'  \n"
@@ -7355,6 +7387,19 @@ def temporary_file_context(text, suffix='', prefix=''):
                                      encoding='utf-8',
                                      mode='w') as temp_file:
         temp_file.write(text)
+    yield temporary[1]
+    os.remove(temporary[1])
+
+
+@contextlib.contextmanager
+def readonly_temporary_file_context(text, suffix='', prefix=''):
+    temporary = mkstemp(suffix=suffix, prefix=prefix)
+    os.close(temporary[0])
+    with autopep8.open_with_encoding(temporary[1],
+                                     encoding='utf-8',
+                                     mode='w') as temp_file:
+        temp_file.write(text)
+    os.chmod(temporary[1], stat.S_IRUSR)
     yield temporary[1]
     os.remove(temporary[1])
 
