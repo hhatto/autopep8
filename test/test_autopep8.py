@@ -5506,8 +5506,8 @@ def f():
             print(filename)
             p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['--in-place', filename],
                       stdout=PIPE, stderr=PIPE)
-            result = p.communicate()
-            self.assertEqual(p.returncode, 1)
+            p.communicate()
+            self.assertEqual(p.returncode, autopep8.EXIT_CODE_ERROR)
 
     def test_pep8_passes(self):
         line = "'abc'  \n"
@@ -5654,7 +5654,6 @@ for i in range(3):
 
     def test_parallel_jobs_with_diff_option(self):
         line = "'abc'  \n"
-        fixed = "'abc'\n"
 
         with temporary_file_context(line) as filename_a:
             with temporary_file_context(line) as filename_b:
@@ -5673,7 +5672,7 @@ for i in range(3):
 -'abc'  
 +'abc'
 """.format(filename=filename))
-                self.assertEqual(0, p.returncode)
+                self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
                 for actual_diff in actual_diffs:
                     self.assertIn(actual_diff, output)
 
@@ -5694,8 +5693,8 @@ for i in range(3):
             p = Popen(list(AUTOPEP8_CMD_TUPLE) +
                       [temp_directory, '--recursive', '--in-place'],
                       stdout=PIPE, stderr=PIPE)
-            result = p.communicate()[0].decode('utf-8')
-            self.assertEqual(p.returncode, 1)
+            p.communicate()[0].decode('utf-8')
+            self.assertEqual(p.returncode, autopep8.EXIT_CODE_ERROR)
         finally:
             shutil.rmtree(temp_directory)
 
@@ -6048,7 +6047,7 @@ class ConfigurationFileTests(unittest.TestCase):
                 fp.write(line)
             p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename], stdout=PIPE)
             self.assertEqual(p.communicate()[0].decode("utf-8"), line)
-            self.assertEqual(p.returncode, 0)
+            self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
 
     def test_pyproject_toml_with_verbose_option(self):
         """override to flake8 config"""
@@ -6065,7 +6064,7 @@ class ConfigurationFileTests(unittest.TestCase):
             output = p.communicate()[0].decode("utf-8")
             self.assertTrue(line in output)
             self.assertTrue(verbose_line in output)
-            self.assertEqual(p.returncode, 0)
+            self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
 
     def test_pyproject_toml_with_iterable_value(self):
         line = "a =  1\n"
@@ -6079,7 +6078,7 @@ class ConfigurationFileTests(unittest.TestCase):
             p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename, ], stdout=PIPE)
             output = p.communicate()[0].decode("utf-8")
             self.assertTrue(line in output)
-            self.assertEqual(p.returncode, 0)
+            self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
 
 
 class ExperimentalSystemTests(unittest.TestCase):
