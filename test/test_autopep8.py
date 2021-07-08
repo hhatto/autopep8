@@ -5201,6 +5201,32 @@ def f():
         with autopep8_context(test_code) as result:
             self.assertEqual(expected_output, result)
 
+    def test_autopep8_disable_multi(self):
+        test_code = """\
+fix=1
+# autopep8: off
+skip=1
+# autopep8: on
+fix=2
+# autopep8: off
+skip=2
+# autopep8: on
+fix=3
+"""
+        expected_output = """\
+fix = 1
+# autopep8: off
+skip=1
+# autopep8: on
+fix = 2
+# autopep8: off
+skip=2
+# autopep8: on
+fix = 3
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
     def test_fmt_disable(self):
         test_code = """\
 # fmt: off
@@ -5271,6 +5297,32 @@ print( 123 )
 print( 123 )
 # fmt: on
 print(123)
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
+    def test_fmt_multi_disable_and_reenable(self):
+        test_code = """\
+fix=1
+# fmt: off
+skip=1
+# fmt: on
+fix=2
+# fmt: off
+skip=2
+# fmt: on
+fix=3
+"""
+        expected_output = """\
+fix = 1
+# fmt: off
+skip=1
+# fmt: on
+fix = 2
+# fmt: off
+skip=2
+# fmt: on
+fix = 3
 """
         with autopep8_context(test_code) as result:
             self.assertEqual(expected_output, result)
@@ -6045,7 +6097,8 @@ class ConfigurationFileTests(unittest.TestCase):
             target_filename = os.path.join(dirname, "foo.py")
             with open(target_filename, "w") as fp:
                 fp.write(line)
-            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename], stdout=PIPE)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [target_filename], stdout=PIPE)
             self.assertEqual(p.communicate()[0].decode("utf-8"), line)
             self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
 
@@ -6060,7 +6113,8 @@ class ConfigurationFileTests(unittest.TestCase):
             target_filename = os.path.join(dirname, "foo.py")
             with open(target_filename, "w") as fp:
                 fp.write(line)
-            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename, "-vvv"], stdout=PIPE)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [target_filename, "-vvv"], stdout=PIPE)
             output = p.communicate()[0].decode("utf-8")
             self.assertTrue(line in output)
             self.assertTrue(verbose_line in output)
@@ -6075,7 +6129,8 @@ class ConfigurationFileTests(unittest.TestCase):
             target_filename = os.path.join(dirname, "foo.py")
             with open(target_filename, "w") as fp:
                 fp.write(line)
-            p = Popen(list(AUTOPEP8_CMD_TUPLE) + [target_filename, ], stdout=PIPE)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [target_filename, ], stdout=PIPE)
             output = p.communicate()[0].decode("utf-8")
             self.assertTrue(line in output)
             self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
