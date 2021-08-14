@@ -5509,7 +5509,6 @@ def f():
     def test_exit_code_with_io_error(self):
         line = "import sys\ndef a():\n    print(1)\n"
         with readonly_temporary_file_context(line) as filename:
-            print(filename)
             p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['--in-place', filename],
                       stdout=PIPE, stderr=PIPE)
             p.communicate()
@@ -5668,6 +5667,7 @@ for i in range(3):
                           ['--jobs=3', '--diff'], stdout=PIPE)
                 p.wait()
                 output = p.stdout.read().decode()
+                p.stdout.close()
 
                 actual_diffs = []
                 for filename in files:
@@ -5681,6 +5681,7 @@ for i in range(3):
                 self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
                 for actual_diff in actual_diffs:
                     self.assertIn(actual_diff, output)
+                p.kill()
 
     def test_parallel_jobs_with_inplace_option_and_io_error(self):
         temp_directory = mkdtemp(dir='.')
