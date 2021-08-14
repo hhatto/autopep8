@@ -1738,9 +1738,15 @@ def refactor(source, fixer_names, ignore=None, filename=''):
     Skip if ignore string is produced in the refactored code.
 
     """
+    not_found_end_of_file_newline = source and source.rstrip("\r\n") == source
+    if not_found_end_of_file_newline:
+        input_source = source + "\n"
+    else:
+        input_source = source
+
     from lib2to3 import pgen2
     try:
-        new_text = refactor_with_2to3(source,
+        new_text = refactor_with_2to3(input_source,
                                       fixer_names=fixer_names,
                                       filename=filename)
     except (pgen2.parse.ParseError,
@@ -1752,6 +1758,9 @@ def refactor(source, fixer_names, ignore=None, filename=''):
     if ignore:
         if ignore in new_text and ignore not in source:
             return source
+
+    if not_found_end_of_file_newline:
+        return new_text.rstrip("\r\n")
 
     return new_text
 
