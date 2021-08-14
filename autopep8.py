@@ -531,6 +531,7 @@ class FixPEP8(object):
             options and (options.aggressive >= 2 or options.experimental) else
             self.fix_long_line_physically)
         self.fix_e703 = self.fix_e702
+        self.fix_w292 = self.fix_w291
         self.fix_w293 = self.fix_w291
 
     def _fix_source(self, results):
@@ -2990,9 +2991,11 @@ def _execute_pep8(pep8_options, source):
     return checker.report.full_error_results()
 
 
-def _remove_leading_and_normalize(line):
+def _remove_leading_and_normalize(line, with_rstrip=True):
     # ignore FF in first lstrip()
-    return line.lstrip(' \t\v').rstrip(CR + LF) + '\n'
+    if with_rstrip:
+        return line.lstrip(' \t\v').rstrip(CR + LF) + '\n'
+    return line.lstrip(' \t\v')
 
 
 class Reindenter(object):
@@ -3019,8 +3022,9 @@ class Reindenter(object):
                 self.lines.append(line)
             else:
                 # Only expand leading tabs.
+                with_rstrip = line_number != len(source_lines)
                 self.lines.append(_get_indentation(line).expandtabs() +
-                                  _remove_leading_and_normalize(line))
+                                  _remove_leading_and_normalize(line, with_rstrip))
 
         self.lines.insert(0, None)
         self.index = 1  # index into self.lines of next line
@@ -3448,9 +3452,11 @@ def normalize_line_endings(lines, newline):
     """Return fixed line endings.
 
     All lines will be modified to use the most common line ending.
-
     """
-    return [line.rstrip('\n\r') + newline for line in lines]
+    line = [line.rstrip('\n\r') + newline for line in lines]
+    if line and lines[-1] == lines[-1].rstrip('\n\r'):
+        line[-1] = line[-1].rstrip('\n\r')
+    return line
 
 
 def mutual_startswith(a, b):
