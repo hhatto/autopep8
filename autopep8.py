@@ -3302,9 +3302,13 @@ def filter_results(source, results, aggressive):
 
     # Filter out the disabled ranges
     disabled_ranges = get_disabled_ranges(source)
-    if len(disabled_ranges) > 0:
+    if disabled_ranges:
         results = [
-            result for result in results if filter_disabled_results(result, disabled_ranges)]
+            result for result in results if filter_disabled_results(
+                result,
+                disabled_ranges,
+            )
+        ]
 
     has_e901 = any(result['id'].lower() == 'e901' for result in results)
 
