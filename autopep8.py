@@ -3023,8 +3023,10 @@ class Reindenter(object):
             else:
                 # Only expand leading tabs.
                 with_rstrip = line_number != len(source_lines)
-                self.lines.append(_get_indentation(line).expandtabs() +
-                                  _remove_leading_and_normalize(line, with_rstrip))
+                self.lines.append(
+                    _get_indentation(line).expandtabs() +
+                    _remove_leading_and_normalize(line, with_rstrip)
+                )
 
         self.lines.insert(0, None)
         self.index = 1  # index into self.lines of next line
