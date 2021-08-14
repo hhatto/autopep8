@@ -5681,7 +5681,6 @@ for i in range(3):
                 self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
                 for actual_diff in actual_diffs:
                     self.assertIn(actual_diff, output)
-                p.kill()
 
     def test_parallel_jobs_with_inplace_option_and_io_error(self):
         temp_directory = mkdtemp(dir='.')
