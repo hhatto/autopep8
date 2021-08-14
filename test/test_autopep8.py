@@ -4419,6 +4419,12 @@ else:
                                              '--select=W292']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w292_ignore(self):
+        line = "1\n2"
+        with autopep8_context(line, options=['--aggressive',
+                                             '--ignore=W292']) as result:
+            self.assertEqual(line, result)
+
     def test_w293(self):
         line = '1\n \n2\n'
         fixed = '1\n\n2\n'
