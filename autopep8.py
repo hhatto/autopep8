@@ -531,6 +531,7 @@ class FixPEP8(object):
             options and (options.aggressive >= 2 or options.experimental) else
             self.fix_long_line_physically)
         self.fix_e703 = self.fix_e702
+        self.fix_w292 = self.fix_w291
         self.fix_w293 = self.fix_w291
 
     def _fix_source(self, results):
@@ -1737,9 +1738,15 @@ def refactor(source, fixer_names, ignore=None, filename=''):
     Skip if ignore string is produced in the refactored code.
 
     """
+    not_found_end_of_file_newline = source and source.rstrip("\r\n") == source
+    if not_found_end_of_file_newline:
+        input_source = source + "\n"
+    else:
+        input_source = source
+
     from lib2to3 import pgen2
     try:
-        new_text = refactor_with_2to3(source,
+        new_text = refactor_with_2to3(input_source,
                                       fixer_names=fixer_names,
                                       filename=filename)
     except (pgen2.parse.ParseError,
@@ -1751,6 +1758,9 @@ def refactor(source, fixer_names, ignore=None, filename=''):
     if ignore:
         if ignore in new_text and ignore not in source:
             return source
+
+    if not_found_end_of_file_newline:
+        return new_text.rstrip("\r\n")
 
     return new_text
 
@@ -2990,9 +3000,11 @@ def _execute_pep8(pep8_options, source):
     return checker.report.full_error_results()
 
 
-def _remove_leading_and_normalize(line):
+def _remove_leading_and_normalize(line, with_rstrip=True):
     # ignore FF in first lstrip()
-    return line.lstrip(' \t\v').rstrip(CR + LF) + '\n'
+    if with_rstrip:
+        return line.lstrip(' \t\v').rstrip(CR + LF) + '\n'
+    return line.lstrip(' \t\v')
 
 
 class Reindenter(object):
@@ -3019,8 +3031,11 @@ class Reindenter(object):
                 self.lines.append(line)
             else:
                 # Only expand leading tabs.
-                self.lines.append(_get_indentation(line).expandtabs() +
-                                  _remove_leading_and_normalize(line))
+                with_rstrip = line_number != len(source_lines)
+                self.lines.append(
+                    _get_indentation(line).expandtabs() +
+                    _remove_leading_and_normalize(line, with_rstrip)
+                )
 
         self.lines.insert(0, None)
         self.index = 1  # index into self.lines of next line
@@ -3467,9 +3482,11 @@ def normalize_line_endings(lines, newline):
     """Return fixed line endings.
 
     All lines will be modified to use the most common line ending.
-
     """
-    return [line.rstrip('\n\r') + newline for line in lines]
+    line = [line.rstrip('\n\r') + newline for line in lines]
+    if line and lines[-1] == lines[-1].rstrip('\n\r'):
+        line[-1] = line[-1].rstrip('\n\r')
+    return line
 
 
 def mutual_startswith(a, b):

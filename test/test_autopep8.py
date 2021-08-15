@@ -4419,6 +4419,12 @@ else:
                                              '--select=W292']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w292_ignore(self):
+        line = "1\n2"
+        with autopep8_context(line, options=['--aggressive',
+                                             '--ignore=W292']) as result:
+            self.assertEqual(line, result)
+
     def test_w293(self):
         line = '1\n \n2\n'
         fixed = '1\n\n2\n'
@@ -5555,7 +5561,6 @@ def f():
     def test_exit_code_with_io_error(self):
         line = "import sys\ndef a():\n    print(1)\n"
         with readonly_temporary_file_context(line) as filename:
-            print(filename)
             p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['--in-place', filename],
                       stdout=PIPE, stderr=PIPE)
             p.communicate()
@@ -5714,6 +5719,7 @@ for i in range(3):
                           ['--jobs=3', '--diff'], stdout=PIPE)
                 p.wait()
                 output = p.stdout.read().decode()
+                p.stdout.close()
 
                 actual_diffs = []
                 for filename in files:
