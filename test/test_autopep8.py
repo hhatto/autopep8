@@ -5333,6 +5333,66 @@ fix = 3
         with autopep8_context(test_code) as result:
             self.assertEqual(expected_output, result)
 
+    def test_fmt_multi_disable_complex(self):
+        test_code = """\
+fix=1
+# fmt: off
+skip=1
+# fmt: off
+fix=2
+# fmt: off
+skip=2
+# fmt: on
+fix=3
+"""
+        expected_output = """\
+fix = 1
+# fmt: off
+skip=1
+# fmt: off
+fix=2
+# fmt: off
+skip=2
+# fmt: on
+fix = 3
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
+    def test_fmt_multi_disable_complex_multi(self):
+        test_code = """\
+fix=1
+# fmt: off
+skip=1
+# fmt: off
+fix=2
+# fmt: on
+fix=22
+# fmt: on
+fix=222
+# fmt: off
+skip=2
+# fmt: on
+fix=3
+"""
+        expected_output = """\
+fix = 1
+# fmt: off
+skip=1
+# fmt: off
+fix=2
+# fmt: on
+fix = 22
+# fmt: on
+fix = 222
+# fmt: off
+skip=2
+# fmt: on
+fix = 3
+"""
+        with autopep8_context(test_code) as result:
+            self.assertEqual(expected_output, result)
+
     def test_general_disable(self):
         test_code = """\
 # fmt: off
