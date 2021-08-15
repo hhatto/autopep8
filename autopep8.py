@@ -3257,18 +3257,12 @@ def get_disabled_ranges(source):
     disabled_start = None
 
     for line, commanded_enabled in sorted(enable_commands.items()):
-        if commanded_enabled is False:
-            if currently_enabled is False:
-                continue
+        if commanded_enabled is False and currently_enabled is True:
             disabled_start = line
             currently_enabled = False
-            continue
-        if commanded_enabled is True:
-            if currently_enabled:
-                continue
+        elif commanded_enabled is True and currently_enabled is False:
             disabled_ranges.append((disabled_start, line))
             currently_enabled = True
-            continue
 
     if currently_enabled is False:
         disabled_ranges.append((disabled_start, total_lines))
@@ -3282,7 +3276,7 @@ def filter_disabled_results(result, disabled_ranges):
     """
     line = result['line']
     for disabled_range in disabled_ranges:
-        if line >= disabled_range[0] and line <= disabled_range[1]:
+        if disabled_range[0] <= line <= disabled_range[1]:
             return False
     return True
 
