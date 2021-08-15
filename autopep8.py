@@ -3257,17 +3257,34 @@ def get_disabled_ranges(source):
     disabled_start = None
 
     for line, commanded_enabled in sorted(enable_commands.items()):
-        if currently_enabled is True and commanded_enabled is False:
+        if commanded_enabled is False:
+            if currently_enabled is False:
+                continue
             disabled_start = line
             currently_enabled = False
-        elif currently_enabled is False and commanded_enabled is True:
+            continue
+        if commanded_enabled is True:
+            if currently_enabled:
+                continue
             disabled_ranges.append((disabled_start, line))
             currently_enabled = True
+            continue
 
     if currently_enabled is False:
         disabled_ranges.append((disabled_start, total_lines))
 
     return disabled_ranges
+
+
+def filter_disabled_results(result, disabled_ranges):
+    """Filter out reports based on tuple of disabled ranges.
+
+    """
+    line = result['line']
+    for disabled_range in disabled_ranges:
+        if line >= disabled_range[0] and line <= disabled_range[1]:
+            return False
+    return True
 
 
 def filter_results(source, results, aggressive):
@@ -3285,11 +3302,13 @@ def filter_results(source, results, aggressive):
 
     # Filter out the disabled ranges
     disabled_ranges = get_disabled_ranges(source)
-    if len(disabled_ranges) > 0:
-        results = [result for result in results
-                   if any(result['line'] not in range(*disabled_range)
-                          for disabled_range in disabled_ranges)
-                   ]
+    if disabled_ranges:
+        results = [
+            result for result in results if filter_disabled_results(
+                result,
+                disabled_ranges,
+            )
+        ]
 
     has_e901 = any(result['id'].lower() == 'e901' for result in results)
 
