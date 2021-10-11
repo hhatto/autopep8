@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [2.7, 3.6, 3.7, 3.8, 3.9, pypy2, pypy3]
+        python-version: [2.7, 3.6, 3.7, 3.8, 3.9, "3.10", pypy2, pypy3]
 
     steps:
     - uses: actions/checkout@v2
@@ -34,7 +34,7 @@ jobs:
         flake8 autopep8.py
         pycodestyle autopep8.py
     - name: doctest for readme
-      if: matrix.python-version == 3.7
+      if: matrix.python-version == 3.9
       run: |
         python -m doctest -v README.rst
     - name: Test with pytest
@@ -48,6 +48,6 @@ jobs:
         python test/test_suite.py
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
-      if: matrix.python-version == 3.7 && success()
+      if: matrix.python-version == 3.9 && success()
       with:
         fail_ci_if_error: true
