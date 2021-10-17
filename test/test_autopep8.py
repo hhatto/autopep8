@@ -3829,6 +3829,15 @@ GYakymOSMc = GYakymOSMW(GYakymOSMJ, GYakymOSMA, GYakymOSMr,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_with_pep572_assignment_expressions(self):
+        line = """\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = 1
+if bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb := aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:
+    print(bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(line, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
