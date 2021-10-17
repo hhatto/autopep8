@@ -3829,6 +3829,11 @@ GYakymOSMc = GYakymOSMW(GYakymOSMJ, GYakymOSMA, GYakymOSMr,
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    @unittest.skipIf(
+        (sys.version_info.major >= 3 and sys.version_info.minor < 8)
+        or sys.version_info.major < 3,
+        "syntax error in Python3.7 and lower version",
+    )
     def test_e501_with_pep572_assignment_expressions(self):
         line = """\
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = 1
