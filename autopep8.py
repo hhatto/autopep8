@@ -721,6 +721,11 @@ class FixPEP8(object):
 
         spaces_to_add = num_indent_spaces - len(_get_indentation(target))
 
+        indent_length = len(_get_indentation(target))
+        spaces_to_add = num_indent_spaces - indent_length
+        if num_indent_spaces == 0 and indent_length == 0:
+            spaces_to_add = 4
+
         if spaces_to_add >= 0:
             self.source[line_index] = (' ' * spaces_to_add +
                                        self.source[line_index])

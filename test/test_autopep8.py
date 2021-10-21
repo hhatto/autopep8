@@ -1765,6 +1765,20 @@ if True:
         with autopep8_context(line, options=['--hang-closing']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e133_no_indentation_line(self):
+        line = """\
+e = [
+    1, 2
+]
+"""
+        fixed = """\
+e = [
+    1, 2
+    ]
+"""
+        with autopep8_context(line, options=['--hang-closing']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e133_not_effected(self):
         line = """\
 if True:
