@@ -2212,6 +2212,18 @@ bar[zap[0][0]:zig[0][0], :]
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e265(self):
+        line = "## comment\n123\n"
+        fixed = "# comment\n123\n"
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e266(self):
+        line = "#1 comment\n123\n"
+        fixed = "# 1 comment\n123\n"
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e271(self):
         line = 'True and  False\n'
         fixed = 'True and False\n'
