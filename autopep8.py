@@ -4001,6 +4001,8 @@ def read_config(args, parser):
     config = SafeConfigParser()
 
     try:
+        if args.verbose and os.path.exists(args.global_config):
+            print("read config path: {}".format(args.global_config))
         config.read(args.global_config)
 
         if not args.ignore_local_config:
@@ -4009,6 +4011,11 @@ def read_config(args, parser):
             while tail:
                 if config.read([os.path.join(parent, fn)
                                 for fn in PROJECT_CONFIG]):
+                    if args.verbose:
+                        for fn in PROJECT_CONFIG:
+                            config_file = os.path.join(parent, fn)
+                            if os.path.exists(config_file):
+                                print("read config path: {}".format(os.path.join(parent, fn)))
                     break
                 (parent, tail) = os.path.split(parent)
 
