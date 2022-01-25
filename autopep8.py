@@ -4014,8 +4014,13 @@ def read_config(args, parser):
                     if args.verbose:
                         for fn in PROJECT_CONFIG:
                             config_file = os.path.join(parent, fn)
-                            if os.path.exists(config_file):
-                                print("read config path: {}".format(os.path.join(parent, fn)))
+                            if not os.path.exists(config_file):
+                                continue
+                            print(
+                                "read config path: {}".format(
+                                    os.path.join(parent, fn)
+                                )
+                            )
                     break
                 (parent, tail) = os.path.split(parent)
 
