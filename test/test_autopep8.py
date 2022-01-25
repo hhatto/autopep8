@@ -1051,7 +1051,14 @@ try:
                    os.path.join(ROOT_DIR, 'test', 'e101_example.py')],
                   stdout=PIPE, stderr=PIPE)
         output = [x.decode('utf-8') for x in p.communicate()][0]
-        self.assertEqual('', output)
+        setup_cfg_file = os.path.join(ROOT_DIR, "setup.cfg")
+        tox_ini_file = os.path.join(ROOT_DIR, "tox.ini")
+        expected = """\
+read config path: /dev/null
+read config path: {}
+read config path: {}
+""".format(setup_cfg_file, tox_ini_file)
+        self.assertEqual(expected, output)
 
     def test_e111_short(self):
         line = 'class Dummy:\n\n  def __init__(self):\n    pass\n'
