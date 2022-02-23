@@ -233,9 +233,6 @@ def extended_blank_lines(logical_line,
             yield (0, 'E301 expected 1 blank line, found 0')
 
 
-pycodestyle.register_check(extended_blank_lines)
-
-
 def continued_indentation(logical_line, tokens, indent_level, hang_closing,
                           indent_char, noqa):
     """Override pycodestyle's function to provide indentation information."""
@@ -427,8 +424,29 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
             yield (pos, 'E125 {}'.format(desired_indent))
 
 
-del pycodestyle._checks['logical_line'][pycodestyle.continued_indentation]
-pycodestyle.register_check(continued_indentation)
+def _replace_checks():
+    g = copy.copy(pycodestyle._checks['logical_line'])
+    for _c, _ in g.items():
+        if not inspect.isfunction(_c):
+            continue
+        if (
+            _c.__module__ == "pycodestyle" and
+            _c.__name__ == "continued_indentation"
+        ):
+            target = pycodestyle.continued_indentation
+        elif (
+            _c.__module__ == "__main__" and
+            _c.__name__ in ("continued_indentation", "extended_blank_lines")
+        ):
+            target = _c
+        else:
+            continue
+        del pycodestyle._checks['logical_line'][target]
+    pycodestyle.register_check(continued_indentation)
+    pycodestyle.register_check(extended_blank_lines)
+
+
+_replace_checks()
 
 
 class FixPEP8(object):
