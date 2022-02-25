@@ -5594,6 +5594,7 @@ if True:
                                                    target_line_index)
         self.assertEqual(result, 10)
 
+    @unittest.skipIf(sys.version_info.major < 3, 'syntax error in Python2')
     def test_with_runpy_call_twice(self):
 
         def _format_using_module():
