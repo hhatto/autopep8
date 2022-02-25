@@ -18,6 +18,7 @@ import sys
 import time
 import contextlib
 import io
+import runpy
 import shutil
 import stat
 from subprocess import Popen, PIPE
@@ -5592,6 +5593,59 @@ if True:
         result = get_module_imports_on_top_of_file(line.splitlines(),
                                                    target_line_index)
         self.assertEqual(result, 10)
+
+    def test_with_runpy_call_twice(self):
+
+        def _format_using_module():
+
+            class redirect_io(contextlib.AbstractContextManager):
+                def __init__(self, stream, new_target):
+                    self._stream = stream
+                    self._new_target = new_target
+                    # We use a list of old targets to make this CM re-entrant
+                    self._old_targets = []
+
+                def __enter__(self):
+                    self._old_targets.append(getattr(sys, self._stream))
+                    setattr(sys, self._stream, self._new_target)
+                    return self._new_target
+
+                def __exit__(self, _, __, ___):
+                    setattr(sys, self._stream, self._old_targets.pop())
+
+            class custom_io(io.TextIOWrapper):
+
+                def __init__(self, name, encoding="utf-8"):
+                    super().__init__(io.BytesIO(), encoding=encoding)
+
+                def close(self):
+                    pass
+
+            str_output = custom_io("<stdout>")
+            str_error = custom_io("<stderr>")
+            content = "import sys;print(sys.argv)"
+            run_args = ['autopep8', "-"]
+
+            original_argv = sys.argv[:]
+            try:
+                sys.argv = run_args
+                with redirect_io("stdout", str_output):
+                    with redirect_io("stderr", str_error):
+                        str_input = custom_io("<input>")
+                        with redirect_io("stdin", str_input):
+                            # Force line endings to be `\n`, this makes the diff
+                            # easier to work with
+                            str_input.write(content.replace("\r\n", "\n"))
+                            str_input.flush()
+                            str_input.seek(0)
+                            runpy.run_module('autopep8', run_name="__main__", alter_sys=True)
+            except SystemExit:
+                pass
+            finally:
+                sys.argv = original_argv
+
+        _format_using_module()
+        _format_using_module()
 
 
 class CommandLineTests(unittest.TestCase):
