@@ -1661,9 +1661,9 @@ def get_item(items, index, default=None):
     return default
 
 
-def reindent(source, indent_size):
+def reindent(source, indent_size,leave_tabs = False):
     """Reindent all lines."""
-    reindenter = Reindenter(source)
+    reindenter = Reindenter(source,leave_tabs)
     return reindenter.run(indent_size)
 
 
@@ -3020,7 +3020,7 @@ class Reindenter(object):
 
     """
 
-    def __init__(self, input_text):
+    def __init__(self, input_text, leave_tabs=False):
         sio = io.StringIO(input_text)
         source_lines = sio.readlines()
 
@@ -3037,10 +3037,16 @@ class Reindenter(object):
             else:
                 # Only expand leading tabs.
                 with_rstrip = line_number != len(source_lines)
-                self.lines.append(
-                    _get_indentation(line).expandtabs() +
-                    _remove_leading_and_normalize(line, with_rstrip)
-                )
+                if leave_tabs:
+                    self.lines.append(
+                        _get_indentation(line) +
+                        _remove_leading_and_normalize(line, with_rstrip)
+                    )
+                else:
+                    self.lines.append(
+                        _get_indentation(line).expandtabs() +
+                        _remove_leading_and_normalize(line, with_rstrip)
+                    )
 
         self.lines.insert(0, None)
         self.index = 1  # index into self.lines of next line
@@ -3689,7 +3695,9 @@ def apply_global_fixes(source, options, where='global', filename='',
     if any(code_match(code, select=options.select, ignore=options.ignore)
            for code in ['E101', 'E111']):
         source = reindent(source,
-                          indent_size=options.indent_size)
+                          indent_size=options.indent_size,
+                          leave_tabs=not(code_match('W191',select=options.select,ignore=options.ignore))
+                         )
 
     for (code, function) in global_fixes():
         if code.upper() in SELECTED_GLOBAL_FIXED_METHOD_CODES \
