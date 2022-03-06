@@ -5836,6 +5836,7 @@ for i in range(3):
                           ['--jobs=3', '--diff'], stdout=PIPE)
                 p.wait()
                 output = p.stdout.read().decode()
+                output = output.replace("\r\n","\n")  # windows compatibility
                 p.stdout.close()
 
                 actual_diffs = []
@@ -5844,9 +5845,9 @@ for i in range(3):
 --- original/{filename}
 +++ fixed/{filename}
 @@ -1 +1 @@
--'abc'
+-'abc'  {blank}
 +'abc'
-""".format(filename=filename))
+""".format(filename=filename, blank=""))  # in case the users IDE trims leaning whitespace
                 self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
                 for actual_diff in actual_diffs:
                     self.assertIn(actual_diff, output)
