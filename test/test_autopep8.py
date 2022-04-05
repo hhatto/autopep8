@@ -1810,6 +1810,16 @@ while True:
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_w191_ignore(self):
+        line = """\
+while True:
+\tif True:
+\t\t1
+"""
+        with autopep8_context(line, options=['--aggressive', '--ignore=W191']) as result:
+            self.assertEqual(line, result)
+
+
     def test_e131_with_select_option(self):
         line = 'd = f(\n    a="hello"\n        "world",\n    b=1)\n'
         fixed = 'd = f(\n    a="hello"\n    "world",\n    b=1)\n'
@@ -5826,6 +5836,7 @@ for i in range(3):
                           ['--jobs=3', '--diff'], stdout=PIPE)
                 p.wait()
                 output = p.stdout.read().decode()
+                output = output.replace("\r\n","\n")  # windows compatibility
                 p.stdout.close()
 
                 actual_diffs = []
@@ -5834,9 +5845,9 @@ for i in range(3):
 --- original/{filename}
 +++ fixed/{filename}
 @@ -1 +1 @@
--'abc'  
+-'abc'  {blank}
 +'abc'
-""".format(filename=filename))
+""".format(filename=filename, blank=""))  # in case the users IDE trims leaning whitespace
                 self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
                 for actual_diff in actual_diffs:
                     self.assertIn(actual_diff, output)
