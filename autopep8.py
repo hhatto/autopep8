@@ -934,22 +934,22 @@ class FixPEP8(object):
                  indentation + 'import ' + target[offset:].lstrip('\t ,'))
         self.source[line_index] = fixed
 
-    def fix_e402(self, result):
-        (line_index, offset, target) = get_index_offset_contents(result,
-                                                                 self.source)
-        for i in range(1, 100):
-            line = "".join(self.source[line_index:line_index+i])
-            try:
-                generate_tokens("".join(line))
-            except (SyntaxError, tokenize.TokenError):
-                continue
-            break
-        if not (target in self.imports and self.imports[target] != line_index):
-            mod_offset = get_module_imports_on_top_of_file(self.source,
-                                                           line_index)
-            self.source[mod_offset] = line + self.source[mod_offset]
-        for offset in range(i):
-            self.source[line_index+offset] = ''
+    def fix_e402(self, result): ...
+        # (line_index, offset, target) = get_index_offset_contents(result,
+        #                                                          self.source)
+        # for i in range(1, 100):
+        #     line = "".join(self.source[line_index:line_index+i])
+        #     try:
+        #         generate_tokens("".join(line))
+        #     except (SyntaxError, tokenize.TokenError):
+        #         continue
+        #     break
+        # if not (target in self.imports and self.imports[target] != line_index):
+        #     mod_offset = get_module_imports_on_top_of_file(self.source,
+        #                                                    line_index)
+        #     self.source[mod_offset] = line + self.source[mod_offset]
+        # for offset in range(i):
+        #     self.source[line_index+offset] = ''
 
     def fix_long_line_logically(self, result, logical):
         """Try to make lines fit within --max-line-length characters."""
