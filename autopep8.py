@@ -3696,7 +3696,7 @@ def apply_global_fixes(source, options, where='global', filename='',
            for code in ['E101', 'E111']):
         source = reindent(source,
                           indent_size=options.indent_size,
-                          leave_tabs=not(
+                          leave_tabs=not (
                               code_match(
                                     'W191',
                                     select=options.select,
