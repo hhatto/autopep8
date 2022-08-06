@@ -10,7 +10,7 @@ from setuptools import setup
 
 
 INSTALL_REQUIRES = (
-    ['pycodestyle >= 2.8.0', 'toml']
+    ['pycodestyle >= 2.9.0', 'toml']
 )
 
 
