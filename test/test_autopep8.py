@@ -26,10 +26,7 @@ import tokenize
 import unittest
 import warnings
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import StringIO
 
 ROOT_DIR = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
 
@@ -7504,23 +7501,6 @@ if True:
                                         'any', k_curr) and k_right in (
                                         'any', k_curr):
                                     pass
-"""
-        with autopep8_context(line, options=['--experimental']) as result:
-            self.assertEqual(fixed, result)
-
-    @unittest.skipIf(sys.version_info.major >= 3, 'syntax error in Python3')
-    def test_e501_print_isnot_function(self):
-        line = """\
-
-def d():
-    print "%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d" % (111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333, 333, 333, 333)
-"""
-        fixed = """\
-
-def d():
-    print "%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d" % (
-        111, 111, 111, 111, 222, 222, 222, 222, 222, 222, 222, 222, 222, 333,
-        333, 333, 333)
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
