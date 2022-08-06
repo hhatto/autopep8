@@ -1,3 +1,12 @@
+#: E275
+from w import(e, f)
+#: E275
+from importable.module import(e, f)
+#: E275
+try:
+    from importable.module import(e, f)
+except ImportError:
+    pass
 #: Okay
 True and False
 #: E271
@@ -28,3 +37,17 @@ a and	b
 a		and b
 #: E273 E274
 this		and	False
+#: E275
+if(foo):
+    pass
+else:
+    pass
+#: Okay
+matched = {"true": True, "false": False}
+#: E275:2:11
+if True:
+    assert(1)
+#: Okay
+def f():
+    print((yield))
+    x = (yield)
