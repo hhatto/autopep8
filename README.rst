@@ -10,7 +10,7 @@ autopep8
     :target: https://github.com/hhatto/autopep8/actions
     :alt: Build status
 
-.. image:: https://codecov.io/gh/hhatto/autopep8/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/hhatto/autopep8/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/hhatto/autopep8
     :alt: Code Coverage
 
