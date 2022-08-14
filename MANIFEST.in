@@ -12,6 +12,7 @@ include test/example.py
 include test/iso_8859_1.py
 include test/fake_configuration/.pep8
 include test/fake_pycodestyle_configuration/tox.ini
+include tox.ini
 recursive-exclude test/suite *.py
 recursive-exclude test/suite/out *.py
 exclude .travis.yml
@@ -27,5 +28,4 @@ exclude test/acid_pypi.py
 exclude test/suite
 exclude test/suite/out
 exclude test/vim_autopep8.py
-exclude tox.ini
 exclude update_readme.py
