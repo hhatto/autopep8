@@ -809,7 +809,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed
 
     def fix_e262(self, result):
-        """Fix spacing after comment hash."""
+        """Fix spacing after inline comment hash."""
         target = self.source[result['line'] - 1]
         offset = result['column']
 
@@ -817,6 +817,17 @@ class FixPEP8(object):
         comment = target[offset:].lstrip(' \t#')
 
         fixed = code + ('  # ' + comment if comment.strip() else '\n')
+
+        self.source[result['line'] - 1] = fixed
+
+    def fix_e265(self, result):
+        """Fix spacing after block comment hash."""
+        target = self.source[result['line'] - 1]
+
+        indent = _get_indentation(target)
+        comment = target.lstrip(' \t#')
+
+        fixed = indent + ('# ' + comment if comment.strip() else '\n')
 
         self.source[result['line'] - 1] = fixed
 
