@@ -2227,14 +2227,14 @@ bar[zap[0][0]:zig[0][0], :]
             self.assertEqual(fixed, result)
 
     def test_e265(self):
-        line = "## comment\n123\n"
-        fixed = "# comment\n123\n"
+        line = "#A comment\n123\n"
+        fixed = "# A comment\n123\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e266(self):
-        line = "#1 comment\n123\n"
-        fixed = "# 1 comment\n123\n"
+        line = "## comment\n123\n"
+        fixed = "# comment\n123\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
