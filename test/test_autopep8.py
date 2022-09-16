@@ -2232,6 +2232,16 @@ bar[zap[0][0]:zig[0][0], :]
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e265_ignores_special_comments(self):
+        line = "#!python\n456\n"
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
+    def test_e265_ignores_special_comments_in_middle_of_file(self):
+        line = "123\n\n#!python\n456\n"
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
     def test_e265_only(self):
         line = "##A comment\n#B comment\n123\n"
         fixed = "## A comment\n# B comment\n123\n"

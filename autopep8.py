@@ -830,6 +830,10 @@ class FixPEP8(object):
         hashes = line[:pos]
         comment = line[pos:].lstrip(' \t')
 
+        # Ignore special comments, even in the middle of the file.
+        if comment.startswith('!'):
+            return
+
         fixed = indent + hashes + (' ' + comment if comment.strip() else '\n')
 
         self.source[result['line'] - 1] = fixed
