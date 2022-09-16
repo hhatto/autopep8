@@ -2232,10 +2232,34 @@ bar[zap[0][0]:zig[0][0], :]
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e265_only(self):
+        line = "##A comment\n#B comment\n123\n"
+        fixed = "## A comment\n# B comment\n123\n"
+        with autopep8_context(line, options=['--select=E265']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_ignore_e265(self):
+        line = "## A comment\n#B comment\n123\n"
+        fixed = "# A comment\n#B comment\n123\n"
+        with autopep8_context(line, options=['--ignore=E265']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e266(self):
         line = "## comment\n123\n"
         fixed = "# comment\n123\n"
         with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e266_only(self):
+        line = "## A comment\n#B comment\n123\n"
+        fixed = "# A comment\n#B comment\n123\n"
+        with autopep8_context(line, options=['--select=E266']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_ignore_e266(self):
+        line = "##A comment\n#B comment\n123\n"
+        fixed = "## A comment\n# B comment\n123\n"
+        with autopep8_context(line, options=['--ignore=E266']) as result:
             self.assertEqual(fixed, result)
 
     def test_e271(self):

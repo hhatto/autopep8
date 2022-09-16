@@ -825,9 +825,12 @@ class FixPEP8(object):
         target = self.source[result['line'] - 1]
 
         indent = _get_indentation(target)
-        comment = target.lstrip(' \t#')
+        line = target.lstrip(' \t')
+        pos = next((index for index, c in enumerate(line) if c != '#'))
+        hashes = line[:pos]
+        comment = line[pos:].lstrip(' \t')
 
-        fixed = indent + ('# ' + comment if comment.strip() else '\n')
+        fixed = indent + hashes + (' ' + comment if comment.strip() else '\n')
 
         self.source[result['line'] - 1] = fixed
 
