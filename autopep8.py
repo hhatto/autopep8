@@ -809,7 +809,7 @@ class FixPEP8(object):
         self.source[result['line'] - 1] = fixed
 
     def fix_e262(self, result):
-        """Fix spacing after comment hash."""
+        """Fix spacing after inline comment hash."""
         target = self.source[result['line'] - 1]
         offset = result['column']
 
@@ -817,6 +817,37 @@ class FixPEP8(object):
         comment = target[offset:].lstrip(' \t#')
 
         fixed = code + ('  # ' + comment if comment.strip() else '\n')
+
+        self.source[result['line'] - 1] = fixed
+
+    def fix_e265(self, result):
+        """Fix spacing after block comment hash."""
+        target = self.source[result['line'] - 1]
+
+        indent = _get_indentation(target)
+        line = target.lstrip(' \t')
+        pos = next((index for index, c in enumerate(line) if c != '#'))
+        hashes = line[:pos]
+        comment = line[pos:].lstrip(' \t')
+
+        # Ignore special comments, even in the middle of the file.
+        if comment.startswith('!'):
+            return
+
+        fixed = indent + hashes + (' ' + comment if comment.strip() else '\n')
+
+        self.source[result['line'] - 1] = fixed
+
+    def fix_e266(self, result):
+        """Fix too many block comment hashes."""
+        target = self.source[result['line'] - 1]
+
+        # Leave stylistic outlined blocks alone.
+        if target.strip().endswith('#'):
+            return
+
+        indentation = _get_indentation(target)
+        fixed = indentation + '# ' + target.lstrip('# \t')
 
         self.source[result['line'] - 1] = fixed
 
@@ -1683,48 +1714,6 @@ def split_and_strip_non_empty_lines(text):
 
     """
     return [line.strip() for line in text.splitlines() if line.strip()]
-
-
-def fix_e265(source, aggressive=False):  # pylint: disable=unused-argument
-    """Format block comments."""
-    if '#' not in source:
-        # Optimization.
-        return source
-
-    ignored_line_numbers = multiline_string_lines(
-        source,
-        include_docstrings=True) | set(commented_out_code_lines(source))
-
-    fixed_lines = []
-    sio = io.StringIO(source)
-    for (line_number, line) in enumerate(sio.readlines(), start=1):
-        if (
-            line.lstrip().startswith('#') and
-            line_number not in ignored_line_numbers and
-            not pycodestyle.noqa(line)
-        ):
-            indentation = _get_indentation(line)
-            line = line.lstrip()
-
-            # Normalize beginning if not a shebang.
-            if len(line) > 1:
-                pos = next((index for index, c in enumerate(line)
-                            if c != '#'))
-                if (
-                    # Leave multiple spaces like '#    ' alone.
-                    (line[:pos].count('#') > 1 or line[1].isalnum() or
-                        not line[1].isspace()) and
-                    line[1] not in ':!' and
-                    # Leave stylistic outlined blocks alone.
-                    not line.rstrip().endswith('#')
-                ):
-                    line = '# ' + line.lstrip('# \t')
-
-            fixed_lines.append(indentation + line)
-        else:
-            fixed_lines.append(line)
-
-    return ''.join(fixed_lines)
 
 
 def refactor(source, fixer_names, ignore=None, filename=''):

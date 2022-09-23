@@ -202,23 +202,23 @@ def foo():
     def test_format_block_comments(self):
         self.assertEqual(
             '# abc',
-            autopep8.fix_e265('#abc'))
+            fix_e265_and_e266('#abc'))
 
         self.assertEqual(
             '# abc',
-            autopep8.fix_e265('####abc'))
+            fix_e265_and_e266('####abc'))
 
         self.assertEqual(
             '# abc',
-            autopep8.fix_e265('##   #   ##abc'))
+            fix_e265_and_e266('##   #   ##abc'))
 
         self.assertEqual(
             '# abc "# noqa"',
-            autopep8.fix_e265('# abc "# noqa"'))
+            fix_e265_and_e266('# abc "# noqa"'))
 
         self.assertEqual(
             '# *abc',
-            autopep8.fix_e265('#*abc'))
+            fix_e265_and_e266('#*abc'))
 
     def test_format_block_comments_should_leave_outline_alone(self):
         line = """\
@@ -226,14 +226,14 @@ def foo():
 ##   Some people like these crazy things. So leave them alone.   ##
 ###################################################################
 """
-        self.assertEqual(line, autopep8.fix_e265(line))
+        self.assertEqual(line, fix_e265_and_e266(line))
 
         line = """\
 #################################################################
 #   Some people like these crazy things. So leave them alone.   #
 #################################################################
 """
-        self.assertEqual(line, autopep8.fix_e265(line))
+        self.assertEqual(line, fix_e265_and_e266(line))
 
     def test_format_block_comments_with_multiple_lines(self):
         self.assertEqual(
@@ -247,7 +247,7 @@ def foo():
 #do not modify strings'''
 #
 """,
-            autopep8.fix_e265("""\
+            fix_e265_and_e266("""\
 # abc
   #blah blah
     #four space indentation
@@ -261,17 +261,17 @@ def foo():
     def test_format_block_comments_should_not_corrupt_special_comments(self):
         self.assertEqual(
             '#: abc',
-            autopep8.fix_e265('#: abc'))
+            fix_e265_and_e266('#: abc'))
 
         self.assertEqual(
             '#!/bin/bash\n',
-            autopep8.fix_e265('#!/bin/bash\n'))
+            fix_e265_and_e266('#!/bin/bash\n'))
 
     def test_format_block_comments_should_only_touch_real_comments(self):
         commented_out_code = '#x = 1'
         self.assertEqual(
             commented_out_code,
-            autopep8.fix_e265(commented_out_code))
+            fix_e265_and_e266(commented_out_code))
 
     def test_fix_file(self):
         self.assertIn(
@@ -2227,15 +2227,49 @@ bar[zap[0][0]:zig[0][0], :]
             self.assertEqual(fixed, result)
 
     def test_e265(self):
+        line = "#A comment\n123\n"
+        fixed = "# A comment\n123\n"
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e265_ignores_special_comments(self):
+        line = "#!python\n456\n"
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
+    def test_e265_ignores_special_comments_in_middle_of_file(self):
+        line = "123\n\n#!python\n456\n"
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
+    def test_e265_only(self):
+        line = "##A comment\n#B comment\n123\n"
+        fixed = "## A comment\n# B comment\n123\n"
+        with autopep8_context(line, options=['--select=E265']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_ignore_e265(self):
+        line = "## A comment\n#B comment\n123\n"
+        fixed = "# A comment\n#B comment\n123\n"
+        with autopep8_context(line, options=['--ignore=E265']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e266(self):
         line = "## comment\n123\n"
         fixed = "# comment\n123\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    def test_e266(self):
-        line = "#1 comment\n123\n"
-        fixed = "# 1 comment\n123\n"
-        with autopep8_context(line) as result:
+    def test_e266_only(self):
+        line = "## A comment\n#B comment\n123\n"
+        fixed = "# A comment\n#B comment\n123\n"
+        with autopep8_context(line, options=['--select=E266']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_ignore_e266(self):
+        line = "##A comment\n#B comment\n123\n"
+        fixed = "## A comment\n# B comment\n123\n"
+        with autopep8_context(line, options=['--ignore=E266']) as result:
             self.assertEqual(fixed, result)
 
     def test_e271(self):
@@ -7504,6 +7538,11 @@ if True:
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
+
+
+def fix_e265_and_e266(source):
+    with autopep8_context(source, options=['--select=E265,E266']) as result:
+        return result
 
 
 @contextlib.contextmanager
