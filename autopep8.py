@@ -3770,6 +3770,11 @@ def create_parser():
     parser.add_argument('--exclude', metavar='globs',
                         help='exclude file/directory names that match these '
                              'comma-separated globs')
+    parser.add_argument('--exclude-base-dir', metavar='directory',
+                        help='files are first made relative to this directory '
+                             'before matching against exclude paths. Ignored '
+                             'when unset, otherwise this defaults to the '
+                             'directory containing the pyproject.toml file')
     parser.add_argument('--list-fixes', action='store_true',
                         help='list codes for fixes; '
                         'used by --ignore and --select')
@@ -4043,6 +4048,7 @@ def read_pyproject_toml(args, parser):
     import toml
 
     config = None
+    config_relative_base = None
 
     if os.path.exists(args.global_config):
         with open(args.global_config) as fp:
@@ -4056,6 +4062,7 @@ def read_pyproject_toml(args, parser):
             if os.path.exists(pyproject_toml):
                 with open(pyproject_toml) as fp:
                     config = toml.load(fp)
+                    config_relative_base = os.path.dirname(pyproject_toml)
                     break
             (parent, tail) = os.path.split(parent)
 
@@ -4084,6 +4091,11 @@ def read_pyproject_toml(args, parser):
             print("enable pyproject.toml config: "
                   "key={}, value={}".format(k, value))
         defaults[norm_opt] = value
+
+    # Only set the base directory if the "exclude" from
+    # this configuration will be used.
+    if "exclude" in defaults and not args.exclude:
+        defaults["exclude_base_dir"] = config_relative_base
 
     if defaults:
         # set value when exists key-value in defaults dict
@@ -4353,12 +4365,19 @@ class LineEndingWrapper(object):
         self.__output.flush()
 
 
-def match_file(filename, exclude):
+def match_file(filename, exclude, exclude_base_dir=None):
     """Return True if file is okay for modifying/recursing."""
     base_name = os.path.basename(filename)
 
     if base_name.startswith('.'):
         return False
+
+    if exclude_base_dir:
+        # Use the "." to ensure "./" prefix for compatibility with TOML
+        # files before this feature was added, where expanding "." would
+        # always add the preceding "./".
+        filename = os.path.join(".", os.path.relpath(filename,
+                                                     exclude_base_dir))
 
     for pattern in exclude:
         if fnmatch.fnmatch(base_name, pattern):
@@ -4372,7 +4391,7 @@ def match_file(filename, exclude):
     return True
 
 
-def find_files(filenames, recursive, exclude):
+def find_files(filenames, recursive, exclude, exclude_base_dir=None):
     """Yield filenames."""
     while filenames:
         name = filenames.pop(0)
@@ -4380,10 +4399,10 @@ def find_files(filenames, recursive, exclude):
             for root, directories, children in os.walk(name):
                 filenames += [os.path.join(root, f) for f in children
                               if match_file(os.path.join(root, f),
-                                            exclude)]
+                                            exclude, exclude_base_dir)]
                 directories[:] = [d for d in directories
                                   if match_file(os.path.join(root, d),
-                                                exclude)]
+                                                exclude, exclude_base_dir)]
         else:
             is_exclude_match = False
             for pattern in exclude:
@@ -4412,7 +4431,8 @@ def fix_multiple_files(filenames, options, output=None):
 
     """
     results = []
-    filenames = find_files(filenames, options.recursive, options.exclude)
+    filenames = find_files(filenames, options.recursive,
+                           options.exclude, options.exclude_base_dir)
     if options.jobs > 1:
         import multiprocessing
         pool = multiprocessing.Pool(options.jobs)
