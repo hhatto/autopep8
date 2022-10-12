@@ -4040,13 +4040,13 @@ def read_config(args, parser):
 
 def read_pyproject_toml(args, parser):
     """Read pyproject.toml and load configuration."""
-    import toml
+    import tomli
 
     config = None
 
     if os.path.exists(args.global_config):
-        with open(args.global_config) as fp:
-            config = toml.load(fp)
+        with open(args.global_config, "rb") as fp:
+            config = tomli.load(fp)
 
     if not args.ignore_local_config:
         parent = tail = args.files and os.path.abspath(
@@ -4054,8 +4054,8 @@ def read_pyproject_toml(args, parser):
         while tail:
             pyproject_toml = os.path.join(parent, "pyproject.toml")
             if os.path.exists(pyproject_toml):
-                with open(pyproject_toml) as fp:
-                    config = toml.load(fp)
+                with open(pyproject_toml, "rb") as fp:
+                    config = tomli.load(fp)
                     break
             (parent, tail) = os.path.split(parent)
 
