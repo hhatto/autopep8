@@ -3973,13 +3973,18 @@ def parse_args(arguments, apply_config=False):
     return args
 
 
-def _get_normalize_options(config, section, option_list):
-    for (k, _) in config.items(section):
+def _get_normalize_options(args, config, section, option_list):
+    for (k, v) in config.items(section):
         norm_opt = k.lstrip('-').replace('-', '_')
         if not option_list.get(norm_opt):
             continue
         opt_type = option_list[norm_opt]
         if opt_type is int:
+            if v.strip() == "auto":
+                # skip to special case
+                if args.verbose:
+                    print(f"ignore config: {k}={v}")
+                continue
             value = config.getint(section, k)
         elif opt_type is bool:
             value = config.getboolean(section, k)
@@ -4023,8 +4028,9 @@ def read_config(args, parser):
         for section in ['pep8', 'pycodestyle', 'flake8']:
             if not config.has_section(section):
                 continue
-            for norm_opt, k, value in _get_normalize_options(config, section,
-                                                             option_list):
+            for norm_opt, k, value in _get_normalize_options(
+                args, config, section, option_list
+            ):
                 if args.verbose:
                     print("enable config: section={}, key={}, value={}".format(
                         section, k, value))
