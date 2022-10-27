@@ -47,7 +47,7 @@ jobs:
         python test/acid.py --pycodestyle= --line-range 289 925 test/vectors_example.py
         python test/test_suite.py
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v3
       if: matrix.python-version == 3.9 && success()
       with:
         fail_ci_if_error: true
