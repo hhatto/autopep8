@@ -451,6 +451,10 @@ sys.maxint
             self.assertTrue(autopep8.match_file(filename, exclude=[]),
                             msg=filename)
 
+    def test_match_file_with_dummy_file(self):
+        filename = "notexists.dummyfile.dummy"
+        self.assertEqual(autopep8.match_file(filename, exclude=[]), False)
+
     def test_find_files(self):
         temp_directory = mkdtemp()
         try:
