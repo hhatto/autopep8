@@ -6135,7 +6135,8 @@ class ConfigurationTests(unittest.TestCase):
     def test_local_config(self):
         args = autopep8.parse_args(
             [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
-             '--global-config={}'.format(os.devnull)],
+             '--global-config={}'.format(os.devnull),
+             '-vvv'],
             apply_config=True)
         self.assertEqual(args.indent_size, 2)
 
@@ -6288,6 +6289,39 @@ class ConfigurationFileTests(unittest.TestCase):
                       [target_filename, ], stdout=PIPE)
             output = p.communicate()[0].decode("utf-8")
             self.assertTrue(line in output)
+            self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
+
+    def test_setupcfg_with_flake8_config(self):
+        line = "a =  1\n"
+        fixed = "a = 1\n"
+        setupcfg_flake8 = """[flake8]\njobs=auto\n"""
+        with temporary_project_directory() as dirname:
+            with open(os.path.join(dirname, "setup.cfg"), "w") as fp:
+                fp.write(setupcfg_flake8)
+            target_filename = os.path.join(dirname, "foo.py")
+            with open(target_filename, "w") as fp:
+                fp.write(line)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [target_filename, "-v"], stdout=PIPE)
+            output = p.communicate()[0].decode("utf-8")
+            self.assertTrue(fixed in output)
+            self.assertTrue("ignore config: jobs=auto" in output)
+            self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
+
+    def test_setupcfg_with_pycodestyle_config(self):
+        line = "a =  1\n"
+        fixed = "a = 1\n"
+        setupcfg_flake8 = """[pycodestyle]\ndiff=True\nignore="E,W"\n"""
+        with temporary_project_directory() as dirname:
+            with open(os.path.join(dirname, "setup.cfg"), "w") as fp:
+                fp.write(setupcfg_flake8)
+            target_filename = os.path.join(dirname, "foo.py")
+            with open(target_filename, "w") as fp:
+                fp.write(line)
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [target_filename, "-v"], stdout=PIPE)
+            output = p.communicate()[0].decode("utf-8")
+            self.assertTrue(fixed in output)
             self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK)
 
 
