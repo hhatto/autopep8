@@ -303,13 +303,6 @@ to fix various types of indentation issues::
 
     $ autopep8 --select=E1,W1 <filename>
 
-Similarly, to just fix deprecated code::
-
-    $ autopep8 --aggressive --select=W6 <filename>
-
-The above is useful when trying to port a single code base to work with both
-Python 2 and Python 3 at the same time.
-
 If the file being fixed is large, you may want to enable verbose progress
 messages::
 
@@ -405,7 +398,7 @@ Testing
 Test cases are in ``test/test_autopep8.py``. They can be run directly via
 ``python test/test_autopep8.py`` or via tox_. The latter is useful for
 testing against multiple Python interpreters. (We currently test against
-CPython versions 2.7, 3.6 3.7 and 3.8. We also test against PyPy.)
+CPython versions 3.7, 3.8, 3.9 and 3.10. We also test against PyPy.)
 
 .. _`tox`: https://pypi.org/project/tox/
 
