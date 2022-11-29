@@ -1779,14 +1779,6 @@ def fix_2to3(source,
                     filename=filename)
 
 
-def fix_w602(source, aggressive=True):
-    """Fix deprecated form of raising exception."""
-    if not aggressive:
-        return source
-
-    return refactor(source, ['raise'], ignore='with_traceback')
-
-
 def find_newline(source):
     """Return type of newline used in source.
 
