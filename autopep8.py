@@ -3534,15 +3534,6 @@ def fix_lines(source_lines, options, filename=''):
         # Disable "apply_local_fixes()" for now due to issue #175.
         fixed_source = tmp_source
     else:
-        pep8_options = {
-            'ignore': options.ignore,
-            'select': options.select,
-            'max_line_length': options.max_line_length,
-            'hang_closing': options.hang_closing,
-        }
-        sio = io.StringIO(tmp_source)
-        contents = sio.readlines()
-        results = _execute_pep8(pep8_options, contents)
         # Apply global fixes only once (for efficiency).
         fixed_source = apply_global_fixes(tmp_source,
                                           options,
