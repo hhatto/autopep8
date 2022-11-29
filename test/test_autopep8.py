@@ -978,11 +978,11 @@ if True:
 
     def test_e101_should_ignore_multiline_strings_complex(self):
         line = """\
-print(3 <> 4, '''
+print(3 !=  4, '''
 while True:
     if True:
     \t1
-\t''', 4 <> 5)
+\t''', 4 !=  5)
 """
         fixed = """\
 print(3 != 4, '''
@@ -4430,11 +4430,11 @@ def tmp(g):
 
     def test_w191_should_ignore_multiline_strings(self):
         line = """\
-print(3 <> 4, '''
+print(3 !=  4, '''
 while True:
     if True:
     \t1
-\t''', 4 <> 5)
+\t''', 4  != 5)
 if True:
 \t123
 """
