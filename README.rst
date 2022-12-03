@@ -245,10 +245,6 @@ autopep8 fixes the following issues_ reported by pycodestyle_::
     W391 - Remove trailing blank lines.
     W503 - Fix line break before binary operator.
     W504 - Fix line break after binary operator.
-    W601 - Use "in" rather than "has_key()".
-    W602 - Fix deprecated form of raising exception.
-    W603 - Use "!=" instead of "<>"
-    W604 - Use "repr()" instead of backticks.
     W605 - Fix invalid escape sequence 'x'.
     W690 - Fix various deprecated code (via lib2to3).
 
@@ -303,13 +299,6 @@ to fix various types of indentation issues::
 
     $ autopep8 --select=E1,W1 <filename>
 
-Similarly, to just fix deprecated code::
-
-    $ autopep8 --aggressive --select=W6 <filename>
-
-The above is useful when trying to port a single code base to work with both
-Python 2 and Python 3 at the same time.
-
 If the file being fixed is large, you may want to enable verbose progress
 messages::
 
@@ -354,9 +343,6 @@ function:
 Or with options:
 
     >>> import autopep8
-    >>> autopep8.fix_code('x.has_key(y)\n',
-    ...                   options={'aggressive': 1})
-    'y in x\n'
     >>> autopep8.fix_code('print( 123 )\n',
     ...                   options={'ignore': ['E']})
     'print( 123 )\n'
@@ -405,7 +391,7 @@ Testing
 Test cases are in ``test/test_autopep8.py``. They can be run directly via
 ``python test/test_autopep8.py`` or via tox_. The latter is useful for
 testing against multiple Python interpreters. (We currently test against
-CPython versions 2.7, 3.6 3.7 and 3.8. We also test against PyPy.)
+CPython versions 3.7, 3.8, 3.9 and 3.10. We also test against PyPy.)
 
 .. _`tox`: https://pypi.org/project/tox/
 
