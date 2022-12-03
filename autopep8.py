@@ -86,7 +86,7 @@ import ast
 from configparser import ConfigParser as SafeConfigParser, Error
 
 import pycodestyle
-from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX
+from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX, COMPARE_TYPE_REGEX
 
 
 __version__ = '2.0.4'
@@ -444,7 +444,7 @@ class FixPEP8(object):
         - e502
         - e701,e702,e703,e704
         - e711,e712,e713,e714
-        - e722
+        - e721,e722
         - e731
         - w291
         - w503,504
@@ -1256,6 +1256,24 @@ class FixPEP8(object):
                     new_target = '{}{} {}'.format(
                         new_target[:pos_start], 'is not', new_target[pos_end:])
                 self.source[line_index] = new_target
+
+    def fix_e721(self, result):
+        """fix comparison type"""
+        (line_index, _, target) = get_index_offset_contents(result,
+                                                            self.source)
+        match = COMPARE_TYPE_REGEX.search(target)
+        if match:
+            start = match.start()
+            end = match.end()
+            _prefix = ""
+            _type_comp = f"{match.groups()[0]}, {target[:start]}"
+            _tmp = target[:start].split()
+            if len(_tmp) >= 2:
+                _type_comp = f"{match.groups()[0]}, {_tmp[-1]}"
+                _prefix = "".join(_tmp[:-1])
+
+            fix_line = f"{_prefix} isinstance({_type_comp}){target[end:]}"
+            self.source[line_index] = fix_line
 
     def fix_e722(self, result):
         """fix bare except"""
