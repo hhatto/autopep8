@@ -245,10 +245,6 @@ autopep8 fixes the following issues_ reported by pycodestyle_::
     W391 - Remove trailing blank lines.
     W503 - Fix line break before binary operator.
     W504 - Fix line break after binary operator.
-    W601 - Use "in" rather than "has_key()".
-    W602 - Fix deprecated form of raising exception.
-    W603 - Use "!=" instead of "<>"
-    W604 - Use "repr()" instead of backticks.
     W605 - Fix invalid escape sequence 'x'.
     W690 - Fix various deprecated code (via lib2to3).
 
@@ -347,9 +343,6 @@ function:
 Or with options:
 
     >>> import autopep8
-    >>> autopep8.fix_code('x.has_key(y)\n',
-    ...                   options={'aggressive': 1})
-    'y in x\n'
     >>> autopep8.fix_code('print( 123 )\n',
     ...                   options={'ignore': ['E']})
     'print( 123 )\n'
