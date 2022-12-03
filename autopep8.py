@@ -89,7 +89,7 @@ import pycodestyle
 from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX
 
 
-__version__ = '1.7.1'
+__version__ = '2.0.0'
 
 
 CR = '\r'
@@ -129,15 +129,10 @@ DEFAULT_INDENT_SIZE = 4
 # to be enabled, disable both of them
 CONFLICTING_CODES = ('W503', 'W504')
 
-SELECTED_GLOBAL_FIXED_METHOD_CODES = ['W602', ]
-
 # W602 is handled separately due to the need to avoid "with_traceback".
 CODE_TO_2TO3 = {
     'E231': ['ws_comma'],
     'E721': ['idioms'],
-    'W601': ['has_key'],
-    'W603': ['ne'],
-    'W604': ['repr'],
     'W690': ['apply',
              'except',
              'exitfunc',
@@ -1777,14 +1772,6 @@ def fix_2to3(source,
                                  where=where,
                                  verbose=verbose),
                     filename=filename)
-
-
-def fix_w602(source, aggressive=True):
-    """Fix deprecated form of raising exception."""
-    if not aggressive:
-        return source
-
-    return refactor(source, ['raise'], ignore='with_traceback')
 
 
 def find_newline(source):
@@ -3547,22 +3534,10 @@ def fix_lines(source_lines, options, filename=''):
         # Disable "apply_local_fixes()" for now due to issue #175.
         fixed_source = tmp_source
     else:
-        pep8_options = {
-            'ignore': options.ignore,
-            'select': options.select,
-            'max_line_length': options.max_line_length,
-            'hang_closing': options.hang_closing,
-        }
-        sio = io.StringIO(tmp_source)
-        contents = sio.readlines()
-        results = _execute_pep8(pep8_options, contents)
-        codes = {result['id'] for result in results
-                 if result['id'] in SELECTED_GLOBAL_FIXED_METHOD_CODES}
         # Apply global fixes only once (for efficiency).
         fixed_source = apply_global_fixes(tmp_source,
                                           options,
-                                          filename=filename,
-                                          codes=codes)
+                                          filename=filename)
 
     passes = 0
     long_line_ignore_cache = set()
@@ -3684,9 +3659,6 @@ def apply_global_fixes(source, options, where='global', filename='',
                           )
 
     for (code, function) in global_fixes():
-        if code.upper() in SELECTED_GLOBAL_FIXED_METHOD_CODES \
-                and code.upper() not in codes:
-            continue
         if code_match(code, select=options.select, ignore=options.ignore):
             if options.verbose:
                 print('--->  Applying {} fix for {}'.format(where,

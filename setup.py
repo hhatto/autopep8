@@ -10,7 +10,7 @@ from setuptools import setup
 
 
 INSTALL_REQUIRES = (
-    ['pycodestyle >= 2.9.1', 'tomli; python_version < "3.11"']
+    ['pycodestyle >= 2.10.0', 'tomli; python_version < "3.11"']
 )
 
 
@@ -51,6 +51,7 @@ with io.open('README.rst') as readme:
         ],
         keywords='automation, pep8, format, pycodestyle',
         install_requires=INSTALL_REQUIRES,
+        python_requires=">=3.6",
         test_suite='test.test_autopep8',
         py_modules=['autopep8'],
         zip_safe=False,
