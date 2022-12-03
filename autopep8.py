@@ -106,6 +106,9 @@ STARTSWITH_DEF_REGEX = re.compile(r'^(async\s+def|def)\s.*\):')
 DOCSTRING_START_REGEX = re.compile(r'^u?r?(?P<kind>["\']{3})')
 ENABLE_REGEX = re.compile(r'# *(fmt|autopep8): *on')
 DISABLE_REGEX = re.compile(r'# *(fmt|autopep8): *off')
+ENCODING_MAGIC_COMMENT = re.compile(
+    r'^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)'
+)
 
 EXIT_CODE_OK = 0
 EXIT_CODE_ERROR = 1
@@ -128,25 +131,6 @@ DEFAULT_INDENT_SIZE = 4
 # these fixes conflict with each other, if the `--ignore` setting causes both
 # to be enabled, disable both of them
 CONFLICTING_CODES = ('W503', 'W504')
-
-# W602 is handled separately due to the need to avoid "with_traceback".
-CODE_TO_2TO3 = {
-    'E231': ['ws_comma'],
-    'E721': ['idioms'],
-    'W690': ['apply',
-             'except',
-             'exitfunc',
-             'numliterals',
-             'operator',
-             'paren',
-             'reduce',
-             'renames',
-             'standarderror',
-             'sys_exc',
-             'throw',
-             'tuple_params',
-             'xreadlines']}
-
 
 if sys.platform == 'win32':  # pragma: no cover
     DEFAULT_CONFIG = os.path.expanduser(r'~\.pycodestyle')
@@ -175,16 +159,27 @@ def open_with_encoding(filename, mode='r', encoding=None, limit_byte_check=-1):
                    newline='')  # Preserve line endings
 
 
+def _detect_magic_comment(filename: str):
+    try:
+        with open(filename) as input_file:
+            for idx, line in enumerate(input_file):
+                if idx >= 2:
+                    break
+                match = ENCODING_MAGIC_COMMENT.search(line)
+                if match:
+                    return match.groups()[0]
+    except Exception:
+        pass
+    # Python3's default encoding
+    return 'utf-8'
+
+
 def detect_encoding(filename, limit_byte_check=-1):
     """Return file encoding."""
+    encoding = _detect_magic_comment(filename)
     try:
-        with open(filename, 'rb') as input_file:
-            from lib2to3.pgen2 import tokenize as lib2to3_tokenize
-            encoding = lib2to3_tokenize.detect_encoding(input_file.readline)[0]
-
         with open_with_encoding(filename, encoding=encoding) as test_file:
             test_file.read(limit_byte_check)
-
         return encoding
     except (LookupError, SyntaxError, UnicodeDecodeError):
         return 'latin-1'
@@ -1711,69 +1706,6 @@ def split_and_strip_non_empty_lines(text):
     return [line.strip() for line in text.splitlines() if line.strip()]
 
 
-def refactor(source, fixer_names, ignore=None, filename=''):
-    """Return refactored code using lib2to3.
-
-    Skip if ignore string is produced in the refactored code.
-
-    """
-    not_found_end_of_file_newline = source and source.rstrip("\r\n") == source
-    if not_found_end_of_file_newline:
-        input_source = source + "\n"
-    else:
-        input_source = source
-
-    from lib2to3 import pgen2
-    try:
-        new_text = refactor_with_2to3(input_source,
-                                      fixer_names=fixer_names,
-                                      filename=filename)
-    except (pgen2.parse.ParseError,
-            SyntaxError,
-            UnicodeDecodeError,
-            UnicodeEncodeError):
-        return source
-
-    if ignore:
-        if ignore in new_text and ignore not in source:
-            return source
-
-    if not_found_end_of_file_newline:
-        return new_text.rstrip("\r\n")
-
-    return new_text
-
-
-def code_to_2to3(select, ignore, where='', verbose=False):
-    fixes = set()
-    for code, fix in CODE_TO_2TO3.items():
-        if code_match(code, select=select, ignore=ignore):
-            if verbose:
-                print('--->  Applying {} fix for {}'.format(where,
-                                                            code.upper()),
-                      file=sys.stderr)
-            fixes |= set(fix)
-    return fixes
-
-
-def fix_2to3(source,
-             aggressive=True, select=None, ignore=None, filename='',
-             where='global', verbose=False):
-    """Fix various deprecated code (via lib2to3)."""
-    if not aggressive:
-        return source
-
-    select = select or []
-    ignore = ignore or []
-
-    return refactor(source,
-                    code_to_2to3(select=select,
-                                 ignore=ignore,
-                                 where=where,
-                                 verbose=verbose),
-                    filename=filename)
-
-
 def find_newline(source):
     """Return type of newline used in source.
 
@@ -3169,24 +3101,6 @@ def _leading_space_count(line):
     return i
 
 
-def refactor_with_2to3(source_text, fixer_names, filename=''):
-    """Use lib2to3 to refactor the source.
-
-    Return the refactored source code.
-
-    """
-    from lib2to3.refactor import RefactoringTool
-    fixers = ['lib2to3.fixes.fix_' + name for name in fixer_names]
-    tool = RefactoringTool(fixer_names=fixers, explicit=fixers)
-
-    from lib2to3.pgen2 import tokenize as lib2to3_tokenize
-    try:
-        # The name parameter is necessary particularly for the "import" fixer.
-        return str(tool.refactor_string(source_text, name=filename))
-    except lib2to3_tokenize.TokenError:
-        return source_text
-
-
 def check_syntax(code):
     """Return True if syntax is okay."""
     try:
@@ -3667,14 +3581,6 @@ def apply_global_fixes(source, options, where='global', filename='',
             source = function(source,
                               aggressive=options.aggressive)
 
-    source = fix_2to3(source,
-                      aggressive=options.aggressive,
-                      select=options.select,
-                      ignore=options.ignore,
-                      filename=filename,
-                      where=where,
-                      verbose=options.verbose)
-
     return source
 
 
@@ -4105,10 +4011,6 @@ def supported_fixes():
     for (code, function) in sorted(global_fixes()):
         yield (code.upper() + (4 - len(code)) * ' ',
                re.sub(r'\s+', ' ', docstring_summary(function.__doc__)))
-
-    for code in sorted(CODE_TO_2TO3):
-        yield (code.upper() + (4 - len(code)) * ' ',
-               re.sub(r'\s+', ' ', docstring_summary(fix_2to3.__doc__)))
 
 
 def docstring_summary(docstring):

@@ -383,37 +383,6 @@ def foo():
         self.assertEqual(['12', '3', '4'],
                          autopep8.split_at_offsets('1234', [3, 2]))
 
-    def test_fix_2to3(self):
-        self.assertEqual(
-            'try: pass\nexcept ValueError as e: pass\n',
-            autopep8.fix_2to3('try: pass\nexcept ValueError, e: pass\n'))
-
-        self.assertEqual(
-            'while True: pass\n',
-            autopep8.fix_2to3('while 1: pass\n'))
-
-        self.assertEqual(
-            """\
-import sys
-sys.maxsize
-""",
-            autopep8.fix_2to3("""\
-import sys
-sys.maxint
-"""))
-
-    def test_fix_2to3_subset(self):
-        line = 'type(res) == type(42)\n'
-        fixed = 'isinstance(res, type(42))\n'
-
-        self.assertEqual(fixed, autopep8.fix_2to3(line))
-        self.assertEqual(fixed, autopep8.fix_2to3(line, select=['E721']))
-        self.assertEqual(fixed, autopep8.fix_2to3(line, select=['E7']))
-
-        self.assertEqual(line, autopep8.fix_2to3(line, select=['W']))
-        self.assertEqual(line, autopep8.fix_2to3(line, select=['E999']))
-        self.assertEqual(line, autopep8.fix_2to3(line, ignore=['E721']))
-
     def test_is_python_file(self):
         self.assertTrue(autopep8.is_python_file(
             os.path.join(ROOT_DIR, 'autopep8.py')))
