@@ -3330,7 +3330,7 @@ def filter_results(source, results, aggressive):
                 continue
 
         if r['line'] in commented_out_code_line_numbers:
-            if issue_id.startswith(('e26', 'e501')):
+            if issue_id.startswith(('e261', 'e262', 'e501')):
                 continue
 
         # Do not touch indentation if there is a token error caused by
