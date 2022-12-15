@@ -89,7 +89,7 @@ import pycodestyle
 from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX, COMPARE_TYPE_REGEX
 
 
-__version__ = '2.0.0'
+__version__ = '2.0.1'
 
 
 CR = '\r'
@@ -3262,7 +3262,7 @@ def filter_results(source, results, aggressive):
                 continue
 
         if r['line'] in commented_out_code_line_numbers:
-            if issue_id.startswith(('e26', 'e501')):
+            if issue_id.startswith(('e261', 'e262', 'e501')):
                 continue
 
         # Do not touch indentation if there is a token error caused by
@@ -3942,13 +3942,16 @@ def read_config(args, parser):
 
 def read_pyproject_toml(args, parser):
     """Read pyproject.toml and load configuration."""
-    import tomli
+    if sys.version_info >= (3, 11):
+        import tomllib
+    else:
+        import tomli as tomllib
 
     config = None
 
     if os.path.exists(args.global_config):
         with open(args.global_config, "rb") as fp:
-            config = tomli.load(fp)
+            config = tomllib.load(fp)
 
     if not args.ignore_local_config:
         parent = tail = args.files and os.path.abspath(
@@ -3957,7 +3960,7 @@ def read_pyproject_toml(args, parser):
             pyproject_toml = os.path.join(parent, "pyproject.toml")
             if os.path.exists(pyproject_toml):
                 with open(pyproject_toml, "rb") as fp:
-                    config = tomli.load(fp)
+                    config = tomllib.load(fp)
                     break
             (parent, tail) = os.path.split(parent)
 

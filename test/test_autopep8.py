@@ -271,7 +271,7 @@ def foo():
         commented_out_code = '#x = 1'
         self.assertEqual(
             commented_out_code,
-            fix_e265_and_e266(commented_out_code))
+            fix_e266(commented_out_code))
 
     def test_fix_file(self):
         self.assertIn(
@@ -2207,6 +2207,12 @@ bar[zap[0][0]:zig[0][0], :]
         with autopep8_context(line, options=['--select=E265']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e265_issue662(self):
+        line = "#print(\" \")\n"
+        fixed = "# print(\" \")\n"
+        with autopep8_context(line, options=['--select=E265']) as result:
+            self.assertEqual(fixed, result)
+
     def test_ignore_e265(self):
         line = "## A comment\n#B comment\n123\n"
         fixed = "# A comment\n#B comment\n123\n"
@@ -2223,6 +2229,12 @@ bar[zap[0][0]:zig[0][0], :]
         line = "## A comment\n#B comment\n123\n"
         fixed = "# A comment\n#B comment\n123\n"
         with autopep8_context(line, options=['--select=E266']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e266_issue662(self):
+        line = "## comment\n"
+        fixed = "# comment\n"
+        with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_ignore_e266(self):
@@ -3136,7 +3148,7 @@ if True:
 # http://foo.bar/abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-
 
 # The following is ugly commented-out code and should not be touched.
-#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
+# xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
 """
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
@@ -6411,7 +6423,7 @@ if True:
 # http://foo.bar/abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-abc-
 
 # The following is ugly commented-out code and should not be touched.
-#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
+# xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = 1
 """
         with autopep8_context(line, options=['--experimental',
                                              '--aggressive']) as result:
@@ -7254,6 +7266,11 @@ if True:
 """
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
+
+
+def fix_e266(source):
+    with autopep8_context(source, options=['--select=E266']) as result:
+        return result
 
 
 def fix_e265_and_e266(source):
