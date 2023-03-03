@@ -3488,6 +3488,16 @@ def fix_code(source, options=None, encoding=None, apply_config=False):
 
     """
     options = _get_options(options, apply_config)
+    # normalize
+    options.ignore = [opt.upper() for opt in options.ignore]
+    options.select = [opt.upper() for opt in options.select]
+
+    # check ignore args
+    # NOTE: If W50x is not included, add W50x because the code
+    #       correction result is indefinite.
+    ignore_opt = options.ignore
+    if not {"W50", "W503", "W504"} & set(ignore_opt):
+        options.ignore.append("W50")
 
     if not isinstance(source, str):
         source = source.decode(encoding or get_encoding())
