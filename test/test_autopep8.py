@@ -40,13 +40,14 @@ FAKE_PYCODESTYLE_CONFIGURATION = os.path.join(
 )
 
 if 'AUTOPEP8_COVERAGE' in os.environ and int(os.environ['AUTOPEP8_COVERAGE']):
-    AUTOPEP8_CMD_TUPLE = ('coverage', 'run', '--branch', '--parallel',
+    AUTOPEP8_CMD_TUPLE = (sys.executable, '-Wignore::DeprecationWarning',
+                          '-m', 'coverage', 'run', '--branch', '--parallel',
                           '--omit=*/site-packages/*',
                           os.path.join(ROOT_DIR, 'autopep8.py'),)
 else:
     # We need to specify the executable to make sure the correct Python
     # interpreter gets used.
-    AUTOPEP8_CMD_TUPLE = (sys.executable,
+    AUTOPEP8_CMD_TUPLE = (sys.executable, '-Wignore::DeprecationWarning',
                           os.path.join(ROOT_DIR,
                                        'autopep8.py'),)  # pragma: no cover
 
