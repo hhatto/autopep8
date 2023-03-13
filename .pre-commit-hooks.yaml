@@ -1,0 +1,7 @@
+-   id: autopep8
+    name: autopep8
+    description: A tool that automatically formats Python code to conform to the PEP 8 style guide.
+    entry: autopep8
+    language: python
+    types: [python]
+    args: [-i]

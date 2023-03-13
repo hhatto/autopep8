@@ -384,6 +384,23 @@ configuration file example::
     recursive = true
     aggressive = 3
 
+Usage with pre-commit
+=====================
+
+autopep8 can be used as a hook for pre-commit_.
+
+To add autopep8 as a plugin, add this repo definition to your configuration:
+
+.. code-block:: yaml
+
+    repos:
+    -   repo: https://github.com/hhatto/autopep8
+        rev: ...  # select the tag or revision you want, or run `pre-commit autoupdate`
+        hooks:
+        -   id: autopep8
+
+.. _`pre-commit`: https://pre-commit.com
+
 
 Testing
 =======
