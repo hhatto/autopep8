@@ -3658,15 +3658,17 @@ def apply_global_fixes(source, options, where='global', filename='',
         codes = []
     if any(code_match(code, select=options.select, ignore=options.ignore)
            for code in ['E101', 'E111']):
-        source = reindent(source,
-                          indent_size=options.indent_size,
-                          leave_tabs=not (
-                              code_match(
-                                    'W191',
-                                    select=options.select,
-                                    ignore=options.ignore)
-                                         )
-                          )
+        source = reindent(
+            source,
+            indent_size=options.indent_size,
+            leave_tabs=not (
+                code_match(
+                    'W191',
+                    select=options.select,
+                    ignore=options.ignore
+                )
+            )
+        )
 
     for (code, function) in global_fixes():
         if code_match(code, select=options.select, ignore=options.ignore):
