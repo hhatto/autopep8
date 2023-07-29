@@ -758,7 +758,7 @@ class FixPEP8(object):
             if not check_syntax(fixed.lstrip()):
                 return
             errors = list(
-                pycodestyle.missing_whitespace_around_operator(fixed, ts))
+                pycodestyle.missing_whitespace(fixed, ts))
             for e in reversed(errors):
                 if error_code != e[1].split()[0]:
                     continue
