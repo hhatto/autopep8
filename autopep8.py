@@ -757,8 +757,14 @@ class FixPEP8(object):
                 return
             if not check_syntax(fixed.lstrip()):
                 return
-            errors = list(
-                pycodestyle.missing_whitespace_around_operator(fixed, ts))
+            try:
+                _missing_whitespace = (
+                    pycodestyle.missing_whitespace_around_operator
+                )
+            except AttributeError:
+                # pycodestyle >= 2.11.0
+                _missing_whitespace = pycodestyle.missing_whitespace
+            errors = list(_missing_whitespace(fixed, ts))
             for e in reversed(errors):
                 if error_code != e[1].split()[0]:
                     continue
