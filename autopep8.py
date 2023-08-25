@@ -84,6 +84,7 @@ import tokenize
 import warnings
 import ast
 from configparser import ConfigParser as SafeConfigParser, Error
+from packaging.version import parse as parse_version
 
 import pycodestyle
 from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX
@@ -757,8 +758,16 @@ class FixPEP8(object):
                 return
             if not check_syntax(fixed.lstrip()):
                 return
+            if (
+                parse_version(pycodestyle.__version__) >=
+                parse_version("2.11.0")
+            ):
+                operator_whitespace = pycodestyle.missing_whitespace
+            else:
+                operator_whitespace = \
+                        pycodestyle.missing_whitespace_around_operator
             errors = list(
-                pycodestyle.missing_whitespace_around_operator(fixed, ts))
+                operator_whitespace(fixed, ts))
             for e in reversed(errors):
                 if error_code != e[1].split()[0]:
                     continue
