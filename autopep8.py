@@ -89,7 +89,7 @@ import pycodestyle
 from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX
 
 
-__version__ = '2.0.3'
+__version__ = '2.0.4'
 
 
 CR = '\r'
