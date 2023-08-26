@@ -84,12 +84,13 @@ import tokenize
 import warnings
 import ast
 from configparser import ConfigParser as SafeConfigParser, Error
+from packaging.version import parse as parse_version
 
 import pycodestyle
 from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX
 
 
-__version__ = '2.0.2'
+__version__ = '2.0.3'
 
 
 CR = '\r'
