@@ -88,7 +88,7 @@ class UnitTests(unittest.TestCase):
         self.assertEqual(
             'utf-8',
             autopep8.detect_encoding(
-                os.path.join(ROOT_DIR, 'setup.py')))
+                os.path.join(ROOT_DIR, 'test', 'test_autopep8.py')))
 
     def test_detect_encoding_with_cookie(self):
         self.assertEqual(
@@ -5959,6 +5959,7 @@ aggressive=1
         with temporary_file_context('[tool.autopep8]\naggressive=2\n') as filename:
             args = autopep8.parse_args(
                 [os.path.join(FAKE_CONFIGURATION, 'foo.py'),
+                 '--ignore-local-config',
                  '--global-config={}'.format(filename)],
                 apply_config=True)
             self.assertEqual(args.aggressive, 2)
