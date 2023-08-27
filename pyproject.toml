@@ -1,0 +1,52 @@
+[project]
+name = "autopep8"
+description = "A tool that automatically formats Python code to conform to the PEP 8 style guide"
+license = {file = "LICENSE.rst"}
+authors = [
+    {name = "Hideo Hattori", email = "hhatto.jp@gmail.com"},
+]
+readme = "README.rst"
+keywords = [
+    "automation",
+    "pep8",
+    "format",
+    "pycodestyle",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Quality Assurance",
+]
+requires-python = ">=3.6"
+dependencies = [
+    "pycodestyle >= 2.10.0",
+    "tomli; python_version < '3.11'",
+]
+dynamic = ["version"]
+
+[project.urls]
+Repository = "https://github.com/hhatto/autopep8"
+
+[project.scripts]
+autopep8 = "autopep8:main"
+
+[tool.setuptools]
+py-modules = ["autopep8"]
+
+[tool.setuptools.dynamic]
+version = {attr = "autopep8.__version__"}
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
