@@ -12,7 +12,6 @@ include test/iso_8859_1.py
 include test/fake_configuration/.pep8
 include test/fake_pycodestyle_configuration/tox.ini
 include tox.ini
-include .pre-commit-hooks.yaml
 recursive-exclude test/suite *.py
 recursive-exclude test/suite/out *.py
 exclude .travis.yml
