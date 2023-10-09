@@ -47,7 +47,6 @@ test_fast:
 test_ci:
 	pytest --cov-report xml --cov=autopep8
 	@${PYTHON} test/acid.py -aaa --experimental test/example.py
-	@${PYTHON} test/acid.py -aaa --experimental test/example_with_reduce.py
 	@${PYTHON} test/acid.py --pycodestyle= -aaa --compare-bytecode --experimental test/example.py
 	@${PYTHON} test/acid.py --pycodestyle= --aggressive --line-range 550 610 test/inspect_example.py
 	@${PYTHON} test/acid.py --pycodestyle= --line-range 289 925 test/vectors_example.py

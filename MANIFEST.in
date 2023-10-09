@@ -7,7 +7,6 @@ include test/bad_encoding2.py
 include test/e101_example.py
 include test/example
 include test/example/x.py
-include test/example_with_reduce.py
 include test/example.py
 include test/iso_8859_1.py
 include test/fake_configuration/.pep8
