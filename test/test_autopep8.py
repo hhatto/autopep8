@@ -61,23 +61,23 @@ class UnitTests(unittest.TestCase):
         self.assertFalse(autopep8.check_syntax(source))
 
     def test_find_newline_only_cr(self):
-        source = ['print 1\r', 'print 2\r', 'print3\r']
+        source = ['print(1)\r', 'print(2)\r', 'print3\r']
         self.assertEqual(autopep8.CR, autopep8.find_newline(source))
 
     def test_find_newline_only_lf(self):
-        source = ['print 1\n', 'print 2\n', 'print3\n']
+        source = ['print(1)\n', 'print(2)\n', 'print3\n']
         self.assertEqual(autopep8.LF, autopep8.find_newline(source))
 
     def test_find_newline_only_crlf(self):
-        source = ['print 1\r\n', 'print 2\r\n', 'print3\r\n']
+        source = ['print(1)\r\n', 'print(2)\r\n', 'print3\r\n']
         self.assertEqual(autopep8.CRLF, autopep8.find_newline(source))
 
     def test_find_newline_cr1_and_lf2(self):
-        source = ['print 1\n', 'print 2\r', 'print3\n']
+        source = ['print(1)\n', 'print(2)\r', 'print3\n']
         self.assertEqual(autopep8.LF, autopep8.find_newline(source))
 
     def test_find_newline_cr1_and_crlf2(self):
-        source = ['print 1\r\n', 'print 2\r', 'print3\r\n']
+        source = ['print(1)\r\n', 'print(2)\r', 'print3\r\n']
         self.assertEqual(autopep8.CRLF, autopep8.find_newline(source))
 
     def test_find_newline_should_default_to_lf(self):
@@ -1891,8 +1891,8 @@ c
             self.assertEqual(fixed, result)
 
     def test_e211(self):
-        line = 'd = [1, 2, 3]\nprint d  [0]\n'
-        fixed = 'd = [1, 2, 3]\nprint d[0]\n'
+        line = 'd = [1, 2, 3]\nprint(d  [0])\n'
+        fixed = 'd = [1, 2, 3]\nprint(d[0])\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -2116,8 +2116,8 @@ bar[zap[0][0]:zig[0][0], :]
             self.assertEqual(fixed, result)
 
     def test_e251(self):
-        line = 'def a(arg = 1):\n    print arg\n'
-        fixed = 'def a(arg=1):\n    print arg\n'
+        line = 'def a(arg = 1):\n    print(arg)\n'
+        fixed = 'def a(arg=1):\n    print(arg)\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -2140,26 +2140,26 @@ bar[zap[0][0]:zig[0][0], :]
             self.assertEqual(fixed, result)
 
     def test_e252(self):
-        line = 'def a(arg1: int=1, arg2: int =1, arg3: int= 1):\n    print arg\n'
-        fixed = 'def a(arg1: int = 1, arg2: int = 1, arg3: int = 1):\n    print arg\n'
+        line = 'def a(arg1: int=1, arg2: int =1, arg3: int= 1):\n    print(arg)\n'
+        fixed = 'def a(arg1: int = 1, arg2: int = 1, arg3: int = 1):\n    print(arg)\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e252_with_argument_on_next_line(self):
-        line = 'def a(arg: int\n=1):\n    print arg\n'
-        fixed = 'def a(arg: int\n= 1):\n    print arg\n'
+        line = 'def a(arg: int\n=1):\n    print(arg)\n'
+        fixed = 'def a(arg: int\n= 1):\n    print(arg)\n'
         with autopep8_context(line, options=['--select=E252']) as result:
             self.assertEqual(fixed, result)
 
     def test_e252_with_escaped_newline(self):
-        line = 'def a(arg: int\\\n=1):\n    print arg\n'
-        fixed = 'def a(arg: int\\\n= 1):\n    print arg\n'
+        line = 'def a(arg: int\\\n=1):\n    print(arg)\n'
+        fixed = 'def a(arg: int\\\n= 1):\n    print(arg)\n'
         with autopep8_context(line, options=['--select=E252']) as result:
             self.assertEqual(fixed, result)
 
     def test_e261(self):
-        line = "print 'a b '# comment\n"
-        fixed = "print 'a b '  # comment\n"
+        line = "print('a b ')# comment\n"
+        fixed = "print('a b ')  # comment\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -2188,32 +2188,32 @@ bar[zap[0][0]:zig[0][0], :]
             self.assertEqual(fixed, result)
 
     def test_e262_more_space(self):
-        line = "print 'a b '  #  comment\n"
-        fixed = "print 'a b '  # comment\n"
+        line = "print('a b ')  #  comment\n"
+        fixed = "print('a b ')  # comment\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e262_none_space(self):
-        line = "print 'a b '  #comment\n"
-        fixed = "print 'a b '  # comment\n"
+        line = "print('a b ')  #comment\n"
+        fixed = "print('a b ')  # comment\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e262_hash_in_string(self):
-        line = "print 'a b  #string'  #comment\n"
-        fixed = "print 'a b  #string'  # comment\n"
+        line = "print('a b  #string')  #comment\n"
+        fixed = "print('a b  #string')  # comment\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e262_hash_in_string_and_multiple_hashes(self):
-        line = "print 'a b  #string'  #comment #comment\n"
-        fixed = "print 'a b  #string'  # comment #comment\n"
+        line = "print('a b  #string')  #comment #comment\n"
+        fixed = "print('a b  #string')  # comment #comment\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e262_more_complex(self):
-        line = "print 'a b '  #comment\n123\n"
-        fixed = "print 'a b '  # comment\n123\n"
+        line = "print('a b ')  #comment\n123\n"
+        fixed = "print('a b ')  # comment\n123\n"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -2340,8 +2340,8 @@ def test_descriptors(self):
             self.assertEqual(fixed, result)
 
     def test_e301(self):
-        line = 'class k:\n    s = 0\n    def f():\n        print 1\n'
-        fixed = 'class k:\n    s = 0\n\n    def f():\n        print 1\n'
+        line = 'class k:\n    s = 0\n    def f():\n        print(1)\n'
+        fixed = 'class k:\n    s = 0\n\n    def f():\n        print(1)\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -2383,8 +2383,8 @@ class Foo(object):
             self.assertEqual(line, result)
 
     def test_e302(self):
-        line = 'def f():\n    print 1\n\ndef ff():\n    print 2\n'
-        fixed = 'def f():\n    print 1\n\n\ndef ff():\n    print 2\n'
+        line = 'def f():\n    print(1)\n\ndef ff():\n    print(2)\n'
+        fixed = 'def f():\n    print(1)\n\n\ndef ff():\n    print(2)\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -2440,14 +2440,14 @@ a = 1     # (E305)
             self.assertEqual(fixed, result)
 
     def test_e304(self):
-        line = '@contextmanager\n\ndef f():\n    print 1\n'
-        fixed = '@contextmanager\ndef f():\n    print 1\n'
+        line = '@contextmanager\n\ndef f():\n    print(1)\n'
+        fixed = '@contextmanager\ndef f():\n    print(1)\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e304_with_comment(self):
-        line = '@contextmanager\n# comment\n\ndef f():\n    print 1\n'
-        fixed = '@contextmanager\n# comment\ndef f():\n    print 1\n'
+        line = '@contextmanager\n# comment\n\ndef f():\n    print(1)\n'
+        fixed = '@contextmanager\n# comment\ndef f():\n    print(1)\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -3927,26 +3927,27 @@ if bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb := aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
             self.assertEqual(fixed, result)
 
     def test_e701(self):
-        line = 'if True: print True\n'
-        fixed = 'if True:\n    print True\n'
+        line = 'if True: print(True)\n'
+        fixed = 'if True:\n    print(True)\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e701_with_escaped_newline(self):
-        line = 'if True:\\\nprint True\n'
-        fixed = 'if True:\n    print True\n'
+        line = 'if True:\\\nprint(True)\n'
+        fixed = 'if True:\n    print(True)\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    @unittest.skipIf(sys.version_info >= (3, 12), 'not detech in Python3.12+')
     def test_e701_with_escaped_newline_and_spaces(self):
-        line = 'if True:    \\   \nprint True\n'
-        fixed = 'if True:\n    print True\n'
+        line = 'if True:    \\   \nprint(True)\n'
+        fixed = 'if True:\n    print(True)\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e702(self):
-        line = 'print 1; print 2\n'
-        fixed = 'print 1\nprint 2\n'
+        line = 'print(1); print(2)\n'
+        fixed = 'print(1)\nprint(2)\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
@@ -3957,20 +3958,20 @@ if bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb := aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
             self.assertEqual(line, result)
 
     def test_e702_with_semicolon_at_end(self):
-        line = 'print 1;\n'
-        fixed = 'print 1\n'
+        line = 'print(1);\n'
+        fixed = 'print(1)\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e702_with_semicolon_and_space_at_end(self):
-        line = 'print 1; \n'
-        fixed = 'print 1\n'
+        line = 'print(1); \n'
+        fixed = 'print(1)\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
     def test_e702_with_whitespace(self):
-        line = 'print 1 ; print 2\n'
-        fixed = 'print 1\nprint 2\n'
+        line = 'print(1) ; print(2)\n'
+        fixed = 'print(1)\nprint(2)\n'
         with autopep8_context(line, options=['--select=E702']) as result:
             self.assertEqual(fixed, result)
 
@@ -4101,8 +4102,8 @@ MY_CONST = [
     def test_e702_with_e701_and_only_select_e702_option(self):
         line = """\
 for i in range(3):
-    if i == 1: print i; continue
-    print i
+    if i == 1: print(i); continue
+    print(i)
 """
         with autopep8_context(line, options=["--select=E702"]) as result:
             self.assertEqual(line, result)
@@ -4492,14 +4493,14 @@ else:
             self.assertEqual(fixed, result)
 
     def test_w291(self):
-        line = "print 'a b '\t \n"
-        fixed = "print 'a b '\n"
+        line = "print('a b ')\t \n"
+        fixed = "print('a b ')\n"
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
     def test_w291_with_comment(self):
-        line = "print 'a b '  # comment\t \n"
-        fixed = "print 'a b '  # comment\n"
+        line = "print('a b ')  # comment\t \n"
+        fixed = "print('a b ')  # comment\n"
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
@@ -5485,8 +5486,8 @@ def f():
     def test_verbose_with_select_e702(self):
         line = """\
 for i in range(3):
-    if i == 1: print i; continue
-    print i
+    if i == 1: print(i); continue
+    print(i)
 """
         with temporary_file_context(line) as filename:
             p = Popen(list(AUTOPEP8_CMD_TUPLE) +
@@ -5798,7 +5799,7 @@ for i in range(3):
             self.assertEqual(retcode, autopep8.EXIT_CODE_OK)
 
     def test_fixpep8_class_constructor(self):
-        line = 'print 1\nprint 2\n'
+        line = 'print(1)\nprint(2)\n'
         with temporary_file_context(line) as filename:
             pep8obj = autopep8.FixPEP8(filename, None)
         self.assertEqual(''.join(pep8obj.source), line)
