@@ -16,7 +16,7 @@ YOUR CODE
 ```
 
 Command Line
-```shell
+```console
 $ autopep8 
 ```
 
