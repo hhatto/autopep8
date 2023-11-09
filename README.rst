@@ -405,16 +405,19 @@ To add autopep8 as a plugin, add this repo definition to your configuration:
 Usage with Trunk Check
 ======================
 
-[Trunk] is an extendable superlinter which can be used to run `autopep8` automatically on every commit.
-The [trunk] autopep8 integration is [here](https://github.com/trunk-io/plugins/tree/main/linters/autopep8).
+Trunk_ is an extendable superlinter which can be used to run autopep8 automatically on every commit.
+The Trunk_ autopep8 integration is here_
 
-To enable autopep8 via [trunk]::
+To enable autopep8 via Trunk::
 
     # to get the latest version:
     trunk check enable autopep8
 
     # to get a specific version:
     trunk check enable autopep@2.0.4
+
+.. _`Trunk`: https://trunk.io/
+.. _here: https://github.com/trunk-io/plugins/tree/main/linters/autopep8
 
 Testing
 =======
