@@ -315,7 +315,7 @@ $ autopep8 --experimental <filename>
 Disabling line-by-line
 ----------------------
 
-It is possible to disable autopep8 untill it it turned back on again in the file, using ``autopep8: off`` and then renabling ``autopep8: on``. 
+It is possible to disable autopep8 untill it it turned back on again in the file, using ``autopep8: off`` and then renabling ``autopep8: on``.
 
 .. code-block:: python
 
@@ -327,7 +327,7 @@ It is possible to disable autopep8 untill it it turned back on again in the file
             [10, 10, 10, 10],
         ]
     # autopep8: on
-         
+
 ``fmt: off`` and ``fmt: on`` are also valid.
 
 Use as a module
@@ -401,6 +401,20 @@ To add autopep8 as a plugin, add this repo definition to your configuration:
 
 .. _`pre-commit`: https://pre-commit.com
 
+
+Usage with Trunk Check
+======================
+
+[Trunk] is an extendable superlinter which can be used to run `autopep8` automatically on every commit.
+The [trunk] autopep8 integration is [here](https://github.com/trunk-io/plugins/tree/main/linters/autopep8).
+
+To enable autopep8 via [trunk]::
+
+    # to get the latest version:
+    trunk check enable autopep8
+
+    # to get a specific version:
+    trunk check enable autopep@2.0.4
 
 Testing
 =======
