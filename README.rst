@@ -315,7 +315,7 @@ $ autopep8 --experimental <filename>
 Disabling line-by-line
 ----------------------
 
-It is possible to disable autopep8 untill it it turned back on again in the file, using ``autopep8: off`` and then renabling ``autopep8: on``.
+It is possible to disable autopep8 untill it it turned back on again in the file, using ``autopep8: off`` and then renabling ``autopep8: on``. 
 
 .. code-block:: python
 
@@ -327,7 +327,7 @@ It is possible to disable autopep8 untill it it turned back on again in the file
             [10, 10, 10, 10],
         ]
     # autopep8: on
-
+         
 ``fmt: off`` and ``fmt: on`` are also valid.
 
 Use as a module
