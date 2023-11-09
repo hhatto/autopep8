@@ -406,7 +406,7 @@ Usage with Trunk Check
 ======================
 
 Trunk_ is an extendable superlinter which can be used to run autopep8 automatically on every commit.
-The Trunk_ autopep8 integration is here_
+The Trunk autopep8 integration is here_
 
 To enable autopep8 via Trunk::
 
