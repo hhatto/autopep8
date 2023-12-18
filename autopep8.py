@@ -3585,6 +3585,9 @@ def fix_file(filename, options=None, output=None, apply_config=False):
     original_source = readlines_from_file(filename)
 
     fixed_source = original_source
+    # Fix to use the function fix_file separately from python script with options as parameter
+    if isinstance(options, dict):
+        options = _get_options(options, apply_config)
 
     if options.in_place or options.diff or output:
         encoding = detect_encoding(filename)
