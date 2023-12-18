@@ -3585,7 +3585,7 @@ def fix_file(filename, options=None, output=None, apply_config=False):
     original_source = readlines_from_file(filename)
 
     fixed_source = original_source
-    # Fix to use the function fix_file separately from python 
+    # Fix to use the function fix_file separately from python
     # script with options as parameter
     if isinstance(options, dict):
         options = _get_options(options, apply_config)
