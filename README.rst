@@ -401,6 +401,7 @@ To add autopep8 as a plugin, add this repo definition to your configuration:
 
 .. _`pre-commit`: https://pre-commit.com
 
+If you don't use a configuration file for autpep8, you'll want to include either ``args: [--in-place]`` or ``args: [--diff]``.
 
 Testing
 =======
