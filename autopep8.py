@@ -202,7 +202,7 @@ def extended_blank_lines(logical_line,
                          indent_level,
                          previous_logical):
     """Check for missing blank lines after class declaration."""
-    if previous_logical.startswith('def '):
+    if previous_logical.startswith(('def ', 'async def ')):
         if blank_lines and pycodestyle.DOCSTRING_REGEX.match(logical_line):
             yield (0, 'E303 too many blank lines ({})'.format(blank_lines))
     elif pycodestyle.DOCSTRING_REGEX.match(previous_logical):
@@ -211,7 +211,7 @@ def extended_blank_lines(logical_line,
             indent_level and
             not blank_lines and
             not blank_before and
-            logical_line.startswith(('def ')) and
+            logical_line.startswith(('def ', 'async def ')) and
             '(self' in logical_line
         ):
             yield (0, 'E301 expected 1 blank line, found 0')
@@ -2914,7 +2914,7 @@ def normalize_multiline(line):
     This is for purposes of checking syntax.
 
     """
-    if line.startswith('def ') and line.rstrip().endswith(':'):
+    if line.startswith(('def ', 'async def ')) and line.rstrip().endswith(':'):
         return line + ' pass'
     elif line.startswith('return '):
         return 'def _(): ' + line
