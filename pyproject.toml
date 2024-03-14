@@ -30,7 +30,7 @@ classifiers = [
 ]
 requires-python = ">=3.6"
 dependencies = [
-    "pycodestyle >= 2.10.0",
+    "pycodestyle >= 2.11.0",
     "tomli; python_version < '3.11'",
 ]
 dynamic = ["version"]
