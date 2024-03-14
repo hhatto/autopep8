@@ -3709,6 +3709,19 @@ def foo(sldfkjlsdfsdf, kksdfsdfsf, sdfsdfsdf, sdfsdfkdk, szdfsdfsdf,
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_aggressive_with_async_def(self):
+        line = """\
+async def foo(sldfkjlsdfsdf, kksdfsdfsf,sdfsdfsdf, sdfsdfkdk, szdfsdfsdf, sdfsdfsdfsdlkfjsdlf, sdfsdfddf,sdfsdfsfd, sdfsdfdsf):
+    pass
+"""
+        fixed = """\
+async def foo(sldfkjlsdfsdf, kksdfsdfsf, sdfsdfsdf, sdfsdfkdk,
+              szdfsdfsdf, sdfsdfsdfsdlkfjsdlf, sdfsdfddf, sdfsdfsfd, sdfsdfdsf):
+    pass
+"""
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_more_aggressive_with_def(self):
         line = """\
 def foobar(sldfkjlsdfsdf, kksdfsdfsf,sdfsdfsdf, sdfsdfkdk, szdfsdfsdf, sdfsdfsdfsdlkfjsdlf, sdfsdfddf,sdfsdfsfd, sdfsdfdsf):
@@ -3716,6 +3729,27 @@ def foobar(sldfkjlsdfsdf, kksdfsdfsf,sdfsdfsdf, sdfsdfkdk, szdfsdfsdf, sdfsdfsdf
 """
         fixed = """\
 def foobar(
+        sldfkjlsdfsdf,
+        kksdfsdfsf,
+        sdfsdfsdf,
+        sdfsdfkdk,
+        szdfsdfsdf,
+        sdfsdfsdfsdlkfjsdlf,
+        sdfsdfddf,
+        sdfsdfsfd,
+        sdfsdfdsf):
+    pass
+"""
+        with autopep8_context(line, options=['-aa']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e501_more_aggressive_with_async_def(self):
+        line = """\
+async def foobar(sldfkjlsdfsdf, kksdfsdfsf,sdfsdfsdf, sdfsdfkdk, szdfsdfsdf, sdfsdfsdfsdlkfjsdlf, sdfsdfddf,sdfsdfsfd, sdfsdfdsf):
+    pass
+"""
+        fixed = """\
+async def foobar(
         sldfkjlsdfsdf,
         kksdfsdfsf,
         sdfsdfsdf,
