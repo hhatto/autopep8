@@ -34,7 +34,7 @@ jobs:
         flake8 autopep8.py
         pycodestyle autopep8.py
     - name: doctest for readme
-      if: matrix.python-version == 3.9
+      if: matrix.python-version == 3.11
       run: |
         python -m doctest -v README.rst
     - name: Test with pytest
@@ -48,6 +48,6 @@ jobs:
         python test/test_suite.py
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
-      if: matrix.python-version == 3.9 && success()
+      if: matrix.python-version == 3.11 && success()
       with:
         fail_ci_if_error: true
