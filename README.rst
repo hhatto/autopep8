@@ -246,13 +246,9 @@ autopep8 fixes the following issues_ reported by pycodestyle_::
     W503 - Fix line break before binary operator.
     W504 - Fix line break after binary operator.
     W605 - Fix invalid escape sequence 'x'.
-    W690 - Fix various deprecated code (via lib2to3).
 
 autopep8 also fixes some issues not found by pycodestyle_.
 
-- Correct deprecated or non-idiomatic Python code (via ``lib2to3``). Use this
-  for making Python 2.7 code more compatible with Python 3. (This is triggered
-  if ``W690`` is enabled.)
 - Normalize files with mixed line endings.
 - Put a blank line between a class docstring and its first method
   declaration. (Enabled with ``E301``.)
