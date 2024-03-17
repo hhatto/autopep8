@@ -18,3 +18,4 @@ coverage.xml
 dist
 htmlcov
 pep8.py
+test/suite/out/*.py.err
