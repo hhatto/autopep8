@@ -86,7 +86,7 @@ import ast
 from configparser import ConfigParser as SafeConfigParser, Error
 
 import pycodestyle
-from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX, COMPARE_TYPE_REGEX
+from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX
 
 
 __version__ = '2.0.4'
@@ -109,6 +109,11 @@ DISABLE_REGEX = re.compile(r'# *(fmt|autopep8): *off')
 ENCODING_MAGIC_COMMENT = re.compile(
     r'^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)'
 )
+COMPARE_TYPE_REGEX = re.compile(
+    r'([=!]=)\s+type(?:\s*\(\s*([^)]*[^ )])\s*\))'
+    r'|\btype(?:\s*\(\s*([^)]*[^ )])\s*\))\s+([=!]=)'
+)
+TYPE_REGEX = re.compile(r'(type\s*\(\s*[^)]*?[^\s)]\s*\))')
 
 EXIT_CODE_OK = 0
 EXIT_CODE_ERROR = 1
@@ -1267,26 +1272,50 @@ class FixPEP8(object):
                                                             self.source)
         match = COMPARE_TYPE_REGEX.search(target)
         if match:
+            # NOTE: match objects
+            #  * type(a) == type(b)  -> (None, None, 'a', '==')
+            #  * str == type(b)      -> ('==', 'b', None, None)
+            #  * type("") != type(b) -> (None, None, '""', '!=')
             start = match.start()
             end = match.end()
-            _prefix = ""
-            if match.groups()[0] is None:
+            first_match_type_obj = match.groups()[1]
+            if first_match_type_obj is None:
+                _target_obj = match.groups()[2]
+            else:
                 _target_obj = match.groups()[1]
-            else:
-                _target_obj = match.groups()[0]
 
+            isinstance_stmt = "isinstance"
+            is_not_condition = match.groups()[0] == "!=" or match.groups()[3] == "!="
+            if is_not_condition:
+                isinstance_stmt = "not isinstance"
+
+            _prefix = ""
+            _suffix = ""
             _type_comp = f"{_target_obj}, {target[:start]}"
-            _tmp = target[:start].split()
-            if len(_tmp) >= 2:
-                _type_comp = f"{_target_obj}, {_tmp[-1]}"
-                _prefix = "".join(_tmp[:-1])
 
-            if match.groups()[0] is None:
-                _suffix = target[-1:]
-                _target = f"{_type_comp}{target[end:-1]}"
-                fix_line = f"{_prefix} isinstance({_target}){_suffix}"
+            _prefix_tmp = target[:start].split()
+            if len(_prefix_tmp) >= 1:
+                _type_comp = f"{_target_obj}, {target[:start]}"
+                if first_match_type_obj is not None:
+                    _prefix = " ".join(_prefix_tmp[:-1])
+                    _type_comp = f"{_target_obj}, {_prefix_tmp[-1]}"
+                else:
+                    _prefix = " ".join(_prefix_tmp)
+
+            _suffix_tmp = target[end:]
+            _suffix_type_match = TYPE_REGEX.search(_suffix_tmp)
+            if len(_suffix_tmp.split()) >= 1 and _suffix_type_match:
+                if _suffix_type_match:
+                    type_match_end = _suffix_type_match.end()
+                    _suffix = _suffix_tmp[type_match_end:]
+            if _suffix_type_match:
+                cmp_b = _suffix_type_match.groups()[0]
+                _type_comp = f"{_target_obj}, {cmp_b}"
+
+            if first_match_type_obj is None:
+                fix_line = f"{_prefix} {isinstance_stmt}({_type_comp}){_suffix}"
             else:
-                fix_line = f"{_prefix} isinstance({_type_comp}){target[end:]}"
+                fix_line = f"{_prefix} {isinstance_stmt}({_type_comp}){target[end:]}"
             self.source[line_index] = fix_line
 
     def fix_e722(self, result):
