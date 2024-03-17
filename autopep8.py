@@ -1278,19 +1278,22 @@ class FixPEP8(object):
             #  * type("") != type(b) -> (None, None, '""', '!=')
             start = match.start()
             end = match.end()
+            _prefix = ""
+            _suffix = ""
             first_match_type_obj = match.groups()[1]
             if first_match_type_obj is None:
                 _target_obj = match.groups()[2]
             else:
                 _target_obj = match.groups()[1]
+                _suffix = target[end:]
 
-            isinstance_stmt = "isinstance"
-            is_not_condition = match.groups()[0] == "!=" or match.groups()[3] == "!="
+            isinstance_stmt = " isinstance"
+            is_not_condition = (
+                match.groups()[0] == "!=" or match.groups()[3] == "!="
+            )
             if is_not_condition:
-                isinstance_stmt = "not isinstance"
+                isinstance_stmt = " not isinstance"
 
-            _prefix = ""
-            _suffix = ""
             _type_comp = f"{_target_obj}, {target[:start]}"
 
             _prefix_tmp = target[:start].split()
@@ -1312,10 +1315,7 @@ class FixPEP8(object):
                 cmp_b = _suffix_type_match.groups()[0]
                 _type_comp = f"{_target_obj}, {cmp_b}"
 
-            if first_match_type_obj is None:
-                fix_line = f"{_prefix} {isinstance_stmt}({_type_comp}){_suffix}"
-            else:
-                fix_line = f"{_prefix} {isinstance_stmt}({_type_comp}){target[end:]}"
+            fix_line = f"{_prefix}{isinstance_stmt}({_type_comp}){_suffix}"
             self.source[line_index] = fix_line
 
     def fix_e722(self, result):
