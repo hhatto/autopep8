@@ -3954,6 +3954,13 @@ if bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb := aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(line, result)
 
+    def test_e501_not_effected_with_fstring(self):
+        line = """\
+connector = f"socks5://{user}:{password}:{url}:{port}"
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(line, result)
+
     def test_e502(self):
         line = "print('abc'\\\n      'def')\n"
         fixed = "print('abc'\n      'def')\n"
