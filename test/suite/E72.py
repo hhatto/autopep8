@@ -26,9 +26,9 @@ assert type(res) == type((0,))
 assert type(res) == type((0))
 #: E721
 assert type(res) != type((1, ))
-#: E721
+#: Okay
 assert type(res) is type((1, ))
-#: E721
+#: Okay
 assert type(res) is not type((1, ))
 #: E211 E721
 assert type(res) == type ([2, ])
