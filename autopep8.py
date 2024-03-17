@@ -159,10 +159,12 @@ def open_with_encoding(filename, mode='r', encoding=None, limit_byte_check=-1):
                    newline='')  # Preserve line endings
 
 
-def _detect_magic_comment(filename: str):
+def _detect_encoding_from_file(filename: str):
     try:
         with open(filename) as input_file:
             for idx, line in enumerate(input_file):
+                if idx == 0 and line[0] == '\ufeff':
+                    return "utf-8-sig"
                 if idx >= 2:
                     break
                 match = ENCODING_MAGIC_COMMENT.search(line)
@@ -176,7 +178,9 @@ def _detect_magic_comment(filename: str):
 
 def detect_encoding(filename, limit_byte_check=-1):
     """Return file encoding."""
-    encoding = _detect_magic_comment(filename)
+    encoding = _detect_encoding_from_file(filename)
+    if encoding == "utf-8-sig":
+        return encoding
     try:
         with open_with_encoding(filename, encoding=encoding) as test_file:
             test_file.read(limit_byte_check)
