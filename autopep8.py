@@ -69,6 +69,7 @@ import collections
 import copy
 import difflib
 import fnmatch
+import importlib
 import inspect
 import io
 import itertools
@@ -219,9 +220,6 @@ def extended_blank_lines(logical_line,
             '(self' in logical_line
         ):
             yield (0, 'E301 expected 1 blank line, found 0')
-
-
-pycodestyle.register_check(extended_blank_lines)
 
 
 def continued_indentation(logical_line, tokens, indent_level, hang_closing,
@@ -415,7 +413,11 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
             yield (pos, 'E125 {}'.format(desired_indent))
 
 
+# NOTE: need reload with runpy and call twice
+#   see: https://github.com/hhatto/autopep8/issues/625
+importlib.reload(pycodestyle)
 del pycodestyle._checks['logical_line'][pycodestyle.continued_indentation]
+pycodestyle.register_check(extended_blank_lines)
 pycodestyle.register_check(continued_indentation)
 
 
