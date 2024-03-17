@@ -12,7 +12,7 @@ if res == types.IntType:
 #: E721
 import types
 
-if not isinstance(res, types.ListType):
+if type(res) is not types.ListType:
     pass
 #: E721
 assert isinstance(res, type(False)) or isinstance(res, type(None))
@@ -26,10 +26,10 @@ assert isinstance(res, type((0,)))
 assert isinstance(res, type((0)))
 #: E721
 assert not isinstance(res, type((1, )))
-#: E721
-assert isinstance(res, type((1, )))
-#: E721
-assert not isinstance(res, type((1, )))
+#: Okay
+assert type(res) is type((1, ))
+#: Okay
+assert type(res) is not type((1, ))
 #: E211 E721
 assert isinstance(res, type([2, ]))
 #: E201 E201 E202 E721
