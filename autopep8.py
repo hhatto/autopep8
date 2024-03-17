@@ -87,7 +87,6 @@ import ast
 from configparser import ConfigParser as SafeConfigParser, Error
 
 import pycodestyle
-from pycodestyle import STARTSWITH_INDENT_STATEMENT_REGEX
 
 
 __version__ = '2.1.0'
@@ -1095,8 +1094,11 @@ class FixPEP8(object):
         # Avoid applying this when indented.
         # https://docs.python.org/reference/compound_stmts.html
         for line in logical_lines:
-            if (result['id'] == 'E702' and ':' in line
-                    and STARTSWITH_INDENT_STATEMENT_REGEX.match(line)):
+            if (
+                result['id'] == 'E702'
+                and ':' in line
+                and pycodestyle.STARTSWITH_INDENT_STATEMENT_REGEX.match(line)
+            ):
                 if self.options.verbose:
                     print(
                         '---> avoid fixing {error} with '
