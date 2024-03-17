@@ -1266,13 +1266,21 @@ class FixPEP8(object):
             start = match.start()
             end = match.end()
             _prefix = ""
-            _type_comp = f"{match.groups()[0]}, {target[:start]}"
+            if match.groups()[0] is None:
+                _target_obj = match.groups()[1]
+            else:
+                _target_obj = match.groups()[0]
+
+            _type_comp = f"{_target_obj}, {target[:start]}"
             _tmp = target[:start].split()
             if len(_tmp) >= 2:
-                _type_comp = f"{match.groups()[0]}, {_tmp[-1]}"
+                _type_comp = f"{_target_obj}, {_tmp[-1]}"
                 _prefix = "".join(_tmp[:-1])
 
-            fix_line = f"{_prefix} isinstance({_type_comp}){target[end:]}"
+            if match.groups()[0] is None:
+                fix_line = f"{_prefix} isinstance({_type_comp}{target[end:-1]}){target[-1:]}"
+            else:
+                fix_line = f"{_prefix} isinstance({_type_comp}){target[end:]}"
             self.source[line_index] = fix_line
 
     def fix_e722(self, result):
