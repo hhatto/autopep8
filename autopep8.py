@@ -1278,7 +1278,9 @@ class FixPEP8(object):
                 _prefix = "".join(_tmp[:-1])
 
             if match.groups()[0] is None:
-                fix_line = f"{_prefix} isinstance({_type_comp}{target[end:-1]}){target[-1:]}"
+                _suffix = target[-1:]
+                _target = f"{_type_comp}{target[end:-1]}"
+                fix_line = f"{_prefix} isinstance({_target}){_suffix}"
             else:
                 fix_line = f"{_prefix} isinstance({_type_comp}){target[end:]}"
             self.source[line_index] = fix_line
