@@ -3948,7 +3948,7 @@ connector = f"socks5://{user}:{password}:{url}:{port}"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
-    @unittest.skipIf(sys.version_info >= (3, 12), 'not detech in Python3.12+')
+    @unittest.skipIf(sys.version_info >= (3, 12), 'not detect in Python3.12+')
     def test_e701_with_escaped_newline_and_spaces(self):
         line = 'if True:    \\   \nprint(True)\n'
         fixed = 'if True:\n    print(True)\n'
@@ -4446,7 +4446,7 @@ if role not in ("domaincontroller_master",
         with autopep8_context(line, options=['--select=E731']) as result:
             self.assertEqual(fixed, result)
 
-    @unittest.skipIf(sys.version_info >= (3, 12), 'not detech in Python3.12+')
+    @unittest.skipIf(sys.version_info >= (3, 12), 'not detect in Python3.12+')
     def test_e901_should_cause_indentation_screw_up(self):
         line = """\
 def tmp(g):
@@ -5495,7 +5495,7 @@ def f():
                   stdout=PIPE)
         self.assertIn('usage:', p.communicate()[0].decode('utf-8').lower())
 
-    @unittest.skipIf(sys.version_info >= (3, 12), 'not detech in Python3.12+')
+    @unittest.skipIf(sys.version_info >= (3, 12), 'not detect in Python3.12+')
     def test_verbose(self):
         line = 'bad_syntax)'
         with temporary_file_context(line) as filename:
@@ -7236,7 +7236,7 @@ def f(self):
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    @unittest.skipIf(sys.version_info >= (3, 12), 'not detech in Python3.12+')
+    @unittest.skipIf(sys.version_info >= (3, 12), 'not detect in Python3.12+')
     def test_e501_experimental_parsing_dict_with_comments(self):
         line = """\
 self.display['xxxxxxxxxxxx'] = [{'title': _('Library'),  #. This is the first comment.
@@ -7260,7 +7260,7 @@ self.display['xxxxxxxxxxxx'] = [{'title': _('Library'),  # . This is the first c
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
-    @unittest.skipIf(sys.version_info >= (3, 12), 'not detech in Python3.12+')
+    @unittest.skipIf(sys.version_info >= (3, 12), 'not detect in Python3.12+')
     def test_e501_experimental_if_line_over_limit(self):
         line = """\
 if not xxxxxxxxxxxx(aaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbb, cccccccccccccc, dddddddddddddddddddddd):
