@@ -529,6 +529,13 @@ class FixPEP8(object):
         self.fix_w292 = self.fix_w291
         self.fix_w293 = self.fix_w291
 
+    def _check_affected_anothers(self, result) -> bool:
+        """Check if the fix affects the number of lines of another remark."""
+        line_index = result['line'] - 1
+        target = self.source[line_index]
+        original_target = self.original_source[line_index]
+        return target != original_target
+
     def _fix_source(self, results):
         try:
             (logical_start, logical_end) = _find_logical(self.source)
@@ -539,14 +546,6 @@ class FixPEP8(object):
         completed_lines = set()
         for result in sorted(results, key=_priority_key):
             if result['line'] in completed_lines:
-                continue
-
-            # NOTE: Skip if the correction by the fixed-method affects
-            #       the number of lines of another remark.
-            _line_index = result['line'] - 1
-            _target = self.source[_line_index]
-            _original_target = self.original_source[_line_index]
-            if _target != _original_target:
                 continue
 
             fixed_methodname = 'fix_' + result['id'].lower()
@@ -570,8 +569,12 @@ class FixPEP8(object):
                                 completed_lines):
                             continue
 
+                    if self._check_affected_anothers(result):
+                        continue
                     modified_lines = fix(result, logical)
                 else:
+                    if self._check_affected_anothers(result):
+                        continue
                     modified_lines = fix(result)
 
                 if modified_lines is None:
