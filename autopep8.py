@@ -2045,6 +2045,7 @@ class ReformattedLines(object):
         self._bracket_depth = 0
         self._prev_item = None
         self._prev_prev_item = None
+        self._in_fstring = False
 
     def __repr__(self):
         return self.emit()
@@ -2172,6 +2173,11 @@ class ReformattedLines(object):
         inserted inside of a container or not.
 
         """
+        if item.is_fstring_start:
+            self._in_fstring = True
+        elif self._prev_item and self._prev_item.is_fstring_end:
+            self._in_fstring = False
+
         if self._prev_item and self._prev_item.is_string and item.is_string:
             # Place consecutive string literals on separate lines.
             self._lines.append(self._LineBreak())
@@ -2198,10 +2204,10 @@ class ReformattedLines(object):
         self._lines.append(item)
         self._prev_item, self._prev_prev_item = item, self._prev_item
 
-        if item_text in '([{':
+        if item_text in '([{' and not self._in_fstring:
             self._bracket_depth += 1
 
-        elif item_text in '}])':
+        elif item_text in '}])' and not self._in_fstring:
             self._bracket_depth -= 1
             assert self._bracket_depth >= 0
 
@@ -2399,6 +2405,14 @@ class Atom(object):
     @property
     def is_string(self):
         return self._atom.token_type == tokenize.STRING
+
+    @property
+    def is_fstring_start(self):
+        return self._atom.token_type == tokenize.FSTRING_START
+
+    @property
+    def is_fstring_end(self):
+        return self._atom.token_type == tokenize.FSTRING_END
 
     @property
     def is_name(self):
