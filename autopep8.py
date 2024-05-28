@@ -155,7 +155,7 @@ PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8', '.flake8')
 MAX_PYTHON_FILE_DETECTION_BYTES = 1024
 
 IS_SUPPORT_TOKEN_FSTRING = False
-if sys.version_info >= (3, 12):
+if sys.version_info >= (3, 12):  # pgrama: no cover
     IS_SUPPORT_TOKEN_FSTRING = True
 
 
