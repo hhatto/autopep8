@@ -477,6 +477,7 @@ class FixPEP8(object):
             self.source = sio.readlines()
         self.options = options
         self.indent_word = _get_indentword(''.join(self.source))
+        self.original_source = copy.copy(self.source)
 
         # collect imports line
         self.imports = {}
@@ -538,6 +539,14 @@ class FixPEP8(object):
         completed_lines = set()
         for result in sorted(results, key=_priority_key):
             if result['line'] in completed_lines:
+                continue
+
+            # NOTE: Skip if the correction by the fixed-method affects
+            #       the number of lines of another remark.
+            _line_index = result['line'] - 1
+            _target = self.source[_line_index]
+            _original_target = self.original_source[_line_index]
+            if _target != _original_target:
                 continue
 
             fixed_methodname = 'fix_' + result['id'].lower()
