@@ -7333,6 +7333,13 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_not_effect_with_fstring(self):
+        line = """\
+fstring = {"some_key": f"There is a string value inside of an f string, which itself is a dictionary value {s})"}
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(line, result)
+
 
 def fix_e266(source):
     with autopep8_context(source, options=['--select=E266']) as result:
