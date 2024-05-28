@@ -7333,6 +7333,7 @@ if True:
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    @unittest.skipIf(sys.version_info < (3, 12), 'not support in Python3.11 and lower version')
     def test_e501_experimental_not_effect_with_fstring(self):
         line = """\
 fstring = {"some_key": f"There is a string value inside of an f string, which itself is a dictionary value {s})"}
