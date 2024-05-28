@@ -154,6 +154,10 @@ PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8', '.flake8')
 
 MAX_PYTHON_FILE_DETECTION_BYTES = 1024
 
+IS_SUPPORT_TOKEN_FSTRING = False
+if sys.version_info >= (3, 12):
+    IS_SUPPORT_TOKEN_FSTRING = True
+
 
 def open_with_encoding(filename, mode='r', encoding=None, limit_byte_check=-1):
     """Return opened file with a specific encoding."""
@@ -2408,10 +2412,14 @@ class Atom(object):
 
     @property
     def is_fstring_start(self):
+        if not IS_SUPPORT_TOKEN_FSTRING:
+            return False
         return self._atom.token_type == tokenize.FSTRING_START
 
     @property
     def is_fstring_end(self):
+        if not IS_SUPPORT_TOKEN_FSTRING:
+            return False
         return self._atom.token_type == tokenize.FSTRING_END
 
     @property
