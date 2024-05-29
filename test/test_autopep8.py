@@ -2256,6 +2256,18 @@ bar[zap[0][0]:zig[0][0], :]
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e271_and_w504_with_affects_another_result_line(self):
+        line = """\
+cm_opts = ([1] +
+           [d for  d in [3,4]])
+"""
+        fixed = """\
+cm_opts = ([1]
+           + [d for d in [3,4]])
+"""
+        with autopep8_context(line, options=["--select=E271,W504"]) as result:
+            self.assertEqual(fixed, result)
+
     def test_e272(self):
         line = 'True  and False\n'
         fixed = 'True and False\n'
