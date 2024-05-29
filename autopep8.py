@@ -3972,7 +3972,11 @@ def parse_args(arguments, apply_config=False):
     original_formatwarning = warnings.formatwarning
     warnings.formatwarning = _custom_formatwarning
     if args.experimental:
-        warnings.warn("`experimental` option is deprecated and will be removed in a future version.", DeprecationWarning)
+        warnings.warn(
+            "`experimental` option is deprecated and will be "
+            "removed in a future version.",
+            DeprecationWarning,
+        )
     warnings.formatwarning = original_formatwarning
 
     return args
