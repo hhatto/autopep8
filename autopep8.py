@@ -3376,13 +3376,20 @@ def multiline_string_lines(source, include_docstrings=False):
     """
     line_numbers = set()
     previous_token_type = ''
+    _check_target_tokens = [tokenize.STRING]
+    if IS_SUPPORT_TOKEN_FSTRING:
+        _check_target_tokens.extend([
+            tokenize.FSTRING_START,
+            tokenize.FSTRING_MIDDLE,
+            tokenize.FSTRING_END,
+        ])
     try:
         for t in generate_tokens(source):
             token_type = t[0]
             start_row = t[2][0]
             end_row = t[3][0]
 
-            if token_type == tokenize.STRING and start_row != end_row:
+            if token_type in _check_target_tokens and start_row != end_row:
                 if (
                     include_docstrings or
                     previous_token_type != tokenize.INDENT
