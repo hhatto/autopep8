@@ -159,6 +159,10 @@ if sys.version_info >= (3, 12):  # pgrama: no cover
     IS_SUPPORT_TOKEN_FSTRING = True
 
 
+def _custom_formatwarning(message, category, _, __, line=None):
+    return f"{category.__name__}: {message}\n"
+
+
 def open_with_encoding(filename, mode='r', encoding=None, limit_byte_check=-1):
     """Return opened file with a specific encoding."""
     if not encoding:
@@ -3964,6 +3968,16 @@ def parse_args(arguments, apply_config=False):
                 'First value of --range should be less than or equal '
                 'to the second',
             )
+
+    original_formatwarning = warnings.formatwarning
+    warnings.formatwarning = _custom_formatwarning
+    if args.experimental:
+        warnings.warn(
+            "`experimental` option is deprecated and will be "
+            "removed in a future version.",
+            DeprecationWarning,
+        )
+    warnings.formatwarning = original_formatwarning
 
     return args
 
