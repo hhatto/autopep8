@@ -3965,6 +3965,9 @@ def parse_args(arguments, apply_config=False):
                 'to the second',
             )
 
+    if args.experimental:
+        warnings.warn("`experimental` option is deprecated and will be removed in a future version.", DeprecationWarning)
+
     return args
 
 
