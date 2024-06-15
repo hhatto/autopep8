@@ -1859,6 +1859,12 @@ c
         with autopep8_context(line, options=['--select=E203']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e204(self):
+        line = '@ decorator\n'
+        fixed = '@decorator\n'
+        with autopep8_context(line, options=['--select=E204']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e211(self):
         line = 'd = [1, 2, 3]\nprint(d  [0])\n'
         fixed = 'd = [1, 2, 3]\nprint(d[0])\n'
