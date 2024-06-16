@@ -509,6 +509,7 @@ class FixPEP8(object):
         self.fix_e133 = self.fix_e131
         self.fix_e202 = self.fix_e201
         self.fix_e203 = self.fix_e201
+        self.fix_e204 = self.fix_e201
         self.fix_e211 = self.fix_e201
         self.fix_e221 = self.fix_e271
         self.fix_e222 = self.fix_e271
