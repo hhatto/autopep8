@@ -3941,6 +3941,19 @@ if bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb := aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         with autopep8_context(line, options=['-aa']) as result:
             self.assertEqual(line, result)
 
+    def test_e501_effected_with_fstring(self):
+        line = """\
+def foo():
+    logger.info(f"some string padding some string padding some string padd {somedict['key1']}, more padding more paddin #: {somedict['dictkey2']}")
+"""
+        fixed = """\
+def foo():
+    logger.info(
+        f"some string padding some string padding some string padd {somedict['key1']}, more padding more paddin #: {somedict['dictkey2']}")
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_not_effected_with_fstring(self):
         line = """\
 connector = f"socks5://{user}:{password}:{url}:{port}"
