@@ -4100,7 +4100,7 @@ def read_pyproject_toml(args, parser):
     if config.get("tool", {}).get("autopep8") is None:
         return None
 
-    config = config.get("tool").get("autopep8")
+    config = config.get("tool", {}).get("autopep8")
 
     defaults = {}
     option_list = {o.dest: o.type or type(o.default)
