@@ -1943,10 +1943,19 @@ def _shorten_line(tokens, source, indentation, indent_word,
     Multiple candidates will be yielded.
 
     """
+    in_string = False
     for (token_type,
          token_string,
          start_offset,
          end_offset) in token_offsets(tokens):
+
+        if IS_SUPPORT_TOKEN_FSTRING:
+            if token_type == tokenize.FSTRING_START:
+                in_string = True
+            elif token_type == tokenize.FSTRING_END:
+                in_string = False
+        if in_string:
+            continue
 
         if (
             token_type == tokenize.COMMENT and
@@ -4091,7 +4100,7 @@ def read_pyproject_toml(args, parser):
     if config.get("tool", {}).get("autopep8") is None:
         return None
 
-    config = config.get("tool").get("autopep8")
+    config = config.get("tool", {}).get("autopep8")
 
     defaults = {}
     option_list = {o.dest: o.type or type(o.default)
