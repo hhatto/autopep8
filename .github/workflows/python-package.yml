@@ -48,7 +48,8 @@ jobs:
         python test/test_suite.py
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
-      if: matrix.python-version == 3.11 && success()
+      if: (matrix.python-version == 3.11 || matrix.python-version == 3.12) && success()
       with:
         fail_ci_if_error: true
+        flags: ${{ matrix.python-version }}
         token: ${{ secrets.CODECOV_TOKEN }}
