@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 """Test suite for autopep8.
 
 Unit tests go in "UnitTests". System tests go in "SystemTests".
