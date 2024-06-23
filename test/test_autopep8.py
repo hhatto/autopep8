@@ -46,8 +46,6 @@ else:
 
 class UnitTests(unittest.TestCase):
 
-    maxDiff = None
-
     def test_compile_value_error(self):
         source = '"\\xhh" \\'
         self.assertFalse(autopep8.check_syntax(source))
@@ -267,19 +265,23 @@ def foo():
             fix_e266(commented_out_code))
 
     def test_fix_file(self):
-        self.assertIn(
-            'import ',
-            autopep8.fix_file(
-                filename=os.path.join(ROOT_DIR, 'test', 'example.py')))
+        ret = autopep8.fix_file(
+            filename=os.path.join(ROOT_DIR, 'test', 'example.py')
+        )
+        self.assertNotEqual(None, ret)
+        if ret is not None:
+            self.assertIn('import ', ret)
 
     def test_fix_file_with_diff(self):
         filename = os.path.join(ROOT_DIR, 'test', 'example.py')
 
-        self.assertIn(
-            '@@',
-            autopep8.fix_file(
-                filename=filename,
-                options=autopep8.parse_args(['--diff', filename])))
+        ret = autopep8.fix_file(
+            filename=filename,
+            options=autopep8.parse_args(['--diff', filename])
+        )
+        self.assertNotEqual(None, ret)
+        if ret is not None:
+            self.assertIn('@@', ret)
 
     def test_fix_lines(self):
         self.assertEqual(
@@ -806,9 +808,7 @@ lambda xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         self.assertEqual(line, autopep8.get_fixed_long_line(line, line, line))
 
 
-class SystemTests(unittest.TestCase):
-
-    maxDiff = None
+class SystemTestsE1(unittest.TestCase):
 
     def test_e101(self):
         line = """\
@@ -1781,6 +1781,9 @@ while True:
         with autopep8_context(line, options=['--select=E131']) as result:
             self.assertEqual(fixed, result)
 
+
+class SystemTestsE2(unittest.TestCase):
+
     def test_e201(self):
         line = '(   1)\n'
         fixed = '(1)\n'
@@ -2284,6 +2287,9 @@ cm_opts = ([1]
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+
+class SystemTestsE3(unittest.TestCase):
+
     def test_e306(self):
         line = """
 def test_descriptors(self):
@@ -2435,6 +2441,9 @@ a = 1     # (E305)
         fixed = 'def a():\n    pass\n\n\na()\n'
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
+
+
+class SystemTestsE4(unittest.TestCase):
 
     def test_e401(self):
         line = 'import os, sys\n'
@@ -2617,6 +2626,9 @@ def f():
 """
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
+
+
+class SystemTestsE5(unittest.TestCase):
 
     def test_e501_basic(self):
         line = """\
@@ -3959,6 +3971,9 @@ connector = f"socks5://{user}:{password}:{url}:{port}"
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+
+class SystemTestsE7(unittest.TestCase):
+
     def test_e701(self):
         line = 'if True: print(True)\n'
         fixed = 'if True:\n    print(True)\n'
@@ -4469,6 +4484,9 @@ if role not in ("domaincontroller_master",
         with autopep8_context(line, options=['--select=E731']) as result:
             self.assertEqual(fixed, result)
 
+
+class SystemTestsE9(unittest.TestCase):
+
     @unittest.skipIf(sys.version_info >= (3, 12), 'not detect in Python3.12+')
     def test_e901_should_cause_indentation_screw_up(self):
         line = """\
@@ -4493,6 +4511,9 @@ def tmp(g):
 
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
+
+
+class SystemTestsW1(unittest.TestCase):
 
     def test_w191_should_ignore_multiline_strings(self):
         line = """\
@@ -4544,6 +4565,9 @@ else:
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+
+class SystemTestsW2(unittest.TestCase):
+
     def test_w291(self):
         line = "print('a b ')\t \n"
         fixed = "print('a b ')\n"
@@ -4575,6 +4599,9 @@ else:
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+
+class SystemTestsW3(unittest.TestCase):
+
     def test_w391(self):
         line = '  \n'
         fixed = ''
@@ -4586,6 +4613,9 @@ else:
         fixed = '123\n456\n'
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
+
+
+class SystemTestsW5(unittest.TestCase):
 
     def test_w503(self):
         line = '(width == 0\n + height == 0)\n'
@@ -4899,6 +4929,9 @@ if True:
             self.assertEqual(fixed, result)
         with autopep8_context(line, options=['-aa', '--select=E,W50']) as result:
             self.assertEqual(fixed, result)
+
+
+class SystemTestsW6(unittest.TestCase):
 
     def test_w605_simple(self):
         line = "escape = '\\.jpg'\n"
@@ -5416,8 +5449,6 @@ if True:
 
 class CommandLineTests(unittest.TestCase):
 
-    maxDiff = None
-
     def test_e122_and_e302_with_backslash(self):
         line = """\
 import sys
@@ -5482,7 +5513,7 @@ def f():
 
     def test_indent_size_is_zero(self):
         line = "'abc'\n"
-        with autopep8_subprocess(line, ['--indent-size=0']) as (result, retcode):
+        with autopep8_subprocess(line, ['--indent-size=0']) as (_, retcode):
             self.assertEqual(retcode, autopep8.EXIT_CODE_ARGPARSE_ERROR)
 
     def test_exit_code_with_io_error(self):
@@ -5642,7 +5673,7 @@ for i in range(3):
 
         with temporary_file_context(line) as filename_a:
             with temporary_file_context(line) as filename_b:
-                files = list(set([filename_a, filename_b]))
+                files = list({filename_a, filename_b})
                 p = Popen(list(AUTOPEP8_CMD_TUPLE) + files +
                           ['--jobs=3', '--diff'], stdout=PIPE)
                 p.wait()
@@ -6107,8 +6138,6 @@ class ConfigurationFileTests(unittest.TestCase):
 
 
 class ExperimentalSystemTests(unittest.TestCase):
-
-    maxDiff = None
 
     def test_e501_experimental_basic(self):
         line = """\
@@ -7403,7 +7432,7 @@ def autopep8_subprocess(line, options, timeout=None):
                     p.kill()
                     raise Exception("subprocess is timed out")
                 _stdout, _ = p.communicate()
-        yield (_stdout.decode('utf-8'), p.returncode)
+        yield _stdout.decode('utf-8'), p.returncode
 
 
 @contextlib.contextmanager
