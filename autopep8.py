@@ -1619,7 +1619,7 @@ def get_index_offset_contents(result, source):
 
 def get_fixed_long_line(target, previous_line, original,
                         indent_word='    ', max_line_length=79,
-                        aggressive=False, experimental=False, verbose=False):
+                        aggressive=0, experimental=False, verbose=False):
     """Break up long line and return result.
 
     Do this by generating multiple reformatted candidates and then
@@ -1896,7 +1896,7 @@ def _priority_key(pep8_result):
 
 
 def shorten_line(tokens, source, indentation, indent_word, max_line_length,
-                 aggressive=False, experimental=False, previous_line=''):
+                 aggressive=0, experimental=False, previous_line=''):
     """Separate line at OPERATOR.
 
     Multiple candidates will be yielded.
@@ -1934,7 +1934,7 @@ def shorten_line(tokens, source, indentation, indent_word, max_line_length,
 
 
 def _shorten_line(tokens, source, indentation, indent_word,
-                  aggressive=False, previous_line=''):
+                  aggressive=0, previous_line=''):
     """Separate line at OPERATOR.
 
     The input is expected to be free of newlines except for inside multiline
