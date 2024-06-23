@@ -436,9 +436,9 @@ Links
 * PyPI_
 * GitHub_
 * `Travis CI`_
-* Coveralls_
+* Codecov_
 
 .. _PyPI: https://pypi.org/project/autopep8/
 .. _GitHub: https://github.com/hhatto/autopep8
 .. _`Travis CI`: https://travis-ci.org/hhatto/autopep8
-.. _`Coveralls`: https://coveralls.io/r/hhatto/autopep8
+.. _`Codecov`: https://app.codecov.io/gh/hhatto/autopep8

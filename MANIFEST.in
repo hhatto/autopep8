@@ -18,7 +18,6 @@ recursive-exclude test/suite/out *.py
 exclude .travis.yml
 exclude CONTRIBUTING.rst
 exclude Makefile
-exclude coveralls.bash
 exclude hooks
 exclude hooks/pre-push
 exclude install_hooks.bash
