@@ -3855,13 +3855,23 @@ def _expand_codes(codes, ignore_codes):
     return ret
 
 
+def _parser_error_with_code(
+    parser: argparse.ArgumentParser, code: int, msg: str,
+) -> None:
+    """wrap parser.error with exit code"""
+    parser.print_usage(sys.stderr)
+    parser.exit(code, f"{msg}\n")
+
+
 def parse_args(arguments, apply_config=False):
     """Parse command-line options."""
     parser = create_parser()
     args = parser.parse_args(arguments)
 
     if not args.files and not args.list_fixes:
-        parser.exit(EXIT_CODE_ARGPARSE_ERROR, 'incorrect number of arguments')
+        _parser_error_with_code(
+            parser, EXIT_CODE_ARGPARSE_ERROR, 'incorrect number of arguments',
+        )
 
     args.files = [decode_filename(name) for name in args.files]
 
@@ -3879,56 +3889,65 @@ def parse_args(arguments, apply_config=False):
 
     if '-' in args.files:
         if len(args.files) > 1:
-            parser.exit(
+            _parser_error_with_code(
+                parser,
                 EXIT_CODE_ARGPARSE_ERROR,
                 'cannot mix stdin and regular files',
             )
 
         if args.diff:
-            parser.exit(
+            _parser_error_with_code(
+                parser,
                 EXIT_CODE_ARGPARSE_ERROR,
                 '--diff cannot be used with standard input',
             )
 
         if args.in_place:
-            parser.exit(
+            _parser_error_with_code(
+                parser,
                 EXIT_CODE_ARGPARSE_ERROR,
                 '--in-place cannot be used with standard input',
             )
 
         if args.recursive:
-            parser.exit(
+            _parser_error_with_code(
+                parser,
                 EXIT_CODE_ARGPARSE_ERROR,
                 '--recursive cannot be used with standard input',
             )
 
     if len(args.files) > 1 and not (args.in_place or args.diff):
-        parser.exit(
+        _parser_error_with_code(
+            parser,
             EXIT_CODE_ARGPARSE_ERROR,
             'autopep8 only takes one filename as argument '
             'unless the "--in-place" or "--diff" args are used',
         )
 
     if args.recursive and not (args.in_place or args.diff):
-        parser.exit(
+        _parser_error_with_code(
+            parser,
             EXIT_CODE_ARGPARSE_ERROR,
             '--recursive must be used with --in-place or --diff',
         )
 
     if args.in_place and args.diff:
-        parser.exit(
+        _parser_error_with_code(
+            parser,
             EXIT_CODE_ARGPARSE_ERROR,
             '--in-place and --diff are mutually exclusive',
         )
 
     if args.max_line_length <= 0:
-        parser.exit(
+        _parser_error_with_code(
+            parser,
             EXIT_CODE_ARGPARSE_ERROR,
             '--max-line-length must be greater than 0',
         )
 
     if args.indent_size <= 0:
-        parser.exit(
+        _parser_error_with_code(
+            parser,
             EXIT_CODE_ARGPARSE_ERROR,
             '--indent-size must be greater than 0',
         )
@@ -3968,19 +3987,22 @@ def parse_args(arguments, apply_config=False):
         args.jobs = multiprocessing.cpu_count()
 
     if args.jobs > 1 and not (args.in_place or args.diff):
-        parser.exit(
+        _parser_error_with_code(
+            parser,
             EXIT_CODE_ARGPARSE_ERROR,
             'parallel jobs requires --in-place',
         )
 
     if args.line_range:
         if args.line_range[0] <= 0:
-            parser.exit(
+            _parser_error_with_code(
+                parser,
                 EXIT_CODE_ARGPARSE_ERROR,
                 '--range must be positive numbers',
             )
         if args.line_range[0] > args.line_range[1]:
-            parser.exit(
+            _parser_error_with_code(
+                parser,
                 EXIT_CODE_ARGPARSE_ERROR,
                 'First value of --range should be less than or equal '
                 'to the second',
