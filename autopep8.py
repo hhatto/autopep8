@@ -89,7 +89,7 @@ from configparser import ConfigParser as SafeConfigParser, Error
 import pycodestyle
 
 
-__version__ = '2.3.0'
+__version__ = '2.3.1'
 
 
 CR = '\r'
