@@ -15,7 +15,6 @@ include test/fake_pycodestyle_configuration/tox.ini
 include tox.ini
 recursive-exclude test/suite *.py
 recursive-exclude test/suite/out *.py
-exclude .travis.yml
 exclude CONTRIBUTING.rst
 exclude Makefile
 exclude hooks
