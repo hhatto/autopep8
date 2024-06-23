@@ -5513,8 +5513,12 @@ def f():
 
     def test_indent_size_is_zero(self):
         line = "'abc'\n"
-        with autopep8_subprocess(line, ['--indent-size=0']) as (_, retcode):
-            self.assertEqual(retcode, autopep8.EXIT_CODE_ARGPARSE_ERROR)
+        p = Popen(list(AUTOPEP8_CMD_TUPLE) + ['--indent-size=0', '-'],
+                  stdout=PIPE, stderr=PIPE)
+        _, _err = p.communicate(line.encode('utf-8'))
+        self.assertEqual(p.returncode, autopep8.EXIT_CODE_ARGPARSE_ERROR)
+        self.assertIn('indent-size must be greater than 0\n', _err.decode('utf-8'))
+        self.assertIn('usage: autopep8', _err.decode('utf-8'))
 
     def test_exit_code_with_io_error(self):
         line = "import sys\ndef a():\n    print(1)\n"
@@ -5939,6 +5943,22 @@ for i in range(3):
         self.assertEqual(
             process.returncode,
             autopep8.EXIT_CODE_EXISTS_DIFF)
+
+    def test_non_args(self):
+        process = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                        [],
+                        stderr=PIPE,
+                        stdout=PIPE,
+                        stdin=PIPE)
+        _output, _error = process.communicate()
+        self.assertEqual(
+            process.returncode,
+            autopep8.EXIT_CODE_ARGPARSE_ERROR)
+        self.assertEqual(_output.decode("utf-8"), "")
+        self.assertIn(
+            "incorrect number of arguments\n",
+            _error.decode("utf-8"),
+        )
 
 
 class ConfigurationTests(unittest.TestCase):
