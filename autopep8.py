@@ -1322,9 +1322,9 @@ class FixPEP8(object):
 
             _type_comp = f"{_target_obj}, {target[:start]}"
             indent_match = re.match(r'^\s+', target)
-            indent_str = ""
+            indent = ""
             if indent_match:
-                indent_str = indent_match.group()
+                indent = indent_match.group()
 
             _prefix_tmp = target[:start].split()
             if len(_prefix_tmp) >= 1:
@@ -1337,15 +1337,28 @@ class FixPEP8(object):
 
             _suffix_tmp = target[end:]
             _suffix_type_match = TYPE_REGEX.search(_suffix_tmp)
-            if len(_suffix_tmp.split()) >= 1 and _suffix_type_match:
-                if _suffix_type_match:
+            if _suffix_type_match:
+                if len(_suffix_tmp.split()) >= 1:
                     type_match_end = _suffix_type_match.end()
                     _suffix = _suffix_tmp[type_match_end:]
-            if _suffix_type_match:
                 cmp_b = _suffix_type_match.groups()[0]
                 _type_comp = f"{_target_obj}, {cmp_b}"
+            else:
+                _else_suffix_match = re.match(
+                    r"^\s*([^\s:]+)(.*)$",
+                    _suffix_tmp,
+                )
+                if _else_suffix_match:
+                    _else_suffix = _else_suffix_match.group(1)
+                    _else_suffix_other = _else_suffix_match.group(2)
+                    _type_comp = f"{_target_obj}, {_else_suffix}"
+                    _else_suffix_end = _suffix_tmp[_else_suffix_match.end():]
+                    _suffix = f"{_else_suffix_other}{_else_suffix_end}"
+                # `else` route is not care
 
-            fix_line = f"{indent_str}{_prefix}{isinstance_stmt}({_type_comp}){_suffix}"
+            fix_line = (
+                f"{indent}{_prefix}{isinstance_stmt}({_type_comp}){_suffix}"
+            )
             self.source[line_index] = fix_line
 
     def fix_e722(self, result):
