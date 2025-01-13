@@ -1320,6 +1320,10 @@ class FixPEP8(object):
                 isinstance_stmt = " not isinstance"
 
             _type_comp = f"{_target_obj}, {target[:start]}"
+            indent_match = re.match(r'^\s+', target)
+            indent_str = ""
+            if indent_match:
+                indent_str = indent_match.group()
 
             _prefix_tmp = target[:start].split()
             if len(_prefix_tmp) >= 1:
@@ -1340,7 +1344,7 @@ class FixPEP8(object):
                 cmp_b = _suffix_type_match.groups()[0]
                 _type_comp = f"{_target_obj}, {cmp_b}"
 
-            fix_line = f"{_prefix}{isinstance_stmt}({_type_comp}){_suffix}"
+            fix_line = f"{indent_str}{_prefix}{isinstance_stmt}({_type_comp}){_suffix}"
             self.source[line_index] = fix_line
 
     def fix_e722(self, result):
