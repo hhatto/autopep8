@@ -4419,6 +4419,18 @@ if role not in ("domaincontroller_master",
         with autopep8_context(line, options=['--aggressive']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e721_in_conditional_pat3(self):
+        line = "if type(res) == str:\n    pass\n"
+        fixed = "if isinstance(res, str):\n    pass\n"
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e721_in_conditional_with_indent(self):
+        line = "if True:\n    if str == type(''):\n        pass\n"
+        fixed = "if True:\n    if isinstance('', str):\n        pass\n"
+        with autopep8_context(line, options=['--aggressive']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e721_in_not_conditional(self):
         line = "if type(res) != type(''):\n    pass\n"
         fixed = "if not isinstance(res, type('')):\n    pass\n"
