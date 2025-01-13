@@ -1300,6 +1300,7 @@ class FixPEP8(object):
             # NOTE: match objects
             #  * type(a) == type(b)  -> (None, None, 'a', '==')
             #  * str == type(b)      -> ('==', 'b', None, None)
+            #  * type(b) == str      -> (None, None, 'b', '==')
             #  * type("") != type(b) -> (None, None, '""', '!=')
             start = match.start()
             end = match.end()
