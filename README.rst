@@ -311,7 +311,8 @@ $ autopep8 --experimental <filename>
 Disabling line-by-line
 ----------------------
 
-It is possible to disable autopep8 until it is turned back on again in the file, using ``autopep8: off`` and then reenabling with ``autopep8: on``. 
+It is possible to disable autopep8 until it is turned back on again in the file,
+using ``autopep8: off`` and then reenabling with ``autopep8: on``.
 
 .. code-block:: python
 
