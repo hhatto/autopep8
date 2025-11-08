@@ -405,7 +405,7 @@ Testing
 Test cases are in ``test/test_autopep8.py``. They can be run directly via
 ``python test/test_autopep8.py`` or via tox_. The latter is useful for
 testing against multiple Python interpreters. (We currently test against
-CPython versions 3.9, 3.10, 3.11, 3.12 and 3.13. We also test against PyPy.)
+CPython versions 3.10, 3.11, 3.12 3.13 and 3.14. We also test against PyPy.)
 
 .. _`tox`: https://pypi.org/project/tox/
 

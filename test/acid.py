@@ -6,6 +6,9 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
+import dis
+import difflib
+import io
 import os
 import random
 import shlex
@@ -164,13 +167,33 @@ def process_args():
 
 
 def compare_bytecode(filename_a, filename_b):
+    # Compile both files and disassemble their bytecode
     try:
-        import pydiff
-    except ImportError:
-        raise SystemExit('pydiff required for bytecode comparison; '
-                         'run "pip install pydiff"')
+        with autopep8.open_with_encoding(filename_a) as f:
+            code_a = compile(f.read(), filename_a, 'exec')
 
-    diff = pydiff.diff_bytecode_of_files(filename_a, filename_b)
+        with autopep8.open_with_encoding(filename_b) as f:
+            code_b = compile(f.read(), filename_b, 'exec')
+    except (SyntaxError, TypeError, UnicodeDecodeError) as e:
+        sys.stderr.write(f'Failed to compile files for bytecode comparison: {e}\n')
+        return False
+
+    # Disassemble bytecode to strings
+    output_a = io.StringIO()
+    dis.dis(code_a, file=output_a)
+    bytecode_a = output_a.getvalue().splitlines(keepends=True)
+
+    output_b = io.StringIO()
+    dis.dis(code_b, file=output_b)
+    bytecode_b = output_b.getvalue().splitlines(keepends=True)
+
+    # Generate unified diff
+    diff = ''.join(difflib.unified_diff(
+        bytecode_a, bytecode_b,
+        fromfile=filename_a,
+        tofile=filename_b,
+        lineterm='\n'
+    ))
 
     if diff:
         sys.stderr.write('New bytecode does not match original:\n' +
