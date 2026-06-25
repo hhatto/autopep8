@@ -2160,6 +2160,9 @@ class ReformattedLines(object):
              # Don't place a space before a colon.
              curr_text[0] != ':' and
 
+             # Don't place a space inside an f-string
+             not self._in_fstring and
+
              # Don't split up ending brackets by spaces.
              ((prev_text[-1] in '}])' and curr_text[0] not in '.,}])') or
 
