@@ -7425,6 +7425,18 @@ fstring = {"some_key": f"There is a string value inside of an f string, which it
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(line, result)
 
+    @unittest.skipIf(sys.version_info < (3, 12), 'not support in Python3.11 and lower version')
+    def test_e501_experimental_effected_with_fstring(self):
+        line="""\
+foo = f"11111111111111111111111111111111111111111111111111111111111111111{variable}{variable_1}:{variable_2}   "
+"""
+        fixed="""\
+foo = f"11111111111111111111111111111111111111111111111111111111111111111{
+    variable}{variable_1}:{variable_2}   "
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
 
 def fix_e266(source):
     with autopep8_context(source, options=['--select=E266']) as result:
