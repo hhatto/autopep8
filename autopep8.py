@@ -2833,6 +2833,29 @@ def _reflow_lines(parsed_tokens, indentation, max_line_length,
     return lines.emit()
 
 
+def _tokens_have_balanced_brackets(tokens):
+    """Return True if the brackets in the tokens open and close cleanly.
+
+    The reflow machinery (``ReformattedLines``) assumes every closing
+    bracket has a matching opening bracket earlier in the same token
+    stream. A physical line that is only a fragment of a larger
+    multi-line statement can start or end in the middle of a bracket,
+    which would make the running depth go negative (or leave it above
+    zero at the end) and trigger an ``AssertionError`` during reflow.
+
+    """
+    depth = 0
+    for tok in tokens:
+        token_string = tok[1]
+        if token_string in ('(', '[', '{'):
+            depth += 1
+        elif token_string in (')', ']', '}'):
+            depth -= 1
+            if depth < 0:
+                return False
+    return depth == 0
+
+
 def _shorten_line_at_tokens_new(tokens, source, indentation,
                                 max_line_length):
     """Shorten the line taking its length into account.
@@ -2844,6 +2867,12 @@ def _shorten_line_at_tokens_new(tokens, source, indentation,
     # Yield the original source so to see if it's a better choice than the
     # shortened candidate lines we generate here.
     yield indentation + source
+
+    if not _tokens_have_balanced_brackets(tokens):
+        # The tokens are only a fragment of a larger multi-line statement
+        # (unbalanced brackets). Reflowing them would drive the bracket
+        # depth negative and crash, so leave the line unchanged.
+        return
 
     parsed_tokens = _parse_tokens(tokens)
 
