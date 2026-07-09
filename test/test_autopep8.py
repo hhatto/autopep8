@@ -6182,6 +6182,29 @@ print(111, 111, 111, 111, 222, 222, 222, 222,
         with autopep8_context(line, options=['--experimental']) as result:
             self.assertEqual(fixed, result)
 
+    def test_e501_experimental_with_unbalanced_multiline_fragment(self):
+        # A long physical line that is only a fragment of a larger
+        # multi-line statement has unbalanced brackets. Reflowing it used
+        # to drive the bracket depth negative and raise an AssertionError
+        # (see issue #784). It should be handled gracefully instead.
+        line = """\
+def do_tables(metadata):
+    x = SomeTable('test', metadata,
+                  Column('col_a', SmallInteger, nullable=False, default=some_model_name.SomeClassName.REVIEW_STATUS_UNAVAILABLE),
+                  Column('col_b', Boolean, nullable=False),  # some comment
+                  )
+"""
+        fixed = """\
+def do_tables(metadata):
+    x = SomeTable('test', metadata,
+                  Column('col_a', SmallInteger, nullable=False,
+                         default=some_model_name.SomeClassName.REVIEW_STATUS_UNAVAILABLE),
+                  Column('col_b', Boolean, nullable=False),  # some comment
+                  )
+"""
+        with autopep8_context(line, options=['--experimental']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e501_experimental_with_commas_and_colons(self):
         line = """\
 foobar = {'aaaaaaaaaaaa': 'bbbbbbbbbbbbbbbb', 'dddddd': 'eeeeeeeeeeeeeeee', 'ffffffffffff': 'gggggggg'}
