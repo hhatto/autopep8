@@ -3701,7 +3701,7 @@ def _get_parameters(function):
 
         return list(inspect.signature(function).parameters)
     else:
-        return inspect.getargspec(function)[0]
+        return inspect.getfullargspec(function)[0]
 
 
 def apply_global_fixes(source, options, where='global', filename='',
