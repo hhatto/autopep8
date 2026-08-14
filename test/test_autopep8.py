@@ -2627,6 +2627,34 @@ def f():
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e402_with_import_in_try_block(self):
+        line = """\
+try:  # try
+    import pyximport
+    pyximport.install(reload_support=True)
+except ImportError:
+    pass
+import random
+random.seed(12)
+from json import dumps
+print(dumps(random.random()))
+"""
+        fixed = """\
+try:  # try
+    import pyximport
+    pyximport.install(reload_support=True)
+except ImportError:
+    pass
+from json import dumps
+import random
+random.seed(12)
+print(dumps(random.random()))
+"""
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+            # the moved imports used to land inside the try block
+            compile(result, '<string>', 'exec')
+
 
 class SystemTestsE5(unittest.TestCase):
 
@@ -5457,6 +5485,21 @@ if True:
         result = get_module_imports_on_top_of_file(line.splitlines(),
                                                    target_line_index)
         self.assertEqual(result, 10)
+
+    def test_get_module_imports_with_try_block(self):
+        line = """\
+try:
+    import pyximport
+except ImportError:
+    pass
+import random
+random.seed(12)
+"""
+        target_line_index = 4
+        result = get_module_imports_on_top_of_file(line.splitlines(),
+                                                   target_line_index)
+        # lines 1-3 are the body of the try block
+        self.assertNotIn(result, (1, 2, 3))
 
 
 class CommandLineTests(unittest.TestCase):

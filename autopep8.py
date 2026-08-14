@@ -1601,6 +1601,12 @@ def get_module_imports_on_top_of_file(source, import_line_index):
             continue
         elif line.startswith('#'):
             continue
+        elif line[:1].isspace():
+            # An indented line, so we are inside a block: for example the
+            # imports in a "try: import x / except ImportError:" at the top
+            # of the file. Returning this position would move a module level
+            # import into that block.
+            continue
 
         if line.startswith('import '):
             if cnt == import_line_index:
