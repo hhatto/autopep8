@@ -4555,12 +4555,30 @@ def wrap_output(output, encoding):
     """Return output with specified encoding."""
     return codecs.getwriter(encoding)(output.buffer
                                       if hasattr(output, 'buffer')
-                                      else output)
+                                      else output,
+                                      'backslashreplace')
 
 
 def get_encoding():
     """Return preferred encoding."""
     return locale.getpreferredencoding() or sys.getdefaultencoding()
+
+
+def read_stdin_source(encoding):
+    """Return standard input decoded the way a source file would be.
+
+    sys.stdin.read() uses the encoding of the console, which on Windows is
+    often a legacy code page. Reading the bytes ourselves lets us fall back
+    the same way detect_encoding() does for files.
+    """
+    raw = sys.stdin.buffer.read()
+    for candidate in (encoding, 'utf-8'):
+        try:
+            return raw.decode(candidate)
+        except (UnicodeDecodeError, LookupError):
+            continue
+    # latin-1 maps every byte, so this is the end of the chain.
+    return raw.decode('latin-1')
 
 
 def main(argv=None, apply_config=True):
@@ -4588,7 +4606,7 @@ def main(argv=None, apply_config=True):
             assert not args.in_place
 
             encoding = sys.stdin.encoding or get_encoding()
-            read_stdin = sys.stdin.read()
+            read_stdin = read_stdin_source(encoding)
             fixed_stdin = fix_code(read_stdin, args, encoding=encoding)
 
             # LineEndingWrapper is unnecessary here due to the symmetry between

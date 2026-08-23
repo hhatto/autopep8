@@ -807,6 +807,33 @@ lambda xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         line = ''
         self.assertEqual(line, autopep8.get_fixed_long_line(line, line, line))
 
+    def test_read_stdin_source_uses_the_given_encoding(self):
+        with replace_stdin('こんにちは'.encode('utf-8')):
+            self.assertEqual('こんにちは',
+                             autopep8.read_stdin_source('utf-8'))
+
+    def test_read_stdin_source_falls_back_when_console_cannot_decode(self):
+        with replace_stdin('こんにちは'.encode('utf-8')):
+            self.assertEqual('こんにちは',
+                             autopep8.read_stdin_source('ascii'))
+
+    def test_read_stdin_source_falls_back_on_an_unknown_encoding(self):
+        with replace_stdin('こんにちは'.encode('utf-8')):
+            self.assertEqual('こんにちは',
+                             autopep8.read_stdin_source('not-a-codec'))
+
+    def test_read_stdin_source_falls_back_to_latin1(self):
+        with replace_stdin(b'\xff'):
+            self.assertEqual('\xff', autopep8.read_stdin_source('ascii'))
+
+    def test_main_reads_standard_in_through_read_stdin_source(self):
+        source = 'print( "こんにちは" )\n'.encode('utf-8')
+        with replace_stdin(source, encoding='utf-8'):
+            with replace_stdout() as output:
+                autopep8.main(['autopep8', '-'])
+        self.assertEqual('print("こんにちは")',
+                         output.getvalue().decode('utf-8').strip())
+
 
 class SystemTestsE1(unittest.TestCase):
 
@@ -5945,6 +5972,33 @@ for i in range(3):
             fixed,
             process.communicate(line.encode('utf-8'))[0].decode('utf-8'))
 
+    def test_standard_in_with_non_ascii(self):
+        line = 'print( "こんにちは" )\n'
+        fixed = 'print("こんにちは")' + os.linesep
+        process = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                        ['-'],
+                        stdout=PIPE,
+                        stdin=PIPE)
+        self.assertEqual(
+            fixed,
+            process.communicate(line.encode('utf-8'))[0].decode('utf-8'))
+
+    def test_standard_in_with_non_ascii_and_ascii_console(self):
+        # the console encoding used to decide how stdin was decoded, so any
+        # non-ASCII source crashed under a legacy code page
+        line = 'print( "こんにちは" )\n'
+        env = os.environ.copy()
+        env['PYTHONIOENCODING'] = 'ascii'
+        process = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                        ['-'],
+                        stdout=PIPE,
+                        stderr=PIPE,
+                        stdin=PIPE,
+                        env=env)
+        _output, _error = process.communicate(line.encode('utf-8'))
+        self.assertEqual(process.returncode, autopep8.EXIT_CODE_OK,
+                         _error.decode('utf-8', 'replace'))
+
     def test_exit_code_should_be_set_when_standard_in(self):
         line = 'print( 1 )\n'
         process = Popen(list(AUTOPEP8_CMD_TUPLE) +
@@ -7514,6 +7568,38 @@ def capture_stderr(sio):
         yield
     finally:
         sys.stderr = _tmp
+
+
+@contextlib.contextmanager
+def replace_stdin(raw, encoding=None):
+    """Stand in for sys.stdin with something whose buffer yields ``raw``."""
+    class _Stdin(object):
+        def __init__(self, data, stream_encoding):
+            self.buffer = io.BytesIO(data)
+            self.encoding = stream_encoding
+
+    _tmp = sys.stdin
+    sys.stdin = _Stdin(raw, encoding)
+    try:
+        yield
+    finally:
+        sys.stdin = _tmp
+
+
+@contextlib.contextmanager
+def replace_stdout():
+    """Stand in for sys.stdout, yielding the buffer that was written to."""
+    class _Stdout(object):
+        def __init__(self):
+            self.buffer = io.BytesIO()
+
+    _tmp = sys.stdout
+    replacement = _Stdout()
+    sys.stdout = replacement
+    try:
+        yield replacement.buffer
+    finally:
+        sys.stdout = _tmp
 
 
 if __name__ == '__main__':
