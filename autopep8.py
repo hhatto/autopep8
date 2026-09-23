@@ -995,6 +995,11 @@ class FixPEP8(object):
         if not (target in self.imports and self.imports[target] != line_index):
             mod_offset = get_module_imports_on_top_of_file(self.source,
                                                            line_index)
+            disabled_ranges = get_disabled_ranges(
+                ''.join(self.original_source))
+            if any(start <= line_index + 1 and end >= mod_offset + 1
+                   for start, end in disabled_ranges):
+                return []
             self.source[mod_offset] = line + self.source[mod_offset]
         for offset in range(i):
             self.source[line_index+offset] = ''

@@ -2492,6 +2492,51 @@ class SystemTestsE4(unittest.TestCase):
         with autopep8_context(line) as result:
             self.assertEqual(fixed, result)
 
+    def test_e402_preserves_disabled_import_boundaries(self):
+        for directive in ('autopep8', 'fmt'):
+            for prefix in ('', 'import os\n'):
+                with self.subTest(directive=directive, prefix=prefix):
+                    line = (prefix + '# {}: off\n'.format(directive) +
+                            'import sys\n'
+                            'sys.dont_write_bytecode = True\n' +
+                            '# {}: on\n'.format(directive) +
+                            'import locale\n'
+                            'from pathlib import (\n'
+                            '    Path\n'
+                            ')\n')
+                    with autopep8_context(line, options=['--select=E402']) as result:
+                        self.assertEqual(line, result)
+
+    def test_e402_preserves_disabled_block_after_earlier_fix(self):
+        line = ('value = 1\nimport os\n'
+                '# autopep8: off\n'
+                'import sys\n'
+                'sys.dont_write_bytecode = True\n'
+                '# autopep8: on\n'
+                'import locale\n')
+        fixed = ('import os\nvalue = 1\n'
+                 '# autopep8: off\n'
+                 'import sys\n'
+                 'sys.dont_write_bytecode = True\n'
+                 '# autopep8: on\n'
+                 'import locale\n')
+        with autopep8_context(line) as result:
+            self.assertEqual(fixed, result)
+        with autopep8_context(fixed) as result:
+            self.assertEqual(fixed, result)
+
+    def test_e402_with_unrelated_disabled_block(self):
+        line = ('a = 1\nimport os\n'
+                '# autopep8: off\n'
+                'b=2\n'
+                '# autopep8: on\n')
+        fixed = ('import os\na = 1\n'
+                 '# autopep8: off\n'
+                 'b=2\n'
+                 '# autopep8: on\n')
+        with autopep8_context(line, options=['--select=E402']) as result:
+            self.assertEqual(fixed, result)
+
     def test_e402_with_future_import(self):
         line = 'from __future__ import print_function\na = 1\nimport os\n'
         fixed = 'from __future__ import print_function\nimport os\na = 1\n'
@@ -5361,8 +5406,6 @@ Only actual code should be reindented.
         expected_output = """\
 # fmt: off
 
-import sys
-import math
 import math, sys;
 
 def example1():
@@ -5386,6 +5429,10 @@ Only actual code should be reindented.
 '''
         return (sys.path, some_string)
 # fmt: on
+
+
+import math
+import sys
 
 
 def example1():
