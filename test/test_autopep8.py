@@ -50,6 +50,16 @@ class UnitTests(unittest.TestCase):
         source = '"\\xhh" \\'
         self.assertFalse(autopep8.check_syntax(source))
 
+    def test_check_syntax_ignores_is_literal_warning(self):
+        # Issue #783: compiling `x is 0` printed SyntaxWarning.
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter('always', SyntaxWarning)
+            self.assertTrue(autopep8.check_syntax('x is 0'))
+        self.assertEqual(
+            [w for w in caught if issubclass(w.category, SyntaxWarning)],
+            [],
+        )
+
     def test_find_newline_only_cr(self):
         source = ['print(1)\r', 'print(2)\r', 'print3\r']
         self.assertEqual(autopep8.CR, autopep8.find_newline(source))

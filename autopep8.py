@@ -3241,7 +3241,11 @@ def _leading_space_count(line):
 def check_syntax(code):
     """Return True if syntax is okay."""
     try:
-        return compile(code, '<string>', 'exec', dont_inherit=True)
+        # User code may contain `x is 0` etc. Compiling that emits
+        # SyntaxWarning on 3.8+; this is a syntax probe, not a lint.
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', SyntaxWarning)
+            return compile(code, '<string>', 'exec', dont_inherit=True)
     except (SyntaxError, TypeError, ValueError):
         return False
 
