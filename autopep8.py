@@ -4070,7 +4070,7 @@ def read_config(args, parser):
 
         if not args.ignore_local_config:
             parent = tail = args.files and os.path.abspath(
-                os.path.commonprefix(args.files))
+                os.path.commonpath(args.files))
             while tail:
                 if config.read([os.path.join(parent, fn)
                                 for fn in PROJECT_CONFIG]):
@@ -4125,7 +4125,7 @@ def read_pyproject_toml(args, parser):
 
     if not args.ignore_local_config:
         parent = tail = args.files and os.path.abspath(
-            os.path.commonprefix(args.files))
+            os.path.commonpath(args.files))
         while tail:
             pyproject_toml = os.path.join(parent, "pyproject.toml")
             if os.path.exists(pyproject_toml):
