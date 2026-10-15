@@ -3972,12 +3972,12 @@ def parse_args(arguments, apply_config=False):
 
     if args.select:
         args.select = _expand_codes(
-            _split_comma_separated(args.select),
-            (_split_comma_separated(args.ignore) if args.ignore else [])
+            _split_codes(args.select),
+            (_split_codes(args.ignore) if args.ignore else [])
         )
 
     if args.ignore:
-        args.ignore = _split_comma_separated(args.ignore)
+        args.ignore = _split_codes(args.ignore)
         if all(
                 not any(
                     conflicting_code.startswith(ignore_code)
@@ -3991,7 +3991,7 @@ def parse_args(arguments, apply_config=False):
             # Enable everything by default if aggressive.
             args.select = {'E', 'W1', 'W2', 'W3', 'W6'}
         else:
-            args.ignore = _split_comma_separated(DEFAULT_IGNORE)
+            args.ignore = _split_codes(DEFAULT_IGNORE)
 
     if args.exclude:
         args.exclude = _split_comma_separated(args.exclude)
@@ -4165,6 +4165,11 @@ def read_pyproject_toml(args, parser):
         parser.set_defaults(**defaults)
 
     return parser
+
+
+def _split_codes(string):
+    """Return a set of error codes separated by commas or whitespace."""
+    return {code for code in re.split(r'[,\s]+', string) if code}
 
 
 def _split_comma_separated(string):

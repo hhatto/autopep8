@@ -5873,6 +5873,21 @@ for i in range(3):
         finally:
             shutil.rmtree(temp_directory)
 
+    def test_exclude_filename_with_spaces(self):
+        with temporary_project_directory() as dirname:
+            filename = os.path.join(dirname, 'a b.py')
+            with open(filename, 'w') as output:
+                output.write('x=1  \n')
+
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [dirname, '--recursive', '--exclude=a b.py,other.py',
+                       '--diff'],
+                      stdout=PIPE)
+            result = p.communicate()[0].decode('utf-8')
+
+            self.assertEqual('', result)
+            self.assertEqual(autopep8.EXIT_CODE_OK, p.returncode)
+
     def test_invalid_option_combinations(self):
         line = "'abc'  \n"
         with temporary_file_context(line) as filename:
@@ -6083,6 +6098,28 @@ aggressive=1
 
 
 class ConfigurationFileTests(unittest.TestCase):
+
+    def test_flake8_error_code_separators(self):
+        line = 'x=1  \n'
+        for option, expected in [('ignore', line), ('select', 'x = 1\n')]:
+            for codes in ['E225,W291', 'E225 W291', 'E225\tW291',
+                          '\n    E225\n    W291', '\n    E225,\n    W291,']:
+                with self.subTest(option=option, codes=codes):
+                    with temporary_project_directory() as dirname:
+                        config = '[flake8]\n{} = {}\n'.format(option, codes)
+                        with open(os.path.join(dirname, '.flake8'), 'w') as fp:
+                            fp.write(config)
+                        filename = os.path.join(dirname, 'foo.py')
+                        with open(filename, 'w') as fp:
+                            fp.write(line)
+
+                        p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                                  [filename, '--global-config', os.devnull],
+                                  stdout=PIPE)
+                        result = p.communicate()[0].decode('utf-8')
+
+                        self.assertEqual(expected, result)
+                        self.assertEqual(autopep8.EXIT_CODE_OK, p.returncode)
 
     def test_pyproject_toml_with_flake8_config(self):
         """override to flake8 config"""
