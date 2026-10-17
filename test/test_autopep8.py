@@ -382,6 +382,12 @@ def foo():
         self.assertTrue(autopep8.is_python_file(
             os.path.join(ROOT_DIR, 'autopep8.py')))
 
+        with temporary_file_context('', suffix='.pyi') as filename:
+            self.assertTrue(autopep8.is_python_file(filename))
+
+        with temporary_file_context('', suffix='.txt') as filename:
+            self.assertFalse(autopep8.is_python_file(filename))
+
         with temporary_file_context('#!/usr/bin/env python') as filename:
             self.assertTrue(autopep8.is_python_file(filename))
 
@@ -5792,6 +5798,31 @@ for i in range(3):
             self.assertEqual(
                 '-123  \n+123',
                 '\n'.join(result.split('\n')[8:10]))
+        finally:
+            shutil.rmtree(temp_directory)
+
+    def test_recursive_formats_stub_files(self):
+        temp_directory = mkdtemp()
+        original = 'value: int=...\n'
+        try:
+            os.mkdir(os.path.join(temp_directory, 'nested'))
+            names = ['module.py', 'module.pyi',
+                     os.path.join('nested', 'module.pyi'), 'notes.txt']
+            for name in names:
+                with open(os.path.join(temp_directory, name), 'w') as output:
+                    output.write(original)
+
+            p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                      [temp_directory, '--recursive', '--in-place'],
+                      stdout=PIPE, stderr=PIPE)
+            _, stderr = p.communicate()
+            self.assertEqual(0, p.returncode, stderr.decode('utf-8'))
+
+            for name in names:
+                expected = (original if name.endswith('.txt') else
+                            'value: int = ...\n')
+                with open(os.path.join(temp_directory, name)) as output:
+                    self.assertEqual(expected, output.read(), name)
         finally:
             shutil.rmtree(temp_directory)
 

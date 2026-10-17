@@ -4517,7 +4517,7 @@ def fix_multiple_files(filenames, options, output=None):
 
 def is_python_file(filename):
     """Return True if filename is Python file."""
-    if filename.endswith('.py'):
+    if filename.endswith(('.py', '.pyi')):
         return True
 
     try:
