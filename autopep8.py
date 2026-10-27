@@ -4119,10 +4119,6 @@ def read_pyproject_toml(args, parser):
 
     config = None
 
-    if os.path.exists(args.global_config):
-        with open(args.global_config, "rb") as fp:
-            config = tomllib.load(fp)
-
     if not args.ignore_local_config:
         parent = tail = args.files and os.path.abspath(
             os.path.commonprefix(args.files))
@@ -4133,6 +4129,11 @@ def read_pyproject_toml(args, parser):
                     config = tomllib.load(fp)
                     break
             (parent, tail) = os.path.split(parent)
+
+    # A local TOML file takes precedence, even if the global file is INI.
+    if config is None and os.path.exists(args.global_config):
+        with open(args.global_config, "rb") as fp:
+            config = tomllib.load(fp)
 
     if not config:
         return None

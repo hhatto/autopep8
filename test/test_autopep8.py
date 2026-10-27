@@ -6084,6 +6084,37 @@ aggressive=1
 
 class ConfigurationFileTests(unittest.TestCase):
 
+    def test_pyproject_toml_overrides_global_config(self):
+        line = "x=1  \n"
+        configurations = [
+            ('[pycodestyle]\nignore = E225\n', [], "x = 1  \n"),
+            ('[pycodestyle]\nmax-line-length = 100\n', [], "x = 1  \n"),
+            ('[tool.autopep8]\nignore = ["E225"]\n', [], "x = 1  \n"),
+            ('[pycodestyle]\nignore = E225\n',
+             ['--ignore=E225'], "x=1\n"),
+            ('[pycodestyle]\nignore = E225\n',
+             ['--ignore-local-config'], "x=1\n"),
+        ]
+        with temporary_project_directory() as dirname:
+            with open(os.path.join(dirname, "pyproject.toml"), "w") as fp:
+                fp.write('[tool.autopep8]\nignore = ["W291"]\n')
+            target_filename = os.path.join(dirname, "foo.py")
+            with open(target_filename, "w") as fp:
+                fp.write(line)
+            global_filename = os.path.join(dirname, "global-config")
+            for global_config, options, expected in configurations:
+                with self.subTest(global_config=global_config, options=options):
+                    with open(global_filename, "w") as fp:
+                        fp.write(global_config)
+                    p = Popen(list(AUTOPEP8_CMD_TUPLE) +
+                              [target_filename,
+                               '--global-config=' + global_filename] + options,
+                              stdout=PIPE, stderr=PIPE)
+                    output, error = p.communicate()
+                    self.assertEqual(p.returncode, autopep8.EXIT_CODE_OK,
+                                     error.decode('utf-8'))
+                    self.assertEqual(output.decode('utf-8'), expected)
+
     def test_pyproject_toml_with_flake8_config(self):
         """override to flake8 config"""
         line = "a =  1\n"
