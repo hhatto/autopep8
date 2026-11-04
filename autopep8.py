@@ -2848,16 +2848,20 @@ def _shorten_line_at_tokens_new(tokens, source, indentation,
     parsed_tokens = _parse_tokens(tokens)
 
     if parsed_tokens:
+        # Reflowed lines are checked outside their enclosing async function.
+        flags = ast.PyCF_ALLOW_TOP_LEVEL_AWAIT
         # Perform two reflows. The first one starts on the same line as the
         # prefix. The second starts on the line after the prefix.
         fixed = _reflow_lines(parsed_tokens, indentation, max_line_length,
                               start_on_prefix_line=True)
-        if fixed and check_syntax(normalize_multiline(fixed.lstrip())):
+        if fixed and check_syntax(normalize_multiline(fixed.lstrip()),
+                                  flags=flags):
             yield fixed
 
         fixed = _reflow_lines(parsed_tokens, indentation, max_line_length,
                               start_on_prefix_line=False)
-        if fixed and check_syntax(normalize_multiline(fixed.lstrip())):
+        if fixed and check_syntax(normalize_multiline(fixed.lstrip()),
+                                  flags=flags):
             yield fixed
 
 
@@ -3238,10 +3242,11 @@ def _leading_space_count(line):
     return i
 
 
-def check_syntax(code):
+def check_syntax(code, *, flags=0):
     """Return True if syntax is okay."""
     try:
-        return compile(code, '<string>', 'exec', dont_inherit=True)
+        return compile(code, '<string>', 'exec', flags=flags,
+                       dont_inherit=True)
     except (SyntaxError, TypeError, ValueError):
         return False
 
