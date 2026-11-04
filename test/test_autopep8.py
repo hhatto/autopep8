@@ -4,6 +4,7 @@ Unit tests go in "UnitTests". System tests go in "SystemTests".
 
 """
 
+import ast
 import os
 import re
 import sys
@@ -7241,6 +7242,17 @@ class Klass(object):
         with autopep8_context(line, options=['--experimental',
                                              '--indent-size=2']) as result:
             self.assertEqual(fixed, result)
+
+    def test_e501_experimental_wraps_call_with_awaited_argument(self):
+        line = """\
+async def some_async_function():
+    some_function_which_takes_some_parameters(await some_other_async_function_returning_a_string(), SOME_CONST_IT_DOESNT_REALLY_MATTER, a_kw_arg_value=True)
+"""
+        with autopep8_context(line, options=['--experimental',
+                                             '--max-line-length=120']) as result:
+            self.assertLessEqual(max(map(len, result.splitlines())), 120)
+            self.assertEqual(ast.dump(ast.parse(line)),
+                             ast.dump(ast.parse(result)))
 
     def test_e501_experimental_long_function_call_elements(self):
         line = """\
