@@ -344,6 +344,42 @@ Or with options:
     ...                   options={'ignore': ['E']})
     'print( 123 )\n'
 
+``options`` accepts a dictionary with the formatting options below. Use
+underscores in option names, without leading dashes: for example,
+``max_line_length`` corresponds to the CLI's ``--max-line-length``.
+
+.. list-table:: Formatting options
+   :header-rows: 1
+
+   * - Option
+     - Value
+   * - ``ignore``, ``select``
+     - Lists of error-code strings, such as ``['E501']``
+   * - ``max_line_length``
+     - Maximum line length as an integer (default: 79)
+   * - ``aggressive``
+     - Integer level: 0, 1, 2, ... (like ``-a``, ``-aa``)
+   * - ``experimental``
+     - Boolean enabling experimental fixes (deprecated)
+   * - ``line_range``
+     - Inclusive, 1-based ``[start, end]`` line numbers
+   * - ``pep8_passes``
+     - Maximum additional passes; -1 means no limit
+   * - ``hang_closing``
+     - Boolean passed to pycodestyle's hang-closing option
+   * - ``indent_size``
+     - Number of spaces per indentation level (default: 4)
+
+For example, to wrap a list at 30 characters:
+
+    >>> autopep8.fix_code('result = [first_item, second_item, third_item]\n',
+    ...                   options={'max_line_length': 30, 'aggressive': 1})
+    'result = [\n    first_item,\n    second_item,\n    third_item]\n'
+
+Unspecified options keep their defaults. Configuration files are ignored
+unless ``apply_config=True`` is passed to ``fix_code()``; values supplied in
+``options`` take precedence over configuration files.
+
 
 Configuration
 =============

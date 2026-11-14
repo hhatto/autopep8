@@ -326,6 +326,15 @@ def foo():
         with self.assertRaises(ValueError):
             autopep8.fix_code('print( 123 )\n', options={'ignore': 'W'})
 
+    def test_fix_code_with_max_line_length_option(self):
+        source = 'result = [first_item, second_item, third_item]\n'
+        self.assertEqual(
+            'result = [\n    first_item,\n    second_item,\n    third_item]\n',
+            autopep8.fix_code(
+                source, options={'max_line_length': 30, 'aggressive': 1}))
+        with self.assertRaisesRegex(ValueError, 'max-line-length'):
+            autopep8.fix_code(source, options={'max-line-length': 30})
+
     def test_normalize_line_endings(self):
         self.assertEqual(
             ['abc\n', 'def\n', '123\n', 'hello\n', 'world\n'],
